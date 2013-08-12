@@ -2,12 +2,15 @@ package ffmpeg.Interop;
 
 import java.awt.Dimension;
 import java.io.File;
+import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.zip.ZipException;
 
 import org.apache.commons.io.FileUtils;
 import org.joda.time.Duration;
@@ -16,6 +19,7 @@ import vidada.model.video.VideoInfo;
 import archimedesJ.io.ShellExecute;
 import archimedesJ.util.FileSupport;
 import archimedesJ.util.OSValidator;
+import archimedesJ.util.PackageUtil;
 import ffmpeg.FFmpegException;
 
 /**
@@ -48,6 +52,29 @@ public abstract class FFmpegInterop {
 		return instance;
 	}
 
+	protected static File extractFFMpeg(String ffmpegPackagePath) {
+
+		File ffmpeg = null;
+
+		try {
+			URI jar = PackageUtil.getJarURI(FFmpegInteropWindows.class);
+			URI ffmpegURI = PackageUtil.extractFile(jar, ffmpegPackagePath);
+
+			ffmpeg = new File(ffmpegURI);
+			ffmpeg.setExecutable(true);
+
+			System.out.println("extracted ffmpeg to " + ffmpeg);
+
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		} catch (ZipException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return ffmpeg;
+	}
 
 	/**
 	 *  Extracts the frame at the given time as an image.
