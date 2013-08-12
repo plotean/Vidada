@@ -8,12 +8,12 @@ package vidada.data;
  *
  */
 @SuppressWarnings("serial")
-public class EMFactoryCreationException extends RuntimeException {
+public class DatabaseConnectionException extends RuntimeException {
 
-	public  EMFactoryCreationException(String message) {
+	public  DatabaseConnectionException(String message) {
 		this(message, null);
 	}
-	public  EMFactoryCreationException(String message, Throwable cause) {
+	public  DatabaseConnectionException(String message, Throwable cause) {
 		super(message, cause);
 	}
 

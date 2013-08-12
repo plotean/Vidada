@@ -67,7 +67,11 @@ public class FileSystemBrowserPanel extends JPanel implements IContentPresenter{
 		if(lib != null)
 		{
 			DirectoiryLocation libPath = lib.getLibraryRoot();
-			root = new RootLocationTreeNode(libPath, thumbFactory);
+			if(libPath != null)
+				root = new RootLocationTreeNode(libPath, thumbFactory);
+			else {
+				System.err.println("FileSystemBrowserPanel.setLibrary: Library root is null!");
+			}
 		}
 		((JThumbExplorerRenderer)mediaExplorer.getMediaViewer()).setDataContext(root);
 	}

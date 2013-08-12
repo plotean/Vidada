@@ -15,7 +15,7 @@ import javax.swing.UIManager.LookAndFeelInfo;
 import vidada.commands.AddNewMediaLibraryAction;
 import vidada.commands.UpdateMediaLibraryAction;
 import vidada.data.DefaultDataCreator;
-import vidada.data.EMFactoryCreationException;
+import vidada.data.DatabaseConnectionException;
 import vidada.data.SessionManager;
 import vidada.model.ServiceProvider;
 import vidada.model.ServiceProvider.IServiceRegisterer;
@@ -205,7 +205,7 @@ public class Application {
 		try{
 			System.out.println("setting up EntityManager...");
 			em = SessionManager.getObjectContainer();
-		}catch(EMFactoryCreationException e){
+		}catch(DatabaseConnectionException e){
 			e.printStackTrace();
 			em = null;
 

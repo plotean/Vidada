@@ -5,9 +5,10 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 import archimedesJ.exceptions.NotSupportedException;
 import archimedesJ.expressions.Predicate;
@@ -59,7 +60,7 @@ public class GlobalSettings extends JsonSettings {
 
 
 	// persistent fields
-	private List<VidadaDatabase> databases = new ArrayList<VidadaDatabase>();
+	private Set<VidadaDatabase> databases = new HashSet<VidadaDatabase>();
 	private boolean forceHDPIRender = false;
 	private boolean usingMetaData = true;
 	private boolean isDebug = false;

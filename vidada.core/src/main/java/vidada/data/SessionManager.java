@@ -29,7 +29,7 @@ public class SessionManager {
 	private static ObjectContainer objectContainer;
 
 
-	public static ObjectContainer getObjectContainer() throws EMFactoryCreationException {
+	public static ObjectContainer getObjectContainer() throws DatabaseConnectionException {
 
 		if(objectContainer == null)
 		{
@@ -46,30 +46,40 @@ public class SessionManager {
 	/**
 	 * Creates a new entity manager
 	 * @return
-	 * @throws EMFactoryCreationException
+	 * @throws DatabaseConnectionException
 	 */
-	public static ObjectContainer createEntityManager() throws EMFactoryCreationException{
+	public static ObjectContainer createEntityManager() throws DatabaseConnectionException{
 		//
+		File dbPath = null;
 
-		/**/
-		EmbeddedConfiguration config = Db4oEmbedded.newConfiguration();
-		config.common().callConstructors(true);
-		config.common().updateDepth(2);
-
-
-		config.common().objectClass(org.joda.time.DateTime.class).translate(new TJodaDateTime ());
-		config.common().objectClass(BaseDateTime.class).translate(new TNull()); 
-		config.common().objectClass(AbstractDateTime.class).translate(new TNull()); 
-		config.common().objectClass(AbstractInstant.class).translate(new TNull()); 
-
-		config.common().objectClass(File.class).translate(new TFile());
-		config.common().objectClass(URI.class).translate(new TURI());
-
-		return Db4oEmbedded.openFile(
-				config,
-				GlobalSettings.getInstance().getAbsoluteDBPath().toString());
+		try{
+			EmbeddedConfiguration config = Db4oEmbedded.newConfiguration();
+			config.common().callConstructors(true);
+			config.common().updateDepth(2);
 
 
+			config.common().objectClass(org.joda.time.DateTime.class).translate(new TJodaDateTime ());
+			config.common().objectClass(BaseDateTime.class).translate(new TNull()); 
+			config.common().objectClass(AbstractDateTime.class).translate(new TNull()); 
+			config.common().objectClass(AbstractInstant.class).translate(new TNull()); 
+
+			config.common().objectClass(File.class).translate(new TFile());
+			config.common().objectClass(URI.class).translate(new TURI());
+
+
+			dbPath = GlobalSettings.getInstance().getAbsoluteDBPath();
+			File dbFolder = dbPath.getParentFile();
+			dbFolder.mkdirs();
+
+			return Db4oEmbedded.openFile(
+					config,
+					dbPath.toString());
+		}catch(Exception cause){
+			throw new DatabaseConnectionException("Database connection to " +
+					(dbPath != null ? dbPath.toString() : "<null>") +
+					" could not be etablished.",
+					cause);
+		}
 	}
 
 
