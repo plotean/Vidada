@@ -80,7 +80,7 @@ public class AboutPanel extends JPanel {
 						"<ul>" +
 						"<li><b>ffmpeg</b> - for extracting thumbnails</li>" +
 						"<li><b>vlcj</b> - for the direct play feature</li>" +
-						"<li><b>hibernate</b> - ORM for database access</li>" +
+						"<li><b>db4o</b> - object database for persistence</li>" +
 						"<li><b>archimedesj</b> - Java paterns/util library</li>" +
 						"</ul>"+
 				"</html>");

@@ -53,7 +53,7 @@ public class MediaLibrary extends BaseEntity {
 			if(root == null)
 				System.err.println("library root is NULL!");
 		}else {
-			System.err.println("A LibraryEntry for the current user could not be found.");
+			System.err.println("MediaLibrary: A LibraryEntry for the current user could not be found.");
 		}
 
 		return root;
@@ -131,7 +131,7 @@ public class MediaLibrary extends BaseEntity {
 	@Transient
 	public List<ResourceLocation> getAllFiles(ILocationFilter filter){
 		DirectoiryLocation root = getLibraryRoot();
-		System.out.println("searching for all files in root: " + root.toString());
+		System.out.println("MediaLibrary: searching for all files in root: " + root.toString());
 		return Lists.asTypedList(root.listAll(filter, true));
 	}
 
@@ -153,6 +153,7 @@ public class MediaLibrary extends BaseEntity {
 
 		@Override
 		public boolean accept(UniformLocation file) {
+
 
 			if(file instanceof ResourceLocation)
 			{
