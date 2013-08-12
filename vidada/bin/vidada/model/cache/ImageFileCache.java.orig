@@ -1,0 +1,298 @@
+package vidada.model.cache;
+
+import java.awt.Dimension;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import javax.imageio.ImageIO;
+
+import org.apache.commons.io.FileUtils;
+
+import vidada.model.GlobalSettings;
+import archimedesJ.data.BiTuple;
+
+/**
+ * A basic implementation of the imagefile cache, using the os filesystem to persist and manage the images
+ * 
+ * @author IsNull
+ *
+ */
+public class ImageFileCache implements IImageCacheService {
+
+	private static final String RESOLUTION_DELEMITER = "_";
+
+	private final File cacheDataBase;
+	private final File scaledCacheDataBase;
+	private final File nativeCacheDataBase;
+
+	private final Set<Dimension> knownDimensions = new HashSet<Dimension>();
+	private final Object knownDimensionsLOCK = new Object();
+
+
+	public ImageFileCache(){	
+
+		cacheDataBase = GlobalSettings.getInstance().getAbsoluteCachePath(); // new File(decodedPath, "cache");
+		scaledCacheDataBase = new File(cacheDataBase, "scaled");
+		nativeCacheDataBase = new File(cacheDataBase, "native");
+
+		System.out.println("image cache located at: " + scaledCacheDataBase.getAbsolutePath());
+
+		//
+		// initially, read the existing scaled resolutions
+		//
+		File[] resolutionFolders = scaledCacheDataBase.listFiles(new FileFilter() {
+			@Override
+			public boolean accept(File pathname) {
+				return pathname.isDirectory();
+			}
+		});
+
+
+		if(resolutionFolders != null)
+		{
+			for (File folder : resolutionFolders) {
+				String[] parts  = folder.getName().split(RESOLUTION_DELEMITER);
+				if(parts.length == 2){
+					try {
+						knownDimensions.add(new Dimension(Integer.parseInt(parts[0]), Integer.parseInt(parts[1])));
+					} catch (NumberFormatException e) {
+						// igonre wrong folders
+					}
+
+				}
+			}
+		}
+
+
+	}
+
+
+
+	/**
+	 * Returns all cached image dimensions for the given id.
+	 */
+	@Override
+	public Set<Dimension> getCachedDimensions(String id) {
+
+		Set<Dimension> avaiableForId = new HashSet<Dimension>();
+
+		for (Dimension knownDim : getKnownDimensions()) 
+		{
+			if(getFilePath( id, knownDim ).exists())
+			{
+				avaiableForId.add(knownDim);
+			}
+		}
+
+		return avaiableForId;
+	}
+
+
+	protected Set<Dimension> getKnownDimensions(){
+		synchronized (knownDimensionsLOCK) {
+			return new HashSet<Dimension>(this.knownDimensions);
+		}
+	}
+
+
+	@Override
+	public Image getImageById(String id, Dimension size) {
+
+		Image thumbnail = null;
+
+		File cachedPath = getFilePath(id, size);
+		if(cachedPath.exists())
+		{
+			try {
+
+				thumbnail = load(cachedPath); 
+			}catch(Exception e) {
+				System.err.println("Can not read image" + cachedPath.getAbsolutePath());
+			}
+		}
+
+		return thumbnail;
+	}
+
+
+
+
+	/**
+	 * Returns the native image by its id
+	 * @param id
+	 * @return
+	 */
+	@Override
+	public Image getNativeImage(String id){
+		Image nativeImage = null;
+
+		if(nativeImageCache.containsKey(id))
+		{
+			nativeImage = nativeImageCache.get(id);
+
+		}else{
+
+			File cachedPath = getFilePathNative(id);
+			if(cachedPath.exists())
+			{
+				try {
+
+					nativeImage = load(cachedPath);
+					if(nativeImage != null)
+						nativeImageCache.put(id, nativeImage);
+
+				}catch(Exception e) {
+					System.err.println("Can not read native image" + cachedPath.getAbsolutePath());
+				}
+			}
+		}
+
+		return nativeImage;	
+	}
+
+	private final Map<String, Image> nativeImageCache = new HashMap<String, Image>(2000);
+
+	/**
+	 * Store a new image. It will be handled as the new native image.
+	 */
+	@Override
+	public void storeNativeImage(String id, BufferedImage image) {
+
+		if(image == null)
+			throw new IllegalArgumentException("image can not be null");
+
+
+		File outputfile = getFilePathNative(id);
+
+		persist(image, outputfile);	    
+
+		nativeImageCache.put(id, image);
+	}
+
+
+	/**
+	 * Store a new image. It will be handled as the new native image.
+	 */
+	@Override
+	public void storeImage(String id, BufferedImage image) {
+
+		if(image == null)
+			throw new IllegalArgumentException("image can not be null");
+
+
+		Dimension imageSize = new Dimension(image.getWidth(), image.getHeight());
+		File outputfile = getFilePath(id, imageSize);
+
+		persist(image, outputfile);
+
+		synchronized (knownDimensionsLOCK) {
+			knownDimensions.add(imageSize);
+		}
+	}
+
+
+
+
+	@Override
+	public boolean exists(String id, Dimension size) {
+		File cachedPath = getFilePath(id, size);
+		//
+		// The appropriate thing here would be Files.isReadable( cachedPath );
+		// However, isReadable seems to be a very big performance hit when called in frequent rounds.
+		return  cachedPath.exists(); 
+	}
+
+	@Override
+	public boolean nativeImageExists(String id){
+		File cachedPath = getFilePathNative(id);
+		return cachedPath.exists();
+	}
+
+
+
+	@Override
+	public void removeImage(String id) {
+
+		FileUtils.deleteQuietly(getFilePathNative(id));
+
+		File path;
+		for (Dimension knownDim : getKnownDimensions()) 
+		{
+			path = getFilePath( id, knownDim );
+			FileUtils.deleteQuietly(path);
+		}
+	}
+
+
+	protected Image load(File path){
+		BufferedImage image = null;
+		try {
+			image = ImageIO.read(path);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return image;
+	}
+
+	protected void persist(BufferedImage image, File path){
+		try {
+
+			path.mkdirs();
+
+			ImageIO.write(image, "png", path);
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+
+
+	private final Map<Integer, File> dimensionPathCache = new HashMap<Integer, File>(2000);
+
+	private File getFilePath(String id, Dimension size){
+
+		int combindedHash = BiTuple.hashCode(id, size);
+
+		if(!dimensionPathCache.containsKey(combindedHash))
+		{
+			dimensionPathCache.put(combindedHash, new File(getFolderForResolution( size ), id + ".dat"));
+		}
+
+		return  dimensionPathCache.get(combindedHash);
+	}
+
+	private final Map<Integer, File> nativePathCache = new HashMap<Integer, File>(2000);
+
+
+	private File getFilePathNative(String id){
+		int combindedHash = id.hashCode();
+
+		if(!nativePathCache.containsKey(combindedHash))
+		{
+			nativePathCache.put(combindedHash, new File(nativeCacheDataBase, id + ".dat"));
+		}
+
+		return  nativePathCache.get(combindedHash);
+	}
+
+
+
+	private final Map<Dimension, File> resolutionFolders = new HashMap<Dimension, File>(10);
+	private File getFolderForResolution( Dimension size){
+		if(!resolutionFolders.containsKey(size)){
+			resolutionFolders.put(size, new File(scaledCacheDataBase, size.width + RESOLUTION_DELEMITER + size.height));
+		}
+
+		return resolutionFolders.get(size);
+	}
+
+
+}

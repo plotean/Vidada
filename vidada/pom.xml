@@ -1,0 +1,216 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+ 	<modelVersion>4.0.0</modelVersion>
+ 	<groupId>Vidada</groupId>
+	<artifactId>Vidada</artifactId>
+	<version>0.1.1-BETA</version>
+
+	<repositories>
+	   <repository>
+		    <id>java.net</id>
+		    <url>http://download.java.net/maven/2/</url>
+		</repository>
+		
+		<!-- -->
+		<repository>
+	    	<id>glg2d-repo</id>
+	    	<url>http://brandonborkholder.github.com/glg2d/maven2/</url>
+	    </repository>
+	    
+	    <repository>
+      		<id>source.db4o</id>
+      		<url>http://source.db4o.com/maven</url>
+    	</repository>
+	     
+	 </repositories>
+	
+	<build>
+		<sourceDirectory>src</sourceDirectory>
+		<resources>
+			<resource>
+				<directory>src</directory>
+				<excludes>
+					<exclude>**/*.java</exclude>
+				</excludes>
+			</resource>
+			
+			<resource>
+				<directory>src/main/resources</directory>
+			</resource>
+
+			<resource>
+				<!-- Translate the resource during copy, interpreting the maven ${foo.bar} variables-->
+				<filtering>true</filtering>
+				<directory>src/main/resources</directory>
+				<includes>
+		        	<include>**/*.properties</include>
+		        	<!-- include any other file types you want to filter
+		         	<include>**/*.css</include> -->
+		      	</includes>
+				
+			</resource>
+			
+		</resources>
+		
+		<plugins>
+		
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-eclipse-plugin</artifactId>
+				<configuration>
+				<downloadSources>true</downloadSources>
+				<downloadJavadocs>true</downloadJavadocs>
+				</configuration>
+			</plugin>
+		
+			<!-- -->
+			<plugin>
+			  <groupId>org.apache.maven.plugins</groupId>
+			  <artifactId>maven-assembly-plugin</artifactId>
+			  <configuration>
+			    <archive>
+			      <manifest>
+			     	<addClasspath>true</addClasspath>
+			        <mainClass>vidada.Application</mainClass>
+			      </manifest>
+			    </archive>
+			  </configuration>
+			</plugin>
+			
+			
+		<plugin>
+		 <groupId>org.apache.maven.plugins</groupId>
+		  <artifactId>maven-jar-plugin</artifactId>
+		  <configuration>
+		    <archive>
+		      <manifest>
+		        <addClasspath>true</addClasspath>
+		        <mainClass>vidada.Application</mainClass>
+		      </manifest>
+		    </archive>
+		  </configuration>
+		</plugin>
+					
+
+			<plugin>
+			     <groupId>org.codehaus.mojo</groupId>
+			     <artifactId>osxappbundle-maven-plugin</artifactId>
+			     <version>1.0-alpha-1</version>
+			     <configuration>
+			         <mainClass>vidada.Application</mainClass>
+			         <jvmVersion>1.7+</jvmVersion>
+			         <iconFile>${basedir}/src/main/resources/images/logo.icns</iconFile>
+			         <javaApplicationStub>JavaApplicationStub</javaApplicationStub>
+			         <!-- 
+			         <javaApplicationStub>/System/Library/Frameworks/JavaVM.framework/Versions/Current/Resources/MacOS/JavaApplicationStub</javaApplicationStub>	
+			    	 -->
+			     </configuration>
+			     <executions>
+			         <execution>
+			             <phase>package</phase>
+			             <goals>
+			                 <goal>bundle</goal>
+			             </goals>
+			         </execution>
+			    </executions>
+			</plugin>
+			
+		</plugins>
+		
+	</build>
+	
+
+
+	<dependencies>
+	    
+  		<dependency>
+		    <groupId>org.securityvision</groupId>
+  			<artifactId>vidada.core</artifactId>
+  			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
+		  <groupId>archimedesJ</groupId>
+		  <artifactId>archimedesJ</artifactId>
+		  <version>0.1.1</version>
+		</dependency>
+		
+	
+		<!--  Apache commons io: File support -->
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.4</version>
+		</dependency>
+            
+		<!--  Joda Time -->
+		<dependency>
+			<groupId>joda-time</groupId>
+			<artifactId>joda-time</artifactId>
+			<version>2.2</version>
+		</dependency>
+            
+	    <dependency>
+	      <groupId>com.db4o</groupId>
+	      <artifactId>db4o-full-java5</artifactId>
+	      <version>8.0-SNAPSHOT</version>
+	    </dependency>
+
+		<!--  vlcJ: VLC media player wrapper -->
+		<dependency>
+			<groupId>uk.co.caprica</groupId>
+			<artifactId>vlcj</artifactId>
+			<version>2.1.0</version>
+		</dependency>
+		
+		<!--  Gson: Java to Json conversion -->
+	    <dependency>
+	      <groupId>com.google.code.gson</groupId>
+	      <artifactId>gson</artifactId>
+	      <version>2.2.2</version>
+	      <scope>compile</scope>
+	    </dependency>
+	    
+	    <!--  JmDNS: Platform independent ZeroConfig Network discovery, supporting Apple's Bonjour -->
+	    <dependency>
+			<groupId>javax.jmdns</groupId>
+			<artifactId>jmdns</artifactId>
+			<version>3.2.2</version>
+		</dependency>
+
+
+	    <dependency>
+	    	<groupId>javax.transaction</groupId>
+	    	<artifactId>jta</artifactId>
+	    	<version>1.0.1B</version>
+	    </dependency>
+	   
+		
+		<dependency>
+	        <groupId>org.slf4j</groupId>
+	        <artifactId>slf4j-jdk14</artifactId>
+	        <version>1.5.8</version>
+    	</dependency>
+    	
+    	<dependency>
+			<groupId>org.swinglabs</groupId>
+			<artifactId>swingx</artifactId>
+			<version>1.6.1</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.jgoodies</groupId>
+			<artifactId>forms</artifactId>
+			<version>1.2.1</version>
+		</dependency>
+		
+		 <dependency>
+ 			<groupId>junit</groupId>
+ 			<artifactId>junit</artifactId>
+ 			<version>4.11</version>
+ 		</dependency>
+
+	</dependencies>
+   
+   
+  
+</project>

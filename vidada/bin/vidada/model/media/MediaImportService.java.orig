@@ -1,0 +1,442 @@
+package vidada.model.media;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
+
+import vidada.data.SessionManager;
+import vidada.model.ServiceProvider;
+import vidada.model.libraries.IMediaLibraryService;
+import vidada.model.libraries.MediaLibrary;
+import vidada.model.media.images.ImagePart;
+import vidada.model.media.movies.MoviePart;
+import vidada.model.media.music.AudioPart;
+import vidada.model.tags.ITagService;
+import vidada.model.tags.Tag;
+import vidada.model.tags.TagGuessingFromFileStrategy;
+import archimedesJ.data.hashing.IFileHashAlgorythm;
+import archimedesJ.threading.IProgressListener;
+import archimedesJ.threading.ProgressEventArgs;
+import archimedesJ.util.FileSupport;
+
+/**
+ * This class implements basic media import functionality
+ * @author IsNull
+ *
+ */
+public class MediaImportService implements IMediaImportService {
+
+	private final IMediaService mediaService;
+	private final IMediaLibraryService libraryService = ServiceProvider.Resolve(IMediaLibraryService.class);
+	private final ITagService tagService = ServiceProvider.Resolve(ITagService.class);
+
+
+	private final IFileHashAlgorythm fileHashAlgorythm;
+	private final TagGuessingFromFileStrategy tagguesser;
+
+
+	public MediaImportService(IMediaService mediaService){
+		this.mediaService = mediaService;
+		fileHashAlgorythm = this.mediaService.getFileHashAlgorythm();
+		tagguesser = new TagGuessingFromFileStrategy(tagService.getAllTags());
+	}
+
+	@Override
+	public void scanAndUpdateDatabases(IProgressListener progressListener){
+
+		progressListener.currentProgress(new ProgressEventArgs(true, "searching for all files in your libraries..."));
+
+		for (MediaLibrary lib : libraryService.getAllLibraries()) {
+			scanAndUpdateLibrary(progressListener, lib);
+		};
+
+		progressListener.currentProgress(new ProgressEventArgs(100, "done."));
+	}
+
+
+
+	public void scanAndUpdateLibrary(IProgressListener progressListener, MediaLibrary library)
+	{
+		Map<File, String> filecontentMap = new HashMap<File, String>();
+
+
+		List<File> mediafiles = library.getAllFiles(library.buildFilter());
+
+
+
+		progressListener.currentProgress(new ProgressEventArgs(true, "Updating Lib:\t"+library.getLibraryRoot().toString() 
+				+ FileSupport.NEWLINE + "Files:\t " + mediafiles.size()
+				+ " known mediafiles!"));
+
+		for (File file : mediafiles) {
+			filecontentMap.put(file, null);
+		}
+
+		if(!filecontentMap.keySet().isEmpty())
+			progressListener.currentProgress(new ProgressEventArgs(true, "found " + filecontentMap.keySet().size() + " files."));
+		else
+		{
+			progressListener.currentProgress(new ProgressEventArgs(100, "found no medifiles in your library folders!"));
+			return;
+		}
+
+
+		progressListener.currentProgress(new ProgressEventArgs(true, "analyzing file contents..."));
+
+		File[] files = filecontentMap.keySet().toArray(new File[0]);
+		String hash;
+
+		for (int i = 0; i < files.length; i++) {
+			hash = fileHashAlgorythm.calculateHashString(files[i]);
+			filecontentMap.put(files[i], hash);
+
+			progressListener.currentProgress(new ProgressEventArgs(100 / files.length * i, "hash: " + hash + "\tfile: " + files[i].getName()));
+		}
+
+
+		progressListener.currentProgress(new ProgressEventArgs(100, "done"));
+
+
+		//
+		// now lets check against our db
+		//
+
+		progressListener.currentProgress(new ProgressEventArgs(true, "comparing with current db..."));
+
+		Set<Entry<File, String>> newFiles = new HashSet<Entry<File, String>>();
+		Set<Tag> tags;
+
+		EntityManager session =  SessionManager.getSession();
+		session.getTransaction().begin();
+		{
+<<<<<<< HEAD
+			Map<File, String> filecontentMap = new HashMap<File, String>();
+			
+
+			List<File> mediafiles = library.getAllFiles(library.buildFilter());
+			
+			
+			
+			progressListener.currentProgress(new ProgressEventArgs(true, "Updating Lib:\t"+library.getLibraryRoot().toString() 
+					+ FileSupport.NEWLINE + "Files:\t " + mediafiles.size()
+					+ " known mediafiles!"));
+
+			for (File file : mediafiles) {
+				filecontentMap.put(file, null);
+			}
+			
+			if(!filecontentMap.keySet().isEmpty())
+				progressListener.currentProgress(new ProgressEventArgs(true, "found " + filecontentMap.keySet().size() + " files."));
+			else
+			{
+				progressListener.currentProgress(new ProgressEventArgs(100, "found no medifiles in your library folders!"));
+				return;
+			}
+			
+			
+			progressListener.currentProgress(new ProgressEventArgs(true, "analyzing file contents..."));
+			
+			File[] files = filecontentMap.keySet().toArray(new File[0]);
+			String hash;
+			
+			for (int i = 0; i < files.length; i++) {
+				hash = fileHashAlgorythm.calculateHashString(files[i]);
+				filecontentMap.put(files[i], hash);
+				
+				progressListener.currentProgress(new ProgressEventArgs(100 / files.length * i, "hash: " + hash + "\tfile: " + files[i].getName()));
+			}
+			
+
+			progressListener.currentProgress(new ProgressEventArgs(100, "done"));
+			
+			
+			//
+			// now lets check against our db
+			//
+			Set<Entry<File, String>> newFiles = compareWithExisting(progressListener, filecontentMap, library);
+			
+		
+			progressListener.currentProgress(new ProgressEventArgs(true, "starting import of new files."));
+			
+			importNewFiles(progressListener, library, newFiles);
+		}
+		
+		/**
+		 * 
+		 * @param progressListener
+		 * @return
+		 */
+		private Set<Entry<File, String>> compareWithExisting(IProgressListener progressListener, Map<File, String> filecontentMap, MediaLibrary library){
+			
+			
+			progressListener.currentProgress(new ProgressEventArgs(true, "comparing with current db..."));
+			
+			Set<Entry<File, String>> newFiles = new HashSet<Entry<File, String>>();
+			Set<Tag> tags;
+			
+			EntityManager session =  SessionManager.getSession();
+			session.getTransaction().begin();
+			{
+				Map<String, MediaData> existingMediaData = new HashMap<String, MediaData>();
+				
+				TypedQuery<MediaData> query = session.createQuery("from MediaData", MediaData.class);
+				List<MediaData> dataParts = query.getResultList();
+				
+				for (MediaData mediaData : dataParts) {
+					existingMediaData.put(mediaData.getFilehash(), mediaData);
+				}
+				
+				
+				
+
+				int i = 0;
+				double fileMapSize = filecontentMap.size();
+				
+				for (Entry<File, String> entry : filecontentMap.entrySet()) {
+
+					if(existingMediaData.containsKey(entry.getValue()))
+					{	
+						//
+						// this file hash was already present in our media lib. check if the path is still the same and update it if necessary
+						//
+						
+						MediaData dataPart = dataParts.get(0);
+
+						//update filepath
+						if(!dataPart.getRelativeFilePath().equals(library.getRelativePath(entry.getKey())))
+						{
+							dataPart.setRelativeFilePath(library.getRelativePath(entry.getKey()));
+							progressListener.currentProgress(new ProgressEventArgs(true, "updated existing media item path\t" + entry.getKey().toString()));
+						}
+						
+						//Update Tags From filepath..
+						tags = tagguesser.guessTags(dataPart, dataPart.getTags());
+						if(!tags.isEmpty())
+						{
+							dataPart.addTags(tags);
+							progressListener.currentProgress(new ProgressEventArgs(true, "found " + tags.size() + " new matching tags for" + entry.getKey().toString()));
+						}
+						session.merge(dataPart);
+						
+					}else{
+						newFiles.add(entry);
+					}
+					
+					int progress = (int)(100d / fileMapSize * (double)i);
+					progressListener.currentProgress(new ProgressEventArgs(progress, "importing:\t" + entry.getKey().getName()));
+					i++;
+				}
+			}
+			session.getTransaction().commit();
+			
+			return newFiles;
+		}
+		
+		
+		/**
+		 * 
+		 * @param progressListener
+		 * @return
+		 */
+		private Set<Entry<File, String>> compareWithExisting_OLD(IProgressListener progressListener, Map<File, String> filecontentMap, MediaLibrary library){
+			
+			
+			progressListener.currentProgress(new ProgressEventArgs(true, "comparing with current db..."));
+			
+			Set<Entry<File, String>> newFiles = new HashSet<Entry<File, String>>();
+			Set<Tag> tags;
+			
+			EntityManager session =  SessionManager.getSession();
+			session.getTransaction().begin();
+			{
+				TypedQuery<MediaData> query = session.createQuery("from MediaData p where p.filehash = :hash", MediaData.class);
+				
+
+				int i = 0;
+				double fileMapSize = filecontentMap.size();
+				for (Entry<File, String> entry : filecontentMap.entrySet()) {
+					
+					query.setParameter("hash", entry.getValue()); 
+					
+					List<MediaData> dataParts = query.getResultList();
+					
+					
+					if(!dataParts.isEmpty())
+					{	
+						//
+						// this file hash was already present in our media lib. check if the path is still the same and update it if necessary
+						//
+						
+						MediaData dataPart = dataParts.get(0);
+
+						//update filepath
+						if(!dataPart.getRelativeFilePath().equals(library.getRelativePath(entry.getKey())))
+						{
+							dataPart.setRelativeFilePath(library.getRelativePath(entry.getKey()));
+							progressListener.currentProgress(new ProgressEventArgs(true, "updated existing media item path\t" + entry.getKey().toString()));
+						}
+						
+						//Update Tags From filepath..
+						tags = tagguesser.guessTags(dataPart, dataPart.getTags());
+						if(!tags.isEmpty())
+						{
+							dataPart.addTags(tags);
+							progressListener.currentProgress(new ProgressEventArgs(true, "found " + tags.size() + " new matching tags for" + entry.getKey().toString()));
+						}
+						session.merge(dataPart);
+						
+					}else{
+						newFiles.add(entry);
+=======
+
+			TypedQuery<MediaData> query = session.createQuery("from MediaData p where p.filehash = :hash", MediaData.class);
+
+
+			int i = 0;
+			double fileMapSize = filecontentMap.size();
+
+			for (Entry<File, String> entry : filecontentMap.entrySet()) {
+
+				query.setParameter("hash", entry.getValue()); 
+
+				System.out.println("query...");
+				List<MediaData> dataParts = query.getResultList();
+				System.out.println("after query!");
+
+				if(!dataParts.isEmpty())
+				{	
+					//
+					// this file hash was already present in our media lib. check if the path is still the same and update it if necessary
+					//
+
+					MediaData dataPart = dataParts.get(0);
+
+					//update filepath
+					if(!dataPart.getRelativeFilePath().equals(library.getRelativePath(entry.getKey())))
+					{
+						dataPart.setRelativeFilePath(library.getRelativePath(entry.getKey()));
+						progressListener.currentProgress(new ProgressEventArgs(true, "updated existing media item path\t" + entry.getKey().toString()));
+>>>>>>> 7d77db861070814fd97f69aa32d68d313bb825fd
+					}
+
+					//Update Tags From filepath..
+					tags = tagguesser.guessTags(dataPart, dataPart.getTags());
+					if(!tags.isEmpty())
+					{
+						dataPart.addTags(tags);
+						progressListener.currentProgress(new ProgressEventArgs(true, "found " + tags.size() + " new matching tags for" + entry.getKey().toString()));
+					}
+					session.merge(dataPart);
+
+				}else{
+					newFiles.add(entry);
+				}
+<<<<<<< HEAD
+			}
+			session.getTransaction().commit();
+			
+			return newFiles;
+		}
+		
+
+		/**
+		 * 
+		 * @param progressListener
+		 * @param newfilesWithHash new file tuples, with precalculated file content hashes
+		 */
+		protected void importNewFiles(IProgressListener progressListener, MediaLibrary parentlibrary, Set<Entry<File, String>> newfilesWithHash){
+			progressListener.currentProgress(new ProgressEventArgs(true, "importing " + newfilesWithHash.size() + " new files..."));
+
+			Set<Tag> tags;
+			List<MediaData> newmedias = new ArrayList<MediaData>(newfilesWithHash.size());
+			
+			double fileMapSize = newfilesWithHash.size();
+			
+			int i=0;
+			for (Entry<File, String> entry : newfilesWithHash) {
+				
+=======
+
+>>>>>>> 7d77db861070814fd97f69aa32d68d313bb825fd
+				int progress = (int)(100d / fileMapSize * (double)i);
+				progressListener.currentProgress(new ProgressEventArgs(progress, "importing:\t" + entry.getKey().getName()));
+				i++;
+			}
+		}
+		session.getTransaction().commit();
+
+		progressListener.currentProgress(new ProgressEventArgs(true, "starting import of new files."));
+
+		importNewFiles(progressListener, library, newFiles);
+
+	}
+
+
+	/**
+	 * 
+	 * @param progressListener
+	 * @param newfilesWithHash new file tuples, with precalculated file content hashes
+	 */
+	protected void importNewFiles(IProgressListener progressListener, MediaLibrary parentlibrary, Set<Entry<File, String>> newfilesWithHash){
+		progressListener.currentProgress(new ProgressEventArgs(true, "importing " + newfilesWithHash.size() + " new files..."));
+
+		Set<Tag> tags;
+		List<MediaData> newmedias = new ArrayList<MediaData>(newfilesWithHash.size());
+
+		double fileMapSize = newfilesWithHash.size();
+
+		int i=0;
+		for (Entry<File, String> entry : newfilesWithHash) {
+
+			int progress = (int)(100d / fileMapSize * (double)i);
+			progressListener.currentProgress(new ProgressEventArgs(progress, "importing new media:\t" + entry.getKey().getName()));
+
+
+			MediaData newDataPart = null;
+
+			if(MediaInfo.get(MediaType.MOVIE).isFileofThisType(entry.getKey()))
+			{
+				newDataPart = new MoviePart(parentlibrary,
+						parentlibrary.getRelativePath(entry.getKey()),
+						entry.getValue());
+
+			}else if(MediaInfo.get(MediaType.IMAGE).isFileofThisType(entry.getKey())){
+
+				newDataPart = new ImagePart(parentlibrary,
+						parentlibrary.getRelativePath(entry.getKey()),
+						entry.getValue());
+
+			}else if(MediaInfo.get(MediaType.MUSIC).isFileofThisType(entry.getKey())){
+
+				newDataPart = new AudioPart(parentlibrary, 
+						parentlibrary.getRelativePath(entry.getKey()),
+						entry.getValue());
+			}else {
+				System.err.println("can not handle " + entry.getKey().toString());
+				continue;
+			}
+
+			tags = tagguesser.guessTags(newDataPart);
+			newDataPart.addTags(tags);
+
+			if(newDataPart != null)
+				newmedias.add(newDataPart);
+
+			i++;
+		}
+
+
+
+		progressListener.currentProgress(new ProgressEventArgs(true, "adding " + newmedias.size() + " new medias to the Library..."));
+		mediaService.addMediaData(newmedias);
+	}
+
+}
