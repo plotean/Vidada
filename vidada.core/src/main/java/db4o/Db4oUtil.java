@@ -8,6 +8,12 @@ import com.db4o.foundation.ArgumentNullException;
 
 public class Db4oUtil {
 
+	/**
+	 * Gets the requested object by the db4o internal id
+	 * @param db
+	 * @param id
+	 * @return
+	 */
 	public static <T> T getById(ObjectContainer db, long id){
 		T library;
 

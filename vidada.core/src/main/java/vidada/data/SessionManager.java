@@ -66,6 +66,9 @@ public class SessionManager {
 			config.common().objectClass(File.class).translate(new TFile());
 			config.common().objectClass(URI.class).translate(new TURI());
 
+			// generate world wide unique uuids for each stored object
+			// config.file().generateUUIDs(ConfigScope.GLOBALLY);
+
 
 			dbPath = GlobalSettings.getInstance().getAbsoluteDBPath();
 			File dbFolder = dbPath.getParentFile();

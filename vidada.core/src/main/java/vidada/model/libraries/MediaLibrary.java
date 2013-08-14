@@ -214,14 +214,6 @@ public class MediaLibrary extends BaseEntity {
 		return LocationFilters.and(extensionFilter, ignoreMetaDataFilter);
 	}
 
-
-
-	@Override
-	public String toString(){
-		DirectoiryLocation root = getLibraryRoot();
-		return root != null ? root.toString() : "DirectoiryLocation=NULL";
-	}
-
 	public boolean isIgnoreMovies() {
 		return ignoreMovies;
 	}
@@ -251,6 +243,13 @@ public class MediaLibrary extends BaseEntity {
 
 	protected void setLibraryEntries(Set<LibraryEntry> libraryEntries) {
 		this.libraryEntries = libraryEntries;
+	}
+
+
+	@Override
+	public String toString(){
+		DirectoiryLocation root = getLibraryRoot();
+		return root != null ? root.toString() : "DirectoiryLocation=NULL";
 	}
 
 
