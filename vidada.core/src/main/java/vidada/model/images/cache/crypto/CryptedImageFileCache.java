@@ -1,22 +1,16 @@
-package vidada.model.cache.crypto;
+package vidada.model.images.cache.crypto;
 
-import java.awt.Dimension;
-import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
-import javax.imageio.ImageIO;
-
-import org.apache.commons.io.output.ByteArrayOutputStream;
-
-import vidada.model.cache.ImageFileCache;
+import vidada.model.images.cache.ImageFileCache;
 import archimedesJ.crypto.IByteBufferEncryption;
 import archimedesJ.crypto.XORByteCrypter;
 import archimedesJ.geometry.Size;
+import archimedesJ.images.IMemoryImage;
 import archimedesJ.util.FileSupport;
 
 import com.google.gson.Gson;
@@ -56,18 +50,41 @@ public class CryptedImageFileCache extends ImageFileCache {
 	public CryptedImageFileCache(IByteBufferEncryption encryption,  ICacheKeyProvider keyProvider){
 		bytestreamEncrypter = encryption;
 		cachekeyProvider = keyProvider;
-
-		ImageIO.setUseCache(false);
 	}
 
 
 	@Override
-	protected BufferedImage load(File path){
-		//
-		// directly load the image
-		//
-		return loadfromEnCryptedFile(path);
-	}
+	protected InputStream openImageStream(File path){
+
+		InputStream fis = super.openImageStream(path);
+		// the file was stored encrypted, so we have to decrypt the inputstream
+
+		ByteArrayInputStream proxyStream = null;
+		byte[] buffer = null;
+
+
+		try {
+			//read the file into a byte array
+			buffer = new byte[(int) path.length()];
+			fis.read(buffer);
+
+			// decrypt the byte array
+			buffer = bytestreamEncrypter.deCrypt(buffer, getEncryptionKeyPad());
+
+			// create a new InputStream, this time with the original image data
+			proxyStream = new ByteArrayInputStream(buffer);
+
+		}catch(IOException e){
+			e.printStackTrace();
+		} finally {
+			try {
+				if(fis != null) fis.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return proxyStream;
+	} 
 
 
 	/**
@@ -87,88 +104,36 @@ public class CryptedImageFileCache extends ImageFileCache {
 		return ".dat";
 	}
 
-	/**
-	 * Loads the given file into memory, decrypts the image and creates a BufferedImage
-	 * This method may take a while depending on the image size and crypto performance
-	 * 
-	 * @param path
-	 * @return
-	 */
-	protected BufferedImage loadfromEnCryptedFile(File path){
-		BufferedImage image = null;
-		FileInputStream fis = null;
-		ByteArrayInputStream proxyStream = null;
-		byte[] buffer = null;
 
-
-		try {
-			//read the file into a byte array
-			fis = new FileInputStream(path);
-			buffer = new byte[(int) path.length()];
-			fis.read(buffer);
-
-			//decrypt the byte array
-			buffer = bytestreamEncrypter.deCrypt(buffer, getEncryptionKeyPad());
-			proxyStream = new ByteArrayInputStream(buffer);
-			image = ImageIO.read(proxyStream);
-
-		}catch(IOException e){
-			e.printStackTrace();
-		} finally {
-			try {
-				if(fis != null) fis.close();
-				if(proxyStream != null) { proxyStream.close(); }
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		return image;
-	}
 
 	@Override
-	public BufferedImage getNativeImage(String id){
-		BufferedImage image = super.getNativeImage(id);
+	public IMemoryImage getNativeImage(String id){
+		IMemoryImage image = super.getNativeImage(id);
 		File metaInfo = getMetaInfoPath(id);
 		if(!metaInfo.exists())
-			storeNativeImageResolution(id, new Dimension(image.getWidth(), image.getHeight()));
+			storeNativeImageResolution(id, new Size(image.getWidth(), image.getHeight()));
 		return image;
 	}
 
 
 	@Override
-	public void storeNativeImage(String id, BufferedImage image){
+	public void storeNativeImage(String id, IMemoryImage image){
 		super.storeNativeImage(id, image);
-		storeNativeImageResolution(id, new Dimension(image.getWidth(), image.getHeight()));
+		storeNativeImageResolution(id, new Size(image.getWidth(), image.getHeight()));
 	}
 
+
+	/**
+	 * Encrypt the bytes 
+	 */
 	@Override
-	protected void persist(BufferedImage image, File path){
-
-		ByteArrayOutputStream out = new ByteArrayOutputStream(1024);
-		FileOutputStream fos = null;
-
-		try {
-			ImageIO.write(image, "png", out);
-			byte[] encodedImage = out.toByteArray();
-			byte[] cryptedImageData = bytestreamEncrypter.enCrypt(encodedImage, getEncryptionKeyPad());
-
-			path.getParentFile().mkdirs();
-			fos = new FileOutputStream(path);
-			fos.write(cryptedImageData);
-
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		} finally {
-			try {
-				if(out!=null) out.close();
-				if(fos!=null) fos.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
+	protected byte[] retrieveBytes(IMemoryImage image){
+		byte[] encodedImage = super.retrieveBytes(image);
+		return bytestreamEncrypter.enCrypt(encodedImage, getEncryptionKeyPad());
 	}
 
-	private void storeNativeImageResolution(String id, Dimension resolution){
+
+	private void storeNativeImageResolution(String id, Size resolution){
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		String jsonString = gson.toJson(resolution);
 		try {

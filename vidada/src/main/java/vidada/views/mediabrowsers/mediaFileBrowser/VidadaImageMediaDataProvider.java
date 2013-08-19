@@ -1,6 +1,7 @@
 package vidada.views.mediabrowsers.mediaFileBrowser;
 
 import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -9,27 +10,29 @@ import java.util.Map;
 
 import javax.swing.tree.TreeNode;
 
+import vidada.images.MemoryImageAwt;
 import vidada.model.settings.GlobalSettings;
 import archimedesJ.data.ObservableBean;
 import archimedesJ.expressions.Predicate;
 import archimedesJ.geometry.Size;
-import archimedesJ.swing.TaskResult;
+import archimedesJ.images.ImageContainer;
+import archimedesJ.images.StaticImageContainer;
 import archimedesJ.swing.components.thumbexplorer.model.locations.ThumbDirectoryNode;
 import archimedesJ.swing.components.thumbexplorer.model.locations.ThumbLocationNode;
 import archimedesJ.swing.components.thumbpresenter.model.IMediaDataProvider;
-import archimedesJ.swing.images.AsyncImage;
+import archimedesJ.threading.TaskResult;
 import archimedesJ.util.Lists;
 import archimedesJ.util.OSValidator;
 
 public class VidadaImageMediaDataProvider extends ObservableBean implements IMediaDataProvider {
 
 	private final ThumbDirectoryNode folderNode;
-	private Map<Size, Image> imageMap;
+	private Map<Size, ImageContainer> imageMap;
 
 
 	public VidadaImageMediaDataProvider(ThumbDirectoryNode folderNode) {
 		this.folderNode = folderNode;
-		imageMap = new HashMap<Size, Image>();
+		imageMap = new HashMap<Size, ImageContainer>();
 	}
 
 	List<Image> goodImages = null;
@@ -122,30 +125,12 @@ public class VidadaImageMediaDataProvider extends ObservableBean implements IMed
 	 */
 	private Image retriveImageFromNode(IMediaDataProvider thumbNode) {
 
-		Image imageToDraw = null;
-
 		Size size = getImageResolution();
 
-		if (!thumbNode.hasCachedThumbnail(size) && thumbNode.canCreateThumbnail()) {
-			System.out.println("forcing creation of async image! " + thumbNode);
-			thumbNode.createCachedThumbnail(size);
-		}
+		ImageContainer thumb = thumbNode.getThumbnail(size);
+		thumb.awaitImage();
 
-		if (thumbNode.hasCachedThumbnail(size)) {
-			imageToDraw = thumbNode.getCachedThumbnail(size);
-		} else {
-			System.err.println("no cached image avaiable! " + thumbNode);
-		}
-
-		if (imageToDraw != null) {
-			imageToDraw = retriveImageToDraw(imageToDraw);
-			if (imageToDraw == null)
-				System.err.println("async loading of image failed. " + thumbNode);
-		} else {
-			System.err.println("imageToDraw is NULL " + thumbNode);
-		}
-
-		return imageToDraw;
+		return (Image)thumb.getRawImage();
 	}
 
 	/**
@@ -164,34 +149,6 @@ public class VidadaImageMediaDataProvider extends ObservableBean implements IMed
 		return size;
 	}
 
-	// private bool hasFiles()
-
-	/**
-	 * Gets the image for the given IMediaDataThumb. Also handles AsyncImages,
-	 * which will be informed to load their content if not yet done.
-	 * 
-	 * @param item
-	 * @param imageSize
-	 * @return
-	 */
-	protected Image retriveImageToDraw(Image imageToDraw) {
-
-		if (imageToDraw instanceof AsyncImage<?>) {
-			AsyncImage<?> asyncImage = (AsyncImage<?>) imageToDraw;
-			if (asyncImage.isLoaded()) {
-				imageToDraw = asyncImage.getOriginalImage();
-			} else {
-				System.out.println("waiting for async image to load");
-				if (!asyncImage.isLoading())
-					asyncImage.loadAsync(null); // load it async and inform the
-				// observer when done
-
-				asyncImage.waitForImage();
-				imageToDraw = asyncImage.getOriginalImage();
-			}
-		}
-		return imageToDraw;
-	}
 
 	private int getImageAmount() {
 		int amount = 0;
@@ -211,7 +168,7 @@ public class VidadaImageMediaDataProvider extends ObservableBean implements IMed
 	private boolean canCreateFolderThumb = true;
 
 	@Override
-	public synchronized TaskResult createCachedThumbnail(Size size) {
+	public synchronized void createThumbnailCached(Size size) {
 		TaskResult state = TaskResult.Failed;
 		iscreatingThumbnail = true;
 
@@ -222,16 +179,15 @@ public class VidadaImageMediaDataProvider extends ObservableBean implements IMed
 			if (images == null) {
 				System.err.println("Failed to create folder thumb! " + getTitle());
 				canCreateFolderThumb = false;
-				return TaskResult.Failed;
+				//return TaskResult.Failed;
 			}
 
 			if (!images.isEmpty()) {
 
 				FolderThumbImageComposer imageComposer = new FolderThumbImageComposer();
+				BufferedImage image = imageComposer.createImageComposition(images, size, 0.11f, 20);
 
-				Image image = imageComposer.createImageComposition(images, size, 0.11f, 20);
-
-				imageMap.put(size, image);
+				imageMap.put(size, new StaticImageContainer(new MemoryImageAwt(image)));
 				state = TaskResult.Completed;
 				firePropertyChange("cachedThumbnail");
 				System.out.println("miniThumb Image has been added to cachedThumbnail");
@@ -242,31 +198,16 @@ public class VidadaImageMediaDataProvider extends ObservableBean implements IMed
 		} finally {
 			iscreatingThumbnail = false;
 		}
-		return state;
+		//return state;
 	}
 
-	@Override
-	public boolean hasCachedThumbnail(Size size) {
-		System.out.println("hasCachedThumbnail " + size);
-		return imageMap.containsKey(size);
-	}
 
 	@Override
-	public boolean preloadThumbnail(Size size) {
-		return canCreateThumbnail() && !hasCachedThumbnail(size);
-	}
-
-	@Override
-	public Image getCachedThumbnail(Size size) {
+	public ImageContainer getThumbnail(Size size) {
 		return imageMap.get(size);
 	}
 
 	private volatile boolean iscreatingThumbnail = false;
-
-	@Override
-	public boolean isCreatingThumbnail() {
-		return iscreatingThumbnail;
-	}
 
 	@Override
 	public boolean canCreateThumbnail() {

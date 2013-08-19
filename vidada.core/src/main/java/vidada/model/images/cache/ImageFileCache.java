@@ -1,24 +1,28 @@
-package vidada.model.cache;
+package vidada.model.images.cache;
 
-import java.awt.Image;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import javax.imageio.ImageIO;
-
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.output.ByteArrayOutputStream;
 
+import vidada.model.ServiceProvider;
+import vidada.model.images.RawImageFactory;
 import vidada.model.settings.GlobalSettings;
 import archimedesJ.data.BiTuple;
 import archimedesJ.geometry.Size;
-import archimedesJ.util.images.ImageInfo;
-import archimedesJ.util.images.SimpleImageInfo;
+import archimedesJ.images.IMemoryImage;
+import archimedesJ.swing.images.ImageInfo;
+import archimedesJ.swing.images.SimpleImageInfo;
 
 /**
  * A basic implementation of the image file cache, 
@@ -31,9 +35,10 @@ public class ImageFileCache implements IImageCacheService {
 
 	private static final String RESOLUTION_DELEMITER = "_";
 
-
 	private final File scaledCacheDataBase;
 	private final File nativeCacheDataBase;
+
+	private final RawImageFactory imageFactory = ServiceProvider.Resolve(RawImageFactory.class);
 
 	// file path caches
 	private final Map<Integer, File> dimensionPathCache = new HashMap<Integer, File>(2000);
@@ -51,7 +56,7 @@ public class ImageFileCache implements IImageCacheService {
 	 * This is a basic implementation of the image file cache, 
 	 * using the current OS file system to persist and manage the images
 	 */
-	public ImageFileCache(){	
+	public ImageFileCache(){
 
 		File cacheDataBase = getCacheRoot(); // new File(decodedPath, "cache");
 		scaledCacheDataBase = new File(cacheDataBase, "scaled");
@@ -128,9 +133,9 @@ public class ImageFileCache implements IImageCacheService {
 
 
 	@Override
-	public Image getImageById(String id, Size size) {
+	public IMemoryImage getImageById(String id, Size size) {
 
-		Image thumbnail = null;
+		IMemoryImage thumbnail = null;
 
 		File cachedPath = getFilePath(id, size);
 		if(cachedPath.exists())
@@ -155,8 +160,8 @@ public class ImageFileCache implements IImageCacheService {
 	 * @return
 	 */
 	@Override
-	public BufferedImage getNativeImage(String id){
-		BufferedImage nativeImage = null;
+	public IMemoryImage getNativeImage(String id){
+		IMemoryImage nativeImage = null;
 
 		File cachedPath = getFilePathNative(id);
 		if(cachedPath.exists())
@@ -175,7 +180,7 @@ public class ImageFileCache implements IImageCacheService {
 	 * Store a new image. It will be handled as the new native image.
 	 */
 	@Override
-	public void storeNativeImage(String id, BufferedImage image) {
+	public void storeNativeImage(String id, IMemoryImage image) {
 
 		if(image == null)
 			throw new IllegalArgumentException("image can not be null");
@@ -191,7 +196,7 @@ public class ImageFileCache implements IImageCacheService {
 	 * Store a new image. It will be handled as the new native image.
 	 */
 	@Override
-	public void storeImage(String id, BufferedImage image) {
+	public void storeImage(String id, IMemoryImage image) {
 
 		if(image == null)
 			throw new IllegalArgumentException("image can not be null");
@@ -261,34 +266,66 @@ public class ImageFileCache implements IImageCacheService {
 	 * @param path
 	 * @return
 	 */
-	protected BufferedImage load(File path){
-		BufferedImage image = null;
+	protected final IMemoryImage load(File path){
+		InputStream is = openImageStream(path);
+		try{
+			return imageFactory.createImage(is);
+		}finally{
+			if(is != null)
+				try {
+					is.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+		}
+	}
+
+	/**
+	 * Open a InputStream which must return the raw image bytes
+	 * @param path
+	 * @return
+	 */
+	protected InputStream openImageStream(File path){
+		FileInputStream fis = null;
 		try {
-			image = ImageIO.read(path);
-		} catch (IOException e) {
+			fis = new FileInputStream(path);
+		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
-		return image;
+		return fis;
 	}
+
+	protected byte[] retrieveBytes(IMemoryImage image){
+		ByteArrayOutputStream out = new ByteArrayOutputStream(1024); 
+		imageFactory.writeImage(image, out);
+		return out.toByteArray();
+		// no need for byte array stream to be closed explicitly
+	}
+
 
 	/**
 	 * Writes the given image to disk
 	 * @param image
 	 * @param path
 	 */
-	protected void persist(BufferedImage image, File path){
+	protected final void persist(IMemoryImage image, File path){
+		byte[] rawImageData = retrieveBytes(image);
+		path.getParentFile().mkdirs();
+
 		try {
-
-			path.mkdirs();
-
-			ImageIO.write(image, "png", path);
-
+			FileOutputStream fos = new FileOutputStream(path);
+			try{
+				fos.write(rawImageData);
+			}finally{
+				if(fos != null)
+					fos.close();
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-
-
 
 
 	/**

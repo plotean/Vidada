@@ -5,6 +5,7 @@ import java.awt.EventQueue;
 import java.awt.Frame;
 import java.awt.Point;
 
+import javax.imageio.ImageIO;
 import javax.swing.Action;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -14,11 +15,13 @@ import javax.swing.UIManager.LookAndFeelInfo;
 
 import vidada.commands.AddNewMediaLibraryAction;
 import vidada.commands.UpdateMediaLibraryAction;
-import vidada.data.DefaultDataCreator;
 import vidada.data.DatabaseConnectionException;
+import vidada.data.DefaultDataCreator;
 import vidada.data.SessionManager;
+import vidada.images.RawImageFactoryAwt;
 import vidada.model.ServiceProvider;
 import vidada.model.ServiceProvider.IServiceRegisterer;
+import vidada.model.images.RawImageFactory;
 import vidada.model.libraries.IMediaLibraryService;
 import vidada.model.security.AuthenticationException;
 import vidada.model.security.IPrivacyService;
@@ -62,6 +65,8 @@ public class Application {
 		System.out.println("Max memory: " + maxBytes / 1024 / 1024 + "MB");
 
 		OSValidator.setForceHDPI(GlobalSettings.getInstance().isForceHDPIRender());
+
+		ImageIO.setUseCache(false);
 
 		try{
 			startApplication();
@@ -184,6 +189,8 @@ public class Application {
 			@Override
 			public void registerServices(ServiceLocator locator) {
 				locator.registerSingleton(ISystemService.class, SystemService.class);
+				locator.registerSingleton(RawImageFactory.class, RawImageFactoryAwt.class);
+
 			}
 		});
 

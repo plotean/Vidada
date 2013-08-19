@@ -1,10 +1,10 @@
-package vidada.model.cache.crypto;
+package vidada.model.images.cache.crypto;
 
 import java.io.File;
 import java.io.IOException;
 
 import vidada.model.ServiceProvider;
-import vidada.model.cache.ImageFileCache;
+import vidada.model.images.cache.ImageFileCache;
 import vidada.model.security.AuthenticationRequieredException;
 import vidada.model.security.IPrivacyService;
 import archimedesJ.crypto.IByteBufferEncryption;

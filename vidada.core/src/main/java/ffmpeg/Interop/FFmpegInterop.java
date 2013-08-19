@@ -1,6 +1,5 @@
 package ffmpeg.Interop;
 
-import java.awt.Dimension;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -16,6 +15,7 @@ import org.apache.commons.io.FileUtils;
 import org.joda.time.Duration;
 
 import vidada.model.video.VideoInfo;
+import archimedesJ.geometry.Size;
 import archimedesJ.io.ShellExecute;
 import archimedesJ.util.FileSupport;
 import archimedesJ.util.OSValidator;
@@ -85,7 +85,7 @@ public abstract class FFmpegInterop {
 	 * @param size
 	 * @throws FFmpegException
 	 */
-	public void createImage(URI pathToVideo, File pathToImage, int second, Dimension size) throws FFmpegException {
+	public void createImage(URI pathToVideo, File pathToImage, int second, Size size) throws FFmpegException {
 
 		//if(!pathToVideo.exists())
 		//	throw new IllegalArgumentException("file must exist and being readable! @ " + pathToVideo.toString());
@@ -157,7 +157,7 @@ public abstract class FFmpegInterop {
 
 		Duration videoDuration = null;
 		int videoBitrate = 0;
-		Dimension resolution = null;
+		Size resolution = null;
 
 
 		//
@@ -194,7 +194,7 @@ public abstract class FFmpegInterop {
 		//
 		m = regex_Resolution.matcher(log);
 		if(m.find()){
-			resolution = new Dimension( 
+			resolution = new Size( 
 					Integer.parseInt(m.group(1)),
 					Integer.parseInt(m.group(2)));
 		}else {
@@ -248,7 +248,7 @@ public abstract class FFmpegInterop {
 		return sb.toString();
 	}
 
-	protected String dimensionToString(Dimension size){
+	protected String dimensionToString(Size size){
 		return  size.width + "x" + size.height;
 	}
 

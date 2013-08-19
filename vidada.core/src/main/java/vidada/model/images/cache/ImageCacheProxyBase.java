@@ -1,10 +1,9 @@
-package vidada.model.cache;
+package vidada.model.images.cache;
 
-import java.awt.Image;
-import java.awt.image.BufferedImage;
 import java.util.Set;
 
 import archimedesJ.geometry.Size;
+import archimedesJ.images.IMemoryImage;
 
 /**
  * Base class for image cache proxy. 
@@ -31,7 +30,7 @@ public abstract class ImageCacheProxyBase implements IImageCacheService{
 	} 
 
 	@Override
-	public Image getImageById(String id, Size size) {
+	public IMemoryImage getImageById(String id, Size size) {
 		return original.getImageById(id, size);
 	}
 
@@ -46,7 +45,7 @@ public abstract class ImageCacheProxyBase implements IImageCacheService{
 	}
 
 	@Override
-	public void storeImage(String id, BufferedImage image) {
+	public void storeImage(String id, IMemoryImage image) {
 		original.storeImage(id, image);
 
 	}
@@ -57,7 +56,7 @@ public abstract class ImageCacheProxyBase implements IImageCacheService{
 	}
 
 	@Override
-	public void storeNativeImage(String id, BufferedImage image) {
+	public void storeNativeImage(String id, IMemoryImage image) {
 		original.storeNativeImage(id, image);
 	}
 
@@ -67,7 +66,7 @@ public abstract class ImageCacheProxyBase implements IImageCacheService{
 	}
 
 	@Override
-	public Image getNativeImage(String id) {
+	public IMemoryImage getNativeImage(String id) {
 		return original.getNativeImage(id);
 	}
 

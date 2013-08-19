@@ -1,9 +1,8 @@
-package vidada.model.cache;
+package vidada.model.images.cache;
 
-import vidada.model.cache.async.AsyncLoadedImageCache;
-import vidada.model.cache.crypto.CryptedImageFileCache;
-import vidada.model.cache.crypto.ICacheKeyProvider;
-import vidada.model.cache.crypto.VidadaCacheKeyProvider;
+import vidada.model.images.cache.crypto.CryptedImageFileCache;
+import vidada.model.images.cache.crypto.ICacheKeyProvider;
+import vidada.model.images.cache.crypto.VidadaCacheKeyProvider;
 
 /**
  * Composition of the vidada image cache
@@ -17,8 +16,7 @@ public class VidadaImageCache  extends ImageCacheProxyBase{
 		super(null);
 
 		boolean encryptCache = true;
-		boolean useAsyncLoader = true;
-		boolean useMemoryCache = true;
+		boolean useMemoryCache = false; // ImageContainers are already cached in memory
 
 		IImageCacheService imageCache;
 
@@ -29,7 +27,6 @@ public class VidadaImageCache  extends ImageCacheProxyBase{
 			imageCache = new ImageFileCache();
 		}
 
-		if(useAsyncLoader) imageCache = new AsyncLoadedImageCache(imageCache);
 		if(useMemoryCache) imageCache = new MemoryImageCache(imageCache);
 
 		setOriginalCache(imageCache);

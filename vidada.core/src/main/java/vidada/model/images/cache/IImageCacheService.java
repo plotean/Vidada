@@ -1,10 +1,9 @@
-package vidada.model.cache;
+package vidada.model.images.cache;
 
-import java.awt.Image;
-import java.awt.image.BufferedImage;
 import java.util.Set;
 
 import archimedesJ.geometry.Size;
+import archimedesJ.images.IMemoryImage;
 
 /**
  * Provides the ability to store and retrieve images
@@ -19,7 +18,7 @@ public interface IImageCacheService {
 	 * @param size The size of the image
 	 * @return
 	 */
-	public abstract Image getImageById(String id, Size size);
+	public abstract IMemoryImage getImageById(String id, Size size);
 
 	/**
 	 * For the given id, returns all available image dimensions
@@ -41,7 +40,7 @@ public interface IImageCacheService {
 	 * @param id
 	 * @param image
 	 */
-	public abstract void storeImage(String id, BufferedImage image);
+	public abstract void storeImage(String id, IMemoryImage image);
 
 
 	/**
@@ -60,7 +59,7 @@ public interface IImageCacheService {
 	 * @param id
 	 * @param image
 	 */
-	void storeNativeImage(String id, BufferedImage image);
+	void storeNativeImage(String id, IMemoryImage image);
 
 	/**
 	 * Exists the native image of the given id?
@@ -74,7 +73,7 @@ public interface IImageCacheService {
 	 * @param id
 	 * @return
 	 */
-	Image getNativeImage(String id);
+	IMemoryImage getNativeImage(String id);
 
 	/**
 	 * Returns the resolution of the native image

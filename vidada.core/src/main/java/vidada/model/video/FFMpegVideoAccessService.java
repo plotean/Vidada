@@ -1,22 +1,23 @@
 package vidada.model.video;
 
-import java.awt.Dimension;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.imageio.ImageIO;
-
 import org.apache.commons.io.FileUtils;
 
+import vidada.model.ServiceProvider;
+import vidada.model.images.RawImageFactory;
+import archimedesJ.geometry.Size;
+import archimedesJ.images.IMemoryImage;
 import ffmpeg.FFmpegException;
 import ffmpeg.Interop.FFmpegInterop;
 
 public class FFMpegVideoAccessService implements IVideoAccessService {
 
+	private final RawImageFactory imageFactory = ServiceProvider.Resolve(RawImageFactory.class);
 	private final static FFmpegInterop ffmpeg = FFmpegInterop.instance();	
 	private final Map<String, VideoInfo> videoInfoCache = new HashMap<String, VideoInfo>();
 
@@ -35,13 +36,13 @@ public class FFMpegVideoAccessService implements IVideoAccessService {
 
 
 	@Override
-	public BufferedImage extractNativeFrame(URI pathToVideFile, int second) {
-		BufferedImage frame = null;
+	public IMemoryImage extractNativeFrame(URI pathToVideFile, int second) {
+		IMemoryImage frame = null;
 
 		VideoInfo info = extractVideoInfo(pathToVideFile);
 		if(info != null)
 		{
-			Dimension resoulution = info.NativeResolution;
+			Size resoulution = info.NativeResolution;
 			if(resoulution != null)
 				frame = extractFrame(pathToVideFile, second, resoulution);
 		}
@@ -52,25 +53,42 @@ public class FFMpegVideoAccessService implements IVideoAccessService {
 	 * extractNativeFrame
 	 */
 	@Override
-	public BufferedImage extractNativeFrame(URI pathToVideFile, float position) {
-
-		position = Math.min(1f, Math.abs(position)); // ensure position is in valid range
-
-		BufferedImage frame = null;
+	public IMemoryImage extractNativeFrame(URI pathToVideFile, float position) {
 
 		VideoInfo info = extractVideoInfo(pathToVideFile);
 		if(info != null)
 		{
-			if(info.NativeResolution != null && info.Duration != null){
-
-				int second =(int)((float)info.Duration.getStandardSeconds() * position);
-				frame = extractFrame(pathToVideFile, second, info.NativeResolution);
+			if(info.NativeResolution != null){
+				return extractFrame(pathToVideFile, position, info.NativeResolution);
 
 			}else{
-				System.err.println("video info is partially unavaiable");
+				System.err.println("extractNativeFrame: video info NativeResolution is unavaiable.");
 			}
 		}else{
-			System.err.println("video info could not be extracted!");
+			System.err.println("extractNativeFrame: video info could not be extracted!");
+		}
+
+		return null; 
+	}
+
+	@Override
+	public IMemoryImage extractFrame(URI pathToVideFile, float position, Size frameSize) {
+		position = Math.min(1f, Math.abs(position)); // ensure position is in valid range
+
+		IMemoryImage frame = null;
+
+		VideoInfo info = extractVideoInfo(pathToVideFile);
+		if(info != null)
+		{
+			if(info.Duration != null){
+				int second =(int)((float)info.Duration.getStandardSeconds() * position);
+				frame = extractFrame(pathToVideFile, second, frameSize);
+
+			}else{
+				System.err.println("extractFrame: video Duration info is unavaiable");
+			}
+		}else{
+			System.err.println("extractFrame: video info could not be extracted!");
 		}
 
 		return frame; 
@@ -84,8 +102,8 @@ public class FFMpegVideoAccessService implements IVideoAccessService {
 	 * @param size
 	 * @return returns a bufferedimage representing the frame
 	 */
-	private BufferedImage extractFrame(URI pathToVideFile, int second, Dimension size){
-		BufferedImage frame = null;
+	private IMemoryImage extractFrame(URI pathToVideFile, int second, Size size){
+		IMemoryImage frame = null;
 
 		File pathToImage = null;
 
@@ -93,13 +111,8 @@ public class FFMpegVideoAccessService implements IVideoAccessService {
 			pathToImage = File.createTempFile("thumb", ".png");
 			try {
 				ffmpeg.createImage(pathToVideFile, pathToImage, second, size);
-				//load the file...
-
-				try {
-					frame = ImageIO.read(pathToImage);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+				//load the file...			
+				frame = imageFactory.createImage(pathToImage);
 
 			} catch (FFmpegException e) {
 				e.printStackTrace();
@@ -118,6 +131,9 @@ public class FFMpegVideoAccessService implements IVideoAccessService {
 	public boolean isAvaiable() {
 		return ffmpeg.isAvaiable();
 	}
+
+
+
 
 
 }

@@ -67,7 +67,7 @@ public class GlobalSettings extends JsonSettings {
 
 
 	/**
-	 * Returns the max thumb resolution
+	 * Returns the max thumb resolution used in the whole application
 	 * (HDPI aware)
 	 * @return
 	 */

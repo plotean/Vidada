@@ -1,10 +1,12 @@
 package vidada.model;
 
 
-import vidada.model.cache.IImageCacheService;
-import vidada.model.cache.VidadaImageCache;
 import vidada.model.connectivity.ConnectivityService;
 import vidada.model.connectivity.IConnectivityService;
+import vidada.model.images.IImageService;
+import vidada.model.images.ImageServiceBase;
+import vidada.model.images.cache.IImageCacheService;
+import vidada.model.images.cache.VidadaImageCache;
 import vidada.model.libraries.IMediaLibraryService;
 import vidada.model.libraries.MediaLibraryService;
 import vidada.model.media.IMediaService;
@@ -96,6 +98,7 @@ public class ServiceProvider implements ILocator {
 		serviceLocator.registerSingleton(IMediaService.class, MediaService.class);
 		serviceLocator.registerSingleton(ITagService.class, TagService.class);
 		serviceLocator.registerSingleton(IImageCacheService.class, VidadaImageCache.class);
+		serviceLocator.registerSingleton(IImageService.class, ImageServiceBase.class);
 
 		System.out.println("config services done...");
 	}
