@@ -213,26 +213,15 @@ public class MovieMediaItem extends MediaItem implements Cloneable {
 		//return success;
 	}
 
-	/**
-	 * Get the current native sized preview frame for this video
-	 * If there is no frame cached, a new one will be created.
-	 * @return
-
-	@Transient
-	public IMemoryImage getCurrentNativeFrame() {
-		IMemoryImage frame = extractRandomNativeSizeFrame();
-		if (frame == null)
-			frame = extractNativeSizeFrameCached();
-		return frame;
-	}
-	 */
-
 	@Override
 	public void resolveResolution(){
 		if(!hasResolution()){
-			VideoInfo info = video.getVideoInfo();
-			if(info != null)
-				setResolution(info.NativeResolution);
+			Video myVideo = getVideo();
+			if(myVideo != null){
+				VideoInfo info = myVideo.getVideoInfo();
+				if(info != null)
+					setResolution(info.NativeResolution);
+			}
 		}
 	}
 
