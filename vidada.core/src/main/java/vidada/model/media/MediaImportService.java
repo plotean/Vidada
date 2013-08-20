@@ -1,5 +1,6 @@
 package vidada.model.media;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -317,10 +318,13 @@ public class MediaImportService implements IMediaImportService {
 
 		if(!currentPathExisits)
 		{
-			FileMediaSource source = new FileMediaSource(library, library.getRelativePath(currentPath));
-			db.store(source);
-			existingMeida.addSource(source);
-			hasChanges = true;
+			URI relativePath = library.getRelativePath(currentPath);
+			if(relativePath != null){
+				FileMediaSource source = new FileMediaSource(library, relativePath);
+				db.store(source);
+				existingMeida.addSource(source);
+				hasChanges = true;
+			}
 		}
 
 		return hasChanges;

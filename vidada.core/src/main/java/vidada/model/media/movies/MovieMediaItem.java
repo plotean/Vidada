@@ -16,6 +16,7 @@ import vidada.model.video.VideoInfo;
 import archimedesJ.exceptions.NotSupportedException;
 import archimedesJ.geometry.Size;
 import archimedesJ.images.IMemoryImage;
+import archimedesJ.io.locations.ResourceLocation;
 import archimedesJ.threading.TaskResult;
 
 /**
@@ -166,10 +167,12 @@ public class MovieMediaItem extends MediaItem implements Cloneable {
 			if(source instanceof FileMediaSource)
 			{
 				FileMediaSource fileSource = (FileMediaSource)source;
-				if (video == null) {
-					video = new Video(fileSource.getAbsoluteFilePath());
+				ResourceLocation path = fileSource.getAbsoluteFilePath();
+
+				if (video == null && path != null) {
+					video = new Video(path);
 				} else
-					video.setPathToVideoFile(fileSource.getAbsoluteFilePath());
+					video.setPathToVideoFile(path);
 			}else
 				throw new NotSupportedException("Can not retrive video from this Source: " + source);
 		}

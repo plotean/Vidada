@@ -39,20 +39,22 @@ public class ImagePartWrapper implements ISmartImage {
 			if(source instanceof FileMediaSource && source.isAvailable())
 			{
 				ResourceLocation resource = ((FileMediaSource)source).getAbsoluteFilePath();
-				InputStream is = null;
-				try {
-					is = resource.openInputStream();
-					image = ImageIO.read(is);
+				if(resource != null) {
+					InputStream is = null;
+					try {
+						is = resource.openInputStream();
+						image = ImageIO.read(is);
 
-				} catch (IOException e) {
-					System.err.println("can't read " + resource);
-					e.printStackTrace();
-				}finally{
-					if(is != null){
-						try {
-							is.close();
-						} catch (IOException e) {
-							e.printStackTrace();
+					} catch (IOException e) {
+						System.err.println("can't read " + resource);
+						e.printStackTrace();
+					}finally{
+						if(is != null){
+							try {
+								is.close();
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
 						}
 					}
 				}

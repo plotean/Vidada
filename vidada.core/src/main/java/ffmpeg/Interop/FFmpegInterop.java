@@ -46,9 +46,6 @@ public abstract class FFmpegInterop {
 
 			System.out.println("loaded ffmpeg interop: " + instance.getClass().getName());
 		}
-
-
-
 		return instance;
 	}
 

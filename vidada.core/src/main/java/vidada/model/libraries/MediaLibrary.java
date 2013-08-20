@@ -89,15 +89,24 @@ public class MediaLibrary extends BaseEntity {
 	/**
 	 * Constructs the relative path for the given file (must be a sub dir of this lib!)
 	 * @param absoluteLibraryFile
-	 * @return Returns the relative path or null, could not be created
+	 * @return Returns the relative path or null, if a relative path could not be created
 	 */
 	@Transient
 	public URI getRelativePath(ResourceLocation absoluteLibraryFile){
 
-		URI relativeFile = FileSupport.getRelativePath(absoluteLibraryFile.getUri(), getLibraryRoot().getUri());
+		URI relativeFile = FileSupport.getRelativePath(
+				absoluteLibraryFile.getUri(),
+				getLibraryRoot().getUri());
 
 		if(absoluteLibraryFile.getUri().getPath().equals(relativeFile.getPath()))
 			relativeFile = null;
+
+		if(relativeFile == null)
+		{
+			System.err.println("could not create relative path for:");
+			System.err.println("absolute: " + absoluteLibraryFile.getUri());
+			System.err.println("root: " + getLibraryRoot().getUri());
+		}
 
 		return relativeFile;
 	}
@@ -110,9 +119,13 @@ public class MediaLibrary extends BaseEntity {
 	@Transient
 	public ResourceLocation getAbsolutePath(URI relativeFile){		
 		try {
-			return  ResourceLocation.Factory.create(
-					new URI(getLibraryRoot().getUri() + relativeFile.toString()),
-					getLibraryRoot().getCreditals());
+			DirectoiryLocation location = getLibraryRoot();
+
+			if(location != null){
+				return  ResourceLocation.Factory.create(
+						new URI(location.getUri() + relativeFile.toString()),
+						location.getCreditals());
+			}
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
 		} 
@@ -252,26 +265,39 @@ public class MediaLibrary extends BaseEntity {
 		return root != null ? root.toString() : "DirectoiryLocation=NULL";
 	}
 
-
-
-	public static void setLibraryRoot(MediaLibrary lib, DirectoiryLocation libraryRoot) {
-
-		LibraryEntry entry = lib.getCurrentEntry();
-		User user = User.current();
-
+	/**
+	 * Set the root path of this media library
+	 * @param libraryRoot
+	 */
+	public void setLibraryRoot(DirectoiryLocation libraryRoot) {
 		ObjectContainer db = SessionManager.getObjectContainer();
+		LibraryEntry entry = findOrCreateEntry();
+
+		entry.setLibraryRoot(libraryRoot);
+		db.store(entry);
+		db.commit();
+	}
+
+
+	/**
+	 * Finds the current libraryEntry or creates a new one
+	 * @return
+	 */
+	private LibraryEntry findOrCreateEntry(){
+
+		LibraryEntry entry = this.getCurrentEntry();
 
 		if(entry == null)
 		{
-			entry = new LibraryEntry(lib, user, libraryRoot);
+			ObjectContainer db = SessionManager.getObjectContainer();
+
+			User user = User.current();
+			entry = new LibraryEntry(this, user, null);
 			db.store(entry);
-			lib.addEntry(entry);
-			db.store(lib);
-		}else{
-			entry.setLibraryRoot(libraryRoot);
-			db.store(entry);
+			this.addEntry(entry);
+			db.store(this);
 		}
 
-		db.commit();
+		return entry;
 	}
 }

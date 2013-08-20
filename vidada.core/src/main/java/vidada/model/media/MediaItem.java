@@ -469,7 +469,7 @@ public abstract class MediaItem extends BaseEntity implements IMediaDataThumb, I
 	@Transient
 	@Override
 	public String getDescription() {
-		return null;
+		return "<no description>";
 	}
 
 	/**

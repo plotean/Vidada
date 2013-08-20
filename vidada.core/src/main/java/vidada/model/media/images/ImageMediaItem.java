@@ -74,7 +74,7 @@ public class ImageMediaItem extends MediaItem {
 				FileMediaSource fileSource = (FileMediaSource)source;
 
 				ResourceLocation imagePath = fileSource.getAbsoluteFilePath();
-				if(imagePath.exists()){
+				if(imagePath != null && imagePath.exists()){
 
 					InputStream is = null;
 					try{
@@ -114,7 +114,7 @@ public class ImageMediaItem extends MediaItem {
 			FileMediaSource fileSource = (FileMediaSource)source;
 
 			ResourceLocation filePath = fileSource.getAbsoluteFilePath();
-			if (filePath.exists()) {
+			if (filePath != null && filePath.exists()) {
 				System.out.println("reading image...");
 				InputStream is = null;
 				try {
