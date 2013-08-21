@@ -1,30 +1,30 @@
 package vidada.model.images.cache;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 
 import vidada.model.ServiceProvider;
 import vidada.model.images.RawImageFactory;
-import vidada.model.settings.GlobalSettings;
 import archimedesJ.data.BiTuple;
 import archimedesJ.geometry.Size;
 import archimedesJ.images.IMemoryImage;
+import archimedesJ.io.locations.DirectoiryLocation;
+import archimedesJ.io.locations.ResourceLocation;
+
 
 /**
- * A basic implementation of the image file cache, 
- * using the current OS file system to persist and manage the images
+ * A basic implementation of a image file cache, 
+ * using the current OS file system to persist and manage the images.
  * 
  * @author IsNull
  *
@@ -33,13 +33,13 @@ public class ImageFileCache implements IImageCacheService {
 
 	private static final String RESOLUTION_DELEMITER = "_";
 
-	private final File scaledCacheDataBase;
+	private final DirectoiryLocation scaledCacheDataBase;
 
 	private final RawImageFactory imageFactory = ServiceProvider.Resolve(RawImageFactory.class);
 
 	// file path caches
-	private final Map<Integer, File> dimensionPathCache = new HashMap<Integer, File>(2000);
-	private final Map<Size, File> resolutionFolders = new HashMap<Size, File>(10);
+	private final Map<Integer, ResourceLocation> dimensionPathCache = new HashMap<Integer, ResourceLocation>(2000);
+	private final Map<Size, DirectoiryLocation> resolutionFolders = new HashMap<Size, DirectoiryLocation>(10);
 
 
 
@@ -47,44 +47,45 @@ public class ImageFileCache implements IImageCacheService {
 	private final Object knownDimensionsLOCK = new Object();
 
 	/**
-	 * Creates a new ImageFileCache.
+	 * Creates a new image cache which uses the file system to store images.
+	 * 
 	 * This is a basic implementation of the image file cache, 
-	 * using the current OS file system to persist and manage the images
+	 * using the current OS file system to persist and manage the images.
+	 * 
+	 * @param cacheRoot The root folder for the cache
 	 */
-	public ImageFileCache(){
+	public ImageFileCache(DirectoiryLocation cacheRoot){
 
-		File cacheDataBase = GlobalSettings.getInstance().getAbsoluteCachePath(); // new File(decodedPath, "cache");
-		scaledCacheDataBase = new File(cacheDataBase, "scaled");
-
+		scaledCacheDataBase = getScaledCache(cacheRoot);
 		scaledCacheDataBase.mkdirs();
-
-		System.out.println("image cache located at: " + scaledCacheDataBase.getAbsolutePath());
 
 		//
 		// initially, read the existing scaled resolutions
 		//
-		File[] resolutionFolders = scaledCacheDataBase.listFiles(new FileFilter() {
-			@Override
-			public boolean accept(File pathname) {
-				return pathname.isDirectory();
-			}
-		});
+		List<DirectoiryLocation> resolutionFolders = scaledCacheDataBase.listDirs();
 
-
-		if(resolutionFolders != null)
+		if(resolutionFolders != null && !resolutionFolders.isEmpty())
 		{
-			for (File folder : resolutionFolders) {
+			for (DirectoiryLocation folder : resolutionFolders) {
 				String[] parts  = folder.getName().split(RESOLUTION_DELEMITER);
 				if(parts.length == 2){
 					try {
 						knownDimensions.add(new Size(Integer.parseInt(parts[0]), Integer.parseInt(parts[1])));
 					} catch (NumberFormatException e) {
-						// igonre wrong folders
+						// Ignore wrong (NON resolution) folders
 					}
-
 				}
 			}
 		}
+	}
+
+	private static DirectoiryLocation getScaledCache(DirectoiryLocation cacheRoot){
+		try {
+			return DirectoiryLocation.Factory.create(cacheRoot, "scaled");
+		} catch (URISyntaxException e1) {
+			e1.printStackTrace();
+		}
+		return null;
 	}
 
 	/**
@@ -119,14 +120,14 @@ public class ImageFileCache implements IImageCacheService {
 
 		IMemoryImage thumbnail = null;
 
-		File cachedPath = getFilePath(id, size);
+		ResourceLocation cachedPath = getFilePath(id, size);
 		if(cachedPath.exists())
 		{
 			try {
 
 				thumbnail = load(cachedPath); 
 			}catch(Exception e) {
-				System.err.println("Can not read image" + cachedPath.getAbsolutePath());
+				System.err.println("Can not read image" + cachedPath);
 			}
 		}
 
@@ -146,7 +147,7 @@ public class ImageFileCache implements IImageCacheService {
 
 
 		Size imageSize = new Size(image.getWidth(), image.getHeight());
-		File outputfile = getFilePath(id, imageSize);
+		ResourceLocation outputfile = getFilePath(id, imageSize);
 
 		persist(image, outputfile);
 
@@ -160,7 +161,7 @@ public class ImageFileCache implements IImageCacheService {
 
 	@Override
 	public boolean exists(String id, Size size) {
-		File cachedPath = getFilePath(id, size);
+		ResourceLocation cachedPath = getFilePath(id, size);
 		//
 		// The appropriate thing here would be Files.isReadable( cachedPath );
 		// However, isReadable seems to have a very big performance hit when called in frequent rounds.
@@ -175,11 +176,11 @@ public class ImageFileCache implements IImageCacheService {
 	@Override
 	public void removeImage(String id) {
 
-		File path;
+		ResourceLocation path;
 		for (Size knownDim : getKnownDimensions()) 
 		{
-			path = getFilePath( id, knownDim );
-			FileUtils.deleteQuietly(path);
+			path = getFilePath(id, knownDim);
+			path.delete();
 		}
 	}
 
@@ -188,7 +189,7 @@ public class ImageFileCache implements IImageCacheService {
 	 * @param path
 	 * @return
 	 */
-	protected final IMemoryImage load(File path){
+	protected final IMemoryImage load(ResourceLocation path){
 		InputStream is = openImageStream(path);
 		try{
 			return imageFactory.createImage(is);
@@ -207,14 +208,8 @@ public class ImageFileCache implements IImageCacheService {
 	 * @param path
 	 * @return
 	 */
-	protected InputStream openImageStream(File path){
-		FileInputStream fis = null;
-		try {
-			fis = new FileInputStream(path);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-		return fis;
+	protected InputStream openImageStream(ResourceLocation path){
+		return path.openInputStream();
 	}
 
 	protected byte[] retrieveBytes(IMemoryImage image){
@@ -230,12 +225,13 @@ public class ImageFileCache implements IImageCacheService {
 	 * @param image
 	 * @param path
 	 */
-	protected final void persist(IMemoryImage image, File path){
+	protected final void persist(IMemoryImage image, ResourceLocation path){
 		byte[] rawImageData = retrieveBytes(image);
-		path.getParentFile().mkdirs();
+
+		path.mkdirs();
 
 		try {
-			FileOutputStream fos = new FileOutputStream(path);
+			OutputStream fos =  path.openOutputStream(); //new FileOutputStream(path);
 			try{
 				fos.write(rawImageData);
 			}finally{
@@ -256,16 +252,24 @@ public class ImageFileCache implements IImageCacheService {
 	 * @param size
 	 * @return
 	 */
-	protected File getFilePath(String id, Size size){
+	protected ResourceLocation getFilePath(String id, Size size){
 
 		int combindedHash = BiTuple.hashCode(id, size);
 
-		if(!dimensionPathCache.containsKey(combindedHash))
+		ResourceLocation cachedThumb = dimensionPathCache.get(combindedHash);
+
+		if(cachedThumb == null)
 		{
-			dimensionPathCache.put(combindedHash, new File(getFolderForResolution( size ), id + getImageExtension()));
+			DirectoiryLocation folder = getFolderForResolution( size );
+			try {
+				cachedThumb = ResourceLocation.Factory.create(folder, id + getImageExtension());
+				dimensionPathCache.put(combindedHash, cachedThumb); 
+			} catch (URISyntaxException e) {
+				e.printStackTrace();
+			}
 		}
 
-		return  dimensionPathCache.get(combindedHash);
+		return cachedThumb;
 	}
 
 	public String getImageExtension(){
@@ -273,12 +277,24 @@ public class ImageFileCache implements IImageCacheService {
 	}
 
 
-	private File getFolderForResolution(Size size){
-		if(!resolutionFolders.containsKey(size)){
-			resolutionFolders.put(size, new File(scaledCacheDataBase, size.width + RESOLUTION_DELEMITER + size.height));
+	private DirectoiryLocation getFolderForResolution(Size size){
+
+		DirectoiryLocation resolutionFolder = resolutionFolders.get(size);
+
+		if(resolutionFolder == null){
+
+			String resolutionName = size.width + RESOLUTION_DELEMITER + size.height;
+
+			try {
+				resolutionFolder = DirectoiryLocation.Factory
+						.create(scaledCacheDataBase, resolutionName);
+			} catch (URISyntaxException e) {
+				e.printStackTrace();
+			}
+			resolutionFolders.put(size, resolutionFolder);
 		}
 
-		return resolutionFolders.get(size);
+		return resolutionFolder;
 	}
 
 

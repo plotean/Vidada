@@ -1,7 +1,6 @@
 package vidada.model.images.cache.crypto;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -9,6 +8,8 @@ import vidada.model.images.cache.ImageFileCache;
 import archimedesJ.crypto.IByteBufferEncryption;
 import archimedesJ.crypto.XORByteCrypter;
 import archimedesJ.images.IMemoryImage;
+import archimedesJ.io.locations.DirectoiryLocation;
+import archimedesJ.io.locations.ResourceLocation;
 
 /**
  * Represents a encrypted image cache
@@ -31,8 +32,8 @@ public class CryptedImageFileCache extends ImageFileCache {
 	 * 
 	 * @param keyProvider Cache keypad provider
 	 */
-	public CryptedImageFileCache(ICacheKeyProvider keyProvider){
-		this(new XORByteCrypter(), keyProvider);
+	public CryptedImageFileCache(DirectoiryLocation cacheRoot, ICacheKeyProvider keyProvider){
+		this(cacheRoot, new XORByteCrypter(), keyProvider);
 	}
 
 	/**
@@ -41,14 +42,15 @@ public class CryptedImageFileCache extends ImageFileCache {
 	 * @param encryption Buffer encryption strategy
 	 * @param keyProvider Cache keypad provider
 	 */
-	public CryptedImageFileCache(IByteBufferEncryption encryption,  ICacheKeyProvider keyProvider){
+	public CryptedImageFileCache(DirectoiryLocation cacheRoot, IByteBufferEncryption encryption,  ICacheKeyProvider keyProvider){
+		super(cacheRoot);
 		bytestreamEncrypter = encryption;
 		cachekeyProvider = keyProvider;
 	}
 
 
 	@Override
-	protected InputStream openImageStream(File path){
+	protected InputStream openImageStream(ResourceLocation path){
 
 		InputStream fis = super.openImageStream(path);
 		// the file was stored encrypted, so we have to decrypt the inputstream
