@@ -55,24 +55,4 @@ public abstract class ImageCacheProxyBase implements IImageCacheService{
 		original.removeImage(id);
 	}
 
-	@Override
-	public void storeNativeImage(String id, IMemoryImage image) {
-		original.storeNativeImage(id, image);
-	}
-
-	@Override
-	public boolean nativeImageExists(String id) {
-		return original.nativeImageExists(id);
-	}
-
-	@Override
-	public IMemoryImage getNativeImage(String id) {
-		return original.getNativeImage(id);
-	}
-
-	@Override
-	public Size getNativeImageResolution(String id) {
-		return original.getNativeImageResolution(id);
-	}
-
 }

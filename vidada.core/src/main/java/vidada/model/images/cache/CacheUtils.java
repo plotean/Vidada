@@ -49,16 +49,6 @@ public class CacheUtils {
 				if(desiredSize.equals(size))
 					return sourceImage; // the already cached image fits perfectly
 			}
-		}else{
-
-			if(imageCache.nativeImageExists(id))
-			{
-				System.err.println("getRescaledInstance: creating thumb from existing NATIVE thumb.");
-
-				sourceImage = imageCache.getNativeImage(id);
-				if(sourceImage == null)
-					System.err.println("getRescaledInstance: imageCache.getNativeImage = NULL for id: " +  id);
-			}
 		}
 
 		if(sourceImage != null){

@@ -9,6 +9,7 @@ import java.util.Set;
 
 import vidada.data.SessionManager;
 import vidada.model.entities.BaseEntity;
+import vidada.model.images.cache.IImageCacheService;
 import vidada.model.media.MediaFileInfo;
 import vidada.model.media.MediaType;
 import vidada.model.user.User;
@@ -36,6 +37,7 @@ public class MediaLibrary extends BaseEntity {
 
 	transient private LibraryEntry currentEntry = null;
 	transient private ILocationFilter mediaFilter = null;
+	transient private IImageCacheService imageCache = null;
 
 	/**
 	 * 
@@ -57,6 +59,14 @@ public class MediaLibrary extends BaseEntity {
 		}
 
 		return root;
+	}
+
+
+	public IImageCacheService getLibraryCache(){
+		if(imageCache == null){
+
+		}
+		return imageCache;
 	}
 
 	/**

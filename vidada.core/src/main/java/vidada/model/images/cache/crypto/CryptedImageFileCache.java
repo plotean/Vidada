@@ -2,19 +2,13 @@ package vidada.model.images.cache.crypto;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
 import vidada.model.images.cache.ImageFileCache;
 import archimedesJ.crypto.IByteBufferEncryption;
 import archimedesJ.crypto.XORByteCrypter;
-import archimedesJ.geometry.Size;
 import archimedesJ.images.IMemoryImage;
-import archimedesJ.util.FileSupport;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 /**
  * Represents a encrypted image cache
@@ -105,24 +99,6 @@ public class CryptedImageFileCache extends ImageFileCache {
 	}
 
 
-
-	@Override
-	public IMemoryImage getNativeImage(String id){
-		IMemoryImage image = super.getNativeImage(id);
-		File metaInfo = getMetaInfoPath(id);
-		if(!metaInfo.exists())
-			storeNativeImageResolution(id, new Size(image.getWidth(), image.getHeight()));
-		return image;
-	}
-
-
-	@Override
-	public void storeNativeImage(String id, IMemoryImage image){
-		super.storeNativeImage(id, image);
-		storeNativeImageResolution(id, new Size(image.getWidth(), image.getHeight()));
-	}
-
-
 	/**
 	 * Encrypt the bytes 
 	 */
@@ -130,48 +106,5 @@ public class CryptedImageFileCache extends ImageFileCache {
 	protected byte[] retrieveBytes(IMemoryImage image){
 		byte[] encodedImage = super.retrieveBytes(image);
 		return bytestreamEncrypter.enCrypt(encodedImage, getEncryptionKeyPad());
-	}
-
-
-	private void storeNativeImageResolution(String id, Size resolution){
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		String jsonString = gson.toJson(resolution);
-		try {
-			FileSupport.writeToFile(getMetaInfoPath(id), jsonString);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * Get the meta info file path for the given id
-	 * @param id
-	 * @return
-	 */
-	private File getMetaInfoPath(String id){
-		return new File(getFilePathNative(id).getAbsolutePath() + ".json");
-	}
-
-	/**
-	 * Get the native image resolution
-	 * This implementation gets it from the meta information
-	 */
-	@Override
-	public Size getNativeImageResolution(String id) {
-		Size dimension = null;
-
-		File metaFile = getMetaInfoPath(id);
-		if(metaFile.exists()){
-			try {
-				String metaInfoJson = FileSupport.readFileToString(metaFile);
-				Gson gson = new GsonBuilder().create();
-				dimension = gson.fromJson(metaInfoJson, Size.class);
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		return dimension;
 	}
 }

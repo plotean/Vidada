@@ -4,9 +4,9 @@ import java.io.File;
 import java.io.IOException;
 
 import vidada.model.ServiceProvider;
-import vidada.model.images.cache.ImageFileCache;
 import vidada.model.security.AuthenticationRequieredException;
 import vidada.model.security.IPrivacyService;
+import vidada.model.settings.GlobalSettings;
 import archimedesJ.crypto.IByteBufferEncryption;
 import archimedesJ.crypto.KeyCurruptedException;
 import archimedesJ.crypto.KeyPad;
@@ -65,7 +65,7 @@ public class VidadaCacheKeyProvider implements ICacheKeyProvider{
 
 				@Override
 				public void eventOccured(Object sender, EventArgsG<byte[]> eventArgs) {
-					encryptWithPassword(ImageFileCache.getCacheRoot(), eventArgs.getValue());
+					encryptWithPassword(GlobalSettings.getInstance().getAbsoluteCachePath(), eventArgs.getValue());
 				}
 			});
 
@@ -74,7 +74,7 @@ public class VidadaCacheKeyProvider implements ICacheKeyProvider{
 
 				@Override
 				public void eventOccured(Object sender, EventArgsG<byte[]> eventArgs) {
-					removeEncryption(ImageFileCache.getCacheRoot(), eventArgs.getValue());
+					removeEncryption(GlobalSettings.getInstance().getAbsoluteCachePath(), eventArgs.getValue());
 				}
 			});
 		}else
@@ -86,7 +86,7 @@ public class VidadaCacheKeyProvider implements ICacheKeyProvider{
 
 	@Override
 	public byte[] getEncryptionKeyPad(CryptedImageFileCache cache) {
-		return getEncryptionKeyPad(ImageFileCache.getCacheRoot());
+		return getEncryptionKeyPad(GlobalSettings.getInstance().getAbsoluteCachePath());
 	}
 
 

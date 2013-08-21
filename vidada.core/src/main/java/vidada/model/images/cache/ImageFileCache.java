@@ -21,8 +21,6 @@ import vidada.model.settings.GlobalSettings;
 import archimedesJ.data.BiTuple;
 import archimedesJ.geometry.Size;
 import archimedesJ.images.IMemoryImage;
-import archimedesJ.swing.images.ImageInfo;
-import archimedesJ.swing.images.SimpleImageInfo;
 
 /**
  * A basic implementation of the image file cache, 
@@ -36,16 +34,13 @@ public class ImageFileCache implements IImageCacheService {
 	private static final String RESOLUTION_DELEMITER = "_";
 
 	private final File scaledCacheDataBase;
-	private final File nativeCacheDataBase;
 
 	private final RawImageFactory imageFactory = ServiceProvider.Resolve(RawImageFactory.class);
 
 	// file path caches
 	private final Map<Integer, File> dimensionPathCache = new HashMap<Integer, File>(2000);
-	private final Map<Integer, File> nativePathCache = new HashMap<Integer, File>(2000);
 	private final Map<Size, File> resolutionFolders = new HashMap<Size, File>(10);
 
-	private final Map<String, Boolean> nativeImageExistCache = new HashMap<String, Boolean>(2000);
 
 
 	private final Set<Size> knownDimensions = new HashSet<Size>();
@@ -58,12 +53,10 @@ public class ImageFileCache implements IImageCacheService {
 	 */
 	public ImageFileCache(){
 
-		File cacheDataBase = getCacheRoot(); // new File(decodedPath, "cache");
+		File cacheDataBase = GlobalSettings.getInstance().getAbsoluteCachePath(); // new File(decodedPath, "cache");
 		scaledCacheDataBase = new File(cacheDataBase, "scaled");
-		nativeCacheDataBase = new File(cacheDataBase, "native");
 
 		scaledCacheDataBase.mkdirs();
-		nativeCacheDataBase.mkdirs();
 
 		System.out.println("image cache located at: " + scaledCacheDataBase.getAbsolutePath());
 
@@ -93,17 +86,6 @@ public class ImageFileCache implements IImageCacheService {
 			}
 		}
 	}
-
-
-	/**
-	 * Gets the root folder of this file cache
-	 * @return
-	 */
-	public static File getCacheRoot(){
-		return GlobalSettings.getInstance().getAbsoluteCachePath();
-	}
-
-
 
 	/**
 	 * Returns all cached image dimensions for the given id.
@@ -153,45 +135,6 @@ public class ImageFileCache implements IImageCacheService {
 
 
 
-
-	/**
-	 * Returns the native image by its id
-	 * @param id
-	 * @return
-	 */
-	@Override
-	public IMemoryImage getNativeImage(String id){
-		IMemoryImage nativeImage = null;
-
-		File cachedPath = getFilePathNative(id);
-		if(cachedPath.exists())
-		{
-			try {
-				nativeImage = load(cachedPath);
-			}catch(Exception e) {
-				System.err.println("Can not read native image" + cachedPath.getAbsolutePath());
-			}
-		}
-		return nativeImage;	
-	}
-
-
-	/**
-	 * Store a new image. It will be handled as the new native image.
-	 */
-	@Override
-	public void storeNativeImage(String id, IMemoryImage image) {
-
-		if(image == null)
-			throw new IllegalArgumentException("image can not be null");
-
-		File outputfile = getFilePathNative(id);
-		persist(image, outputfile);	    
-
-		nativeImageExistCache.put(id, true);
-	}
-
-
 	/**
 	 * Store a new image. It will be handled as the new native image.
 	 */
@@ -229,29 +172,8 @@ public class ImageFileCache implements IImageCacheService {
 
 
 
-	/**
-	 * Checks if the native image exists
-	 */
-	@Override
-	public boolean nativeImageExists(String id){
-
-		if(!nativeImageExistCache.containsKey(id))
-		{
-			File cachedPath = getFilePathNative(id);
-			nativeImageExistCache.put(id, cachedPath.exists());
-		}
-
-		return nativeImageExistCache.get(id);
-	}
-
-
-
 	@Override
 	public void removeImage(String id) {
-
-		FileUtils.deleteQuietly(getFilePathNative(id));
-
-		nativeImageExistCache.put(id, false);
 
 		File path;
 		for (Size knownDim : getKnownDimensions()) 
@@ -346,52 +268,9 @@ public class ImageFileCache implements IImageCacheService {
 		return  dimensionPathCache.get(combindedHash);
 	}
 
-	/**
-	 * Returns the native image resolution as long as the native image exists
-	 */
-	@Override
-	public Size getNativeImageResolution(String id) {
-
-		Size nativeResolution = null;
-
-		File imageFile = getFilePathNative(id);
-		if(imageFile.exists())
-		{
-			try {
-				ImageInfo info = SimpleImageInfo.parseInfo(imageFile);
-				if(info != null && info.isValid())
-					nativeResolution = new Size(info.getWidth(), info.getHeight());
-				else
-					System.err.println("extracted info INVALID: " + info);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-
-		return nativeResolution;
-	}
-
 	public String getImageExtension(){
 		return ".png";
 	}
-
-
-	/**
-	 * Gets the filepath to the native image
-	 * @param id
-	 * @return
-	 */
-	protected File getFilePathNative(String id){
-		int combindedHash = id.hashCode();
-
-		if(!nativePathCache.containsKey(combindedHash))
-		{
-			nativePathCache.put(combindedHash, new File(nativeCacheDataBase, id + getImageExtension()));
-		}
-
-		return nativePathCache.get(combindedHash);
-	}
-
 
 
 	private File getFolderForResolution(Size size){

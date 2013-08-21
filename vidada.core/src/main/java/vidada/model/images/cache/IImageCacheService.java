@@ -48,37 +48,4 @@ public interface IImageCacheService {
 	 * @param id
 	 */
 	public abstract void removeImage(String id);
-
-
-	//
-	// Native image handling
-	//
-
-	/**
-	 * Store the given image as native image for the given id
-	 * @param id
-	 * @param image
-	 */
-	void storeNativeImage(String id, IMemoryImage image);
-
-	/**
-	 * Exists the native image of the given id?
-	 * @param id
-	 * @return
-	 */
-	boolean nativeImageExists(String id);
-
-	/**
-	 * Returns the native image of the given id
-	 * @param id
-	 * @return
-	 */
-	IMemoryImage getNativeImage(String id);
-
-	/**
-	 * Returns the resolution of the native image
-	 * @param id
-	 * @return
-	 */
-	Size getNativeImageResolution(String id);
 }
