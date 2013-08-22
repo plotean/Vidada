@@ -5,6 +5,7 @@ import java.util.List;
 
 import vidada.data.SessionManager;
 import vidada.model.entities.BaseEntity;
+import archimedesJ.crypto.KeyPad;
 import archimedesJ.events.EventArgs;
 import archimedesJ.events.EventHandlerEx;
 import archimedesJ.events.IEvent;
@@ -84,6 +85,7 @@ public class DatabaseSettings extends BaseEntity{
 
 	private String name;
 	private byte[] passwordHash;
+	private byte[] cryptoBlock = KeyPad.generateKey(30);
 	private boolean ignoreMovies;
 	private boolean ignoreImages;
 	private boolean isNewDatabase;
@@ -103,6 +105,14 @@ public class DatabaseSettings extends BaseEntity{
 
 	public void setPasswordHash(byte[] newPassHash){
 		passwordHash = newPassHash;
+	}
+
+	public byte[] getCryptoBlock() {
+		return cryptoBlock;
+	}
+
+	public void setCryptoBlock(byte[] cryptoBlock) {
+		this.cryptoBlock = cryptoBlock;
 	}
 
 
@@ -146,5 +156,7 @@ public class DatabaseSettings extends BaseEntity{
 		this.playSoundDirectPlay = playSoundDirectPlay;
 		PlaySoundDirectPlayChanged.fireEvent(this, EventArgs.Empty);
 	}
+
+
 
 }

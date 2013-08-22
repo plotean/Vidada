@@ -11,6 +11,8 @@ import vidada.model.libraries.IMediaLibraryService;
 import vidada.model.libraries.MediaLibraryService;
 import vidada.model.media.IMediaService;
 import vidada.model.media.MediaService;
+import vidada.model.security.CredentialManager;
+import vidada.model.security.ICredentialManager;
 import vidada.model.security.IPrivacyService;
 import vidada.model.security.PrivacyService;
 import vidada.model.tags.ITagService;
@@ -99,6 +101,7 @@ public class ServiceProvider implements ILocator {
 		serviceLocator.registerSingleton(ITagService.class, TagService.class);
 		serviceLocator.registerSingleton(IImageCacheService.class, VidadaImageCache.class);
 		serviceLocator.registerSingleton(IImageService.class, ImageServiceBase.class);
+		serviceLocator.registerSingleton(ICredentialManager.class, CredentialManager.class); 
 
 		System.out.println("config services done...");
 	}

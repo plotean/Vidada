@@ -1,7 +1,8 @@
 package vidada.model.images.cache.crypto;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URISyntaxException;
 
 import vidada.model.ServiceProvider;
 import vidada.model.security.AuthenticationRequieredException;
@@ -11,20 +12,27 @@ import archimedesJ.crypto.IByteBufferEncryption;
 import archimedesJ.crypto.KeyCurruptedException;
 import archimedesJ.crypto.KeyPad;
 import archimedesJ.crypto.XORByteCrypter;
-import archimedesJ.events.EventArgsG;
+import archimedesJ.events.EventArgs;
 import archimedesJ.events.EventListenerEx;
 import archimedesJ.exceptions.NotSupportedException;
+import archimedesJ.io.locations.DirectoiryLocation;
+import archimedesJ.io.locations.ResourceLocation;
 import archimedesJ.util.FileSupport;
 
 
-
-
 /**
- * The cache encryption:
+ * The cache encryption
+ * --------------------
+ * As a general remark, the cached images are always encrypted.
+ * The difference between the two states is, that in DECRYPTED
+ * state, the encryption key-pad is freely available in the root folder
+ * while in ENCRYPTED state, the key-pad is itself encrypted with the users
+ * password. The key-pad has a role similar to a master password.
+ * 
  * 
  * DECRYPTED STATE
  * 
- * In the NOT encrypted state, the encryption keypad is saved
+ * In the DECRYPTED state, the encryption keypad is saved
  * as "cache.key" in the root folder of the cache. The 
  * keypad is generated randomly the first time a cache is
  * used.
@@ -54,27 +62,36 @@ public class VidadaCacheKeyProvider implements ICacheKeyProvider{
 	private final static String EncryptedKeyFileName = "cache.encrypted";
 
 	private final IPrivacyService privacyService = ServiceProvider.Resolve(IPrivacyService.class);
-	private final IByteBufferEncryption keyCrypter = new XORByteCrypter(); //new AESByteBufferCrypter();
+	private final IByteBufferEncryption keyCrypter = new XORByteCrypter();
 
 
 	public VidadaCacheKeyProvider(){
 
+		final DirectoiryLocation localCache = DirectoiryLocation.Factory.create(GlobalSettings.getInstance().getAbsoluteCachePath());
+
 		if(privacyService != null)
 		{
-			privacyService.getProtected().add(new EventListenerEx<EventArgsG<byte[]>>() {
-
+			privacyService.getProtected().add(new EventListenerEx<EventArgs>() {
 				@Override
-				public void eventOccured(Object sender, EventArgsG<byte[]> eventArgs) {
-					encryptWithPassword(GlobalSettings.getInstance().getAbsoluteCachePath(), eventArgs.getValue());
+				public void eventOccured(Object sender, EventArgs eventArgs) {
+					try {
+						encryptWithPassword(localCache, privacyService.getCryptoPad());
+					} catch (AuthenticationRequieredException e) {
+						e.printStackTrace();
+					}
 				}
 			});
 
 
-			privacyService.getProtectionRemoved().add(new EventListenerEx<EventArgsG<byte[]>>() {
+			privacyService.getProtectionRemoved().add(new EventListenerEx<EventArgs>() {
 
 				@Override
-				public void eventOccured(Object sender, EventArgsG<byte[]> eventArgs) {
-					removeEncryption(GlobalSettings.getInstance().getAbsoluteCachePath(), eventArgs.getValue());
+				public void eventOccured(Object sender, EventArgs eventArgs) {
+					try {
+						removeEncryption( localCache, privacyService.getCryptoPad());
+					} catch (AuthenticationRequieredException e) {
+						e.printStackTrace();
+					}
 				}
 			});
 		}else
@@ -82,11 +99,9 @@ public class VidadaCacheKeyProvider implements ICacheKeyProvider{
 	}
 
 
-
-
 	@Override
 	public byte[] getEncryptionKeyPad(CryptedImageFileCache cache) {
-		return getEncryptionKeyPad(GlobalSettings.getInstance().getAbsoluteCachePath());
+		return getEncryptionKeyPad(cache.getCacheRoot());
 	}
 
 
@@ -95,37 +110,50 @@ public class VidadaCacheKeyProvider implements ICacheKeyProvider{
 	 * @param root
 	 * @return
 	 */
-	public byte[] getEncryptionKeyPad(File root) {
+	public byte[] getEncryptionKeyPad(DirectoiryLocation root) {
 
 		byte[] key = defaultKeyPad;
 
-		File keyFile = new File(root, KeyFileName);
-		File enckeyFile = new File(root, EncryptedKeyFileName);
+		ResourceLocation keyFile;
+		ResourceLocation enckeyFile;
+		try {
+			keyFile = ResourceLocation.Factory.create(root, KeyFileName);
+			enckeyFile = ResourceLocation.Factory.create(root, EncryptedKeyFileName);
+		} catch (URISyntaxException e1) {
+			e1.printStackTrace();
+			return key;
+		}
 
 		if(keyFile.exists())
 		{
+			InputStream iStreamkeyFile = keyFile.openInputStream();
 			try {
-				key = FileSupport.readAllBytes(keyFile);
-				KeyPad.checkKey(key);
+				try {
+					key = FileSupport.readAllBytes(iStreamkeyFile, (int)keyFile.length());
+					KeyPad.checkKey(key);
+				} catch (KeyCurruptedException e) {
+					e.printStackTrace();
+				}finally{
+					iStreamkeyFile.close();
+				}
 			} catch (IOException e) {
 				e.printStackTrace();
-			} catch (KeyCurruptedException e) {
-				e.printStackTrace();
 			}
+
+
 		}else if(enckeyFile.exists()){
 
 			try {
-				byte[] enckey = FileSupport.readAllBytes(enckeyFile);
-				byte[] secret = privacyService.getUserSecret();
+				byte[] enckey = enckeyFile.readAllBytes();
+				byte[] secret = privacyService.getCryptoPad();
 				key = keyCrypter.deCrypt(enckey, secret);
 
 				KeyPad.checkKey(key);
-
-			} catch (IOException e) {
-				e.printStackTrace();
 			} catch (KeyCurruptedException e) {
 				e.printStackTrace();
 			} catch (AuthenticationRequieredException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
 				e.printStackTrace();
 			}
 
@@ -135,7 +163,7 @@ public class VidadaCacheKeyProvider implements ICacheKeyProvider{
 
 			key = KeyPad.generateKey(KEYPAD_SIZE);
 			try {
-				FileSupport.writeToFile(keyFile, key);
+				keyFile.writeAllBytes(key);
 				System.out.println("generated cache encryption key");
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -146,6 +174,9 @@ public class VidadaCacheKeyProvider implements ICacheKeyProvider{
 
 
 
+
+
+
 	/**
 	 * Encrypt the key pad with the given password
 	 * 
@@ -153,26 +184,32 @@ public class VidadaCacheKeyProvider implements ICacheKeyProvider{
 	 * @param root
 	 * @param password
 	 */
-	private void encryptWithPassword(File root, byte[] secret){
+	private void encryptWithPassword(DirectoiryLocation root, byte[] password){
 
-		File keyFile = new File(root, KeyFileName);
-		File enckeyFile = new File(root, EncryptedKeyFileName);
-
-		if(enckeyFile.exists())
-			throw new NotSupportedException("Already encrypted!");
-
-		if(!keyFile.exists())
-			throw new NotSupportedException("Keyfile not found! " + keyFile);
-
+		ResourceLocation keyFile;
+		ResourceLocation enckeyFile;
 		try {
-			byte[] key = FileSupport.readAllBytes(keyFile);
-			byte[] encKey = keyCrypter.enCrypt(key, secret);
+			keyFile = ResourceLocation.Factory.create(root, KeyFileName);
+			enckeyFile = ResourceLocation.Factory.create(root, EncryptedKeyFileName);
 
-			FileSupport.writeToFile(enckeyFile, encKey);
-			keyFile.delete();
+			if(enckeyFile.exists())
+				throw new NotSupportedException("Already encrypted!");
 
-		} catch (IOException e) {
-			e.printStackTrace();
+			if(!keyFile.exists())
+				throw new NotSupportedException("Keyfile not found! " + keyFile);
+
+			try {
+				byte[] key = keyFile.readAllBytes();
+				byte[] encKey = keyCrypter.enCrypt(key, password);
+
+				enckeyFile.writeAllBytes(encKey);
+				keyFile.delete();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+		} catch (URISyntaxException e1) {
+			e1.printStackTrace();
 		}
 	}
 
@@ -184,25 +221,32 @@ public class VidadaCacheKeyProvider implements ICacheKeyProvider{
 	 * @param root
 	 * @param password
 	 */
-	private void removeEncryption(File root, byte[] oldSecret){
+	private void removeEncryption(DirectoiryLocation root, byte[] oldPass){
 
-		File keyFile = new File(root, KeyFileName);
-		File enckeyFile = new File(root, EncryptedKeyFileName);
+		ResourceLocation keyFile;
+		ResourceLocation enckeyFile;
+		try {
+			keyFile = ResourceLocation.Factory.create(root, KeyFileName);
+			enckeyFile = ResourceLocation.Factory.create(root, EncryptedKeyFileName);
 
-		if(enckeyFile.exists()){
+			if(enckeyFile.exists()){
 
-			try {
-				byte[] encKey = FileSupport.readAllBytes(enckeyFile);
-				byte[] key = keyCrypter.deCrypt(encKey, oldSecret);
+				try {
+					byte[] encKey = enckeyFile.readAllBytes();
+					byte[] key = keyCrypter.deCrypt(encKey, oldPass);
 
-				keyFile.delete();
-				FileSupport.writeToFile(keyFile, key);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+					keyFile.delete();
+					keyFile.writeAllBytes(key);
+					enckeyFile.delete();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 
-		}else
-			throw new NotSupportedException("Already decrypted!");
+			}else
+				throw new NotSupportedException("Already decrypted!");
+		} catch (URISyntaxException e1) {
+			e1.printStackTrace();
+		}
 
 	}
 

@@ -33,6 +33,7 @@ public class ImageFileCache implements IImageCacheService {
 
 	private static final String RESOLUTION_DELEMITER = "_";
 
+	private final DirectoiryLocation cacheRoot;
 	private final DirectoiryLocation scaledCacheDataBase;
 
 	private final RawImageFactory imageFactory = ServiceProvider.Resolve(RawImageFactory.class);
@@ -56,6 +57,7 @@ public class ImageFileCache implements IImageCacheService {
 	 */
 	public ImageFileCache(DirectoiryLocation cacheRoot){
 
+		this.cacheRoot = cacheRoot;
 		scaledCacheDataBase = getScaledCache(cacheRoot);
 		scaledCacheDataBase.mkdirs();
 
@@ -77,6 +79,12 @@ public class ImageFileCache implements IImageCacheService {
 				}
 			}
 		}
+	}
+
+
+
+	public DirectoiryLocation getCacheRoot() {
+		return cacheRoot;
 	}
 
 	private static DirectoiryLocation getScaledCache(DirectoiryLocation cacheRoot){
@@ -296,6 +304,7 @@ public class ImageFileCache implements IImageCacheService {
 
 		return resolutionFolder;
 	}
+
 
 
 

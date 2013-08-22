@@ -24,6 +24,8 @@ import vidada.model.ServiceProvider.IServiceRegisterer;
 import vidada.model.images.RawImageFactory;
 import vidada.model.libraries.IMediaLibraryService;
 import vidada.model.security.AuthenticationException;
+import vidada.model.security.ICredentialManager;
+import vidada.model.security.ICredentialManager.AuthProvider;
 import vidada.model.security.IPrivacyService;
 import vidada.model.settings.DatabaseSettings;
 import vidada.model.settings.GlobalSettings;
@@ -33,6 +35,7 @@ import vidada.views.MainFrame;
 import vidada.views.VidadaSplash;
 import vidada.views.dialoges.AuthenticateDialog;
 import vidada.views.dialoges.ChooseMediaDatabase;
+import archimedesJ.io.locations.Credentials;
 import archimedesJ.services.ServiceLocator;
 import archimedesJ.util.ExceptionUtil;
 import archimedesJ.util.FileSupport;
@@ -161,6 +164,7 @@ public class Application {
 			}
 	}
 
+
 	private void configDatabase(){
 
 		GlobalSettings settings = GlobalSettings.getInstance();
@@ -191,6 +195,8 @@ public class Application {
 				locator.registerSingleton(ISystemService.class, SystemService.class);
 				locator.registerSingleton(RawImageFactory.class, RawImageFactoryAwt.class);
 
+				ICredentialManager credentialManager = locator.resolve(ICredentialManager.class);
+				credentialManager.register(authProvider);
 			}
 		});
 
@@ -231,18 +237,25 @@ public class Application {
 
 		if(em != null)
 		{
-			System.out.println("EM created sucessfully");
+			System.out.println("EM created sucessfully.");
 
 			//
 			// EM is created successfully which indicates that we have a working db connection
 			// hibernate has initialized
 			//
+
+			System.out.println("Checking user authentication...");
+
 			IPrivacyService privacyService = ServiceProvider.Resolve(IPrivacyService.class);
+			ICredentialManager credentialManager= ServiceProvider.Resolve(ICredentialManager.class);
 
 			if(privacyService == null) return false;
 
 			if(privacyService.isProtected()){
-				requestAuthentication(privacyService);
+				System.out.println("Requesting user authentication!");
+				requestAuthentication(credentialManager, privacyService);
+			}else {
+				System.out.println("No authentication necessary.");
 			}
 
 			if(privacyService.isAuthenticated() || !privacyService.isProtected())
@@ -268,24 +281,33 @@ public class Application {
 		return false;
 	}
 
-	private void requestAuthentication(IPrivacyService privacyService){
 
-		boolean success = false;
-		AuthenticateDialog authDlg;
+	private final AuthProvider authProvider = new AuthProvider() {
+		@Override
+		public Credentials authenticate(String domain, String description) {
 
-		while(!success) {
-			authDlg = new AuthenticateDialog(customSplash);
-
+			AuthenticateDialog authDlg = new AuthenticateDialog(customSplash);
 			Point lPoint = authDlg.getLocation();
 			lPoint.y = lPoint.y + (int)((float)customSplash.getHeight() / 1.5f);
 			authDlg.setLocation(lPoint);
 
 			authDlg.setVisible(true);
 
-			if(!authDlg.isOk()) break;
+			if(!authDlg.isOk()) 
+				return new Credentials(null, authDlg.getPassword());
 
+			return null;
+		}
+	};
+
+	private void requestAuthentication(ICredentialManager credentialManager, IPrivacyService privacyService){
+		boolean success = false;
+
+		while(!success) {
+			Credentials credentials = credentialManager.requestAuthentication("vidada.database.pass", "Please enter the Database password:", false);
+			if(credentials == null) break;
 			try {
-				success = privacyService.authenticate(authDlg.getPassword());
+				success = privacyService.authenticate(credentials.getPassword());
 			} catch (AuthenticationException e) {
 				System.err.println(e.getMessage());
 			}

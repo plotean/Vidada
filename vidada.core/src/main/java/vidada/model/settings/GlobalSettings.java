@@ -156,6 +156,10 @@ public class GlobalSettings extends JsonSettings {
 		return toAbsolutePath(getCurrentDBConfig().getDataBasePath());
 	}
 
+	/**
+	 * Gets the path to the local cache
+	 * @return
+	 */
 	public File getAbsoluteCachePath() {
 		return toAbsolutePath(getCurrentDBConfig().getFileCachePath());
 	}

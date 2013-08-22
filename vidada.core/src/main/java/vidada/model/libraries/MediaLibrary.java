@@ -58,15 +58,24 @@ public class MediaLibrary extends BaseEntity {
 		}else {
 			System.err.println("MediaLibrary: A LibraryEntry for the current user could not be found.");
 		}
-
 		return root;
 	}
 
-
+	/**
+	 * Gets the libraries image cache
+	 * @return Returns the cache service if this library supports caches
+	 */
 	public IImageCacheService getLibraryCache(){
 		if(imageCache == null){
 			DirectoiryLocation libraryRoot = getLibraryRoot();
-			imageCache = new ImageFileCache(libraryRoot);
+			if(libraryRoot != null && libraryRoot.exists()){
+				try {
+					DirectoiryLocation libCache = DirectoiryLocation.Factory.create(libraryRoot, "thumbs");
+					imageCache = new ImageFileCache(libraryRoot);
+				} catch (URISyntaxException e1) {
+					e1.printStackTrace();
+				}
+			}
 		}
 		return imageCache;
 	}
