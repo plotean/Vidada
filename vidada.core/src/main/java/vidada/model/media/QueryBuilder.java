@@ -94,7 +94,7 @@ public class QueryBuilder {
 
 			// Predicate for matching the input with the filename
 
-			Constraint constrFileName = q.descend("filename").constrain(query.toLowerCase()).contains();	
+			Constraint constrFileName = q.descend("filename").constrain(query.toLowerCase()).like();	
 
 			//each tag which contains the input gets added to the the list tagsSearchBox.
 			//the predicates are determined by checking if current mediaData item has the matched tag assigned
