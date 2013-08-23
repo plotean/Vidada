@@ -57,17 +57,14 @@ public class PrivacyService implements IPrivacyService{
 			byte[] hash = KeyPad.hashKey(password);
 			getDBSettings().setPasswordHash(hash);
 
-
 			try {
-				authenticate(password);
-				byte[] cryptoBlock = getDBSettings().getCryptoBlock();
-				getDBSettings().setCryptoBlock(keyPadCrypter.enCrypt(cryptoBlock, getUserKey()));
-				getDBSettings().persist();
+				if(authenticate(password)){
+					byte[] cryptoBlock = getDBSettings().getCryptoBlock();
+					getDBSettings().setCryptoBlock(keyPadCrypter.enCrypt(cryptoBlock, getUserKey()));
+					getDBSettings().persist();
 
-				ProtectedEvent.fireEvent(this, EventArgsG.Empty);
-
-			} catch (AuthenticationException e) {
-				e.printStackTrace();
+					ProtectedEvent.fireEvent(this, EventArgsG.Empty);
+				}
 			} catch (AuthenticationRequieredException e) {
 				e.printStackTrace();
 			}
@@ -108,7 +105,7 @@ public class PrivacyService implements IPrivacyService{
 	private byte[] userSecret = null;
 
 	@Override
-	public boolean authenticate(String password) throws AuthenticationException {
+	public boolean authenticate(String password) {
 
 		if(!isAuthenticated())
 		{
@@ -118,10 +115,11 @@ public class PrivacyService implements IPrivacyService{
 				// we can now derive the user secret from the password
 
 				userSecret = KeyPad.calculateSecret(password.getBytes());
-				System.out.println("usersecret set to: " + userSecret);
+				System.out.println("PrivacyService: Authentification successful. Usersecret set to: " + userSecret);
 				return true;
-			}else
-				throw new AuthenticationException();
+			}
+		}else {
+			return true;
 		}
 		return false;
 	}

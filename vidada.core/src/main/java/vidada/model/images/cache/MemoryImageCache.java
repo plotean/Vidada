@@ -22,9 +22,9 @@ import archimedesJ.images.IMemoryImage;
  * @author IsNull
  *
  */
-public class MemoryImageCache implements IImageCacheService {
+public class MemoryImageCache implements IImageCache {
 
-	private final IImageCacheService unbufferedImageCache;
+	private final IImageCache unbufferedImageCache;
 	private final Map<Size, Map<String, SoftReference<IMemoryImage>>> imageCache;
 
 	/**
@@ -75,7 +75,7 @@ public class MemoryImageCache implements IImageCacheService {
 	 * 
 	 * @param unbufferedImageCache A slow cache which gets a memory cache wrapper
 	 */
-	public MemoryImageCache(IImageCacheService unbufferedImageCache){
+	public MemoryImageCache(IImageCache unbufferedImageCache){
 		this.unbufferedImageCache = unbufferedImageCache;
 
 		// Setup image cache

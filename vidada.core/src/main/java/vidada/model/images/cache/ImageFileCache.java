@@ -29,7 +29,7 @@ import archimedesJ.io.locations.ResourceLocation;
  * @author IsNull
  *
  */
-public class ImageFileCache implements IImageCacheService {
+public class ImageFileCache implements IImageCache {
 
 	private static final String RESOLUTION_DELEMITER = "_";
 

@@ -1,8 +1,9 @@
 package vidada.model.system;
 
 import archimedesJ.io.locations.ResourceLocation;
+import archimedesJ.services.IService;
 
-public interface ISystemService {
+public interface ISystemService extends IService{
 
 	/**
 	 * Open this resource with the standard tool registered in the current Operating System

@@ -90,7 +90,11 @@ public class CryptedImageFileCache extends ImageFileCache {
 	protected byte[] getEncryptionKeyPad(){
 		if(keypad == null)
 		{
+			System.out.println("CryptedImageFileCache: getEncryptionKeyPad...");
 			keypad = cachekeyProvider.getEncryptionKeyPad(this);
+			if(keypad == null){
+				System.err.println("cachekeyProvider returned a NULL KeyPad!");
+			}
 		}
 		return keypad;
 	}

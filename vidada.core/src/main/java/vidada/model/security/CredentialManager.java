@@ -90,7 +90,9 @@ public class CredentialManager implements ICredentialManager {
 
 
 	@Override
-	public Credentials requestAuthentication(String domain, String description, boolean useKeyStore) {
+	public Credentials requestAuthentication(String domain, String description, CredentialsChecker checker, boolean useKeyStore) {
+
+		System.out.println("requestAuthentication for " + domain);
 
 		Credentials credentials = null;
 		if(useKeyStore){
@@ -106,21 +108,47 @@ public class CredentialManager implements ICredentialManager {
 			if(authProvider == null)
 				throw new NotSupportedException("No authProvider was registered. -> requestAuthentication");
 
-			credentials = authProvider.authenticate(domain, description);
-			if(credentials != null && credentials.isRemember()){
-				try {
-					storeCredentials(domain, credentials);
-				} catch (AuthenticationRequieredException e) {
-					e.printStackTrace();
+			// as for correct authentication until success or abort
+			while (true) {
+
+				System.out.println("CredentialManager: Asking user for credentials...");
+				credentials = authProvider.authenticate(domain, description);
+
+				if(credentials != null){
+					if(checker.check(credentials))
+					{
+						System.out.println("CredentialManager: User entered correct credentials.");
+
+						if(credentials.isRemember()){
+							try {
+								System.out.println("CredentialManager: Storing credentials for " + domain);
+
+								storeCredentials(domain, credentials);
+							} catch (AuthenticationRequieredException e) {
+								e.printStackTrace();
+							}
+						}
+
+						// Credentials were correct
+						break;
+					}else{
+						System.err.println("CredentialManager: User entered wrong credentials.");
+					}
+				}else {
+					System.out.println("CredentialManager: User canceled entering credentials.");
+					// User canceled
+					break;
 				}
+
 			}
+
 		}
 		return credentials;
 	}
 
-	transient private AuthProvider authProvider;
+	transient private CredentialsProvider authProvider;
 	@Override
-	public void register(AuthProvider authProvider) {
+	public void register(CredentialsProvider authProvider) {
 		this.authProvider = authProvider;
 	}
 

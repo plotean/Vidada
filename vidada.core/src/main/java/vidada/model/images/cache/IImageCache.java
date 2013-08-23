@@ -6,11 +6,11 @@ import archimedesJ.geometry.Size;
 import archimedesJ.images.IMemoryImage;
 
 /**
- * Provides the ability to store and retrieve images
+ * Represents an image cache
  * @author IsNull
  *
  */
-public interface IImageCacheService {
+public interface IImageCache {
 
 	/**
 	 * get the image from cache

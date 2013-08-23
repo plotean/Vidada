@@ -12,7 +12,7 @@ import com.db4o.foundation.ArgumentNullException;
  * @author IsNull
  *
  */
-public class LeveledImageCache implements IImageCacheService {
+public class LeveledImageCache implements IImageCache {
 
 	// Add cached images from second cache to the first one
 	private final boolean updateFirstFromSecond = true;
@@ -20,15 +20,15 @@ public class LeveledImageCache implements IImageCacheService {
 	// Add cached images in the first level cache to the second one
 	private final boolean updateSecondFromFirst = true;
 
-	private final IImageCacheService firstLevelCache;
-	private final IImageCacheService secondLevelCache;
+	private final IImageCache firstLevelCache;
+	private final IImageCache secondLevelCache;
 
 	/**
 	 * 
 	 * @param firstLevelCache
 	 * @param secondLevelCache
 	 */
-	public LeveledImageCache(IImageCacheService firstLevelCache, IImageCacheService secondLevelCache) {
+	public LeveledImageCache(IImageCache firstLevelCache, IImageCache secondLevelCache) {
 		if(firstLevelCache == null) throw new ArgumentNullException("firstLevelCache");
 		if(secondLevelCache == null) throw new ArgumentNullException("secondLevelCache");
 

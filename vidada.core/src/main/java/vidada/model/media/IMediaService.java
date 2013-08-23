@@ -9,8 +9,9 @@ import archimedesJ.events.EventArgs;
 import archimedesJ.events.EventArgsG;
 import archimedesJ.events.IEvent;
 import archimedesJ.io.locations.ResourceLocation;
+import archimedesJ.services.IService;
 
-public interface IMediaService {
+public interface IMediaService extends IService{
 
 
 	// Events

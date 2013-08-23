@@ -48,11 +48,11 @@ public class PrivacyPanel extends JPanel {
 
 				Window parent = (Window)PrivacyPanel.this.getTopLevelAncestor();
 
-				AuthenticateDialog authDlg = new AuthenticateDialog(parent);
+				AuthenticateDialog authDlg = new AuthenticateDialog(parent, "Please enter a new password:");
 				authDlg.setVisible(true);
 				if(authDlg.isOk()){
 
-					AuthenticateDialog authDlgSave = new AuthenticateDialog(parent);
+					AuthenticateDialog authDlgSave = new AuthenticateDialog(parent, "Please confirm your new password again:");
 					authDlgSave.setVisible(true);
 					if(authDlgSave.isOk()){
 						if(authDlg.getPassword().equals(authDlgSave.getPassword())){
@@ -90,7 +90,7 @@ public class PrivacyPanel extends JPanel {
 
 				Window parent = (Window)PrivacyPanel.this.getTopLevelAncestor();
 
-				AuthenticateDialog authDlg = new AuthenticateDialog(parent);
+				AuthenticateDialog authDlg = new AuthenticateDialog(parent, "Please enter your old password in order to remove it.");
 				authDlg.setVisible(true);
 				if(authDlg.isOk()){
 					try {

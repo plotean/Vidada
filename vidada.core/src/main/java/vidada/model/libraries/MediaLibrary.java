@@ -8,11 +8,13 @@ import java.util.List;
 import java.util.Set;
 
 import vidada.data.SessionManager;
+import vidada.model.ServiceProvider;
 import vidada.model.entities.BaseEntity;
-import vidada.model.images.cache.IImageCacheService;
-import vidada.model.images.cache.ImageFileCache;
+import vidada.model.images.IImageService;
+import vidada.model.images.cache.IImageCache;
 import vidada.model.media.MediaFileInfo;
 import vidada.model.media.MediaType;
+import vidada.model.security.ICredentialManager;
 import vidada.model.user.User;
 import archimedesJ.io.locations.DirectoiryLocation;
 import archimedesJ.io.locations.ILocationFilter;
@@ -38,7 +40,7 @@ public class MediaLibrary extends BaseEntity {
 
 	transient private LibraryEntry currentEntry = null;
 	transient private ILocationFilter mediaFilter = null;
-	transient private IImageCacheService imageCache = null;
+	transient private IImageCache imageCache = null;
 
 	/**
 	 * 
@@ -65,13 +67,17 @@ public class MediaLibrary extends BaseEntity {
 	 * Gets the libraries image cache
 	 * @return Returns the cache service if this library supports caches
 	 */
-	public IImageCacheService getLibraryCache(){
+	public IImageCache getLibraryCache(){
 		if(imageCache == null){
+
+			IImageService imageService = ServiceProvider.Resolve(IImageService.class);
+			ICredentialManager credentialManager = ServiceProvider.Resolve(ICredentialManager.class);
+
 			DirectoiryLocation libraryRoot = getLibraryRoot();
 			if(libraryRoot != null && libraryRoot.exists()){
 				try {
 					DirectoiryLocation libCache = DirectoiryLocation.Factory.create(libraryRoot, "thumbs");
-					imageCache = new ImageFileCache(libraryRoot);
+					imageCache = imageService.openCache(libCache, credentialManager);
 				} catch (URISyntaxException e1) {
 					e1.printStackTrace();
 				}

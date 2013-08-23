@@ -2,13 +2,14 @@ package vidada.model.security;
 
 import archimedesJ.events.EventArgs;
 import archimedesJ.events.IEvent;
+import archimedesJ.services.IService;
 
 /**
  * Manages privacy settings
  * @author IsNull
  *
  */
-public interface IPrivacyService {
+public interface IPrivacyService extends IService{
 
 
 
@@ -55,7 +56,7 @@ public interface IPrivacyService {
 	 * @return Returns true if successfully authenticated
 	 * @throws AuthenticationException Thrown, if the password is wrong
 	 */
-	public abstract boolean authenticate(String password) throws AuthenticationException;
+	public abstract boolean authenticate(String password);
 
 	/**
 	 * Is the current system user authenticated?

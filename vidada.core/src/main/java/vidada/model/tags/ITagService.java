@@ -7,13 +7,14 @@ import vidada.model.tags.autoTag.ITagGuessingStrategy;
 import archimedesJ.events.EventArgs;
 import archimedesJ.events.EventArgsG;
 import archimedesJ.events.IEvent;
+import archimedesJ.services.IService;
 
 /**
  * Provides functionality to manage tags
  * @author IsNull
  *
  */
-public interface ITagService {
+public interface ITagService extends IService{
 
 	/**
 	 * Raised when one or more Tags have been changed

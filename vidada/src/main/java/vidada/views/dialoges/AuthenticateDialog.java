@@ -30,7 +30,7 @@ public class AuthenticateDialog extends JDialog {
 	 */
 	public static void main(String[] args) {
 		try {
-			AuthenticateDialog dialog = new AuthenticateDialog(null);
+			AuthenticateDialog dialog = new AuthenticateDialog(null, "Please enter your password below:");
 			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 			dialog.setVisible(true);
 		} catch (Exception e) {
@@ -41,7 +41,7 @@ public class AuthenticateDialog extends JDialog {
 	/**
 	 * Create the dialog.
 	 */
-	public AuthenticateDialog(Window owner) {
+	public AuthenticateDialog(Window owner, String description) {
 		super(owner, "Authenticate", ModalityType.APPLICATION_MODAL);
 
 		setBounds(100, 100, 452, 225);
@@ -67,7 +67,7 @@ public class AuthenticateDialog extends JDialog {
 				FormFactory.RELATED_GAP_ROWSPEC,
 				FormFactory.DEFAULT_ROWSPEC,}));
 		{
-			JLabel lblPleaseEnterYour = new JLabel("Please enter your password below.");
+			JLabel lblPleaseEnterYour = new JLabel(description);
 			contentPanel.add(lblPleaseEnterYour, "2, 4, 3, 1");
 		}
 		{

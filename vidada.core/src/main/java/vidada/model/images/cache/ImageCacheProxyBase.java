@@ -13,19 +13,19 @@ import archimedesJ.images.IMemoryImage;
  * @author IsNull
  *
  */
-public abstract class ImageCacheProxyBase implements IImageCacheService{
+public abstract class ImageCacheProxyBase implements IImageCache{
 
-	private IImageCacheService original;
+	private IImageCache original;
 
-	protected ImageCacheProxyBase(IImageCacheService original){
+	protected ImageCacheProxyBase(IImageCache original){
 		this.original = original;
 	}
 
-	protected final void setOriginalCache(IImageCacheService original) {
+	protected final void setOriginalCache(IImageCache original) {
 		this.original = original;
 	} 
 
-	protected final IImageCacheService getOriginalCache() {
+	protected final IImageCache getOriginalCache() {
 		return original;
 	} 
 

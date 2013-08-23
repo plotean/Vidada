@@ -1,5 +1,6 @@
 package vidada.model.images;
 
+import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -8,29 +9,46 @@ import java.util.concurrent.Executors;
 
 import vidada.model.ServiceProvider;
 import vidada.model.images.ImageContainerBase.ImageChangedCallback;
-import vidada.model.images.cache.IImageCacheService;
+import vidada.model.images.cache.IImageCache;
 import vidada.model.images.cache.LeveledImageCache;
 import vidada.model.images.cache.MemoryImageCache;
+import vidada.model.images.cache.crypto.CryptedImageFileCache;
+import vidada.model.images.cache.crypto.ICacheKeyProvider;
+import vidada.model.images.cache.crypto.VidadaCacheKeyProvider;
 import vidada.model.libraries.MediaLibrary;
 import vidada.model.media.MediaItem;
 import vidada.model.media.source.FileMediaSource;
 import vidada.model.media.source.MediaSource;
+import vidada.model.security.ICredentialManager;
+import vidada.model.settings.GlobalSettings;
 import archimedesJ.data.caching.LRUCache;
 import archimedesJ.geometry.Size;
 import archimedesJ.images.IMemoryImage;
 import archimedesJ.images.ImageContainer;
+import archimedesJ.io.locations.DirectoiryLocation;
 
 public class ImageServiceBase implements IImageService {
 
-	private final IImageCacheService localImageCache = ServiceProvider.Resolve(IImageCacheService.class);
+	private final ICredentialManager credentialManager =  ServiceProvider.Resolve(ICredentialManager.class);
 	private final ExecutorService executorService = Executors.newFixedThreadPool(2);
-
 	private final Map<Long, Map<Size, ImageContainer>> imageContainerCache;
 
+	private final IImageCache localImageCache;
 
 	public ImageServiceBase(){
 		this.imageContainerCache = Collections.synchronizedMap(
 				new LRUCache<Long, Map<Size, ImageContainer>>((int)MemoryImageCache.MAX_MEMORY_SCALED_CACHE));
+
+
+		DirectoiryLocation localCacheLocation = null;
+		try {
+			localCacheLocation = DirectoiryLocation.Factory.create(
+					GlobalSettings.getInstance().getAbsoluteCachePath().toString());
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		}
+
+		localImageCache = openCache(localCacheLocation, credentialManager);
 	}
 
 	@Override
@@ -53,11 +71,11 @@ public class ImageServiceBase implements IImageService {
 		return container;
 	}
 
-	transient private final Map<MediaLibrary, IImageCacheService> combinedCachesMap = new HashMap<MediaLibrary, IImageCacheService>();
+	transient private final Map<MediaLibrary, IImageCache> combinedCachesMap = new HashMap<MediaLibrary, IImageCache>();
 
 
-	private IImageCacheService getImageCache(MediaItem media){
-		IImageCacheService imageCache;
+	private IImageCache getImageCache(MediaItem media){
+		IImageCache imageCache;
 
 		MediaSource source = media.getSource();
 		if(source instanceof FileMediaSource){
@@ -66,9 +84,24 @@ public class ImageServiceBase implements IImageService {
 			imageCache = combinedCachesMap.get(library);
 
 			if(imageCache == null){
-				imageCache = new LeveledImageCache(
-						localImageCache,
-						library.getLibraryCache());
+
+				IImageCache libraryCache = library.getLibraryCache();
+
+				if(localImageCache != null){
+					if(libraryCache != null){
+						imageCache = new LeveledImageCache(
+								localImageCache,
+								libraryCache
+								);
+					}else {
+						imageCache = localImageCache;
+					}
+				}else {
+					if(libraryCache != null){
+						imageCache = libraryCache;
+					}
+					System.err.println("getImageCache -> localImageCache is NULL!");
+				}
 
 				combinedCachesMap.put(library, imageCache);
 			}
@@ -103,6 +136,16 @@ public class ImageServiceBase implements IImageService {
 				executorService,
 				new ImageLoaderTask(getImageCache(media), media, size),
 				callback);
+	}
+
+	/**
+	 * Creates a location based image cache. The concrete used cache implementation
+	 * depends on the location type and on properties of the cache such as encryption.
+	 */
+	@Override
+	public IImageCache openCache(DirectoiryLocation cacheLocation, ICredentialManager credentialManager) {
+		ICacheKeyProvider cacheKeyProvider = new VidadaCacheKeyProvider();
+		return new CryptedImageFileCache(cacheLocation, cacheKeyProvider);
 	}
 
 

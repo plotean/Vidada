@@ -31,7 +31,7 @@ public class CacheUtils {
 	 * @return
 	 */
 	@SuppressWarnings("rawtypes")
-	public static IMemoryImage getRescaledInstance(IImageCacheService imageCache, String id, Size desiredSize ){
+	public static IMemoryImage getRescaledInstance(IImageCache imageCache, String id, Size desiredSize ){
 
 		IMemoryImage sourceImage = null, resizedImage = null;
 
@@ -68,7 +68,7 @@ public class CacheUtils {
 	 * @param desiredSize
 	 * @return
 	 */
-	private static Size getBestMatchingSize(IImageCacheService imageCache, String id, Size desiredSize){
+	private static Size getBestMatchingSize(IImageCache imageCache, String id, Size desiredSize){
 
 		Set<Size> dims = imageCache.getCachedDimensions(id);
 

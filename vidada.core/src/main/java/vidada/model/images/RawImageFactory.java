@@ -5,8 +5,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import archimedesJ.images.IMemoryImage;
+import archimedesJ.services.IService;
 
-public interface RawImageFactory {
+public interface RawImageFactory extends IService {
 
 
 	/**

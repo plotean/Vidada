@@ -3,7 +3,7 @@ package vidada.model.images;
 import java.util.concurrent.Callable;
 
 import vidada.model.images.cache.CacheUtils;
-import vidada.model.images.cache.IImageCacheService;
+import vidada.model.images.cache.IImageCache;
 import vidada.model.media.MediaItem;
 import vidada.model.settings.GlobalSettings;
 import archimedesJ.geometry.Size;
@@ -19,12 +19,12 @@ public class ImageLoaderTask implements Callable<IMemoryImage>
 	private static final Size maxThumbSize = GlobalSettings.getInstance().getMaxThumbResolution();
 
 
-	private final IImageCacheService imageCache;
+	private final IImageCache imageCache;
 	private final  MediaItem media;
 	private final Size size;
 
 
-	public ImageLoaderTask(IImageCacheService imageCache, MediaItem media, Size size){
+	public ImageLoaderTask(IImageCache imageCache, MediaItem media, Size size){
 		this.imageCache = imageCache;
 		this.media = media;
 		this.size = size;

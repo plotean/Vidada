@@ -1,12 +1,16 @@
 package vidada.model.images;
 
 import vidada.model.images.ImageContainerBase.ImageChangedCallback;
+import vidada.model.images.cache.IImageCache;
 import vidada.model.media.MediaItem;
+import vidada.model.security.ICredentialManager;
 import archimedesJ.geometry.Size;
 import archimedesJ.images.IMemoryImage;
 import archimedesJ.images.ImageContainer;
+import archimedesJ.io.locations.DirectoiryLocation;
+import archimedesJ.services.IService;
 
-public interface IImageService {
+public interface IImageService extends IService{
 
 	/**
 	 * Retrieves a image container for a preview image of the given media item in the given size.
@@ -33,4 +37,14 @@ public interface IImageService {
 	 * @param image
 	 */
 	void storeImage(MediaItem media, IMemoryImage image);
+
+
+	/**
+	 * Open the image cache at the given location.
+	 * 
+	 * @param cacheLocation The location of the cache
+	 * @param credentialManager Credital manager to use if a password is required.
+	 * @return
+	 */
+	IImageCache openCache(DirectoiryLocation cacheLocation, ICredentialManager credentialManager);
 }
