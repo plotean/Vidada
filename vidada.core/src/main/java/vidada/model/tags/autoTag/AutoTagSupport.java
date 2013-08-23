@@ -24,6 +24,7 @@ public class AutoTagSupport {
 		if(!tags.isEmpty())
 		{
 			media.addTags(tags);
+			tagsUpdated = true;
 		}
 
 		return tagsUpdated;
