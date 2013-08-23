@@ -1,7 +1,10 @@
 package vidada.model.security;
 
 import vidada.model.settings.DatabaseSettings;
+import archimedesJ.crypto.IByteBufferEncryption;
 import archimedesJ.crypto.KeyPad;
+import archimedesJ.crypto.XORByteCrypter;
+import archimedesJ.events.EventArgs;
 import archimedesJ.events.EventArgsG;
 import archimedesJ.events.EventHandlerEx;
 import archimedesJ.events.IEvent;
@@ -15,21 +18,21 @@ import archimedesJ.events.IEvent;
 public class PrivacyService implements IPrivacyService{
 
 
-	private final EventHandlerEx<EventArgsG<byte[]>> ProtectedEvent = new EventHandlerEx<EventArgsG<byte[]>>();
-	private final EventHandlerEx<EventArgsG<byte[]>> ProtectionRemovedEvent = new EventHandlerEx<EventArgsG<byte[]>>();
+	private final EventHandlerEx<EventArgs> ProtectedEvent = new EventHandlerEx<EventArgs>();
+	private final EventHandlerEx<EventArgs> ProtectionRemovedEvent = new EventHandlerEx<EventArgs>();
+
+	private final IByteBufferEncryption keyPadCrypter = new XORByteCrypter();
 
 
 	public PrivacyService(){
-		System.out.println("starting PrivacyService...");
 	}
 
 
+	@Override
+	public IEvent<EventArgs> getProtected() {return ProtectedEvent;}
 
 	@Override
-	public IEvent<EventArgsG<byte[]>> getProtected() {return ProtectedEvent;}
-
-	@Override
-	public IEvent<EventArgsG<byte[]>> getProtectionRemoved() {return ProtectionRemovedEvent;}
+	public IEvent<EventArgs> getProtectionRemoved() {return ProtectionRemovedEvent;}
 
 
 	private DatabaseSettings dbSettings;
@@ -53,21 +56,18 @@ public class PrivacyService implements IPrivacyService{
 		{
 			byte[] hash = KeyPad.hashKey(password);
 			getDBSettings().setPasswordHash(hash);
-			getDBSettings().persist();
-
 
 			try {
-				authenticate(password);
-				ProtectedEvent.fireEvent(this, EventArgsG.build(getUserSecret()));
+				if(authenticate(password)){
+					byte[] cryptoBlock = getDBSettings().getCryptoBlock();
+					getDBSettings().setCryptoBlock(keyPadCrypter.enCrypt(cryptoBlock, getUserKey()));
+					getDBSettings().persist();
 
-			} catch (AuthenticationException e) {
-				e.printStackTrace();
+					ProtectedEvent.fireEvent(this, EventArgsG.Empty);
+				}
 			} catch (AuthenticationRequieredException e) {
 				e.printStackTrace();
 			}
-
-		}else {
-			//throw new NotSupportedException("You can not protect a already protected library.");
 
 		}
 	}
@@ -80,23 +80,32 @@ public class PrivacyService implements IPrivacyService{
 			if(checkPassword(oldPassword))
 			{
 				// password seems to be correct
+				if(!isAuthenticated())
+					authenticate(oldPassword);
+
+				try {
+					// save the crypto block unencrypted in the db
+					getDBSettings().setCryptoBlock(getCryptoPad());
+				} catch (AuthenticationRequieredException e) {
+					e.printStackTrace();
+				}
 
 				byte[] oldUserSecret = KeyPad.calculateSecret(oldPassword.getBytes());
 
 				// finally remove the password hash to indicate that 
 				// this db is not protected
 				getDBSettings().setPasswordHash(null);
+				getDBSettings().persist();
 
 				ProtectionRemovedEvent.fireEvent(this, EventArgsG.build(oldUserSecret));
-			}else
-				throw new AuthenticationException();
+			}
 		}
 	}
 
 	private byte[] userSecret = null;
 
 	@Override
-	public boolean authenticate(String password) throws AuthenticationException {
+	public boolean authenticate(String password) {
 
 		if(!isAuthenticated())
 		{
@@ -106,10 +115,11 @@ public class PrivacyService implements IPrivacyService{
 				// we can now derive the user secret from the password
 
 				userSecret = KeyPad.calculateSecret(password.getBytes());
-				System.out.println("usersecret set to: " + userSecret);
+				System.out.println("PrivacyService: Authentification successful. Usersecret set to: " + userSecret);
 				return true;
-			}else
-				throw new AuthenticationException();
+			}
+		}else {
+			return true;
 		}
 		return false;
 	}
@@ -129,19 +139,43 @@ public class PrivacyService implements IPrivacyService{
 		return userSecret != null;
 	}
 
+	private byte[] plainCryptoPad;
+
+	/**
+	 * Gets the un encrypted crypto pad
+	 */
+	@Override
+	public byte[] getCryptoPad() throws AuthenticationRequieredException{
+
+		if(plainCryptoPad == null){
+			if(isProtected())
+			{
+				byte[] userKey = getUserKey(); // throws AuthenticationRequieredException
+				byte[] cryptoPadEncrypted = getDBSettings().getCryptoBlock();
+
+				// we have to decrypt the cryptoPad
+				plainCryptoPad = keyPadCrypter.deCrypt(cryptoPadEncrypted, userKey);
+			}else{
+				// on unprotected systems, the crypto block stored in the DB is not encrypted
+				plainCryptoPad = getDBSettings().getCryptoBlock();
+			}
+		}
+		return plainCryptoPad;
+	}
+
+
 	/**
 	 * Gets the user secret which is a calculated value derived from the 
 	 * users original password. Therefore, the user must be authenticated
 	 * in order to calculate the secret.
 	 * 
 	 */
-	@Override
-	public byte[] getUserSecret() throws AuthenticationRequieredException {
-
+	private byte[] getUserKey() throws AuthenticationRequieredException {
 		if(!isAuthenticated())
 			throw new AuthenticationRequieredException();
-
 		return userSecret;
 	}
+
+
 
 }

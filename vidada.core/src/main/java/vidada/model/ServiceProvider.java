@@ -1,20 +1,29 @@
 package vidada.model;
 
 
-import vidada.model.cache.IImageCacheService;
-import vidada.model.cache.VidadaImageCache;
 import vidada.model.connectivity.ConnectivityService;
 import vidada.model.connectivity.IConnectivityService;
+import vidada.model.images.IImageService;
+import vidada.model.images.ImageServiceBase;
+import vidada.model.images.cache.crypto.CryptedCacheUtil;
 import vidada.model.libraries.IMediaLibraryService;
 import vidada.model.libraries.MediaLibraryService;
 import vidada.model.media.IMediaService;
 import vidada.model.media.MediaService;
+import vidada.model.security.AuthenticationRequieredException;
+import vidada.model.security.CredentialManager;
+import vidada.model.security.ICredentialManager;
 import vidada.model.security.IPrivacyService;
 import vidada.model.security.PrivacyService;
+import vidada.model.settings.GlobalSettings;
 import vidada.model.tags.ITagService;
 import vidada.model.tags.TagService;
+import archimedesJ.events.EventArgs;
+import archimedesJ.events.EventListenerEx;
+import archimedesJ.io.locations.DirectoiryLocation;
 import archimedesJ.services.ILocator;
 import archimedesJ.services.ISelectionService;
+import archimedesJ.services.IService;
 import archimedesJ.services.SelectionService;
 import archimedesJ.services.ServiceLocator;
 
@@ -49,7 +58,7 @@ public class ServiceProvider implements ILocator {
 	 * @param iclazz
 	 * @return
 	 */
-	public static <T> T Resolve(Class<T> iclazz) {
+	public static <T extends IService> T Resolve(Class<T> iclazz) {
 		return ServiceProvider.getInstance().resolve(iclazz);
 	}
 
@@ -78,7 +87,7 @@ public class ServiceProvider implements ILocator {
 	}
 
 	@Override
-	public <T> T resolve(Class<T> iclazz) {
+	public <T extends IService> T resolve(Class<T> iclazz) {
 		return serviceLocator.resolve(iclazz);
 	}
 
@@ -95,12 +104,54 @@ public class ServiceProvider implements ILocator {
 		serviceLocator.registerSingleton(IMediaLibraryService.class, MediaLibraryService.class);
 		serviceLocator.registerSingleton(IMediaService.class, MediaService.class);
 		serviceLocator.registerSingleton(ITagService.class, TagService.class);
-		serviceLocator.registerSingleton(IImageCacheService.class, VidadaImageCache.class);
+		serviceLocator.registerSingleton(IImageService.class, ImageServiceBase.class);
+		serviceLocator.registerSingleton(ICredentialManager.class, CredentialManager.class);
+
+		//serviceLocator.registerSingleton(IImageCacheService.class, VidadaImageCache.class);
+
+		registerProtectionHandler();
 
 		System.out.println("config services done...");
 	}
 
+	private void registerProtectionHandler(){
 
+		final IPrivacyService privacyService = ServiceProvider.Resolve(IPrivacyService.class);
+
+		if(privacyService != null)
+		{
+			privacyService.getProtected().add(new EventListenerEx<EventArgs>() {
+				@Override
+				public void eventOccured(Object sender, EventArgs eventArgs) {
+					try {
+						final DirectoiryLocation localCache = DirectoiryLocation.Factory
+								.create(GlobalSettings.getInstance().getAbsoluteCachePath());
+
+						CryptedCacheUtil.encryptWithPassword(localCache, privacyService.getCryptoPad());
+					} catch (AuthenticationRequieredException e) {
+						e.printStackTrace();
+					}
+				}
+			});
+
+
+			privacyService.getProtectionRemoved().add(new EventListenerEx<EventArgs>() {
+
+				@Override
+				public void eventOccured(Object sender, EventArgs eventArgs) {
+					try {
+						final DirectoiryLocation localCache = DirectoiryLocation.Factory
+								.create(GlobalSettings.getInstance().getAbsoluteCachePath());
+
+						CryptedCacheUtil.removeEncryption( localCache, privacyService.getCryptoPad());
+					} catch (AuthenticationRequieredException e) {
+						e.printStackTrace();
+					}
+				}
+			});
+		}else
+			System.err.println("CacheKeyProvider: IPrivacyService is not avaiable!");
+	}
 
 
 

@@ -1,14 +1,16 @@
 package vidada.model.security;
 
-import archimedesJ.events.EventArgsG;
+import archimedesJ.events.EventArgs;
 import archimedesJ.events.IEvent;
+import archimedesJ.services.IService;
 
 /**
  * Manages privacy settings
  * @author IsNull
  *
  */
-public interface IPrivacyService {
+public interface IPrivacyService extends IService{
+
 
 
 	/**
@@ -16,13 +18,13 @@ public interface IPrivacyService {
 	 * 
 	 * @return
 	 */
-	public abstract IEvent<EventArgsG<byte[]>> getProtectionRemoved();
+	public abstract IEvent<EventArgs> getProtectionRemoved();
 
 	/**
 	 * Occurs when the protection has been applied. The EventsArgs hold the new user secret
 	 * @return
 	 */
-	public abstract IEvent<EventArgsG<byte[]>> getProtected();
+	public abstract IEvent<EventArgs> getProtected();
 
 
 	/**
@@ -54,7 +56,7 @@ public interface IPrivacyService {
 	 * @return Returns true if successfully authenticated
 	 * @throws AuthenticationException Thrown, if the password is wrong
 	 */
-	public abstract boolean authenticate(String password) throws AuthenticationException;
+	public abstract boolean authenticate(String password);
 
 	/**
 	 * Is the current system user authenticated?
@@ -63,11 +65,17 @@ public interface IPrivacyService {
 	public boolean isAuthenticated();
 
 	/**
-	 * Gets the users secret key pad
+	 * Gets the crypto-pad used to encrypt/decrypt all data
+	 * 
+	 * If this database is protected, previous authentication is required
+	 * in order to get this crypto pad.
+	 * 
 	 * @return
 	 * @throws AuthenticationRequieredException Thrown if the current user is not authenticated. 
 	 * @see <code>authenticate(String password)</code>
 	 */
-	public abstract byte[] getUserSecret() throws AuthenticationRequieredException;
+	public abstract byte[] getCryptoPad() throws AuthenticationRequieredException;
+
+	// Credential management
 
 }

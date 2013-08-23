@@ -8,9 +8,13 @@ import java.util.List;
 import java.util.Set;
 
 import vidada.data.SessionManager;
+import vidada.model.ServiceProvider;
 import vidada.model.entities.BaseEntity;
+import vidada.model.images.IImageService;
+import vidada.model.images.cache.IImageCache;
 import vidada.model.media.MediaFileInfo;
 import vidada.model.media.MediaType;
+import vidada.model.security.ICredentialManager;
 import vidada.model.user.User;
 import archimedesJ.io.locations.DirectoiryLocation;
 import archimedesJ.io.locations.ILocationFilter;
@@ -36,6 +40,7 @@ public class MediaLibrary extends BaseEntity {
 
 	transient private LibraryEntry currentEntry = null;
 	transient private ILocationFilter mediaFilter = null;
+	transient private IImageCache imageCache = null;
 
 	/**
 	 * 
@@ -55,8 +60,30 @@ public class MediaLibrary extends BaseEntity {
 		}else {
 			System.err.println("MediaLibrary: A LibraryEntry for the current user could not be found.");
 		}
-
 		return root;
+	}
+
+	/**
+	 * Gets the libraries image cache
+	 * @return Returns the cache service if this library supports caches
+	 */
+	public IImageCache getLibraryCache(){
+		if(imageCache == null){
+
+			IImageService imageService = ServiceProvider.Resolve(IImageService.class);
+			ICredentialManager credentialManager = ServiceProvider.Resolve(ICredentialManager.class);
+
+			DirectoiryLocation libraryRoot = getLibraryRoot();
+			if(libraryRoot != null && libraryRoot.exists()){
+				try {
+					DirectoiryLocation libCache = DirectoiryLocation.Factory.create(libraryRoot, "thumbs");
+					imageCache = imageService.openCache(libCache, credentialManager);
+				} catch (URISyntaxException e1) {
+					e1.printStackTrace();
+				}
+			}
+		}
+		return imageCache;
 	}
 
 	/**
@@ -89,15 +116,24 @@ public class MediaLibrary extends BaseEntity {
 	/**
 	 * Constructs the relative path for the given file (must be a sub dir of this lib!)
 	 * @param absoluteLibraryFile
-	 * @return Returns the relative path or null, could not be created
+	 * @return Returns the relative path or null, if a relative path could not be created
 	 */
 	@Transient
 	public URI getRelativePath(ResourceLocation absoluteLibraryFile){
 
-		URI relativeFile = FileSupport.getRelativePath(absoluteLibraryFile.getUri(), getLibraryRoot().getUri());
+		URI relativeFile = FileSupport.getRelativePath(
+				absoluteLibraryFile.getUri(),
+				getLibraryRoot().getUri());
 
 		if(absoluteLibraryFile.getUri().getPath().equals(relativeFile.getPath()))
 			relativeFile = null;
+
+		if(relativeFile == null)
+		{
+			System.err.println("could not create relative path for:");
+			System.err.println("absolute: " + absoluteLibraryFile.getUri());
+			System.err.println("root: " + getLibraryRoot().getUri());
+		}
 
 		return relativeFile;
 	}
@@ -110,9 +146,13 @@ public class MediaLibrary extends BaseEntity {
 	@Transient
 	public ResourceLocation getAbsolutePath(URI relativeFile){		
 		try {
-			return  ResourceLocation.Factory.create(
-					new URI(getLibraryRoot().getUri() + relativeFile.toString()),
-					getLibraryRoot().getCreditals());
+			DirectoiryLocation location = getLibraryRoot();
+
+			if(location != null){
+				return  ResourceLocation.Factory.create(
+						new URI(location.getUri() + relativeFile.toString()),
+						location.getCreditals());
+			}
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
 		} 
@@ -252,26 +292,39 @@ public class MediaLibrary extends BaseEntity {
 		return root != null ? root.toString() : "DirectoiryLocation=NULL";
 	}
 
-
-
-	public static void setLibraryRoot(MediaLibrary lib, DirectoiryLocation libraryRoot) {
-
-		LibraryEntry entry = lib.getCurrentEntry();
-		User user = User.current();
-
+	/**
+	 * Set the root path of this media library
+	 * @param libraryRoot
+	 */
+	public void setLibraryRoot(DirectoiryLocation libraryRoot) {
 		ObjectContainer db = SessionManager.getObjectContainer();
+		LibraryEntry entry = findOrCreateEntry();
+
+		entry.setLibraryRoot(libraryRoot);
+		db.store(entry);
+		db.commit();
+	}
+
+
+	/**
+	 * Finds the current libraryEntry or creates a new one
+	 * @return
+	 */
+	private LibraryEntry findOrCreateEntry(){
+
+		LibraryEntry entry = this.getCurrentEntry();
 
 		if(entry == null)
 		{
-			entry = new LibraryEntry(lib, user, libraryRoot);
+			ObjectContainer db = SessionManager.getObjectContainer();
+
+			User user = User.current();
+			entry = new LibraryEntry(this, user, null);
 			db.store(entry);
-			lib.addEntry(entry);
-			db.store(lib);
-		}else{
-			entry.setLibraryRoot(libraryRoot);
-			db.store(entry);
+			this.addEntry(entry);
+			db.store(this);
 		}
 
-		db.commit();
+		return entry;
 	}
 }

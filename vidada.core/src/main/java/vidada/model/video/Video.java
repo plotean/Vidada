@@ -1,8 +1,9 @@
 package vidada.model.video;
 
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 
+import archimedesJ.geometry.Size;
+import archimedesJ.images.IMemoryImage;
 import archimedesJ.io.locations.IResourceAccessContext;
 import archimedesJ.io.locations.ResourceLocation;
 
@@ -60,8 +61,8 @@ public class Video {
 	 * 
 	 * @param second
 	 * @return
-	 */
-	public BufferedImage getNativeFrame(int second){
+
+	public IMemoryImage getNativeFrame(int second){
 		IResourceAccessContext ctx = videoResource.openResourceContext();
 		try{
 			return videoAccessService.extractNativeFrame(ctx.getUri(), second); 
@@ -73,6 +74,7 @@ public class Video {
 			}
 		}
 	}
+	 */
 
 	/**
 	 * Gets the frame at the given position in its native resolution
@@ -80,10 +82,20 @@ public class Video {
 	 * @param position 0.0 - 1.0 Relative position in the video
 	 * @return
 	 */
-	public BufferedImage getNativeFrame(float position){
+	public IMemoryImage getNativeFrame(float position){
+		return getFrame(position, null);
+	}
+
+	/**
+	 * Gets the frame at the given position in the requested resolution
+	 * @param position
+	 * @param thumbSize
+	 * @return
+	 */
+	public IMemoryImage getFrame(float position, Size thumbSize){
 		IResourceAccessContext ctx = videoResource.openResourceContext();
 		try{
-			return videoAccessService.extractNativeFrame(ctx.getUri(), position); 
+			return videoAccessService.extractFrame(ctx.getUri(), position, thumbSize); 
 		}finally{
 			try {
 				ctx.close();

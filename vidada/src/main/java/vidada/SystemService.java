@@ -4,9 +4,9 @@ import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 
-import archimedesJ.io.locations.ResourceLocation;
 import vidada.model.system.ISystemService;
 import vidada.util.WindowManager;
+import archimedesJ.io.locations.ResourceLocation;
 
 public class SystemService implements ISystemService{
 
@@ -35,6 +35,8 @@ public class SystemService implements ISystemService{
 
 	@Override
 	public void showResourceHome(ResourceLocation resource){
+		if(resource == null) return;
+
 		try{
 			File file = new File(resource.getUri());
 			WindowManager.Instance.openFileSystemWindow(file);

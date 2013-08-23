@@ -94,7 +94,7 @@ public class ManageLibraryFoldersDialog extends JDialog {
 				if(library != null)
 				{
 					URI location = txtCurrentPath.getFile().toURI();
-					MediaLibrary.setLibraryRoot(library, DirectoiryLocation.Factory.create(location, null));
+					library.setLibraryRoot(DirectoiryLocation.Factory.create(location, null));
 				}
 			}
 		};

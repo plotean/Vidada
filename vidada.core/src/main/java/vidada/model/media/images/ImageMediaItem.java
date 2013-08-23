@@ -1,30 +1,29 @@
 package vidada.model.media.images;
 
-import java.awt.image.BufferedImage;
 import java.beans.Transient;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 
-import javax.imageio.ImageIO;
-
-import vidada.model.cache.CacheUtils;
+import vidada.model.ServiceProvider;
+import vidada.model.images.RawImageFactory;
 import vidada.model.libraries.MediaLibrary;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaType;
 import vidada.model.media.source.FileMediaSource;
 import vidada.model.media.source.MediaSource;
-import vidada.model.settings.GlobalSettings;
 import archimedesJ.data.hashing.FileHashAlgorythms;
 import archimedesJ.data.hashing.IFileHashAlgorythm;
 import archimedesJ.geometry.Size;
+import archimedesJ.images.IMemoryImage;
 import archimedesJ.io.locations.ResourceLocation;
-import archimedesJ.swing.TaskResult;
-import archimedesJ.util.images.ImageInfo;
-import archimedesJ.util.images.ScalrEx;
-import archimedesJ.util.images.SimpleImageInfo;
+import archimedesJ.swing.images.ImageInfo;
+import archimedesJ.swing.images.SimpleImageInfo;
+import archimedesJ.threading.TaskResult;
 
 public class ImageMediaItem extends MediaItem {
+
+	private final RawImageFactory imageFactory = ServiceProvider.Resolve(RawImageFactory.class);
 
 	/**
 	 * Empty hibernate constructor
@@ -54,41 +53,14 @@ public class ImageMediaItem extends MediaItem {
 	}
 
 	@Override
-	public TaskResult createCachedThumbnail(Size size) {
+	public void createThumbnailCached(Size size) {
 
 		TaskResult state;
 
-		BufferedImage thumb;
-		Size maxThumb = GlobalSettings.getMaxThumbResolution();
+		IMemoryImage frame = readImage(size);
+		imageService.storeImage(this, frame);
 
-		if(!imageCache.exists(getThumbId(), maxThumb))
-		{
-			// Ensure that the biggest thumb is created.
-			// Other thumbs can be created based on this one 
-			// which makes thumb creation for big images
-			// much faster.
-
-			BufferedImage frame = extractNativeSizeFrame();
-			if(frame != null){
-				thumb =  ScalrEx.rescaleImage(frame, maxThumb.width, maxThumb.height);
-				imageCache.storeImage(getFilehash(), thumb);
-			}
-		}
-
-		thumb = CacheUtils.getRescaledInstance(imageCache, getThumbId(), size);
-
-		if(thumb != null){
-			imageCache.storeImage(getFilehash(), thumb);
-			state = TaskResult.Completed;
-		}else
-			state = TaskResult.Failed;
-
-		return state;
-	}
-
-	@Override
-	public boolean preloadThumbnail(Size size) {
-		return !imageCache.exists(getThumbId(), size);
+		//return state;
 	}
 
 	@Override
@@ -102,7 +74,7 @@ public class ImageMediaItem extends MediaItem {
 				FileMediaSource fileSource = (FileMediaSource)source;
 
 				ResourceLocation imagePath = fileSource.getAbsoluteFilePath();
-				if(imagePath.exists()){
+				if(imagePath != null && imagePath.exists()){
 
 					InputStream is = null;
 					try{
@@ -132,8 +104,8 @@ public class ImageMediaItem extends MediaItem {
 	/**
 	 * On plain images, this will just read the image
 	 */
-	protected BufferedImage extractNativeSizeFrame() {
-		BufferedImage bufferedImage = null;
+	private IMemoryImage readImage(Size size) {
+		IMemoryImage bufferedImage = null;
 
 
 		MediaSource source = getSource();
@@ -142,16 +114,17 @@ public class ImageMediaItem extends MediaItem {
 			FileMediaSource fileSource = (FileMediaSource)source;
 
 			ResourceLocation filePath = fileSource.getAbsoluteFilePath();
-			if (filePath.exists()) {
+			if (filePath != null && filePath.exists()) {
 				System.out.println("reading image...");
 				InputStream is = null;
 				try {
 					is = filePath.openInputStream();
-					bufferedImage = ImageIO.read(is);
+					bufferedImage = imageFactory.createImage(is);
 					if(!hasResolution())
 						setResolution(new Size(bufferedImage.getWidth(), bufferedImage.getHeight()));
-				} catch (IOException e) {
-					e.printStackTrace();
+
+					bufferedImage = bufferedImage.rescale(size.width, size.height);
+
 				} catch (Exception e) {
 					System.err.println("Can not read image" + filePath.toString());
 				}finally{

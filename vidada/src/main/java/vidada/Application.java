@@ -5,6 +5,7 @@ import java.awt.EventQueue;
 import java.awt.Frame;
 import java.awt.Point;
 
+import javax.imageio.ImageIO;
 import javax.swing.Action;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -14,13 +15,17 @@ import javax.swing.UIManager.LookAndFeelInfo;
 
 import vidada.commands.AddNewMediaLibraryAction;
 import vidada.commands.UpdateMediaLibraryAction;
-import vidada.data.DefaultDataCreator;
 import vidada.data.DatabaseConnectionException;
+import vidada.data.DefaultDataCreator;
 import vidada.data.SessionManager;
+import vidada.images.RawImageFactoryAwt;
 import vidada.model.ServiceProvider;
 import vidada.model.ServiceProvider.IServiceRegisterer;
+import vidada.model.images.RawImageFactory;
 import vidada.model.libraries.IMediaLibraryService;
-import vidada.model.security.AuthenticationException;
+import vidada.model.security.ICredentialManager;
+import vidada.model.security.ICredentialManager.CredentialsChecker;
+import vidada.model.security.ICredentialManager.CredentialsProvider;
 import vidada.model.security.IPrivacyService;
 import vidada.model.settings.DatabaseSettings;
 import vidada.model.settings.GlobalSettings;
@@ -30,7 +35,9 @@ import vidada.views.MainFrame;
 import vidada.views.VidadaSplash;
 import vidada.views.dialoges.AuthenticateDialog;
 import vidada.views.dialoges.ChooseMediaDatabase;
+import archimedesJ.io.locations.Credentials;
 import archimedesJ.services.ServiceLocator;
+import archimedesJ.swing.util.SwingInvoker;
 import archimedesJ.util.ExceptionUtil;
 import archimedesJ.util.FileSupport;
 import archimedesJ.util.OSValidator;
@@ -62,6 +69,8 @@ public class Application {
 		System.out.println("Max memory: " + maxBytes / 1024 / 1024 + "MB");
 
 		OSValidator.setForceHDPI(GlobalSettings.getInstance().isForceHDPIRender());
+
+		ImageIO.setUseCache(false);
 
 		try{
 			startApplication();
@@ -156,6 +165,7 @@ public class Application {
 			}
 	}
 
+
 	private void configDatabase(){
 
 		GlobalSettings settings = GlobalSettings.getInstance();
@@ -184,6 +194,10 @@ public class Application {
 			@Override
 			public void registerServices(ServiceLocator locator) {
 				locator.registerSingleton(ISystemService.class, SystemService.class);
+				locator.registerSingleton(RawImageFactory.class, RawImageFactoryAwt.class);
+
+				ICredentialManager credentialManager = locator.resolve(ICredentialManager.class);
+				credentialManager.register(authProvider);
 			}
 		});
 
@@ -224,18 +238,28 @@ public class Application {
 
 		if(em != null)
 		{
-			System.out.println("EM created sucessfully");
+			System.out.println("EM created sucessfully.");
 
 			//
 			// EM is created successfully which indicates that we have a working db connection
 			// hibernate has initialized
 			//
+
+			System.out.println("Checking user authentication...");
+
 			IPrivacyService privacyService = ServiceProvider.Resolve(IPrivacyService.class);
+			ICredentialManager credentialManager= ServiceProvider.Resolve(ICredentialManager.class);
 
 			if(privacyService == null) return false;
 
 			if(privacyService.isProtected()){
-				requestAuthentication(privacyService);
+				System.out.println("Requesting user authentication for privacyService!");
+				if(!requestAuthentication(privacyService, credentialManager)){
+					System.err.println("Autentification failed, aborting...");
+					return false;
+				}
+			}else {
+				System.out.println("No authentication necessary.");
 			}
 
 			if(privacyService.isAuthenticated() || !privacyService.isProtected())
@@ -261,28 +285,46 @@ public class Application {
 		return false;
 	}
 
-	private void requestAuthentication(IPrivacyService privacyService){
 
-		boolean success = false;
-		AuthenticateDialog authDlg;
+	private final CredentialsProvider authProvider = new CredentialsProvider() {
+		@Override
+		public Credentials authenticate(String domain, String description) {
 
-		while(!success) {
-			authDlg = new AuthenticateDialog(customSplash);
+			final AuthenticateDialog authDlg = new AuthenticateDialog(customSplash, description);
 
-			Point lPoint = authDlg.getLocation();
-			lPoint.y = lPoint.y + (int)((float)customSplash.getHeight() / 1.5f);
-			authDlg.setLocation(lPoint);
+			SwingInvoker.invokeAndWait(new Runnable() {
+				@Override
+				public void run() {
+					Point lPoint = authDlg.getLocation();
+					lPoint.y = lPoint.y + (int)((float)customSplash.getHeight() / 1.5f);
+					authDlg.setLocation(lPoint);
 
-			authDlg.setVisible(true);
+					authDlg.setVisible(true);
+				}
+			});
 
-			if(!authDlg.isOk()) break;
-
-			try {
-				success = privacyService.authenticate(authDlg.getPassword());
-			} catch (AuthenticationException e) {
-				System.err.println(e.getMessage());
-			}
+			return authDlg.isOk() 
+					? new Credentials(null, authDlg.getPassword())
+			: null;
 		}
+	};
+
+
+
+
+	private boolean requestAuthentication(final IPrivacyService privacyService, ICredentialManager credentialManager){
+
+		Credentials validCredentials = credentialManager.requestAuthentication(
+				"vidada.core",
+				"Please enter the Database password:",
+				new CredentialsChecker(){
+					@Override
+					public boolean check(Credentials credentials) {
+						return privacyService.authenticate(credentials.getPassword());
+					}},
+					false);
+
+		return validCredentials != null;
 	}
 
 	static boolean useTheme = true;

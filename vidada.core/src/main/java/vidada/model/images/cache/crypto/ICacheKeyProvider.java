@@ -1,4 +1,4 @@
-package vidada.model.cache.crypto;
+package vidada.model.images.cache.crypto;
 
 /**
  * Encryption Keypad provider for the CryptedImageFileCache 

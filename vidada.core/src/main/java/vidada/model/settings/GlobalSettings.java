@@ -67,7 +67,7 @@ public class GlobalSettings extends JsonSettings {
 
 
 	/**
-	 * Returns the max thumb resolution
+	 * Returns the max thumb resolution used in the whole application
 	 * (HDPI aware)
 	 * @return
 	 */
@@ -156,6 +156,10 @@ public class GlobalSettings extends JsonSettings {
 		return toAbsolutePath(getCurrentDBConfig().getDataBasePath());
 	}
 
+	/**
+	 * Gets the path to the local cache
+	 * @return
+	 */
 	public File getAbsoluteCachePath() {
 		return toAbsolutePath(getCurrentDBConfig().getFileCachePath());
 	}

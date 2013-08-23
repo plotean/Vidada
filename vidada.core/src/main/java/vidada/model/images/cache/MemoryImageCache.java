@@ -1,16 +1,14 @@
-package vidada.model.cache;
+package vidada.model.images.cache;
 
-import java.awt.Image;
-import java.awt.image.BufferedImage;
 import java.lang.ref.SoftReference;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 import archimedesJ.data.caching.LRUCache;
 import archimedesJ.geometry.Size;
+import archimedesJ.images.IMemoryImage;
 
 /**
  * Implements a basic memory image cache for super fast 
@@ -24,11 +22,10 @@ import archimedesJ.geometry.Size;
  * @author IsNull
  *
  */
-public class MemoryImageCache implements IImageCacheService {
+public class MemoryImageCache implements IImageCache {
 
-	private final IImageCacheService unbufferedImageCache;
-	private final Map<Size, Map<String, SoftReference<Image>>> imageCache;
-	private final Map<String, Size> nativeImageResolution;
+	private final IImageCache unbufferedImageCache;
+	private final Map<Size, Map<String, SoftReference<IMemoryImage>>> imageCache;
 
 	/**
 	 * Average native image size in MB
@@ -44,7 +41,7 @@ public class MemoryImageCache implements IImageCacheService {
 	/**
 	 * Maximum amount in MB the native image cache is allowed to take
 	 */
-	private final float MAX_MEMORY_NATIVE_CACHE = 250f; // 250 MB
+	private static final float MAX_MEMORY_NATIVE_CACHE = 250f; // 250 MB
 
 	/**
 	 * Maximum amount in MB the scaled image cache is allowed to take
@@ -57,26 +54,18 @@ public class MemoryImageCache implements IImageCacheService {
 	 * Each resolution has its own cache, so you need
 	 * to divide the actual value by the number of caches you expect
 	 */
-	private final float MAX_OVERALL_MEMORY_SCALED_CACHE = 2000f; //2GB
+	private static final float MAX_OVERALL_MEMORY_SCALED_CACHE = 2000f; //2GB
 
 
 	/**
 	 * Max numbers of cached resolution size folders
 	 */
-	private int MAX_SCALED_CACHE_SIZEFOLDERS = 5; 
+	private static int MAX_SCALED_CACHE_SIZEFOLDERS = 5; 
 
 	/**
 	 * Max size of a single resolution cache
 	 */
-	private final float MAX_MEMORY_SCALED_CACHE = MAX_OVERALL_MEMORY_SCALED_CACHE / MAX_SCALED_CACHE_SIZEFOLDERS;
-
-	/**
-	 * Native sized frame cache, which has a limited size.
-	 * If we assume that a single frame takes 1.3MB space,
-	 * the max size oft this cache can be calculated
-	 * 
-	 */
-	private final Map<String, SoftReference<Image>> nativeImageCache;
+	public static final float MAX_MEMORY_SCALED_CACHE = MAX_OVERALL_MEMORY_SCALED_CACHE / MAX_SCALED_CACHE_SIZEFOLDERS;
 
 	/**
 	 * Wraps this memory cache around the given cache service,
@@ -86,26 +75,18 @@ public class MemoryImageCache implements IImageCacheService {
 	 * 
 	 * @param unbufferedImageCache A slow cache which gets a memory cache wrapper
 	 */
-	public MemoryImageCache(IImageCacheService unbufferedImageCache){
+	public MemoryImageCache(IImageCache unbufferedImageCache){
 		this.unbufferedImageCache = unbufferedImageCache;
 
-		// setup native image cache
-		nativeImageResolution = new HashMap<String, Size>(300);
-		int nativeCacheMaxSize = (int)(MAX_MEMORY_NATIVE_CACHE / AVERAGE_NATIVE_IMAGE_SIZE);
-		this.nativeImageCache = Collections.synchronizedMap(new LRUCache<String, SoftReference<Image>>(nativeCacheMaxSize));
-
-		System.out.println("Created: Native image cache. MAX Capacity: " + nativeCacheMaxSize);
-
-
-		// setup resized image cache
+		// Setup image cache
 		this.imageCache = Collections.synchronizedMap(
-				new LRUCache<Size, Map<String, SoftReference<Image>>>(MAX_SCALED_CACHE_SIZEFOLDERS));
+				new LRUCache<Size, Map<String, SoftReference<IMemoryImage>>>(MAX_SCALED_CACHE_SIZEFOLDERS));
 	}
 
 
 	@Override
-	public Image getImageById(String id, Size size) {
-		Image image = null;
+	public IMemoryImage getImageById(String id, Size size) {
+		IMemoryImage image = null;
 
 		if(existsInMemoryCache(id, size))
 		{
@@ -128,7 +109,7 @@ public class MemoryImageCache implements IImageCacheService {
 	}
 
 	@Override
-	public void storeImage(String id, BufferedImage image) {
+	public void storeImage(String id, IMemoryImage image) {
 		this.unbufferedImageCache.storeImage(id, image);
 		storeImageInMemoryCache(id, image);
 	}
@@ -137,7 +118,7 @@ public class MemoryImageCache implements IImageCacheService {
 	public void removeImage(String id) {
 
 		for (Size d : new HashSet<Size>(imageCache.keySet())) {
-			Map<String, SoftReference<Image>> idImageMap = imageCache.get(d);
+			Map<String, SoftReference<IMemoryImage>> idImageMap = imageCache.get(d);
 			if(idImageMap.containsKey(id))
 			{
 				idImageMap.remove(id);
@@ -147,23 +128,21 @@ public class MemoryImageCache implements IImageCacheService {
 				imageCache.remove(d);
 		}
 
-		nativeImageCache.remove(id);
-
 		unbufferedImageCache.removeImage(id);
 	}
 
 
 	protected boolean existsInMemoryCache(String id, Size size){
-		Map<String, SoftReference<Image>> map = imageCache.get(size);
+		Map<String, SoftReference<IMemoryImage>> map = imageCache.get(size);
 		if(map != null){
-			SoftReference<Image> imageRef = map.get(id);
+			SoftReference<IMemoryImage> imageRef = map.get(id);
 			return imageRef != null ? imageRef.get() != null : false;
 		}
 		return false;	
 	}
 
 
-	protected void storeImageInMemoryCache(String id, BufferedImage image) {
+	protected void storeImageInMemoryCache(String id, IMemoryImage image) {
 		if(image != null)
 		{
 			Size d = new Size(image.getWidth(), image.getHeight());
@@ -172,62 +151,22 @@ public class MemoryImageCache implements IImageCacheService {
 	}
 
 
-	protected void storeImageInMemoryCache(String id, Image image, Size imageSize) {
+	protected void storeImageInMemoryCache(String id, IMemoryImage image, Size imageSize) {
 
 		if(image != null)
 		{
 			if(!imageCache.containsKey(imageSize))
 			{
 				int maxScaledSize = (int)(MAX_MEMORY_SCALED_CACHE / AVERAGE_SCALED_IMAGE_SIZE);
-				Map<String, SoftReference<Image>> realImageCache = new LRUCache<String, SoftReference<Image>>(maxScaledSize);
+				Map<String, SoftReference<IMemoryImage>> realImageCache = new LRUCache<String, SoftReference<IMemoryImage>>(maxScaledSize);
 				imageCache.put(imageSize, realImageCache);
 
 				System.out.println("Created: Scaled image cache. MAX Capacity: " + maxScaledSize);
 			}
-			imageCache.get(imageSize).put(id, new SoftReference<Image>(image));
+			imageCache.get(imageSize).put(id, new SoftReference<IMemoryImage>(image));
 		}
 	}
 
 
-	@Override
-	public void storeNativeImage(String id, BufferedImage image) {
-		nativeImageCache.put(id, new SoftReference<Image>(image));
-
-		this.unbufferedImageCache.storeNativeImage(id, image);
-	}
-
-
-	@Override
-	public boolean nativeImageExists(String id) {
-		SoftReference<Image> ref = nativeImageCache.get(id);
-		return (ref != null && ref.get() != null) || this.unbufferedImageCache.nativeImageExists(id);
-	}
-
-
-	@Override
-	public Image getNativeImage(String id) {
-
-		SoftReference<Image> nativeImageRef = nativeImageCache.get(id);
-		Image nativeImage = nativeImageRef != null ? nativeImageRef.get() : null;
-
-		if(nativeImage != null)
-		{
-			nativeImage = this.unbufferedImageCache.getNativeImage(id);
-			if(nativeImage != null)
-				nativeImageCache.put(id, new SoftReference<Image>(nativeImage));
-		}
-		return nativeImage;
-	}
-
-
-	@Override
-	public Size getNativeImageResolution(String id) {
-		if(!nativeImageResolution.containsKey(id))
-		{
-			Size resolution = unbufferedImageCache.getNativeImageResolution(id);
-			nativeImageResolution.put(id, resolution);
-		}
-		return nativeImageResolution.get(id);
-	}
 
 }

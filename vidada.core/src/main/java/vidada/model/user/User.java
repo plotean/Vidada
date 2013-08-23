@@ -10,6 +10,11 @@ import archimedesJ.util.OSValidator;
 import com.db4o.ObjectContainer;
 import com.db4o.query.Predicate;
 
+/**
+ * Represents a Vidada user client
+ * @author IsNull
+ *
+ */
 public class User extends BaseEntity {
 
 	private transient static User currentUser = null;

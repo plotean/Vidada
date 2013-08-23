@@ -8,8 +8,8 @@ import java.awt.image.ImageObserver;
 import java.util.List;
 
 import archimedesJ.geometry.Size;
+import archimedesJ.swing.images.ScalrEx;
 import archimedesJ.util.OSValidator;
-import archimedesJ.util.images.ScalrEx;
 
 public class FolderThumbImageComposer {
 
@@ -22,7 +22,7 @@ public class FolderThumbImageComposer {
 	public FolderThumbImageComposer() {
 	}
 
-	public Image createImageComposition(List<Image> images, Size size, float insetTopBottom, int minBorderInset) {
+	public BufferedImage createImageComposition(List<Image> images, Size size, float insetTopBottom, int minBorderInset) {
 
 		BufferedImage image = new BufferedImage(size.width, size.height, BufferedImage.TYPE_INT_ARGB);
 		Graphics g = image.getGraphics();

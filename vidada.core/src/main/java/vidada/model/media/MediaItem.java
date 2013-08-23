@@ -1,6 +1,5 @@
 package vidada.model.media;
 
-import java.awt.Image;
 import java.awt.event.MouseEvent;
 import java.beans.Transient;
 import java.net.URI;
@@ -10,9 +9,10 @@ import java.util.Set;
 import org.joda.time.DateTime;
 
 import vidada.model.ServiceProvider;
-import vidada.model.cache.IImageCacheService;
 import vidada.model.compatibility.IHaveMediaData;
 import vidada.model.entities.BaseEntity;
+import vidada.model.images.IImageService;
+import vidada.model.images.ImageContainerBase.ImageChangedCallback;
 import vidada.model.libraries.MediaLibrary;
 import vidada.model.media.source.FileMediaSource;
 import vidada.model.media.source.MediaSource;
@@ -21,6 +21,7 @@ import archimedesJ.events.EventArgsG;
 import archimedesJ.events.EventHandlerEx;
 import archimedesJ.events.IEvent;
 import archimedesJ.geometry.Size;
+import archimedesJ.images.ImageContainer;
 import archimedesJ.swing.components.thumbpresenter.items.IMediaDataThumb;
 import archimedesJ.util.Lists;
 
@@ -34,7 +35,7 @@ import com.db4o.config.annotations.Indexed;
  */
 public abstract class MediaItem extends BaseEntity implements IMediaDataThumb, IHaveMediaData {
 
-	protected transient final IImageCacheService imageCache = ServiceProvider.Resolve(IImageCacheService.class);
+	protected transient final IImageService imageService = ServiceProvider.Resolve(IImageService.class);
 
 
 	private Set<MediaSource> sources = new HashSet<MediaSource>();
@@ -379,60 +380,28 @@ public abstract class MediaItem extends BaseEntity implements IMediaDataThumb, I
 		return success;
 	}
 
+
 	@Override
-	public Image getCachedThumbnail(Size size) {
+	public ImageContainer getThumbnail(Size size) {
+		ImageContainer container = imageService.retrieveImageContainer(
+				this,
+				size,
+				imageChangedCallBack);
 
-		Image cachedImage = null;
+		if(container != null)
+			container.getImageChangedEvent();
 
-		if (imageCache != null && imageCache.exists(getFilehash(), size)) {
-			cachedImage = imageCache.getImageById(getFilehash(), size);
+		return container;
+	} 
+
+	private final ImageChangedCallback imageChangedCallBack = new ImageChangedCallback(){
+		@Override
+		public void imageChanged(ImageContainer container) {
+			firePropertyChange("thumbnail");
 		}
+	};
 
-		return cachedImage;
-	}
 
-	protected transient final Object thumbnailCreatorLock = new Object();
-	protected transient boolean isCreatingThumbnail = false;
-
-	/**
-	 * Is there currently a thumb being created for this media item?
-	 * 
-	 * @return
-	 */
-	@Override
-	@Transient
-	public boolean isCreatingThumbnail() {
-		synchronized (thumbnailCreatorLock) {
-			return isCreatingThumbnail;
-		}
-	}
-
-	/**
-	 * Is the there a cached thumb in the given size?
-	 */
-	@Transient
-	@Override
-	public boolean hasCachedThumbnail(Size size) {
-
-		if (imageCache == null)
-			return false;
-
-		boolean cached = imageCache.exists(getFilehash(), size);
-
-		return cached;
-	}
-
-	/**
-	 * Do we have to preload this thumb?
-	 * 
-	 */
-	@Override
-	public boolean preloadThumbnail(Size size) {
-		if (canCreateThumbnail()) {
-			return !imageCache.nativeImageExists(getFilehash());
-		}
-		return false;
-	}
 
 
 	public String getFilename() {
@@ -500,7 +469,7 @@ public abstract class MediaItem extends BaseEntity implements IMediaDataThumb, I
 	@Transient
 	@Override
 	public String getDescription() {
-		return null;
+		return "<no description>";
 	}
 
 	/**

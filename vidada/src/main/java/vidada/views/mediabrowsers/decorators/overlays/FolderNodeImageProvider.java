@@ -12,13 +12,13 @@ import archimedesJ.events.EventArgs;
 import archimedesJ.events.EventHandlerEx;
 import archimedesJ.events.IEvent;
 import archimedesJ.geometry.Size;
+import archimedesJ.images.ImageContainer;
 import archimedesJ.swing.components.imageviewer.IImageProvider;
 import archimedesJ.swing.components.imageviewer.ISmartImage;
 import archimedesJ.swing.components.imageviewer.SmartImageWrapper;
 import archimedesJ.swing.components.thumbexplorer.model.files.FileTreeNode;
 import archimedesJ.swing.components.thumbexplorer.model.files.ThumbFolderNode;
 import archimedesJ.swing.components.thumbpresenter.model.IMediaDataProvider;
-import archimedesJ.swing.images.AsyncImage;
 import archimedesJ.util.OSValidator;
 
 public class FolderNodeImageProvider implements IImageProvider {
@@ -77,13 +77,9 @@ public class FolderNodeImageProvider implements IImageProvider {
 	@SuppressWarnings("rawtypes")
 	private void setMediaDataProvider(IMediaDataProvider media) {
 
-		if (!media.hasCachedThumbnail(getImageResolution())) {
-			media.createCachedThumbnail(getImageResolution());
-		}
-
-		Image image = media.getCachedThumbnail(getImageResolution());
-		if (image instanceof AsyncImage<?>)
-			image = ((AsyncImage) image).waitForImage();
+		ImageContainer container = media.getThumbnail(getImageResolution());
+		container.awaitImage();
+		Image image = (Image)container.getRawImage();
 
 		if (image != null) {
 			SmartImageWrapper imageWrapper = new SmartImageWrapper(image, media.getTitle());

@@ -3,11 +3,13 @@ package vidada.model.media.source;
 import java.beans.Transient;
 import java.net.URI;
 
-import archimedesJ.io.locations.ResourceLocation;
 import vidada.model.ServiceProvider;
 import vidada.model.libraries.MediaLibrary;
 import vidada.model.media.MediaHashUtil;
 import vidada.model.system.ISystemService;
+import archimedesJ.io.locations.ResourceLocation;
+
+import com.db4o.foundation.ArgumentNullException;
 
 /**
  * Represents a local file media source
@@ -27,13 +29,20 @@ public class FileMediaSource extends MediaSource {
 
 	public FileMediaSource(MediaLibrary parentLibrary, URI relativeFilePath)
 	{
+		if(parentLibrary == null)
+			throw new ArgumentNullException("parentLibrary");
+		if(relativeFilePath == null)
+			throw new ArgumentNullException("relativeFilePath");
+
+
 		setParentLibrary(parentLibrary);
 		setRelativeFilePath(relativeFilePath);
 	}
 
 	@Override
 	public String getName() {
-		return getAbsoluteFilePath().getName();
+		ResourceLocation location = getAbsoluteFilePath();
+		return location != null ? location.getName() : "AbsoluteFilePath == NULL";
 	}
 
 	/**
@@ -48,7 +57,7 @@ public class FileMediaSource extends MediaSource {
 	public boolean isAvailable() {
 		if (isFileAvaiableDirty) {
 			ResourceLocation absolutePath = getAbsoluteFilePath();
-			isFileAvaiable = absolutePath.exists();
+			isFileAvaiable = absolutePath != null && absolutePath.exists();
 			isFileAvaiableDirty = false;
 		}
 		return isFileAvaiable;
@@ -92,7 +101,14 @@ public class FileMediaSource extends MediaSource {
 	 */
 	@Transient
 	public ResourceLocation getAbsoluteFilePath() {
-		return getParentLibrary().getAbsolutePath(getRelativeFilePath());
+		ResourceLocation absolutePath = null;
+		URI relativePath = getRelativeFilePath();
+		if(relativePath != null){
+			absolutePath = getParentLibrary().getAbsolutePath(relativePath);
+		}else {
+			System.err.println("Source:getAbsoluteFilePath: relativePath is NULL!");
+		}
+		return absolutePath;
 	}
 
 	/**
@@ -127,7 +143,7 @@ public class FileMediaSource extends MediaSource {
 
 	@Override
 	public String toString(){
-		return "[" + getAbsoluteFilePath().toString() + "] avaiable: " + isAvailable();
+		return "[" + getName() + "] avaiable: " + isAvailable();
 	}
 
 

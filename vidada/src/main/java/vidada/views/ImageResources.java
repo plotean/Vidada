@@ -4,7 +4,7 @@ import java.net.URL;
 
 import javax.swing.Icon;
 
-import archimedesJ.util.images.IconFactory;
+import archimedesJ.swing.images.IconFactory;
 
 /**
  * Holds all image resources, this way images are loaded just once and easily accessible

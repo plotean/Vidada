@@ -65,7 +65,7 @@ public class AddNewMediaLibraryAction extends AbstractAction{
 			libService.addLibrary(library);
 
 			DirectoiryLocation location = DirectoiryLocation.Factory.create(dialog.getFile().toURI());
-			MediaLibrary.setLibraryRoot(library, location);
+			library.setLibraryRoot(location);
 			System.out.println("added media libarary @" + library.getLibraryRoot());
 
 		}else {
