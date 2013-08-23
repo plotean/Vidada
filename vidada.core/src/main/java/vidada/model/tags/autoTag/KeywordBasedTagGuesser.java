@@ -1,5 +1,7 @@
 package vidada.model.tags.autoTag;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -44,8 +46,10 @@ public class KeywordBasedTagGuesser  implements ITagGuessingStrategy {
 		Set<Tag> matchingTags = new HashSet<Tag>();
 
 		for (Tag tag : tags) {
-			if(doesMediaMatchTag(media, tag))
+			if(doesMediaMatchTag(media, tag)){
+				System.out.println("media " + media + " --> matches Tag: " + tag);
 				matchingTags.add(tag);
+			}
 		}
 
 		return matchingTags;
@@ -58,23 +62,35 @@ public class KeywordBasedTagGuesser  implements ITagGuessingStrategy {
 		{
 			FileMediaSource fileSource = (FileMediaSource)source;
 
-			String absolutePathString = fileSource.getAbsoluteFilePath().toString().toLowerCase();
+			String decodedPath;
+			try {
+				decodedPath = URLDecoder.decode(fileSource.getAbsoluteFilePath().toString(), "utf-8");
+				String absolutePathString = decodedPath.toLowerCase();
 
-			//split the path in single tokens
-			String[] tokens = absolutePathString.split(splitRegEx);
-			//split the path in node tokens
-			String[] pathTokens = absolutePathString.split(splitPathRegex);
-			//combine the tokens to provide one single source file
-			String [] combinedTokens = Lists.concat(tokens, pathTokens);
+				System.out.println("path: " + absolutePathString);
 
-			for (TagKeyoword keyword : tag.getKeyWords()) {
-				for (int i = 0; i < combinedTokens.length; i++) {
-					if(keyword.isMatch(combinedTokens[i]))
-					{
-						return true;
+				//split the path in single tokens
+				String[] tokens = absolutePathString.split(splitRegEx);
+				//split the path in node tokens
+				String[] pathTokens = absolutePathString.split(splitPathRegex);
+				//combine the tokens to provide one single source file
+				String [] combinedTokens = Lists.concat(tokens, pathTokens);
+
+				Debug.printAll("combinedTokens:", combinedTokens);
+
+				for (TagKeyoword keyword : tag.getKeyWords()) {
+					for (int i = 0; i < combinedTokens.length; i++) {
+						if(keyword.isMatch(combinedTokens[i]))
+						{
+							return true;
+						}
 					}
 				}
+
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace(); // should never happen
 			}
+
 		}else
 			System.err.println("KeywordBasedTagGuesser: skipped media as source is not compatible: " + source);
 
