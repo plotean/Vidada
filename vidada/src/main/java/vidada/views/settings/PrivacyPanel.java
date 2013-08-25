@@ -14,8 +14,12 @@ import javax.swing.JPanel;
 
 import vidada.model.ServiceProvider;
 import vidada.model.security.AuthenticationException;
+import vidada.model.security.ICredentialManager;
 import vidada.model.security.IPrivacyService;
-import vidada.views.dialoges.AuthenticateDialog;
+import archimedesJ.security.CredentialType;
+import archimedesJ.security.Credentials;
+import archimedesJ.util.Debug;
+import archimedesJ.util.FileSupport;
 
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.ColumnSpec;
@@ -30,6 +34,7 @@ public class PrivacyPanel extends JPanel {
 
 
 	private IPrivacyService privacyService = ServiceProvider.Resolve(IPrivacyService.class);
+	private ICredentialManager credentialManager = ServiceProvider.Resolve(ICredentialManager.class);
 
 	private void defineActions(){
 
@@ -48,27 +53,20 @@ public class PrivacyPanel extends JPanel {
 
 				Window parent = (Window)PrivacyPanel.this.getTopLevelAncestor();
 
-				AuthenticateDialog authDlg = new AuthenticateDialog(parent, "Please enter a new password:");
-				authDlg.setVisible(true);
-				if(authDlg.isOk()){
+				Credentials newCredentials = credentialManager
+						.requestNewCredentials("Please enter a new password:", CredentialType.PasswordOnly);
 
-					AuthenticateDialog authDlgSave = new AuthenticateDialog(parent, "Please confirm your new password again:");
-					authDlgSave.setVisible(true);
-					if(authDlgSave.isOk()){
-						if(authDlg.getPassword().equals(authDlgSave.getPassword())){
+				if(newCredentials != null){
+					// now we are ready to protect the database:
+					privacyService.protect(newCredentials);
+					updateModelToView();
 
-							// now we are ready to protect the database:
-							privacyService.protect(authDlgSave.getPassword());
-							updateModelToView();
-
-							JOptionPane.showMessageDialog(parent, "Successful protected", "Database and cache successful protected.", JOptionPane.INFORMATION_MESSAGE);
-
-						}else{
-							JOptionPane.showMessageDialog(parent, "Your password confirmation was not correct. Try again.", "Protection failed", JOptionPane.WARNING_MESSAGE);
-						}
-
-					}
+					JOptionPane.showMessageDialog(parent, "Successful protected", "Database and cache successful protected.", JOptionPane.INFORMATION_MESSAGE);
+				}else {
+					System.err.println("user aborted creditals input.");
 				}
+
+
 			}
 
 		};
@@ -90,15 +88,32 @@ public class PrivacyPanel extends JPanel {
 
 				Window parent = (Window)PrivacyPanel.this.getTopLevelAncestor();
 
-				AuthenticateDialog authDlg = new AuthenticateDialog(parent, "Please enter your old password in order to remove it.");
-				authDlg.setVisible(true);
-				if(authDlg.isOk()){
-					try {
-						privacyService.removeProtection(authDlg.getPassword());
-						JOptionPane.showMessageDialog(parent, "Protection removed", "Database and cache protection has been removed.", JOptionPane.INFORMATION_MESSAGE);
+				Credentials oldCredentials = credentialManager.requestCredentials(
+						"Please enter your old password in order to remove it.",
+						CredentialType.PasswordOnly);
 
+
+				if(oldCredentials != null){
+					try {
+						privacyService.removeProtection(oldCredentials);
+						JOptionPane.showMessageDialog(
+								parent,
+								"Protection removed",
+								"Database and cache protection has been removed.",
+								JOptionPane.INFORMATION_MESSAGE);
 					} catch (AuthenticationException e) {
-						JOptionPane.showMessageDialog(parent, "Your password was not correct. You have to supply yor password in order to remove the protection.", "Removing protection failed", JOptionPane.WARNING_MESSAGE);
+						JOptionPane.showMessageDialog(
+								parent,
+								"Your password was not correct. You have to supply yor password in order to remove the protection.",
+								"Removing protection failed",
+								JOptionPane.WARNING_MESSAGE);
+					}catch (Exception e) {
+						JOptionPane.showMessageDialog(
+								parent,
+								"There was an error while removing the protection:" + FileSupport.NEWLINE +
+								Debug.buildExceptionStackTrace(e),
+								"Removing protection failed",
+								JOptionPane.WARNING_MESSAGE);
 					}
 				}
 			}

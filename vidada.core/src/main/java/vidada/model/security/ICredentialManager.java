@@ -2,7 +2,8 @@ package vidada.model.security;
 
 import java.util.List;
 
-import archimedesJ.io.locations.Credentials;
+import archimedesJ.security.CredentialType;
+import archimedesJ.security.Credentials;
 import archimedesJ.services.IService;
 
 public interface ICredentialManager extends IService{
@@ -33,7 +34,7 @@ public interface ICredentialManager extends IService{
 		 * @param description
 		 * @return
 		 */
-		Credentials authenticate(String domain, String description);
+		Credentials authenticate(String domain, String description, CredentialType type);
 	}
 
 	/**
@@ -46,10 +47,29 @@ public interface ICredentialManager extends IService{
 	 * 
 	 * @param domain The domain id
 	 * @param description A request description for the user
+	 * @param type The type
 	 * @param useKeyStore Shall remembered keys being used to authenticate?
 	 * @return On success, returns the valid Credentials.
 	 */
-	public Credentials requestAuthentication(String domain, String description, CredentialsChecker checker, boolean useKeyStore);
+	public Credentials requestAuthentication(String domain, String description, CredentialType type, CredentialsChecker checker, boolean useKeyStore);
+
+	/**
+	 * Requests new credentials, the user has to confirm the entered credentials
+	 * @param description
+	 * @param type
+	 * @return
+	 */
+	public Credentials requestNewCredentials(String description, CredentialType type);
+
+	/**
+	 * Requests credentials without checking them and without using a key-store
+	 * @param description
+	 * @param type
+	 * @return
+	 */
+	public Credentials requestCredentials(String description, CredentialType type);
+
+
 
 	/**
 	 * Registers the given Credentials provider

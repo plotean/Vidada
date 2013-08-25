@@ -1,7 +1,6 @@
 package vidada.model.images.cache.crypto;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URISyntaxException;
 
 import vidada.model.security.CredentialUtil;
@@ -12,19 +11,19 @@ import archimedesJ.crypto.KeyCurruptedException;
 import archimedesJ.crypto.KeyPad;
 import archimedesJ.crypto.XORByteCrypter;
 import archimedesJ.exceptions.NotSupportedException;
-import archimedesJ.io.locations.Credentials;
 import archimedesJ.io.locations.DirectoiryLocation;
 import archimedesJ.io.locations.ResourceLocation;
-import archimedesJ.util.FileSupport;
+import archimedesJ.security.CredentialType;
+import archimedesJ.security.Credentials;
 
 public class CryptedCacheUtil {
 
-	private final static int KEYPAD_SIZE = 20;
+	transient private final static int KEYPAD_SIZE = 20;
 	//private final static byte[] defaultKeyPad = new byte[]{12,34,65,23,45,23};
 
-	private final static IByteBufferEncryption keyCrypter = new XORByteCrypter();
-	private final static String KeyFileName = "cache.keypad";
-	private final static String EncryptedKeyFileName = "cache.encrypted";
+	transient private final static IByteBufferEncryption keyCrypter = new XORByteCrypter();
+	transient private final static String KeyFileName = "cache.keypad";
+	transient private final static String EncryptedKeyFileName = "cache.encrypted";
 
 
 	/**
@@ -34,7 +33,7 @@ public class CryptedCacheUtil {
 	 */
 	public static byte[] getEncryptionKeyPad(DirectoiryLocation root, ICredentialManager credentialManager) {
 
-		byte[] key = null;
+		byte[] keyPad = null;
 
 		ResourceLocation keyFile;
 		ResourceLocation enckeyFile;
@@ -43,74 +42,116 @@ public class CryptedCacheUtil {
 			enckeyFile = ResourceLocation.Factory.create(root, EncryptedKeyFileName);
 		} catch (URISyntaxException e1) {
 			e1.printStackTrace();
-			return key;
+			return keyPad;
 		}
 
 		if(keyFile.exists())
 		{
-			InputStream iStreamkeyFile = keyFile.openInputStream();
+			System.out.println("Reading KeyPad from file: " + keyFile);
+			keyPad = readKeyPad(keyFile);
+		}else if(enckeyFile.exists()){
+			System.out.println("Reading encrypted KeyPad from file: " + enckeyFile);
+			readEncryptedKeyPad(enckeyFile, credentialManager);
+		}else{
+			// no file found
+			// time to generate a new key
+			keyPad = generateNewKeyPad(keyFile);
+
+		}
+		return keyPad;
+	}
+
+	private static byte[] readKeyPad(ResourceLocation keyFile){
+		byte[] keyPad = null;
+		try {
+			keyPad = keyFile.readAllBytes();
+			KeyPad.checkKey(keyPad);
+		} catch (KeyCurruptedException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return keyPad;
+	}
+
+	/*
+	private static byte[] readEncryptedKeyPad(ResourceLocation enckeyFile, Credentials credentials){
+		byte[] keyPad = null;
+		try {
+
+			final byte[] encryptedPad = enckeyFile.readAllBytes();
+			keyPad = decryptPad(encryptedPad, credentials);
+
 			try {
-				try {
-					key = FileSupport.readAllBytes(iStreamkeyFile, (int)keyFile.length());
-					KeyPad.checkKey(key);
-				} catch (KeyCurruptedException e) {
-					e.printStackTrace();
-				}finally{
-					iStreamkeyFile.close();
-				}
-			} catch (IOException e) {
+				// should always pass this check 
+				// since the creditals were checked previously
+				KeyPad.checkKey(keyPad);
+			} catch (KeyCurruptedException e) {
 				e.printStackTrace();
 			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
+		return keyPad;
+	}
+	 */
 
-		}else if(enckeyFile.exists()){
+	private static byte[] readEncryptedKeyPad(ResourceLocation enckeyFile, ICredentialManager credentialManager){
+		byte[] keyPad = null;
 
-			try {
+		try {
 
-				final byte[] enckey = enckeyFile.readAllBytes();
+			final byte[] encryptedPad = enckeyFile.readAllBytes();
 
-				String domain = CredentialUtil.toDomain("vidada.cache", root.toString());
+			String domain = CredentialUtil.toDomain("vidada.cache", enckeyFile.toString());
 
-				Credentials validCredentials = credentialManager.requestAuthentication(
-						domain,
-						"Enter password for cache " + root.toString(), new CredentialsChecker() {
-							@Override
-							public boolean check(Credentials credentials) {
-								byte[] currentKey = keyCrypter.deCrypt(
-										enckey,
-										credentials.getUserSecret());
-								return KeyPad.validate(currentKey);
-							}
-						}  ,true);
+			Credentials validCredentials = credentialManager.requestAuthentication(
+					domain,
+					"Enter password for cache " + enckeyFile.toString(),
+					CredentialType.PasswordOnly,
+					new CredentialsChecker() {
+						@Override
+						public boolean check(Credentials credentials) {
+							byte[] currentKeyPad = decryptPad(encryptedPad, credentials);
+							return KeyPad.validate(currentKeyPad);
+						}
+					}  ,true);
 
-				key = keyCrypter.deCrypt(
-						enckey,
-						validCredentials.getUserSecret());
+			if(validCredentials != null){
+				System.out.println("ReadEncryptedKeyPad: Valid Credentials: " + validCredentials);
+
+				keyPad = decryptPad(encryptedPad, validCredentials);
 
 				try {
 					// should always pass this check 
 					// since the creditals were checked previously
-					KeyPad.checkKey(key);
+					KeyPad.checkKey(keyPad);
 				} catch (KeyCurruptedException e) {
 					e.printStackTrace();
+					keyPad = null;
 				}
-			} catch (IOException e) {
-				e.printStackTrace();
+			}else {
+				System.err.println("ReadEncryptedKeyPad: User could not provide correct credentials.");
 			}
 
-		}else{
-			// no file found
-			// time to generate a new key
-
-			key = KeyPad.generateKey(KEYPAD_SIZE);
-			try {
-				keyFile.writeAllBytes(key);
-				System.out.println("generated cache encryption key");
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
-		return key;
+
+		return keyPad;
+	}
+
+
+	private static byte[] generateNewKeyPad(ResourceLocation keyFile){
+		byte[] keyPad = KeyPad.generateKey(KEYPAD_SIZE);
+		try {
+			keyFile.writeAllBytes(keyPad);
+			System.out.println("generated cache encryption key");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return keyPad;
 	}
 
 	/**
@@ -120,7 +161,7 @@ public class CryptedCacheUtil {
 	 * @param root
 	 * @param password
 	 */
-	public static void encryptWithPassword(DirectoiryLocation root, byte[] password){
+	public static void encryptWithPassword(DirectoiryLocation root, Credentials credentials){
 
 		ResourceLocation keyFile;
 		ResourceLocation enckeyFile;
@@ -135,10 +176,12 @@ public class CryptedCacheUtil {
 				throw new NotSupportedException("Keyfile not found! " + keyFile);
 
 			try {
-				byte[] key = keyFile.readAllBytes();
-				byte[] encKey = keyCrypter.enCrypt(key, password);
+				byte[] pad = keyFile.readAllBytes();
 
-				enckeyFile.writeAllBytes(encKey);
+				byte[] encPad = encryptPad(pad, credentials);
+
+				enckeyFile.writeAllBytes(encPad);
+
 				keyFile.delete();
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -157,7 +200,7 @@ public class CryptedCacheUtil {
 	 * @param root
 	 * @param password
 	 */
-	public static void removeEncryption(DirectoiryLocation root, byte[] oldPass){
+	public static void removeEncryption(DirectoiryLocation root, Credentials oldPass){
 
 		ResourceLocation keyFile;
 		ResourceLocation enckeyFile;
@@ -168,9 +211,8 @@ public class CryptedCacheUtil {
 			if(enckeyFile.exists()){
 
 				try {
-					byte[] encKey = enckeyFile.readAllBytes();
-					byte[] key = keyCrypter.deCrypt(encKey, oldPass);
-
+					byte[] encryptedPad = enckeyFile.readAllBytes();
+					byte[] key = decryptPad(encryptedPad, oldPass);
 					keyFile.delete();
 					keyFile.writeAllBytes(key);
 					enckeyFile.delete();
@@ -183,7 +225,14 @@ public class CryptedCacheUtil {
 		} catch (URISyntaxException e1) {
 			e1.printStackTrace();
 		}
+	}
 
+	public static byte[] encryptPad(byte[] pad, Credentials credentials){
+		return keyCrypter.enCrypt(pad, credentials.getUserSecret());
+	}
+
+	public static byte[] decryptPad(byte[] encryptedPad, Credentials credentials){
+		return keyCrypter.deCrypt(encryptedPad, credentials.getUserSecret());
 	}
 
 

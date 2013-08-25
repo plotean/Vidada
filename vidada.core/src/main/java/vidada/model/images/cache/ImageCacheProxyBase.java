@@ -1,5 +1,6 @@
 package vidada.model.images.cache;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import archimedesJ.geometry.Size;
@@ -13,11 +14,11 @@ import archimedesJ.images.IMemoryImage;
  * @author IsNull
  *
  */
-public abstract class ImageCacheProxyBase implements IImageCache{
+public class ImageCacheProxyBase implements IImageCache{
 
-	private IImageCache original;
+	transient private IImageCache original;
 
-	protected ImageCacheProxyBase(IImageCache original){
+	public ImageCacheProxyBase(IImageCache original){
 		this.original = original;
 	}
 
@@ -31,28 +32,29 @@ public abstract class ImageCacheProxyBase implements IImageCache{
 
 	@Override
 	public IMemoryImage getImageById(String id, Size size) {
-		return original.getImageById(id, size);
+		return original != null ? original.getImageById(id, size) : null;
 	}
 
 	@Override
 	public Set<Size> getCachedDimensions(String id) {
-		return original.getCachedDimensions(id);
+		return original != null ? original.getCachedDimensions(id) : new HashSet<Size>();
 	}
 
 	@Override
 	public boolean exists(String id, Size size) {
-		return original.exists(id, size);
+		return original != null ? original.exists(id, size) : false;
 	}
 
 	@Override
 	public void storeImage(String id, IMemoryImage image) {
-		original.storeImage(id, image);
-
+		if(original != null)
+			original.storeImage(id, image);
 	}
 
 	@Override
 	public void removeImage(String id) {
-		original.removeImage(id);
+		if(original != null)
+			original.removeImage(id);
 	}
 
 }

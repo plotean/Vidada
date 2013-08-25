@@ -43,4 +43,9 @@ public class MemoryImageAwt implements IMemoryImage {
 		return new MemoryImageAwt(rescaled);
 	}
 
+	@Override
+	public String toString(){
+		return "MemoryImageAwt: org: " + getOriginal() + " (" + getWidth() + "x" + getHeight() +")";
+	}
+
 }

@@ -132,7 +132,6 @@ public class ImageFileCache implements IImageCache {
 		if(cachedPath.exists())
 		{
 			try {
-
 				thumbnail = load(cachedPath); 
 			}catch(Exception e) {
 				System.err.println("Can not read image" + cachedPath);

@@ -2,6 +2,7 @@ package vidada.model.security;
 
 import archimedesJ.events.EventArgs;
 import archimedesJ.events.IEvent;
+import archimedesJ.security.Credentials;
 import archimedesJ.services.IService;
 
 /**
@@ -39,7 +40,7 @@ public interface IPrivacyService extends IService{
 	 * 
 	 * @param password The new password
 	 */
-	public abstract void protect(String password);
+	public abstract void protect(Credentials credentials);
 
 
 	/**
@@ -47,7 +48,7 @@ public interface IPrivacyService extends IService{
 	 * 
 	 * @param oldPassword The old password
 	 */
-	public abstract void removeProtection(String oldPassword) throws AuthenticationException;
+	public abstract void removeProtection(Credentials credentials) throws AuthenticationException;
 
 
 	/**
@@ -56,7 +57,7 @@ public interface IPrivacyService extends IService{
 	 * @return Returns true if successfully authenticated
 	 * @throws AuthenticationException Thrown, if the password is wrong
 	 */
-	public abstract boolean authenticate(String password);
+	public abstract boolean authenticate(Credentials credentials);
 
 	/**
 	 * Is the current system user authenticated?
@@ -65,7 +66,8 @@ public interface IPrivacyService extends IService{
 	public boolean isAuthenticated();
 
 	/**
-	 * Gets the crypto-pad used to encrypt/decrypt all data
+	 * Gets the crypto-pad used to encrypt/decrypt all data.
+	 * The Crypto-Pad is bound to this Database
 	 * 
 	 * If this database is protected, previous authentication is required
 	 * in order to get this crypto pad.
@@ -76,6 +78,12 @@ public interface IPrivacyService extends IService{
 	 */
 	public abstract byte[] getCryptoPad() throws AuthenticationRequieredException;
 
-	// Credential management
+	/**
+	 * Gets the currently authenticated user credentials
+	 * 
+	 * @return
+	 * @throws AuthenticationRequieredException
+	 */
+	Credentials getCredentials() throws AuthenticationRequieredException;
 
 }

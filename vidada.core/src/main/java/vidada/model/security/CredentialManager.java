@@ -5,7 +5,8 @@ import java.util.List;
 import vidada.data.SessionManager;
 import vidada.model.ServiceProvider;
 import archimedesJ.exceptions.NotSupportedException;
-import archimedesJ.io.locations.Credentials;
+import archimedesJ.security.CredentialType;
+import archimedesJ.security.Credentials;
 import archimedesJ.util.Lists;
 
 import com.db4o.ObjectContainer;
@@ -90,7 +91,7 @@ public class CredentialManager implements ICredentialManager {
 
 
 	@Override
-	public Credentials requestAuthentication(String domain, String description, CredentialsChecker checker, boolean useKeyStore) {
+	public Credentials requestAuthentication(String domain, String description, CredentialType type, CredentialsChecker checker, boolean useKeyStore) {
 
 		System.out.println("requestAuthentication for " + domain);
 
@@ -112,7 +113,7 @@ public class CredentialManager implements ICredentialManager {
 			while (true) {
 
 				System.out.println("CredentialManager: Asking user for credentials...");
-				credentials = authProvider.authenticate(domain, description);
+				credentials = authProvider.authenticate(domain, description, type);
 
 				if(credentials != null){
 					if(checker.check(credentials))
@@ -135,14 +136,15 @@ public class CredentialManager implements ICredentialManager {
 						System.err.println("CredentialManager: User entered wrong credentials.");
 					}
 				}else {
-					System.out.println("CredentialManager: User canceled entering credentials.");
+					System.out.println("CredentialManager: User Canceled entering credentials.");
 					// User canceled
 					break;
 				}
 
 			}
-
 		}
+
+		System.out.println("CredentialManager: returning credentials -> " + credentials);
 		return credentials;
 	}
 
@@ -150,6 +152,34 @@ public class CredentialManager implements ICredentialManager {
 	@Override
 	public void register(CredentialsProvider authProvider) {
 		this.authProvider = authProvider;
+	}
+
+
+	@Override
+	public Credentials requestCredentials(String description,
+			CredentialType type) {
+		if(authProvider == null)
+			throw new NotSupportedException("No authProvider was registered. -> requestAuthentication");
+
+		return authProvider.authenticate(null, description, type);
+	}
+
+	@Override
+	public Credentials requestNewCredentials(String description,
+			CredentialType type) {
+		if(authProvider == null)
+			throw new NotSupportedException("No authProvider was registered. -> requestAuthentication");
+
+		Credentials credentials = requestCredentials(description, type);
+
+		if(credentials != null){
+			Credentials credentialsConf = requestCredentials("Please confirm your credentials.", type);
+			if(!credentials.equals(credentialsConf)){
+				System.err.println("Credential confirmation failed.");
+				credentials = null;
+			}
+		}
+		return credentials;
 	}
 
 

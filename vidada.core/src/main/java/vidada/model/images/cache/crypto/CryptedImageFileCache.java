@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import vidada.model.images.cache.ImageFileCache;
+import vidada.model.security.AuthenticationException;
 import archimedesJ.crypto.IByteBufferEncryption;
 import archimedesJ.crypto.XORByteCrypter;
 import archimedesJ.images.IMemoryImage;
@@ -18,7 +19,8 @@ import archimedesJ.io.locations.ResourceLocation;
  */
 public class CryptedImageFileCache extends ImageFileCache {
 
-	byte[] keypad = null;
+	private byte[] keypad = null;
+	private final Object keypadLock = new Object();
 
 	private final IByteBufferEncryption bytestreamEncrypter;
 	private final ICacheKeyProvider cachekeyProvider;
@@ -32,7 +34,7 @@ public class CryptedImageFileCache extends ImageFileCache {
 	 * 
 	 * @param keyProvider Cache keypad provider
 	 */
-	public CryptedImageFileCache(DirectoiryLocation cacheRoot, ICacheKeyProvider keyProvider){
+	public CryptedImageFileCache(DirectoiryLocation cacheRoot, ICacheKeyProvider keyProvider) throws AuthenticationException{
 		this(cacheRoot, new XORByteCrypter(), keyProvider);
 	}
 
@@ -42,10 +44,23 @@ public class CryptedImageFileCache extends ImageFileCache {
 	 * @param encryption Buffer encryption strategy
 	 * @param keyProvider Cache keypad provider
 	 */
-	public CryptedImageFileCache(DirectoiryLocation cacheRoot, IByteBufferEncryption encryption,  ICacheKeyProvider keyProvider){
+	protected CryptedImageFileCache(DirectoiryLocation cacheRoot,
+			IByteBufferEncryption encryption,  ICacheKeyProvider keyProvider)throws AuthenticationException{
 		super(cacheRoot);
+
+		System.err.println("Creating CryptedImageFileCache!");
+
 		bytestreamEncrypter = encryption;
 		cachekeyProvider = keyProvider;
+
+
+		keypad = cachekeyProvider.getEncryptionKeyPad(this);
+		if(keypad == null){
+			System.err.println("CryptedImageFileCache: cachekeyProvider returned a NULL EncryptionKeyPad!");
+			throw new AuthenticationException();
+		}else {
+			System.out.println("CryptedImageFileCache: Got EncryptionKeyPad.");
+		}
 	}
 
 
@@ -87,17 +102,30 @@ public class CryptedImageFileCache extends ImageFileCache {
 	 * Gets the key for the encrypt and decrypt cache items
 	 * @return
 	 */
-	protected byte[] getEncryptionKeyPad(){
-		if(keypad == null)
-		{
-			System.out.println("CryptedImageFileCache: getEncryptionKeyPad...");
-			keypad = cachekeyProvider.getEncryptionKeyPad(this);
-			if(keypad == null){
-				System.err.println("cachekeyProvider returned a NULL KeyPad!");
-			}
-		}
+	private byte[] getEncryptionKeyPad(){
 		return keypad;
 	}
+
+	/**
+	 * Gets the key for the encrypt and decrypt cache items
+	 * @return
+
+	private byte[] getEncryptionKeyPad(){
+		synchronized (keypadLock) {
+			if(keypad == null)
+			{
+				System.out.println("CryptedImageFileCache: getEncryptionKeyPad...");
+				keypad = cachekeyProvider.getEncryptionKeyPad(this);
+				if(keypad == null){
+					System.err.println("CryptedImageFileCache: cachekeyProvider returned a NULL EncryptionKeyPad!");
+				}else {
+					System.out.println("CryptedImageFileCache: Got EncryptionKeyPad.");
+				}
+
+			}
+			return keypad;
+		}
+	}*/
 
 	@Override
 	public String getImageExtension(){

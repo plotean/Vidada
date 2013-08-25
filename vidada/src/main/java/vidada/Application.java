@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Frame;
 import java.awt.Point;
+import java.util.concurrent.CountDownLatch;
 
 import javax.imageio.ImageIO;
 import javax.swing.Action;
@@ -35,7 +36,8 @@ import vidada.views.MainFrame;
 import vidada.views.VidadaSplash;
 import vidada.views.dialoges.AuthenticateDialog;
 import vidada.views.dialoges.ChooseMediaDatabase;
-import archimedesJ.io.locations.Credentials;
+import archimedesJ.security.CredentialType;
+import archimedesJ.security.Credentials;
 import archimedesJ.services.ServiceLocator;
 import archimedesJ.swing.util.SwingInvoker;
 import archimedesJ.util.ExceptionUtil;
@@ -89,38 +91,44 @@ public class Application {
 
 	private static void startApplication(){
 
-		System.out.println("starting application...");
-
-		customSplash = new VidadaSplash();
-		customSplash.setVisible(true);
-		customSplash.setAlwaysOnTop(true);
-		customSplash.toFront();
-		//customSplash.requestFocus();
-		customSplash.setAlwaysOnTop(false);
+		System.out.println("starting application main UI Thread");
 
 		EventQueue.invokeLater(new Runnable() {
 			@Override
 			public void run() {
 				try {
 
+					// create splash
+					customSplash = new VidadaSplash();
+					customSplash.setVisible(true);
+					customSplash.setAlwaysOnTop(true);
+					customSplash.toFront();
+					customSplash.setAlwaysOnTop(false);
+
 					// define visual appearance
 					setTheme();
 
-					// start up application
-					new Application();
-
-					if(customSplash!= null && customSplash.isVisible())
-						customSplash.setVisible(false);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
+			}
+		});
+
+		// start up application
+		new Application();
+
+		EventQueue.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				if(customSplash!= null && customSplash.isVisible())
+					customSplash.setVisible(false);
 			}
 		});
 	}
 
 
 	/**
-	 * Create the application.
+	 * Creates the application.
 	 */
 	public Application() {
 		System.out.println("initializing...");
@@ -288,24 +296,39 @@ public class Application {
 
 	private final CredentialsProvider authProvider = new CredentialsProvider() {
 		@Override
-		public Credentials authenticate(String domain, String description) {
+		public Credentials authenticate(String domain, String description, CredentialType type) {
 
-			final AuthenticateDialog authDlg = new AuthenticateDialog(customSplash, description);
+			System.out.println("CredentialsProvider->authenticate");
 
-			SwingInvoker.invokeAndWait(new Runnable() {
+			final CountDownLatch latch = new CountDownLatch(1);
+			final AuthenticateDialog authDlg = new AuthenticateDialog(null, type, description);
+
+			System.out.println("invoking async auth dialog...");
+
+			SwingInvoker.invokeLater(new Runnable() {
 				@Override
 				public void run() {
 					Point lPoint = authDlg.getLocation();
-					lPoint.y = lPoint.y + (int)((float)customSplash.getHeight() / 1.5f);
+					//lPoint.y = lPoint.y + (int)((float)MainFrame.getHeight() / 1.5f);
 					authDlg.setLocation(lPoint);
-
+					System.out.println("showing dialog");
 					authDlg.setVisible(true);
+
+					System.out.println("dialog done!");
+					latch.countDown();
 				}
 			});
 
+			try {
+				System.out.println("waiting for latch...");
+				latch.await();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+
 			return authDlg.isOk() 
-					? new Credentials(null, authDlg.getPassword())
-			: null;
+					? authDlg.getCredentials()
+							: null;
 		}
 	};
 
@@ -317,10 +340,11 @@ public class Application {
 		Credentials validCredentials = credentialManager.requestAuthentication(
 				"vidada.core",
 				"Please enter the Database password:",
+				CredentialType.PasswordOnly,
 				new CredentialsChecker(){
 					@Override
 					public boolean check(Credentials credentials) {
-						return privacyService.authenticate(credentials.getPassword());
+						return privacyService.authenticate(credentials);
 					}},
 					false);
 

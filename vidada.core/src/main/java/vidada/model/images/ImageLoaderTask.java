@@ -16,12 +16,12 @@ import archimedesJ.images.IMemoryImage;
  */
 public class ImageLoaderTask implements Callable<IMemoryImage>
 {
-	private static final Size maxThumbSize = GlobalSettings.getInstance().getMaxThumbResolution();
+	transient private static final Size maxThumbSize = GlobalSettings.getInstance().getMaxThumbResolution();
 
 
-	private final IImageCache imageCache;
-	private final  MediaItem media;
-	private final Size size;
+	transient private final IImageCache imageCache;
+	transient private final  MediaItem media;
+	transient private final Size size;
 
 
 	public ImageLoaderTask(IImageCache imageCache, MediaItem media, Size size){

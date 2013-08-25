@@ -35,7 +35,7 @@ import com.db4o.config.annotations.Indexed;
  */
 public abstract class MediaItem extends BaseEntity implements IMediaDataThumb, IHaveMediaData {
 
-	protected transient final IImageService imageService = ServiceProvider.Resolve(IImageService.class);
+	transient protected final IImageService imageService = ServiceProvider.Resolve(IImageService.class);
 
 
 	private Set<MediaSource> sources = new HashSet<MediaSource>();
@@ -57,10 +57,9 @@ public abstract class MediaItem extends BaseEntity implements IMediaDataThumb, I
 	private MediaType mediaType;
 
 
-	private transient MediaSource source;
-
-	private transient final EventHandlerEx<EventArgsG<Tag>> tagAddedEvent = new EventHandlerEx<EventArgsG<Tag>>();
-	private transient final EventHandlerEx<EventArgsG<Tag>> tagRemovedEvent = new EventHandlerEx<EventArgsG<Tag>>();
+	transient private MediaSource source;
+	transient private final EventHandlerEx<EventArgsG<Tag>> tagAddedEvent = new EventHandlerEx<EventArgsG<Tag>>();
+	transient private final EventHandlerEx<EventArgsG<Tag>> tagRemovedEvent = new EventHandlerEx<EventArgsG<Tag>>();
 
 
 
@@ -382,14 +381,11 @@ public abstract class MediaItem extends BaseEntity implements IMediaDataThumb, I
 
 
 	@Override
-	public ImageContainer getThumbnail(Size size) {
+	public synchronized ImageContainer getThumbnail(Size size) {
 		ImageContainer container = imageService.retrieveImageContainer(
 				this,
 				size,
 				imageChangedCallBack);
-
-		if(container != null)
-			container.getImageChangedEvent();
 
 		return container;
 	} 
@@ -397,6 +393,7 @@ public abstract class MediaItem extends BaseEntity implements IMediaDataThumb, I
 	private final ImageChangedCallback imageChangedCallBack = new ImageChangedCallback(){
 		@Override
 		public void imageChanged(ImageContainer container) {
+			System.out.println("imageChangedCallBack: --> firePropertyChange('thumbnail'): raw-image: " + container.getRawImage());
 			firePropertyChange("thumbnail");
 		}
 	};

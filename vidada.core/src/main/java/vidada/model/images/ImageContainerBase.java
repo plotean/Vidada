@@ -24,13 +24,16 @@ public class ImageContainerBase implements ImageContainer, Runnable {
 		void imageChanged(ImageContainer container);
 	}
 
+	// final
 	private final ExecutorService imageLoaderPool;
-	private IMemoryImage rawImage;
-
-	transient private Callable<IMemoryImage> imageLoader;
 	private final Lock imageLoaderLock = new ReentrantLock();
-
 	private final ImageChangedCallback  changedCallback;
+
+	// mutable
+	private volatile IMemoryImage rawImage; // since we don't use any locks, this ensures visibility to another thread
+
+	// transient
+	transient private Callable<IMemoryImage> imageLoader;
 
 	// Events
 
@@ -49,7 +52,7 @@ public class ImageContainerBase implements ImageContainer, Runnable {
 	private final Object requestImageLock = new Object();
 
 	/**
-	 * This method returns imediatly
+	 * This method returns immediately
 	 */
 	@Override
 	public void requestImage() {
@@ -75,7 +78,8 @@ public class ImageContainerBase implements ImageContainer, Runnable {
 				if(isImageLoaded()) return;
 
 				try {
-					setRawImage(imageLoader.call());
+					IMemoryImage loadedImage = imageLoader.call();
+					setRawImage(loadedImage);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

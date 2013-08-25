@@ -127,7 +127,8 @@ public class ServiceProvider implements ILocator {
 						final DirectoiryLocation localCache = DirectoiryLocation.Factory
 								.create(GlobalSettings.getInstance().getAbsoluteCachePath());
 
-						CryptedCacheUtil.encryptWithPassword(localCache, privacyService.getCryptoPad());
+						System.out.println(privacyService.getCredentials().toString());
+						CryptedCacheUtil.encryptWithPassword(localCache, privacyService.getCredentials());
 					} catch (AuthenticationRequieredException e) {
 						e.printStackTrace();
 					}
@@ -143,7 +144,7 @@ public class ServiceProvider implements ILocator {
 						final DirectoiryLocation localCache = DirectoiryLocation.Factory
 								.create(GlobalSettings.getInstance().getAbsoluteCachePath());
 
-						CryptedCacheUtil.removeEncryption( localCache, privacyService.getCryptoPad());
+						CryptedCacheUtil.removeEncryption( localCache, privacyService.getCredentials());
 					} catch (AuthenticationRequieredException e) {
 						e.printStackTrace();
 					}

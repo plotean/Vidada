@@ -4,7 +4,7 @@ import java.io.UnsupportedEncodingException;
 
 import archimedesJ.crypto.IByteBufferEncryption;
 import archimedesJ.crypto.XORByteCrypter;
-import archimedesJ.io.locations.Credentials;
+import archimedesJ.security.Credentials;
 
 /**
  * Represents a encrypted Credential-Set which can be safely persisted

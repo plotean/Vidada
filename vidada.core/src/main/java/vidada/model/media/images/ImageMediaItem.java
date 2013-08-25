@@ -19,11 +19,10 @@ import archimedesJ.images.IMemoryImage;
 import archimedesJ.io.locations.ResourceLocation;
 import archimedesJ.swing.images.ImageInfo;
 import archimedesJ.swing.images.SimpleImageInfo;
-import archimedesJ.threading.TaskResult;
 
 public class ImageMediaItem extends MediaItem {
 
-	private final RawImageFactory imageFactory = ServiceProvider.Resolve(RawImageFactory.class);
+	transient private final RawImageFactory imageFactory = ServiceProvider.Resolve(RawImageFactory.class);
 
 	/**
 	 * Empty hibernate constructor
@@ -55,11 +54,14 @@ public class ImageMediaItem extends MediaItem {
 	@Override
 	public void createThumbnailCached(Size size) {
 
-		TaskResult state;
+		//TaskResult state;
 
 		IMemoryImage frame = readImage(size);
-		imageService.storeImage(this, frame);
-
+		if(frame != null)
+			imageService.storeImage(this, frame);
+		else {
+			System.err.println("Reading image failed: " + this);
+		}
 		//return state;
 	}
 

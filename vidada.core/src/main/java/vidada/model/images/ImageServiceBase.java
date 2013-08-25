@@ -10,6 +10,7 @@ import java.util.concurrent.Executors;
 import vidada.model.ServiceProvider;
 import vidada.model.images.ImageContainerBase.ImageChangedCallback;
 import vidada.model.images.cache.IImageCache;
+import vidada.model.images.cache.ImageCacheProxyBase;
 import vidada.model.images.cache.LeveledImageCache;
 import vidada.model.images.cache.MemoryImageCache;
 import vidada.model.images.cache.crypto.CryptedImageFileCache;
@@ -19,6 +20,7 @@ import vidada.model.libraries.MediaLibrary;
 import vidada.model.media.MediaItem;
 import vidada.model.media.source.FileMediaSource;
 import vidada.model.media.source.MediaSource;
+import vidada.model.security.AuthenticationException;
 import vidada.model.security.ICredentialManager;
 import vidada.model.settings.GlobalSettings;
 import archimedesJ.data.caching.LRUCache;
@@ -29,17 +31,24 @@ import archimedesJ.io.locations.DirectoiryLocation;
 
 public class ImageServiceBase implements IImageService {
 
-	private final ICredentialManager credentialManager =  ServiceProvider.Resolve(ICredentialManager.class);
-	private final ExecutorService executorService = Executors.newFixedThreadPool(2);
-	private final Map<Long, Map<Size, ImageContainer>> imageContainerCache;
-
-	private final IImageCache localImageCache;
+	transient private final ICredentialManager credentialManager =  ServiceProvider.Resolve(ICredentialManager.class);
+	transient private final ExecutorService executorService = Executors.newFixedThreadPool(2);
+	transient private final Map<Long, Map<Size, ImageContainer>> imageContainerCache;
+	transient private final IImageCache localImageCache;
 
 	public ImageServiceBase(){
 		this.imageContainerCache = Collections.synchronizedMap(
 				new LRUCache<Long, Map<Size, ImageContainer>>((int)MemoryImageCache.MAX_MEMORY_SCALED_CACHE));
 
+		localImageCache = openLocalCache();
+	}
 
+	/**
+	 * Opens the local image cache
+	 * Should this fail, it will return a dummy cache
+	 * @return
+	 */
+	private IImageCache openLocalCache() {
 		DirectoiryLocation localCacheLocation = null;
 		try {
 			localCacheLocation = DirectoiryLocation.Factory.create(
@@ -47,8 +56,13 @@ public class ImageServiceBase implements IImageService {
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
 		}
-
-		localImageCache = openCache(localCacheLocation, credentialManager);
+		IImageCache cache = openCache(localCacheLocation, credentialManager);
+		if(cache != null){
+			return cache;
+		}else{
+			System.out.println("Injecting a MemoryCache to replace LocalFile Cache");
+			return new MemoryImageCache(new ImageCacheProxyBase(null));
+		}
 	}
 
 	@Override
@@ -145,7 +159,14 @@ public class ImageServiceBase implements IImageService {
 	@Override
 	public IImageCache openCache(DirectoiryLocation cacheLocation, ICredentialManager credentialManager) {
 		ICacheKeyProvider cacheKeyProvider = new VidadaCacheKeyProvider();
-		return new CryptedImageFileCache(cacheLocation, cacheKeyProvider);
+		IImageCache cache = null;
+		try {
+			cache = new CryptedImageFileCache(cacheLocation, cacheKeyProvider);
+		} catch (AuthenticationException e) {
+			System.err.println("openCache failed!");
+			e.printStackTrace();
+		}
+		return cache;
 	}
 
 

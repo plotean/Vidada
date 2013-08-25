@@ -35,8 +35,13 @@ public class MediaLibrary extends BaseEntity {
 
 	private Set<LibraryEntry> libraryEntries = new HashSet<LibraryEntry>();
 
+
 	private boolean ignoreMovies;
 	private boolean ignoreImages;
+
+
+	//TODO DEBUG ONLY!?
+	transient private boolean useLibraryCache = false;
 
 	transient private LibraryEntry currentEntry = null;
 	transient private ILocationFilter mediaFilter = null;
@@ -67,7 +72,10 @@ public class MediaLibrary extends BaseEntity {
 	 * Gets the libraries image cache
 	 * @return Returns the cache service if this library supports caches
 	 */
-	public IImageCache getLibraryCache(){
+	public synchronized IImageCache getLibraryCache(){
+
+		if(!useLibraryCache) return null;
+
 		if(imageCache == null){
 
 			IImageService imageService = ServiceProvider.Resolve(IImageService.class);
@@ -77,6 +85,7 @@ public class MediaLibrary extends BaseEntity {
 			if(libraryRoot != null && libraryRoot.exists()){
 				try {
 					DirectoiryLocation libCache = DirectoiryLocation.Factory.create(libraryRoot, "thumbs");
+					System.out.println("opening new library cache...");
 					imageCache = imageService.openCache(libCache, credentialManager);
 				} catch (URISyntaxException e1) {
 					e1.printStackTrace();
