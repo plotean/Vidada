@@ -15,11 +15,11 @@ import archimedesJ.io.locations.DirectoiryLocation;
 import archimedesJ.io.locations.ResourceLocation;
 import archimedesJ.security.CredentialType;
 import archimedesJ.security.Credentials;
+import archimedesJ.util.Debug;
 
 public class CryptedCacheUtil {
 
 	transient private final static int KEYPAD_SIZE = 20;
-	//private final static byte[] defaultKeyPad = new byte[]{12,34,65,23,45,23};
 
 	transient private final static IByteBufferEncryption keyCrypter = new XORByteCrypter();
 	transient private final static String KeyFileName = "cache.keypad";
@@ -51,7 +51,7 @@ public class CryptedCacheUtil {
 			keyPad = readKeyPad(keyFile);
 		}else if(enckeyFile.exists()){
 			System.out.println("Reading encrypted KeyPad from file: " + enckeyFile);
-			readEncryptedKeyPad(enckeyFile, credentialManager);
+			keyPad = readEncryptedKeyPad(enckeyFile, credentialManager);
 		}else{
 			// no file found
 			// time to generate a new key
@@ -103,6 +103,7 @@ public class CryptedCacheUtil {
 		try {
 
 			final byte[] encryptedPad = enckeyFile.readAllBytes();
+			System.out.println("CRYPTO PAD: " + Debug.toString(encryptedPad) + " len: " + encryptedPad.length );
 
 			String domain = CredentialUtil.toDomain("vidada.cache", enckeyFile.toString());
 
@@ -113,7 +114,12 @@ public class CryptedCacheUtil {
 					new CredentialsChecker() {
 						@Override
 						public boolean check(Credentials credentials) {
+
 							byte[] currentKeyPad = decryptPad(encryptedPad, credentials);
+
+							System.out.println("decrypted pad: " + Debug.toString(currentKeyPad) + " len: " + currentKeyPad.length );
+							System.out.println("encrypted pad: " + Debug.toString(encryptedPad) + " len: " + encryptedPad.length );
+
 							return KeyPad.validate(currentKeyPad);
 						}
 					}  ,true);
@@ -122,6 +128,9 @@ public class CryptedCacheUtil {
 				System.out.println("ReadEncryptedKeyPad: Valid Credentials: " + validCredentials);
 
 				keyPad = decryptPad(encryptedPad, validCredentials);
+
+				System.out.println("decrypted pad: " + Debug.toString(keyPad) + " len: " + keyPad.length );
+				System.out.println("encrypted pad: " + Debug.toString(encryptedPad) + " len: " + encryptedPad.length );
 
 				try {
 					// should always pass this check 
