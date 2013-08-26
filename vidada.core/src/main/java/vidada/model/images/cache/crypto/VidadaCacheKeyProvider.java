@@ -1,6 +1,5 @@
 package vidada.model.images.cache.crypto;
 
-import vidada.model.ServiceProvider;
 import vidada.model.security.ICredentialManager;
 
 
@@ -38,7 +37,12 @@ import vidada.model.security.ICredentialManager;
  */
 public class VidadaCacheKeyProvider implements ICacheKeyProvider{
 
-	private final ICredentialManager credentialManager = ServiceProvider.Resolve(ICredentialManager.class);
+	transient private final ICredentialManager credentialManager;
+
+	public VidadaCacheKeyProvider(ICredentialManager credentialManager){
+		this.credentialManager = credentialManager;
+	}
+
 
 	@Override
 	public synchronized byte[] getEncryptionKeyPad(CryptedImageFileCache cache) {
