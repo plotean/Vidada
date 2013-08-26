@@ -47,11 +47,6 @@ public class MediaDataInfo {
 	}
 
 
-
-
-
-
-
 	// MediaData
 	/**
 	 * File Id (Hash)

@@ -46,5 +46,12 @@ public interface IImageService extends IService{
 	 * @param credentialManager Credital manager to use if a password is required.
 	 * @return
 	 */
-	IImageCache openCache(DirectoiryLocation cacheLocation, ICredentialManager credentialManager);
+	IImageCache openEncryptedCache(DirectoiryLocation cacheLocation, ICredentialManager credentialManager);
+
+	/**
+	 * Open a non encrypted cache
+	 * @param cacheLocation
+	 * @return
+	 */
+	IImageCache openCache(DirectoiryLocation cacheLocation);
 }

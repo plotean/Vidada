@@ -153,9 +153,11 @@ public class MediaService implements IMediaService {
 
 	@Override
 	public List<MediaItem> getAllMediaData() {
+		System.out.println("getAllMediaData ...");
 		ObjectContainer db =  SessionManager.getObjectContainer();
 		Query query = db.query();
 		query.constrain(MediaItem.class);
+		System.out.println("execute media data query ...");
 		List<MediaItem> medias = query.execute();
 
 		return Lists.newList(medias); 
