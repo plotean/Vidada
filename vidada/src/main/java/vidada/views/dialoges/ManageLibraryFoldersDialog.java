@@ -130,7 +130,7 @@ public class ManageLibraryFoldersDialog extends JDialog {
 
 				MediaLibrary library = (MediaLibrary)listAllLibraries.getSelectedValue();
 				if(library != null)
-					txtCurrentPath.setFilePath(library.getLibraryRoot().toString());
+					txtCurrentPath.setFilePath("" + library.getLibraryRoot());
 
 				updateState();
 			}

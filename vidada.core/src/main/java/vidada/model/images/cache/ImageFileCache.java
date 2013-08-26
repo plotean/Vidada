@@ -239,6 +239,7 @@ public class ImageFileCache implements IImageCache {
 
 		try {
 			OutputStream fos =  path.openOutputStream(); //new FileOutputStream(path);
+			if(fos == null) return;
 			try{
 				fos.write(rawImageData);
 			}finally{
