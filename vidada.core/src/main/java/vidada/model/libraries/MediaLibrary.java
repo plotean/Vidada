@@ -14,7 +14,6 @@ import vidada.model.images.IImageService;
 import vidada.model.images.cache.IImageCache;
 import vidada.model.media.MediaFileInfo;
 import vidada.model.media.MediaType;
-import vidada.model.security.ICredentialManager;
 import vidada.model.user.User;
 import archimedesJ.io.locations.DirectoiryLocation;
 import archimedesJ.io.locations.ILocationFilter;
@@ -40,8 +39,8 @@ public class MediaLibrary extends BaseEntity {
 	private boolean ignoreImages;
 
 
-	//TODO DEBUG ONLY!?
-	transient private boolean useLibraryCache = false;
+	// TODO DEBUG ONLY!?
+	transient private boolean useLibraryCache = true;
 
 	transient private LibraryEntry currentEntry = null;
 	transient private ILocationFilter mediaFilter = null;
@@ -79,14 +78,13 @@ public class MediaLibrary extends BaseEntity {
 		if(imageCache == null){
 
 			IImageService imageService = ServiceProvider.Resolve(IImageService.class);
-			ICredentialManager credentialManager = ServiceProvider.Resolve(ICredentialManager.class);
 
 			DirectoiryLocation libraryRoot = getLibraryRoot();
 			if(libraryRoot != null && libraryRoot.exists()){
 				try {
-					DirectoiryLocation libCache = DirectoiryLocation.Factory.create(libraryRoot, "thumbs");
+					DirectoiryLocation libCache = DirectoiryLocation.Factory.create(libraryRoot, "vidada.thumbs");
 					System.out.println("opening new library cache...");
-					imageCache = imageService.openCache(libCache, credentialManager);
+					imageCache = imageService.openCache(libCache);
 				} catch (URISyntaxException e1) {
 					e1.printStackTrace();
 				}
@@ -218,6 +216,28 @@ public class MediaLibrary extends BaseEntity {
 	};
 
 	/**
+	 * A simple filter to igonre vidada generated thumbs
+	 */
+	private transient static final ILocationFilter ignoreVidadaThumbs = new ILocationFilter() {
+
+		private static final String VidataThumbsFolder = "vidada.thumbs";
+
+
+		@Override
+		public boolean accept(UniformLocation file) {
+
+
+			if(file instanceof ResourceLocation)
+			{
+				String name = ((ResourceLocation)file).getUriString();
+				return !name.contains(VidataThumbsFolder);
+			}
+
+			return true;
+		}
+	};
+
+	/**
 	 * Build an IOFilter to filter files
 	 * which are applicable for this media library
 	 * @return
@@ -244,6 +264,7 @@ public class MediaLibrary extends BaseEntity {
 
 			mediaFilter = LocationFilters.extensionFilter(allMediaExtensions);
 			mediaFilter = LocationFilters.and(mediaFilter, ignoreMetaDataFilter);
+			mediaFilter = LocationFilters.and(mediaFilter, ignoreVidadaThumbs);
 		}
 		return mediaFilter;
 	}
