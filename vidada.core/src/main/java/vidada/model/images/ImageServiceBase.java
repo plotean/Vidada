@@ -11,6 +11,7 @@ import vidada.model.ServiceProvider;
 import vidada.model.images.ImageContainerBase.ImageChangedCallback;
 import vidada.model.images.cache.IImageCache;
 import vidada.model.images.cache.ImageCacheProxyBase;
+import vidada.model.images.cache.ImageFileCache;
 import vidada.model.images.cache.LeveledImageCache;
 import vidada.model.images.cache.MemoryImageCache;
 import vidada.model.images.cache.crypto.CryptedImageFileCache;
@@ -56,7 +57,7 @@ public class ImageServiceBase implements IImageService {
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
 		}
-		IImageCache cache = openCache(localCacheLocation, credentialManager);
+		IImageCache cache = openEncryptedCache(localCacheLocation, credentialManager);
 		if(cache != null){
 			return cache;
 		}else{
@@ -153,12 +154,12 @@ public class ImageServiceBase implements IImageService {
 	}
 
 	/**
-	 * Creates a location based image cache. The concrete used cache implementation
-	 * depends on the location type and on properties of the cache such as encryption.
+	 * Creates a location based encrypted image cache. The concrete used cache implementation
+	 * depends on the location type.
 	 */
 	@Override
-	public IImageCache openCache(DirectoiryLocation cacheLocation, ICredentialManager credentialManager) {
-		ICacheKeyProvider cacheKeyProvider = new VidadaCacheKeyProvider();
+	public IImageCache openEncryptedCache(DirectoiryLocation cacheLocation, ICredentialManager credentialManager) {
+		ICacheKeyProvider cacheKeyProvider = new VidadaCacheKeyProvider(credentialManager);
 		IImageCache cache = null;
 		try {
 			cache = new CryptedImageFileCache(cacheLocation, cacheKeyProvider);
@@ -169,6 +170,12 @@ public class ImageServiceBase implements IImageService {
 		return cache;
 	}
 
-
+	/**
+	 * Opens an non encrypted cache. 
+	 */
+	@Override
+	public IImageCache openCache(DirectoiryLocation cacheLocation) {
+		return new ImageFileCache(cacheLocation);
+	}
 
 }
