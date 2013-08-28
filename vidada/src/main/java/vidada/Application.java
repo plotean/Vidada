@@ -77,6 +77,8 @@ public class Application {
 		try{
 			startApplication();
 		}catch(Exception e){
+			e.printStackTrace();
+
 			JOptionPane.showMessageDialog(null, 
 					e.getStackTrace(),
 					"Vidada - " + e.getMessage(),
