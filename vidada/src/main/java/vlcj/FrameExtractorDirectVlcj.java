@@ -10,6 +10,7 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 import uk.co.caprica.vlcj.player.MediaPlayerFactory;
+import uk.co.caprica.vlcj.player.direct.BufferFormat;
 import uk.co.caprica.vlcj.player.direct.DirectMediaPlayer;
 import uk.co.caprica.vlcj.player.direct.RenderCallback;
 
@@ -99,7 +100,12 @@ public class FrameExtractorDirectVlcj {
 
 		@SuppressWarnings("unused")
 		@Override
-		public synchronized void display(Memory nativeBuffer) {
+		public synchronized void display(DirectMediaPlayer mediaPlayer,
+				Memory[] nativeBuffers, BufferFormat bufferFormat) {
+
+			// TODO nativeBuffers[0];
+			Memory nativeBuffer = nativeBuffers[0];
+
 
 			System.out.println("nativeBuffer size:" + nativeBuffer.size());
 
@@ -124,6 +130,8 @@ public class FrameExtractorDirectVlcj {
 			String rndName = ++num + "_test.png";
 			persist(image, new File("E:\\Out", rndName) );
 		}
+
+
 	}
 
 	/**

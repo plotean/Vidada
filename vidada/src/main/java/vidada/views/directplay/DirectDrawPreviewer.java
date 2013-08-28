@@ -170,6 +170,9 @@ public class DirectDrawPreviewer extends DirectPlayBaseComponent {
 	@Override
 	public void playMedia(String file) {
 		lastPlayedMedia = file;
+		// vlc(j) path fix
+		file = file.replace("file:/", "file:///");
+
 		boolean success = getMediaPlayer().playMedia(file);
 		System.out.println("playMedia succeeded? " + success + " - playing file: " + file);
 		this.validate();
@@ -200,7 +203,7 @@ public class DirectDrawPreviewer extends DirectPlayBaseComponent {
 		}
 
 		@Override
-		protected void onDisplay(int[] rgbBuffer) {
+		protected void onDisplay(DirectMediaPlayer mediaPlayer, int[] rgbBuffer) {
 			imagePane.repaint();
 		}
 	}
