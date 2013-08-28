@@ -233,6 +233,8 @@ public class Application {
 
 			// notify user
 
+			e.printStackTrace();
+
 			String exceptionDetail = ExceptionUtil.exeptionToUserErrorString(e);
 
 			JOptionPane.showMessageDialog(null, 
@@ -292,6 +294,10 @@ public class Application {
 
 		return false;
 	}
+
+
+
+
 
 
 	private final CredentialsProvider authProvider = new CredentialsProvider() {

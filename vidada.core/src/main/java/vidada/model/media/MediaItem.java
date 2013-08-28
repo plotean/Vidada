@@ -390,7 +390,7 @@ public abstract class MediaItem extends BaseEntity implements IMediaDataThumb, I
 		return container;
 	} 
 
-	private final ImageChangedCallback imageChangedCallBack = new ImageChangedCallback(){
+	transient private final ImageChangedCallback imageChangedCallBack = new ImageChangedCallback(){
 		@Override
 		public void imageChanged(ImageContainer container) {
 			System.out.println("imageChangedCallBack: --> firePropertyChange('thumbnail'): raw-image: " + container.getRawImage());

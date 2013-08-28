@@ -29,10 +29,10 @@ import archimedesJ.threading.TaskResult;
 public class MovieMediaItem extends MediaItem implements Cloneable {
 
 	transient public final static int INVALID_POSITION = -1;
-
 	transient private final static int MAX_THUMB_RETRY_COUT = 2;
-
 	transient private Video video;
+	transient private final Lock thumbnailCreatorLock = new ReentrantLock();
+
 
 	private float preferredThumbPosition = INVALID_POSITION;
 	private float currentThumbPosition = INVALID_POSITION;
@@ -198,8 +198,6 @@ public class MovieMediaItem extends MediaItem implements Cloneable {
 				&& Video.isGenericEncoderPresent() && isAvailable();
 	}
 
-
-	private final Lock thumbnailCreatorLock = new ReentrantLock();
 
 	/**
 	 * Creates a thumbnail of the requested size and stores it in the cache. This method may block the

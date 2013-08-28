@@ -111,7 +111,7 @@ public class MediaLibrary extends BaseEntity {
 		if(currentEntry == null){
 			User current = User.current();
 			for (LibraryEntry entry : getLibraryEntries()) {
-				if(entry.getUser().equals(current)){
+				if(current.equals(entry.getUser())){
 					currentEntry =  entry;
 					break;
 				}
