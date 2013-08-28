@@ -3,6 +3,7 @@ package vidada.model.libraries;
 import java.beans.Transient;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -16,6 +17,7 @@ import vidada.model.media.MediaFileInfo;
 import vidada.model.media.MediaType;
 import vidada.model.user.User;
 import archimedesJ.io.locations.DirectoiryLocation;
+import archimedesJ.io.locations.IDirectoryFilter;
 import archimedesJ.io.locations.ILocationFilter;
 import archimedesJ.io.locations.LocationFilters;
 import archimedesJ.io.locations.ResourceLocation;
@@ -169,28 +171,36 @@ public class MediaLibrary extends BaseEntity {
 	/**
 	 * Returns all Files from this library
 	 * @return
-	 */
+
 	@Transient
 	public List<ResourceLocation> getAllFiles(){
-		return Lists.asTypedList(getLibraryRoot().listAll(LocationFilters.AcceptAllFiles, true));
+		return Lists.asTypedList(getLibraryRoot().listAll(
+				LocationFilters.AcceptAllFiles,
+				LocationFilters.AcceptAllDirectories));
 	}
 
 	@Transient
 	public List<ResourceLocation> getAllFiles(ILocationFilter filter){
 		DirectoiryLocation root = getLibraryRoot();
-		System.out.println("MediaLibrary: searching for all files in root: " + root.toString());
-		return Lists.asTypedList(root.listAll(filter, true));
+		return Lists.asTypedList(root.listAll(filter, null));
 	}
-
-	@Transient
-	public List<ResourceLocation> getAllMediaFiles(DirectoiryLocation root){
-		return Lists.asTypedList(root.listAll(buildFilter(), true));
-	}
-
+	 */
 
 
 	/**
-	 * A simple filter to igonre meta data files (AppleDouble etc.)
+	 * Returns all media files in this library
+	 * @return
+	 */
+	public List<ResourceLocation> getAllMediaFiles(){
+		DirectoiryLocation root = getLibraryRoot();
+		if(root != null)
+			return Lists.asTypedList(root.listAll(buildFilter(), ignoreVidadaThumbs));
+		return new ArrayList<ResourceLocation>();
+	}
+
+
+	/**
+	 * A simple filter to ignore meta data files (AppleDouble etc.)
 	 */
 	private transient static final ILocationFilter ignoreMetaDataFilter = new ILocationFilter() {
 
@@ -218,22 +228,14 @@ public class MediaLibrary extends BaseEntity {
 	/**
 	 * A simple filter to igonre vidada generated thumbs
 	 */
-	private transient static final ILocationFilter ignoreVidadaThumbs = new ILocationFilter() {
+	private transient static final IDirectoryFilter ignoreVidadaThumbs = new IDirectoryFilter() {
 
 		private static final String VidataThumbsFolder = "vidada.thumbs";
 
-
 		@Override
-		public boolean accept(UniformLocation file) {
-
-
-			if(file instanceof ResourceLocation)
-			{
-				String name = ((ResourceLocation)file).getUriString();
-				return !name.contains(VidataThumbsFolder);
-			}
-
-			return true;
+		public boolean accept(DirectoiryLocation directoiry) {
+			String name = directoiry.getName();
+			return !name.equals(VidataThumbsFolder);
 		}
 	};
 
@@ -264,7 +266,6 @@ public class MediaLibrary extends BaseEntity {
 
 			mediaFilter = LocationFilters.extensionFilter(allMediaExtensions);
 			mediaFilter = LocationFilters.and(mediaFilter, ignoreMetaDataFilter);
-			mediaFilter = LocationFilters.and(mediaFilter, ignoreVidadaThumbs);
 		}
 		return mediaFilter;
 	}
