@@ -30,7 +30,6 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import vidada.Application;
 import vidada.commands.AddNewMediaLibraryAction;
 import vidada.commands.UpdateMediaLibraryAction;
 import vidada.model.ServiceProvider;
@@ -149,6 +148,7 @@ public class ManageLibraryFoldersDialog extends JDialog {
 	 */
 	public ManageLibraryFoldersDialog(JFrame owner) {
 		super(owner, true);
+
 
 		init();
 
@@ -269,7 +269,7 @@ public class ManageLibraryFoldersDialog extends JDialog {
 
 	private void onDialogClosing(){
 		if(librariesHasChanged){
-			Action updateMediaLibraryAction = new UpdateMediaLibraryAction(Application.MainFrame); 
+			Action updateMediaLibraryAction = new UpdateMediaLibraryAction(getOwner()); 
 			updateMediaLibraryAction.actionPerformed(null);
 		}
 	}
