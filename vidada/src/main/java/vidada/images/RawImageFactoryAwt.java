@@ -1,5 +1,9 @@
 package vidada.images;
 
+import java.awt.Graphics;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -13,15 +17,44 @@ import archimedesJ.images.IMemoryImage;
 
 public class RawImageFactoryAwt implements RawImageFactory {
 
+	public RawImageFactoryAwt(){
+
+	}
+
+
 	@Override
 	public IMemoryImage createImage(InputStream inputStream) {
 		try {
-			return new MemoryImageAwt(ImageIO.read(inputStream));
+
+			BufferedImage image = ImageIO.read(inputStream);
+			image = toOptimalThumbBitmap(image);
+
+			return new MemoryImageAwt(image);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
+
+	private BufferedImage toOptimalThumbBitmap(BufferedImage bitmap){
+
+		GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		GraphicsDevice device = env.getDefaultScreenDevice();
+		GraphicsConfiguration config = device.getDefaultConfiguration();
+
+
+		BufferedImage optimal = config.createCompatibleImage(
+				bitmap.getWidth(),
+				bitmap.getHeight(),
+				bitmap.getTransparency());
+
+		Graphics g = optimal.getGraphics();
+		g.drawImage(bitmap, 0,0, null);
+		g.dispose();
+
+		return optimal;
+	}
+
 
 	@Override
 	public boolean writeImage(IMemoryImage image, OutputStream outputStream) {
