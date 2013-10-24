@@ -71,6 +71,7 @@ public class ImageContainerBase implements ImageContainer, Runnable {
 	 */
 	@Override
 	public void loadImageSync(){
+
 		if(imageLoaderLock.tryLock()){
 			try{
 				if(imageLoader == null) return;

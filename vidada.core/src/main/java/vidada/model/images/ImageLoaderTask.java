@@ -40,6 +40,9 @@ public class ImageLoaderTask implements Callable<IMemoryImage>
 
 		IMemoryImage loadedImage = null;
 
+
+		//Thread.sleep(100);  TODO:
+
 		// the image may already be cached
 
 		loadedImage = imageCache.getImageById(media.getFilehash(), size);

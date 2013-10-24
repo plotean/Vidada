@@ -53,7 +53,6 @@ public class PrimaryMediaBrowserPanel extends JPanel implements IContentPresente
 
 		this.setLayout(new BorderLayout(0, 0));
 
-		//TODO DEBUG!
 		this.add(filterPanel, BorderLayout.NORTH);
 
 		MediaBrowserContainer browserContainer = new MediaBrowserContainer(browser);
@@ -174,7 +173,7 @@ public class PrimaryMediaBrowserPanel extends JPanel implements IContentPresente
 
 	private boolean sampleItemPerformance = false;
 
-	EventListenerEx<CancelTokenEventArgs<List<MediaItem>>> dataFetchedListener = new EventListenerEx<CancelTokenEventArgs<List<MediaItem>>>(){
+	transient private final EventListenerEx<CancelTokenEventArgs<List<MediaItem>>> dataFetchedListener = new EventListenerEx<CancelTokenEventArgs<List<MediaItem>>>(){
 		//
 		// As this event is fired by an async running thread, this method will therefore be async too.
 		//
@@ -185,12 +184,12 @@ public class PrimaryMediaBrowserPanel extends JPanel implements IContentPresente
 
 			filterPanel.setCurrentResultSet(medias);
 
+			// TODO: Refactor this debug hack
 			// for debug purposes make much more items
 			if(sampleItemPerformance)
 				medias = MediaDataCloner.crowdRandom(medias, 30);
 
 			browserModel.setData(medias);
-
 		}
 	};
 

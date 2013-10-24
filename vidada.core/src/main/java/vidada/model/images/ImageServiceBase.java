@@ -33,7 +33,7 @@ import archimedesJ.io.locations.DirectoiryLocation;
 public class ImageServiceBase implements IImageService {
 
 	transient private final ICredentialManager credentialManager =  ServiceProvider.Resolve(ICredentialManager.class);
-	transient private final ExecutorService executorService = Executors.newFixedThreadPool(2);
+	transient private final ExecutorService executorService = Executors.newFixedThreadPool(1);
 	transient private final Map<Long, Map<Size, ImageContainer>> imageContainerCache;
 	transient private final IImageCache localImageCache;
 

@@ -149,7 +149,7 @@ public class GlobalSettings extends JsonSettings {
 
 	public void setCurrentDBConfig(VidadaDatabase db){
 		currentDBConfig = db;
-		System.out.println("current db: " + currentDBConfig.getDataBasePath());
+		System.out.println("current db: " + currentDBConfig != null ? currentDBConfig.getDataBasePath() : "null");
 	}
 
 	public File getAbsoluteDBPath(){

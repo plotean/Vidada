@@ -128,6 +128,7 @@ public class ImageFileCache implements IImageCache {
 
 		IMemoryImage thumbnail = null;
 
+
 		ResourceLocation cachedPath = getFilePath(id, size);
 		if(cachedPath.exists())
 		{
@@ -137,6 +138,7 @@ public class ImageFileCache implements IImageCache {
 				System.err.println("Can not read image" + cachedPath);
 			}
 		}
+
 
 		return thumbnail;
 	}
