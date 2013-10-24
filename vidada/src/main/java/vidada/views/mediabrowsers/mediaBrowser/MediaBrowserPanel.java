@@ -86,10 +86,11 @@ public class MediaBrowserPanel extends MediaBrowserBasePanel {
 
 		overlayDecorator = new JThumbOverlayDecorator(viewPortRenderer);
 		registerOverlays(overlayDecorator);
+
 		JScrollPane mediaViewerScrollPane = new JScrollPane();	
 		mediaViewerScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		mediaViewerScrollPane.setViewportView(overlayDecorator);
-		mediaViewerScrollPane.getViewport().setScrollMode(JViewport.SIMPLE_SCROLL_MODE);
+		mediaViewerScrollPane.getViewport().setScrollMode(JViewport.BLIT_SCROLL_MODE);
 
 		add(mediaViewerScrollPane);
 
