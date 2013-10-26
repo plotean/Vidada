@@ -34,11 +34,10 @@ public class SessionManager {
 
 		if(objectContainer == null)
 		{
-			objectContainer = createEntityManager();
+			objectContainer = createObjectContainer();
 			printDBClasses(objectContainer);
 
 		}
-
 
 		return objectContainer;
 	}
@@ -59,13 +58,25 @@ public class SessionManager {
 	public static final int ACTIVATION_DEEPTH = 4;
 
 	/**
-	 * Creates a new entity manager
+	 * Creates a new object container for the default Vidada DB
 	 * @return
 	 * @throws DatabaseConnectionException
 	 */
-	public static ObjectContainer createEntityManager() throws DatabaseConnectionException{
-		//
-		File dbPath = null;
+	public static ObjectContainer createObjectContainer() throws DatabaseConnectionException{
+		File dbPath = GlobalSettings.getInstance().getAbsoluteDBPath();
+		return createObjectContainer(dbPath);
+	}
+
+
+
+	/**
+	 * Creates a new object container for the given db file.
+	 * If a file does not exists, a new DB will be generated there.
+	 * 
+	 * @return
+	 * @throws DatabaseConnectionException
+	 */
+	public static ObjectContainer createObjectContainer(final File dbPath) throws DatabaseConnectionException{
 
 		try{
 			EmbeddedConfiguration config = Db4oEmbedded.newConfiguration();
@@ -81,40 +92,10 @@ public class SessionManager {
 			config.common().objectClass(File.class).translate(new TFile());
 			config.common().objectClass(URI.class).translate(new TURI());
 
-			/*
-			// fix for db4o on Android
-			// Generally enums can not be stored: 
-			// TODO: (maybe we could even hack a generic converter...)
-			config.common().objectClass(java.lang.Enum.class).translate(new TLoggerProxy());
-			// Enums which shall be storeable must have a converter 
-			config.common().objectClass(MediaType.class).translate(new TEnumMediaType());
-
-
-			config.common().registerTypeHandler(new TypeHandlerPredicate() {
-
-				@Override
-				public boolean match(ReflectClass arg0) {
-					System.err.println("ReflectClass: " + arg0.getName());
-					return false;
-				}
-			}, new TypeHandler4() {
-				@Override
-				public void write(WriteContext writeCtx, Object arg1) { }
-
-				@Override
-				public void delete(DeleteContext delereCtx) throws Db4oIOException { }
-
-				@Override
-				public void defragment(DefragmentContext defragCtx) { }
-			});
-			 */
-
-
 			// generate world wide unique uuids for each stored object
 			// config.file().generateUUIDs(ConfigScope.GLOBALLY);
 
-
-			dbPath = GlobalSettings.getInstance().getAbsoluteDBPath();
+			// ensure that the path (folders) exist
 			File dbFolder = dbPath.getParentFile();
 			dbFolder.mkdirs();
 
@@ -130,10 +111,6 @@ public class SessionManager {
 					cause);
 		}
 	}
-
-
-
-
 
 
 

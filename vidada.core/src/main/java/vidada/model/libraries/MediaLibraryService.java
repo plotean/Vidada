@@ -41,10 +41,17 @@ public class MediaLibraryService implements IMediaLibraryService {
 	@Override
 	public List<MediaLibrary> getAllLibraries(){
 		ObjectContainer db =  SessionManager.getObjectContainer();
-		Query query = db.query();
-		query.constrain(MediaLibrary.class);
-		List<MediaLibrary> libs = query.execute();
-		return Lists.newList(libs);
+		{
+			Query query = db.query();
+			query.constrain(MediaLibrary.class);
+			List<MediaLibrary> libs = query.execute();
+
+			for (MediaLibrary mediaLibrary : libs) {
+				db.activate(mediaLibrary, 4);
+			}
+
+			return Lists.newList(libs);
+		}
 	}
 
 

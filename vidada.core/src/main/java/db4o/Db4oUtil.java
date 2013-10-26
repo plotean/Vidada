@@ -15,17 +15,17 @@ public class Db4oUtil {
 	 * @return
 	 */
 	public static <T> T getById(ObjectContainer db, long id){
-		T library;
+		T entity;
 
 		if(db == null)
 			throw new ArgumentNullException("db");
 		if(id > 0){
-			library = db.ext().getByID(id);
-			db.activate(library, SessionManager.ACTIVATION_DEEPTH);
+			entity = db.ext().getByID(id);
+			db.activate(entity, SessionManager.ACTIVATION_DEEPTH);
 		}else{
-			library = null;
+			entity = null;
 		}
-		return library;
+		return entity;
 	}
 
 	/*

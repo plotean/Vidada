@@ -1,28 +1,32 @@
 package vidada.viewsFX;
 
-import java.awt.EventQueue;
-
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Separator;
-import javafx.scene.control.ToolBar;
-import javafx.scene.effect.Glow;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
+import javafx.scene.control.TitledPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-import vidada.views.dialoges.ManageLibraryFoldersDialog;
-import vidada.viewsFX.ImageResources.IconType;
+import javafx.stage.WindowEvent;
+import vidada.model.ServiceProvider;
+import vidada.model.media.IMediaService;
+import vidada.viewsFX.mediabrowsers.MediaBrowserFX;
 import archimedesJ.util.OSValidator;
+
+import com.aquafx_project.AquaFx;
+import com.aquafx_project.controls.skin.styles.TabPaneType;
 
 
 public class MainFXContext extends Application {
 
 
 	public static void main(String[] args) {
+
 		OSValidator.setForceHDPI(true);
 		launch(args);
 	}
@@ -37,88 +41,69 @@ public class MainFXContext extends Application {
 
 		primaryStage.setTitle("Vidada 2014");
 
+
+		//AquaFx.style();
+
 		BorderPane contentPane = new BorderPane();
-		contentPane.setTop(createToolBar());
+		contentPane.setTop(new VidadaToolBar());
 		contentPane.setCenter(createMainContent());
 
 		StackPane root = new StackPane();
 		root.getChildren().add(contentPane);
 		primaryStage.setScene(new Scene(root, 300, 250));
+
+		primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+
+			@Override
+			public void handle(WindowEvent we) {
+
+				//SessionManager.getObjectContainer().close();
+
+			}
+		});
 		primaryStage.show();
+	}
+
+
+	@Override
+	public void stop(){
+		System.out.println("MainFXContext.stop(): bye bye");
+		Platform.exit();
+		System.exit(0);
 	}
 
 	private Node createMainContent(){	
 
-		BorderPane contentPane = new BorderPane();
+		TabPane mainTab = new TabPane();
 
-		return contentPane;
+		Tab browserTab = new Tab("Browser");
+		Tab fileBrowserTab = new Tab("File Browser");
+		browserTab.setClosable(false);
+		fileBrowserTab.setClosable(false);
+		mainTab.getTabs().add(browserTab);
+		mainTab.getTabs().add(fileBrowserTab);
+
+
+		MediaBrowserFX contentPane = new MediaBrowserFX();
+		browserTab.setContent(contentPane);
+
+
+		contentPane.setDataContext(ServiceProvider.Resolve(IMediaService.class).getAllMediaData());
+
+		TitledPane filterPane = new TitledPane("Filter", new Button("Button"));
+		contentPane.setTop(filterPane);
+
+
+
+		AquaFx.createTabPaneStyler().setType(TabPaneType.REGULAR).style(mainTab);
+		return mainTab;
 	}
 
 
-	private static final String Style_ToolBar_Background = "-fx-background-color: #505050;";
 
 
-	private ToolBar createToolBar(){
 
-		ToolBar toolBar = new ToolBar(
-				createToolBarButton(IconType.FOLDER_ICON_32, new Runnable() {
 
-					@Override
-					public void run() {
-						//JFrame parentFrame = (JFrame)getTopLevelAncestor();
-
-						EventQueue.invokeLater(new Runnable() {
-							@Override
-							public void run() {
-
-								ManageLibraryFoldersDialog libDialog = new ManageLibraryFoldersDialog(null);
-								libDialog.setLocationRelativeTo(null);
-								libDialog.setVisible(true);
-							}
-						});
-					}
-				}),
-				createToolBarButton(IconType.UPDATELIB_ICON_32,null),
-				createToolBarButton(IconType.TAG_ICON_32,null),
-				new Separator(),
-				createToolBarButton(IconType.SETTINGS_ICON_32,null)
-
-				);
-
-		toolBar.setStyle(Style_ToolBar_Background);
-
-		return toolBar;
-	}
-
-	private Button createToolBarButton(IconType icon, final Runnable action){
-		final Button btn = new Button("", ImageResources.getImageView(icon));
-
-		btn.setOnMouseEntered(new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent me) {
-				btn.setEffect(new Glow(0.5));
-			}	
-		});
-
-		btn.setOnMouseExited(new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent me) {
-				btn.setEffect(null);
-			}	
-		});
-
-		if(action != null){
-			btn.setOnMouseClicked(new EventHandler<MouseEvent>() {
-				@Override
-				public void handle(MouseEvent me) {
-					action.run();	
-				}
-			});
-		}
-
-		btn.setStyle(Style_ToolBar_Background);
-		return btn;
-	}
 
 
 

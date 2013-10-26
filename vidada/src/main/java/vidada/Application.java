@@ -13,7 +13,7 @@ import vidada.commands.UpdateMediaLibraryAction;
 import vidada.data.DatabaseConnectionException;
 import vidada.data.DefaultDataCreator;
 import vidada.data.SessionManager;
-import vidada.images.RawImageFactoryAwt;
+import vidada.images.RawImageFactoryFx;
 import vidada.model.ServiceProvider;
 import vidada.model.ServiceProvider.IServiceRegisterer;
 import vidada.model.images.RawImageFactory;
@@ -104,6 +104,13 @@ public class Application {
 		if(initialize()){
 			System.out.println("initalized successfully.");
 			afterStartup();
+
+			// Show MainFrame
+
+			//mainUIContext.showMainUI();
+			MainFXContext cgtx = new MainFXContext();
+			cgtx.showMainUI();
+
 		}else
 			System.exit(-1);
 	}
@@ -172,7 +179,7 @@ public class Application {
 			@Override
 			public void registerServices(ServiceLocator locator) {
 				locator.registerSingleton(ISystemService.class, SystemService.class);
-				locator.registerSingleton(RawImageFactory.class, RawImageFactoryAwt.class);
+				locator.registerSingleton(RawImageFactory.class, RawImageFactoryFx.class);
 
 				ICredentialManager credentialManager = locator.resolve(ICredentialManager.class);
 				credentialManager.register(authProvider);
@@ -246,12 +253,6 @@ public class Application {
 			{
 
 				mainUIContext.hideSplash();
-
-				// Show MainFrame
-
-				//mainUIContext.showMainUI();
-				MainFXContext cgtx = new MainFXContext();
-				cgtx.showMainUI();
 
 
 				return true;

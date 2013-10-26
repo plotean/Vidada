@@ -26,6 +26,7 @@ import archimedesJ.util.FileSupport;
 import archimedesJ.util.Lists;
 
 import com.db4o.ObjectContainer;
+import com.db4o.query.Query;
 
 /**
  * Represents an MediaLibrary
@@ -51,7 +52,10 @@ public class MediaLibrary extends BaseEntity {
 	/**
 	 * 
 	 */
-	public MediaLibrary(){	}
+	public MediaLibrary(){	
+
+		System.err.println("media lib constructor :) ");
+	}
 
 
 	@Transient
@@ -112,14 +116,34 @@ public class MediaLibrary extends BaseEntity {
 	private LibraryEntry getCurrentEntry(){
 		if(currentEntry == null){
 			User current = User.current();
+
+			printAllEntrys();
+
+			System.out.println("searching LibraryEntry for user: " + current);
 			for (LibraryEntry entry : getLibraryEntries()) {
+				System.out.println(entry);
 				if(current.equals(entry.getUser())){
 					currentEntry =  entry;
+					System.out.println("^-- Matching Entry! --");
 					break;
 				}
 			}
 		}
 		return currentEntry;
+	}
+
+	private void printAllEntrys(){
+
+		System.out.println("All entries:");
+		ObjectContainer db = SessionManager.getObjectContainer();
+
+		Query query = db.query();
+		query.constrain(LibraryEntry.class);
+		List<LibraryEntry> entries = query.execute();
+
+		for (LibraryEntry entry : entries) {
+			System.out.println(entry.toString());
+		}
 	}
 
 	/**
@@ -348,12 +372,14 @@ public class MediaLibrary extends BaseEntity {
 		if(entry == null)
 		{
 			ObjectContainer db = SessionManager.getObjectContainer();
-
-			User user = User.current();
-			entry = new LibraryEntry(this, user, null);
-			db.store(entry);
-			this.addEntry(entry);
-			db.store(this);
+			{
+				User user = User.current();
+				entry = new LibraryEntry(this, user, null);
+				db.store(entry);
+				this.addEntry(entry);
+				db.store(this);
+			}
+			db.commit();
 		}
 
 		return entry;
