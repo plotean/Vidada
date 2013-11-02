@@ -112,6 +112,7 @@ public class QueryBuilder {
 
 		// Ordering
 
+		selectedOrder = selectedOrder == null ? OrderProperty.FILENAME : selectedOrder;
 		if(reverseOrder){
 			if(OrderProperty.FILENAME != selectedOrder)
 			{
