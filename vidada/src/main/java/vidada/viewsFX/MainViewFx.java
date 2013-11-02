@@ -6,23 +6,46 @@ import javafx.scene.control.TabPane;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.BorderPane;
 import vidada.controller.filters.MediaFilterController;
-import vidada.model.media.MediaBrowserModel;
+import vidada.model.ServiceProvider;
+import vidada.model.browser.FilterModel;
+import vidada.model.browser.MediaBrowserModel;
+import vidada.model.browser.TagServiceModelBinding;
+import vidada.model.tags.ITagService;
 import vidada.viewsFX.filters.FilterViewFx;
 import vidada.viewsFX.mediabrowsers.MediaBrowserFX;
 
 import com.aquafx_project.AquaFx;
 import com.aquafx_project.controls.skin.styles.TabPaneType;
 
+/**
+ * Represents the main view
+ * @author IsNull
+ *
+ */
 public class MainViewFx extends BorderPane {
 
+	private final FilterModel filterModel;
+	private final MediaBrowserModel browserModel;
+
+
+	private MediaFilterController filterController;
+
+
 	public MainViewFx(){
+
+		// TODO refactor this out into main-context-model
+		browserModel = new MediaBrowserModel();
+		ITagService tagService = ServiceProvider.Resolve(ITagService.class);
+		TagServiceModelBinding.bind(tagService, browserModel.getTagStatesModel());
+		filterModel = new FilterModel(browserModel.getTagStatesModel());
+
+		filterController = new MediaFilterController(filterModel, browserModel);
+
+		// create the view
 		this.setTop(new VidadaToolBar());
 		this.setCenter(createMainContent());
 	}
 
-	MediaBrowserModel browserModel = new MediaBrowserModel();
-
-	MediaFilterController filterController;
 
 	private Node createMainContent(){	
 
@@ -42,12 +65,13 @@ public class MainViewFx extends BorderPane {
 		// TODO: Controller?
 		mediaBrowserFX.setDataContext(browserModel);
 
-		FilterViewFx filterView = new FilterViewFx();
+
+		FilterViewFx filterView = new FilterViewFx(filterModel);
 
 
 		TitledPane filterPane = new TitledPane("Filter", filterView);
 		mediaBrowserFX.setTop(filterPane);
-		filterController = new MediaFilterController(filterView, browserModel);
+
 
 		AquaFx.createTabPaneStyler().setType(TabPaneType.REGULAR).style(mainTab);
 		return mainTab;

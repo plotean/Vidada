@@ -1,11 +1,7 @@
 package vidada.controller.filters;
 
-import java.util.List;
-
 import vidada.model.media.MediaType;
 import vidada.model.media.OrderProperty;
-import vidada.model.tags.Tag;
-import vidada.model.tags.TagFilterState;
 import archimedesJ.events.EventArgs;
 import archimedesJ.events.IEvent;
 
@@ -29,13 +25,6 @@ public interface IFilterView {
 	 * @return
 	 */
 	MediaType getSelectedMediaType();
-
-	/**
-	 * Returns all tags with the given state
-	 * @param checked
-	 * @return
-	 */
-	List<Tag> getTagsWithState(TagFilterState state);
 
 	/**
 	 * Returns the selected order

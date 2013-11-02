@@ -4,11 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import vidada.model.ServiceProvider;
+import vidada.model.browser.FilterModel;
+import vidada.model.browser.MediaBrowserModel;
 import vidada.model.filters.AsyncFetchData;
 import vidada.model.filters.AsyncFetchData.CancelTokenEventArgs;
 import vidada.model.libraries.IMediaLibraryService;
 import vidada.model.libraries.MediaLibrary;
-import vidada.model.media.MediaBrowserModel;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaType;
 import vidada.model.media.OrderProperty;
@@ -25,17 +26,17 @@ import com.db4o.query.Query;
 
 public class MediaFilterController {
 
-	private final IFilterView view;
+	private final FilterModel filterModel;
 	private final MediaBrowserModel mediaBrowserModel;
 
 	private final IMediaLibraryService mediaLibraryService = ServiceProvider.Resolve(IMediaLibraryService.class);
 	private final QueryBuilder queryBuilder = new QueryBuilder();
 
-	public MediaFilterController(IFilterView view, MediaBrowserModel mediaBrowserModel){
-		this.view = view;
+	public MediaFilterController(FilterModel filterModel, MediaBrowserModel mediaBrowserModel){
+		this.filterModel = filterModel;
 		this.mediaBrowserModel = mediaBrowserModel;
 
-		view.getFilterChangedEvent().add(new EventListenerEx<EventArgs>() {
+		filterModel.getFilterChangedEvent().add(new EventListenerEx<EventArgs>() {
 			@Override
 			public void eventOccured(Object sender, EventArgs eventArgs) {
 				updateMediaBrowserModel();
@@ -105,16 +106,17 @@ public class MediaFilterController {
 	 */
 	private Query buildCriteria(){
 
-		MediaType selectedtype = (MediaType)view.getSelectedMediaType();
-		List<Tag> requiredTags = view.getTagsWithState(TagFilterState.Required);
-		OrderProperty selectedOrder = (OrderProperty)view.getSelectedOrder();
-		List<MediaLibrary> requiredMediaLibs = new ArrayList<MediaLibrary>();
-		boolean reverse = view.isReverseOrder();
-		boolean onlyAvaiable = view.isOnlyShowAvaiable();
-		String queryString = view.getQueryString();
+		List<Tag> requiredTags = mediaBrowserModel.getTagStatesModel()
+				.getTagsWithState(TagFilterState.Required);
+
+		MediaType selectedtype = (MediaType)filterModel.getMediaType();
+		OrderProperty selectedOrder = (OrderProperty)filterModel.getOrder();
+		List<MediaLibrary> requiredMediaLibs = mediaLibraryService.getAllLibraries();
+		boolean reverse = filterModel.isReverse();
+		boolean onlyAvaiable = filterModel.isOnlyAvaiable();
+		String queryString = filterModel.getQueryString();
 
 
-		requiredMediaLibs = mediaLibraryService.getAllLibraries();
 		if(onlyAvaiable)
 		{
 			for (MediaLibrary mediaLibrary : new ArrayList<MediaLibrary>(requiredMediaLibs)) {
@@ -138,7 +140,7 @@ public class MediaFilterController {
 
 	private Predicate<MediaItem> getPostFilter(){
 
-		boolean onlyAvaiable = view.isOnlyShowAvaiable();
+		boolean onlyAvaiable = filterModel.isOnlyAvaiable();
 
 		if(onlyAvaiable){
 

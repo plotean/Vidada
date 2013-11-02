@@ -11,7 +11,7 @@ import javafx.util.Callback;
 import org.controlsfx.control.GridCell;
 import org.controlsfx.control.GridView;
 
-import vidada.model.media.MediaBrowserModel;
+import vidada.model.browser.MediaBrowserModel;
 import vidada.model.media.MediaItem;
 import archimedesJ.data.events.CollectionEventArg;
 import archimedesJ.events.EventListenerEx;

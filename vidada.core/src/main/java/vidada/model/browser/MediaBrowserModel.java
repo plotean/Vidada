@@ -1,8 +1,9 @@
-package vidada.model.media;
+package vidada.model.browser;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import vidada.model.media.MediaItem;
 import archimedesJ.data.events.CollectionEventArg;
 import archimedesJ.events.EventHandlerEx;
 import archimedesJ.events.IEvent;
@@ -12,7 +13,10 @@ import archimedesJ.events.IEvent;
 public class MediaBrowserModel {
 
 	private final List<MediaItem> medias = new ArrayList<MediaItem>();
-
+	private final TagStatesModel tagStatesModel = new TagStatesModel();
+	//
+	// Events
+	//
 	private final EventHandlerEx<CollectionEventArg<MediaItem>> mediasChangedEvent = new EventHandlerEx<CollectionEventArg<MediaItem>>();
 	/**
 	 * Raised when the media model has changed
@@ -22,6 +26,10 @@ public class MediaBrowserModel {
 
 	public MediaBrowserModel(){
 
+	}
+
+	public TagStatesModel getTagStatesModel(){
+		return tagStatesModel;
 	}
 
 	public void clear() {
