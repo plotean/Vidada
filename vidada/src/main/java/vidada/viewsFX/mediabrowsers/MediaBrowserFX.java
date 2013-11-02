@@ -78,14 +78,14 @@ public class MediaBrowserFX extends BorderPane {
 		}
 	};
 
-	private void updateView(){
+	private synchronized void updateView(){
 
 		System.out.println("MediaBrowserFX:updateView!");
 
 		observableMedias.clear();
 
 		if(mediaModel != null){
-			System.out.println("items: " + mediaModel.size());
+			System.out.println("MediaBrowserFX:updateView items: " + mediaModel.size());
 
 			if(!mediaModel.isEmpty()){
 				observableMedias.addAll(mediaModel.getRaw());
