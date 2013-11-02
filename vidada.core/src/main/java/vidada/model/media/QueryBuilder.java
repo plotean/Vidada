@@ -89,7 +89,7 @@ public class QueryBuilder {
 
 
 		// Query for search field
-		if(!query.isEmpty()){
+		if(query != null && !query.isEmpty()){
 			// We match the query against the media name, tags etc.
 
 			// Predicate for matching the input with the filename

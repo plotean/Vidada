@@ -52,6 +52,15 @@
 		</resources>
 		
 		<plugins>
+		    
+		  <plugin>
+	        <artifactId>maven-compiler-plugin</artifactId>
+	        <version>2.3.2</version>
+	        <configuration>
+	          <source>1.8</source>
+	          <target>1.8</target>
+	        </configuration>
+	      </plugin>
 		
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -97,7 +106,7 @@
 			     <version>1.0-alpha-1</version>
 			     <configuration>
 			         <mainClass>vidada.Application</mainClass>
-			         <jvmVersion>1.7+</jvmVersion>
+			         <jvmVersion>1.8+</jvmVersion>
 			         <iconFile>${basedir}/src/main/resources/images/logo.icns</iconFile>
 			         <javaApplicationStub>JavaApplicationStub</javaApplicationStub>
 			         <!-- 

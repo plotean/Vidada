@@ -29,7 +29,7 @@ import vidada.model.system.ISystemService;
 import vidada.views.SwingMainContext;
 import vidada.views.dialoges.AuthenticateDialog;
 import vidada.views.dialoges.ChooseMediaDatabase;
-import vidada.viewsFX.MainFXContext;
+import vidada.viewsFX.ApplicationFX;
 import archimedesJ.security.CredentialType;
 import archimedesJ.security.Credentials;
 import archimedesJ.services.ServiceLocator;
@@ -108,7 +108,7 @@ public class Application {
 			// Show MainFrame
 
 			//mainUIContext.showMainUI();
-			MainFXContext cgtx = new MainFXContext();
+			ApplicationFX cgtx = new ApplicationFX();
 			cgtx.showMainUI();
 
 		}else

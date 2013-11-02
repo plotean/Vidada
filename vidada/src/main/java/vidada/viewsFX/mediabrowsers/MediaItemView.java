@@ -1,5 +1,7 @@
 package vidada.viewsFX.mediabrowsers;
 
+import java.io.File;
+
 import javafx.animation.FadeTransition;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -14,14 +16,27 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
 
+import javax.swing.JDialog;
+import javax.swing.JOptionPane;
+
 import org.controlsfx.control.Rating;
 
 import vidada.model.media.MediaItem;
+import vidada.model.media.images.ImageMediaItem;
+import vidada.views.mediabrowsers.imageviewer.ImageViewerDialog;
 import vidada.viewsFX.util.AsyncImageProperty;
 import archimedesJ.geometry.Size;
 import archimedesJ.images.ImageContainer;
+import archimedesJ.swing.components.imageviewer.FileSmartImage;
+import archimedesJ.swing.components.imageviewer.StaticImageProvider;
+import archimedesJ.util.FileSupport;
 
-public class MediaItemPanel extends StackPane {
+/**
+ * View of a single media item in the MediaBrowser
+ * @author IsNull
+ *
+ */
+public class MediaItemView extends StackPane {
 
 	private final ImageView primaryContent;
 	private final AsyncImageProperty imageProperty = new AsyncImageProperty();
@@ -32,7 +47,7 @@ public class MediaItemPanel extends StackPane {
 	private Size thumbSize = new Size(200, 140);
 	private MediaItem media = null;
 
-	public MediaItemPanel(){ 
+	public MediaItemView(){ 
 
 		this.setAlignment(Pos.TOP_LEFT);
 
@@ -98,16 +113,31 @@ public class MediaItemPanel extends StackPane {
 			@Override
 			public void handle(MouseEvent me) {
 				if(me.getClickCount() == 2){
+					onMediaDefaultAction();
 
 
-
-					System.out.println("double clicked on " + media);
+					//System.out.println("double clicked on " + media);
 				}
 
 			}});
 	}
 
 	static 	String imageUrl = "file:/Users/IsNull/Pictures/Girls/vidada.thumbs/scaled/400_280/4bc76107e6554df84d1b9c998a3d4efb.png";
+
+	private void onMediaDefaultAction(){
+		if(media instanceof ImageMediaItem){
+
+			JDialog viewerDialog = new ImageViewerDialog(new StaticImageProvider(new FileSmartImage(new File(media.getSource().getPath()))));
+			viewerDialog.setVisible(true);
+		}else{
+			// default OS action
+			if(!media.open()){
+				JOptionPane.showMessageDialog(null, "The file " + media.getTitle() + 
+						" could not be opened!" + FileSupport.NEWLINE + media.getSource() ,
+						"File not found!",JOptionPane.ERROR_MESSAGE );
+			}
+		}
+	}
 
 
 

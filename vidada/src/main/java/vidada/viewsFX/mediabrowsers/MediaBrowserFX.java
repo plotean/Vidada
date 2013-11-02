@@ -2,7 +2,6 @@ package vidada.viewsFX.mediabrowsers;
 
 
 import java.util.ArrayList;
-import java.util.List;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -12,10 +11,15 @@ import javafx.util.Callback;
 import org.controlsfx.control.GridCell;
 import org.controlsfx.control.GridView;
 
+import vidada.model.media.MediaBrowserModel;
 import vidada.model.media.MediaItem;
+import archimedesJ.data.events.CollectionEventArg;
+import archimedesJ.events.EventListenerEx;
 
 
 public class MediaBrowserFX extends BorderPane {
+
+	private MediaBrowserModel mediaModel;
 
 	private GridView<MediaItem> gridView;
 	transient private final ObservableList<MediaItem> observableMedias;
@@ -53,23 +57,49 @@ public class MediaBrowserFX extends BorderPane {
 		gridView.setCellHeight(height);
 	}
 
-	public void setDataContext(List<MediaItem> items){
-		System.out.println("items: " + items.size());
+	public void setDataContext(MediaBrowserModel mediaModel){
+
+		if(this.mediaModel != null)
+			this.mediaModel.getMediasChangedEvent().remove(mediasChangedEventListener);
+
+		this.mediaModel = mediaModel;
+		this.mediaModel.getMediasChangedEvent().add(mediasChangedEventListener);
+
+		updateView();
+	}
+
+
+	transient private EventListenerEx<CollectionEventArg<MediaItem>> mediasChangedEventListener 
+	= new EventListenerEx<CollectionEventArg<MediaItem>>() {
+		@Override
+		public void eventOccured(Object sender,
+				CollectionEventArg<MediaItem> eventArgs) {
+			updateView();
+		}
+	};
+
+	private void updateView(){
+
+		System.out.println("MediaBrowserFX:updateView!");
 
 		observableMedias.clear();
-		if(items != null && !items.isEmpty()){
-			observableMedias.addAll(items);
+
+		if(mediaModel != null){
+			System.out.println("items: " + mediaModel.size());
+
+			if(!mediaModel.isEmpty()){
+				observableMedias.addAll(mediaModel.getRaw());
+			}
 		}
 	}
 
 	static class MediaGridItemCell extends GridCell<MediaItem> {
 
-		private final MediaItemPanel visual = new MediaItemPanel();
+		private final MediaItemView visual = new MediaItemView();
 
 		public MediaGridItemCell(){
 			setGraphic(visual);
 		}
-
 
 		@Override
 		public void updateItem(MediaItem item, boolean empty) {

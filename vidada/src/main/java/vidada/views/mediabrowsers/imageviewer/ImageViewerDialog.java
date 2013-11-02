@@ -6,6 +6,7 @@ import java.awt.GraphicsEnvironment;
 
 import javax.swing.JDialog;
 
+import archimedesJ.swing.components.imageviewer.IImageProvider;
 import archimedesJ.swing.components.imageviewer.SmartImageViewer;
 import archimedesJ.swing.components.thumbpresenter.JThumbInteractionController;
 
@@ -14,17 +15,17 @@ public class ImageViewerDialog extends JDialog {
 
 	private SmartImageViewer smartImageViewer;
 
-
 	public ImageViewerDialog(JThumbInteractionController thumbInteractionController){
+		this(new VidadaImageProvider(thumbInteractionController));
+	}
 
-		
+	public ImageViewerDialog(IImageProvider imageProvider){
 		setBackground(Color.DARK_GRAY);
 
 		this.setModalityType(ModalityType.APPLICATION_MODAL);
 
-		VidadaImageProvider vidadaImageProvider = new VidadaImageProvider(thumbInteractionController);
 		smartImageViewer = new SmartImageViewer();
-		smartImageViewer.setDataContext(vidadaImageProvider);
+		smartImageViewer.setDataContext(imageProvider);
 		smartImageViewer.setBackground(Color.DARK_GRAY);
 
 		this.add(smartImageViewer);

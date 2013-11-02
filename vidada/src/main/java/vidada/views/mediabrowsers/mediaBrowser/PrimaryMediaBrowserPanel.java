@@ -12,12 +12,12 @@ import javax.swing.JPanel;
 
 import vidada.mock.MediaDataCloner;
 import vidada.model.ServiceProvider;
+import vidada.model.filters.AsyncFetchData;
+import vidada.model.filters.AsyncFetchData.CancelTokenEventArgs;
 import vidada.model.media.IMediaService;
 import vidada.model.media.MediaItem;
 import vidada.views.IContentPresenter;
 import vidada.views.mediabrowsers.MediaBrowserContainer;
-import vidada.views.mediabrowsers.mediaBrowser.filter.AsyncFetchData;
-import vidada.views.mediabrowsers.mediaBrowser.filter.AsyncFetchData.CancelTokenEventArgs;
 import vidada.views.mediabrowsers.mediaBrowser.filter.IFilterProvider;
 import vidada.views.mediabrowsers.mediaBrowser.filter.MediaFilterExpandabel;
 import archimedesJ.events.EventArgs;
