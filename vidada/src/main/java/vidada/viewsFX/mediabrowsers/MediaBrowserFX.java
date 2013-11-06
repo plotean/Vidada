@@ -2,7 +2,9 @@ package vidada.viewsFX.mediabrowsers;
 
 
 import java.util.ArrayList;
+import java.util.List;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.layout.BorderPane;
@@ -35,6 +37,8 @@ public class MediaBrowserFX extends BorderPane {
 
 		gridView.setStyle("-fx-background-color: #FFFFFF;");
 
+		gridView.getStylesheets().add("css/default_media_cell.css");
+
 		gridView.setCellFactory(new Callback<GridView<MediaItem>, GridCell<MediaItem>>() {
 			@Override
 			public GridCell<MediaItem> call(GridView<MediaItem> arg0) {
@@ -44,7 +48,11 @@ public class MediaBrowserFX extends BorderPane {
 			}
 		});
 
+
 		setItemSize(200, 140);
+
+		//setItemSize(200, 240);
+		//setItemSize(300, 300);
 
 		gridView.setItems(observableMedias);
 
@@ -55,6 +63,7 @@ public class MediaBrowserFX extends BorderPane {
 	public void setItemSize(double width, double height){
 		gridView.setCellWidth(width);
 		gridView.setCellHeight(height);
+
 	}
 
 	public void setDataContext(MediaBrowserModel mediaModel){
@@ -79,23 +88,33 @@ public class MediaBrowserFX extends BorderPane {
 	};
 
 	private synchronized void updateView(){
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
 
-		System.out.println("MediaBrowserFX:updateView!");
+				observableMedias.clear();
 
-		observableMedias.clear();
+				if(mediaModel != null){
 
-		if(mediaModel != null){
-			System.out.println("MediaBrowserFX:updateView items: " + mediaModel.size());
+					final List<MediaItem> items = mediaModel.getRaw();
+					System.out.println("MediaBrowserFX:updateView items: " + items.size() + " empty?" + items.isEmpty());
 
-			if(!mediaModel.isEmpty()){
-				observableMedias.addAll(mediaModel.getRaw());
+					if(!items.isEmpty()){
+						observableMedias.addAll(items);
+					}
+
+				}else {
+					System.out.println("medias empty");
+				}
 			}
-		}
+		});
 	}
 
-	static class MediaGridItemCell extends GridCell<MediaItem> {
+	class MediaGridItemCell extends GridCell<MediaItem> {
 
-		private final MediaItemView visual = new MediaItemView();
+		private final MediaItemView visual = new MediaItemView(
+				gridView.cellWidthProperty(),
+				gridView.cellHeightProperty());
 
 		public MediaGridItemCell(){
 			setGraphic(visual);

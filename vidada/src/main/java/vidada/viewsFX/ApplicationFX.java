@@ -34,7 +34,7 @@ public class ApplicationFX extends Application {
 
 			StackPane root = new StackPane();
 			root.getChildren().add(contentPane);
-			primaryStage.setScene(new Scene(root, 300, 250));
+			primaryStage.setScene(new Scene(root, 600, 450));
 			primaryStage.show();
 
 		}catch(Exception e){

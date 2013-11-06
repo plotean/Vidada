@@ -1,6 +1,5 @@
 package vidada.model.media;
 
-import java.awt.event.MouseEvent;
 import java.beans.Transient;
 import java.net.URI;
 import java.util.HashSet;
@@ -22,7 +21,7 @@ import archimedesJ.events.EventHandlerEx;
 import archimedesJ.events.IEvent;
 import archimedesJ.geometry.Size;
 import archimedesJ.images.ImageContainer;
-import archimedesJ.swing.components.thumbpresenter.items.IMediaDataThumb;
+import archimedesJ.swing.components.thumbpresenter.model.IMediaDataProvider;
 import archimedesJ.util.Lists;
 
 import com.db4o.config.annotations.Indexed;
@@ -33,7 +32,7 @@ import com.db4o.config.annotations.Indexed;
  * @author IsNull
  * 
  */
-public abstract class MediaItem extends BaseEntity implements IMediaDataThumb, IHaveMediaData {
+public abstract class MediaItem extends BaseEntity implements IMediaDataProvider, IHaveMediaData {
 
 	transient protected final IImageService imageService = ServiceProvider.Resolve(IImageService.class);
 
@@ -544,59 +543,5 @@ public abstract class MediaItem extends BaseEntity implements IMediaDataThumb, I
 	public MediaItem getMediaData() {
 		return this;
 	}
-
-	//
-	// IBaseThumb - a bit hacky to handle the view stuff here but yeah,
-	// we can avoid a mapping between the MediaData model and the thumb media
-	// item this way.
-	//
-	//
-
-	private transient boolean isSelected;
-	private transient boolean isHovered;
-
-	@Transient
-	@Override
-	public boolean isSelected() {
-		return isSelected;
-	}
-
-	@Transient
-	@Override
-	public void setSelection(boolean selection) {
-		isSelected = selection;
-	}
-
-	@Transient
-	@Override
-	public boolean isHovered() {
-		return isHovered;
-	}
-
-	@Transient
-	@Override
-	public void onMouseEnter(MouseEvent e) {
-		isHovered = true;
-	}
-
-	@Transient
-	@Override
-	public void onMouseLeave(MouseEvent e) {
-		isHovered = false;
-	}
-
-	@Transient
-	@Override
-	public void mouseClicked(MouseEvent e) {
-
-	}
-
-	@Transient
-	@Override
-	public Integer getIdentifier(){
-		return getFilehash().hashCode();
-	}
-
-
 
 }

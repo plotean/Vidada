@@ -106,7 +106,7 @@ public class DirectPlayOverlayComponent extends AbstractThumbOverlay {
 
 				if (thumbitem instanceof IHaveMediaData) {
 					MediaItem media = ((IHaveMediaData) thumbitem).getMediaData();
-					itemRenderer.drawVideoInformation(g, g.getClipBounds(), media, colorStaticBkgrd);
+					//itemRenderer.drawVideoInformation(g, g.getClipBounds(), media, colorStaticBkgrd);
 				}
 			}
 		});
@@ -158,7 +158,7 @@ public class DirectPlayOverlayComponent extends AbstractThumbOverlay {
 								SwingUtilities.invokeLater(new Runnable() {
 									@Override
 									public void run() {
-										viewPortRenderer.onItemChanged(currentPlayedMedia); // TODO Refactor
+										//viewPortRenderer.onItemChanged(currentPlayedMedia); // TODO Refactor
 										// invoke
 										// changed
 										// data

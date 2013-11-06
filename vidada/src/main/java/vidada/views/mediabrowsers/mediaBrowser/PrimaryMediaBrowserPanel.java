@@ -189,7 +189,7 @@ public class PrimaryMediaBrowserPanel extends JPanel implements IContentPresente
 			if(sampleItemPerformance)
 				medias = MediaDataCloner.crowdRandom(medias, 30);
 
-			browserModel.setData(medias);
+			//browserModel.setData(medias);
 		}
 	};
 

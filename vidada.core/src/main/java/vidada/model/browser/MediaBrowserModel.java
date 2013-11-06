@@ -7,13 +7,18 @@ import vidada.model.media.MediaItem;
 import archimedesJ.data.events.CollectionEventArg;
 import archimedesJ.events.EventHandlerEx;
 import archimedesJ.events.IEvent;
+import archimedesJ.services.ISelectionManager;
+import archimedesJ.services.SelectionManager;
 
 
 
 public class MediaBrowserModel {
 
+	private final ISelectionManager<MediaItem> selectionManager = new SelectionManager<MediaItem>();
 	private final List<MediaItem> medias = new ArrayList<MediaItem>();
 	private final TagStatesModel tagStatesModel = new TagStatesModel();
+
+
 	//
 	// Events
 	//
@@ -71,6 +76,14 @@ public class MediaBrowserModel {
 	 */
 	public List<MediaItem> getRaw() {
 		return medias;
+	}
+
+	/**
+	 * Gets the selection manager
+	 * @return
+	 */
+	public ISelectionManager<MediaItem> getSelectionManager() {
+		return selectionManager;
 	}
 
 
