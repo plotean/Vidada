@@ -10,7 +10,6 @@ import java.util.Map;
 
 import javax.swing.tree.TreeNode;
 
-import vidada.images.MemoryImageAwt;
 import vidada.model.settings.GlobalSettings;
 import archimedesJ.data.ObservableBean;
 import archimedesJ.expressions.Predicate;
@@ -20,6 +19,7 @@ import archimedesJ.images.StaticImageContainer;
 import archimedesJ.swing.components.thumbexplorer.model.locations.ThumbDirectoryNode;
 import archimedesJ.swing.components.thumbexplorer.model.locations.ThumbLocationNode;
 import archimedesJ.swing.components.thumbpresenter.model.IMediaDataProvider;
+import archimedesJ.swing.images.MemoryImageAwt;
 import archimedesJ.threading.TaskResult;
 import archimedesJ.util.Lists;
 import archimedesJ.util.OSValidator;

@@ -16,7 +16,6 @@ import vidada.data.SessionManager;
 import vidada.images.RawImageFactoryFx;
 import vidada.model.ServiceProvider;
 import vidada.model.ServiceProvider.IServiceRegisterer;
-import vidada.model.images.RawImageFactory;
 import vidada.model.libraries.IMediaLibraryService;
 import vidada.model.security.ICredentialManager;
 import vidada.model.security.ICredentialManager.CredentialsChecker;
@@ -30,6 +29,9 @@ import vidada.views.SwingMainContext;
 import vidada.views.dialoges.AuthenticateDialog;
 import vidada.views.dialoges.ChooseMediaDatabase;
 import vidada.viewsFX.ApplicationFX;
+import vidada.viewsFX.images.ImageViewerServiceFx;
+import archimedesJ.images.IRawImageFactory;
+import archimedesJ.images.viewer.IImageViewerService;
 import archimedesJ.security.CredentialType;
 import archimedesJ.security.Credentials;
 import archimedesJ.services.ServiceLocator;
@@ -179,7 +181,9 @@ public class Application {
 			@Override
 			public void registerServices(ServiceLocator locator) {
 				locator.registerSingleton(ISystemService.class, SystemService.class);
-				locator.registerSingleton(RawImageFactory.class, RawImageFactoryFx.class);
+				locator.registerSingleton(IRawImageFactory.class, RawImageFactoryFx.class);
+				locator.registerSingleton(IImageViewerService.class, ImageViewerServiceFx.class);
+
 
 				ICredentialManager credentialManager = locator.resolve(ICredentialManager.class);
 				credentialManager.register(authProvider);

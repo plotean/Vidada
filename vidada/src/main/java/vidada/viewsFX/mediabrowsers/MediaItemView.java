@@ -1,6 +1,7 @@
 package vidada.viewsFX.mediabrowsers;
 
-import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import javafx.beans.property.DoubleProperty;
 import javafx.event.EventHandler;
@@ -12,19 +13,20 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 
-import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
 import org.controlsfx.control.Rating;
 
+import vidada.model.ServiceProvider;
 import vidada.model.media.MediaItem;
 import vidada.model.media.images.ImageMediaItem;
-import vidada.views.mediabrowsers.imageviewer.ImageViewerDialog;
 import vidada.viewsFX.util.AsyncImageProperty;
 import archimedesJ.geometry.Size;
+import archimedesJ.images.IRawImageFactory;
 import archimedesJ.images.ImageContainer;
-import archimedesJ.swing.components.imageviewer.FileSmartImage;
-import archimedesJ.swing.components.imageviewer.StaticImageProvider;
+import archimedesJ.images.viewer.IImageViewerService;
+import archimedesJ.images.viewer.ISmartImage;
+import archimedesJ.images.viewer.SmartImageLazy;
 import archimedesJ.util.FileSupport;
 
 /**
@@ -99,12 +101,20 @@ public class MediaItemView extends BorderPane {
 		}
 	};
 
+	transient private final IImageViewerService imageViewer = ServiceProvider.Resolve(IImageViewerService.class);
+	transient private final IRawImageFactory imageFactory = ServiceProvider.Resolve(IRawImageFactory.class);
+
 
 	private void onMediaDefaultAction(){
 		if(media instanceof ImageMediaItem){
 
-			JDialog viewerDialog = new ImageViewerDialog(new StaticImageProvider(new FileSmartImage(new File(media.getSource().getPath()))));
-			viewerDialog.setVisible(true);
+			ISmartImage smartImage;
+			try {
+				smartImage = new SmartImageLazy(imageFactory, new URI(media.getSource().getPath()));
+				imageViewer.showImage(smartImage);
+			} catch (URISyntaxException e) {
+				e.printStackTrace();
+			}
 		}else{
 			// default OS action
 			if(!media.open()){

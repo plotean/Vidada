@@ -3,16 +3,17 @@ package vidada.images;
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
 
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 
 import javax.imageio.ImageIO;
 
-import vidada.model.images.RawImageFactory;
 import archimedesJ.images.IMemoryImage;
+import archimedesJ.images.IRawImageFactory;
 
-public class RawImageFactoryFx implements RawImageFactory {
+public class RawImageFactoryFx implements IRawImageFactory {
 
 	public RawImageFactoryFx(){
 
@@ -44,11 +45,16 @@ public class RawImageFactoryFx implements RawImageFactory {
 	@Override
 	public IMemoryImage createImage(File file) {
 		if(file.exists()){
-			return new MemoryImageFx(new Image(file.toURI().toString()));
+			return createImage(file.toURI());
 		}else{
 			System.err.println("createImage failed: " + file + "(missing)");
 		}
 		return null;
+	}
+
+	@Override
+	public IMemoryImage createImage(URI file) {
+		return new MemoryImageFx(new Image(file.toString()));
 	}
 
 }

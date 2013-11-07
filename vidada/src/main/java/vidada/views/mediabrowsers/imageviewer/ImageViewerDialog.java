@@ -6,7 +6,7 @@ import java.awt.GraphicsEnvironment;
 
 import javax.swing.JDialog;
 
-import archimedesJ.swing.components.imageviewer.IImageProvider;
+import archimedesJ.images.viewer.IImageProvider;
 import archimedesJ.swing.components.imageviewer.SmartImageViewer;
 import archimedesJ.swing.components.thumbpresenter.JThumbInteractionController;
 

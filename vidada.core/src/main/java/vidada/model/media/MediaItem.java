@@ -544,4 +544,14 @@ public abstract class MediaItem extends BaseEntity implements IMediaDataProvider
 		return this;
 	}
 
+	transient private boolean selected = false;
+
+	public void setSelection(boolean state) {
+		selected = state;
+	}
+
+	public boolean isSelected() {
+		return selected;
+	}
+
 }

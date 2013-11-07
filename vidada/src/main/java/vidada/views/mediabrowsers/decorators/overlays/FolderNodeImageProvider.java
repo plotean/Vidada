@@ -1,7 +1,6 @@
 package vidada.views.mediabrowsers.decorators.overlays;
 
 import java.awt.Dimension;
-import java.awt.Image;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -12,10 +11,11 @@ import archimedesJ.events.EventArgs;
 import archimedesJ.events.EventHandlerEx;
 import archimedesJ.events.IEvent;
 import archimedesJ.geometry.Size;
+import archimedesJ.images.IMemoryImage;
 import archimedesJ.images.ImageContainer;
-import archimedesJ.swing.components.imageviewer.IImageProvider;
-import archimedesJ.swing.components.imageviewer.ISmartImage;
-import archimedesJ.swing.components.imageviewer.SmartImageWrapper;
+import archimedesJ.images.viewer.IImageProvider;
+import archimedesJ.images.viewer.ISmartImage;
+import archimedesJ.images.viewer.SmartImageWrapper;
 import archimedesJ.swing.components.thumbexplorer.model.files.FileTreeNode;
 import archimedesJ.swing.components.thumbexplorer.model.files.ThumbFolderNode;
 import archimedesJ.swing.components.thumbpresenter.model.IMediaDataProvider;
@@ -79,7 +79,8 @@ public class FolderNodeImageProvider implements IImageProvider {
 
 		ImageContainer container = media.getThumbnail(getImageResolution());
 		container.awaitImage();
-		Image image = (Image)container.getRawImage();
+
+		IMemoryImage image = container.getRawImage();
 
 		if (image != null) {
 			SmartImageWrapper imageWrapper = new SmartImageWrapper(image, media.getTitle());
@@ -99,7 +100,7 @@ public class FolderNodeImageProvider implements IImageProvider {
 		// ignored because handling happens over setCurrentImageRelative
 	}
 
-	ISmartImage currentImage;
+	private ISmartImage currentImage;
 
 	@Override
 	public ISmartImage currentImage() {

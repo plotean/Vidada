@@ -31,6 +31,8 @@ public class ImagePane extends ScrollPane {
 	public ImagePane(ObjectProperty<Image> imageProperty){
 		setHbarPolicy(ScrollBarPolicy.NEVER);
 		setVbarPolicy(ScrollBarPolicy.NEVER);
+		setPannable(false);
+
 
 		imageView = new ImageView();
 		imageView.imageProperty().bind(imageProperty);
@@ -51,6 +53,10 @@ public class ImagePane extends ScrollPane {
 
 
 		imageProperty.addListener(imageChangeListener);
+	}
+
+	private ImageView getImageView(){
+		return imageView;
 	}
 
 
