@@ -1,8 +1,7 @@
 package vlcj.fx;
 
-import javafx.scene.Node;
-import vidada.viewsFX.player.IMediaController;
 import vidada.viewsFX.player.IMediaPlayerService;
+import vidada.viewsFX.player.MediaPlayerFx;
 import vlcj.VlcjUtil;
 import archimedesJ.events.EventArgs;
 import archimedesJ.events.EventHandlerEx;
@@ -33,21 +32,13 @@ public class MediaPlayerService implements IMediaPlayerService {
 		 * Represents an mediaplayer visual
 		 */
 		@Override
-		public Node getSharedPlayer() { return player; }
+		public MediaPlayerFx getSharedPlayer() { return player; }
 
-		/**
-		 * Represents the mediaplayer controller
-		 */
-		@Override
-		public IMediaController getMediaController(){ return mediaController;}
+		private MediaPlayerFx player;
 
 
-		private Node player;
-		private IMediaController mediaController;
-
-		public MediaPlayerComponent(Node player, IMediaController mediaController ){
+		public MediaPlayerComponent(MediaPlayerFx player ){
 			this.player = player;
-			this.mediaController = mediaController;
 		}
 
 		/**
@@ -64,7 +55,7 @@ public class MediaPlayerService implements IMediaPlayerService {
 	public MediaPlayerComponent resolveMediaPlayer() {
 		if(mediaPlayerComponent == null){
 			MediaPlayerVLC vlcPlayerFX = new MediaPlayerVLC();
-			mediaPlayerComponent = new MediaPlayerComponent(vlcPlayerFX, vlcPlayerFX.getMediaController());
+			mediaPlayerComponent = new MediaPlayerComponent(vlcPlayerFX);
 		}else{
 			mediaPlayerComponent.freePlayer();
 		}

@@ -6,9 +6,10 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.canvas.Canvas;
+import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.PixelWriter;
+import javafx.scene.image.WritableImage;
 import javafx.scene.image.WritablePixelFormat;
 import javafx.util.Duration;
 import uk.co.caprica.vlcj.player.MediaPlayer;
@@ -22,6 +23,7 @@ import uk.co.caprica.vlcj.player.direct.RenderCallback;
 import uk.co.caprica.vlcj.player.direct.format.RV32BufferFormat;
 import vidada.model.settings.DatabaseSettings;
 import vidada.viewsFX.player.IMediaController;
+import vidada.viewsFX.player.MediaPlayerFx;
 import vlcj.VLCMediaController;
 import archimedesJ.util.Lists;
 
@@ -32,7 +34,7 @@ import com.sun.jna.Memory;
  * @author IsNull
  *
  */
-public class MediaPlayerVLC extends Canvas 
+public class MediaPlayerVLC extends MediaPlayerFx 
 {
 	// TODO refactore this dependency away
 	private final DatabaseSettings applicationSettings = DatabaseSettings.getSettings();
@@ -40,6 +42,14 @@ public class MediaPlayerVLC extends Canvas
 	// player factory config
 	private static String[] args = {"--no-plugins-cache",  "--no-video-title-show", "--no-snapshot-preview", "--quiet", "--quiet-synchro", "--intf", "dummy"};
 	private static String[] directPlaySund = {"--no-audio"};
+
+
+	private float dpiMultiplier = 2.0f;
+
+	/**
+	 * The canvas in which the video is rendered
+	 */
+	private final ImageView videopane;
 
 	/**
 	 * Media controller for the current player
@@ -49,7 +59,8 @@ public class MediaPlayerVLC extends Canvas
 	/**
 	 * Pixel writer to update the canvas.
 	 */
-	private final PixelWriter pixelWriter;
+	private volatile PixelWriter pixelWriter = null;
+	private volatile WritableImage backbuffer;
 
 	/**
 	 * Pixel format.
@@ -65,17 +76,56 @@ public class MediaPlayerVLC extends Canvas
 	private volatile BufferFormat tmpformat = null;
 
 
+
 	/**
 	 * Creates a new MediaPlayerVLC canvas
 	 */
 	public MediaPlayerVLC(){
-		pixelWriter = this.getGraphicsContext2D().getPixelWriter();
+
+		videopane = new ImageView();
 		pixelFormat = PixelFormat.getByteBgraInstance();
 
+		this.setCenter(videopane);
 		getMediaPlayer(); // ensure the media player is loaded
 	}
 
 
+	private void updateBackBuffer(){
+		createBackBuffer(
+				(int)(videopane.getFitWidth()*dpiMultiplier),
+				(int)(videopane.getFitHeight()*dpiMultiplier));
+	}
+
+	private void createBackBuffer(int width, int height){
+		if(width > 0 && height > 0)
+		{
+			if(backbuffer != null && backbuffer.getWidth() == width && backbuffer.getHeight() == height)
+				return; // we have a backbuffer with exact the requested size already
+
+			backbuffer = new WritableImage(width, height);
+			pixelWriter = backbuffer.getPixelWriter();
+
+			videopane.setImage(backbuffer);
+		}
+	}
+
+
+
+	@Override
+	public void setWidth(double width) {
+		videopane.setFitWidth(width);
+		updateBackBuffer();
+	}
+
+
+	@Override
+	public void setHeight(double height) {
+		videopane.setFitHeight(height);
+		updateBackBuffer();
+	}
+
+
+	@Override
 	public IMediaController getMediaController(){
 		return mediaController;
 	}
@@ -156,10 +206,11 @@ public class MediaPlayerVLC extends Canvas
 		// save the references (to avoid NPE race conditions)
 		final ByteBuffer currentBuffer = tmpbuffer;
 		final BufferFormat currentFormat = tmpformat;
+		final PixelWriter writer = pixelWriter;
 
-		if(currentBuffer != null && currentFormat != null)
+		if(writer != null && currentBuffer != null && currentFormat != null)
 		{
-			pixelWriter.setPixels(0, 0, 
+			writer.setPixels(0, 0, 
 					currentFormat.getWidth(),
 					currentFormat.getHeight(),
 					pixelFormat, currentBuffer,
@@ -212,6 +263,8 @@ public class MediaPlayerVLC extends Canvas
 		}
 	}
 
+
+
 	/**
 	 * Callback to get the buffer format to use for video playback.
 	 */
@@ -219,11 +272,11 @@ public class MediaPlayerVLC extends Canvas
 		@Override
 		public BufferFormat getBufferFormat(int sourceWidth, int sourceHeight) {
 
-			int width = (int)getWidth();
-			int height = (int)getHeight();
-			System.out.println("MediaPlayerVLC:getBufferFormat: Media(" + width + " x " + height + ")");
+			int width = (int)(videopane.getFitWidth()*dpiMultiplier);
+			int height = (int)(videopane.getFitHeight()*dpiMultiplier);
+			System.out.println("MediaPlayerVLC:getBufferFormat: Media(" + width + " x " + height + ") "
+					+ "dpi: " + dpiMultiplier );
 
-			// TODO: double size for retina displays
 			return new RV32BufferFormat(width, height);
 		}
 	};
@@ -245,5 +298,8 @@ public class MediaPlayerVLC extends Canvas
 			tmpformat = bufferFormat;
 		}
 	};
+
+
+
 
 }

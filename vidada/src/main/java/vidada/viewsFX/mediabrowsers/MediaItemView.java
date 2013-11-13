@@ -8,7 +8,6 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
@@ -25,6 +24,7 @@ import vidada.model.media.MediaItem;
 import vidada.model.media.images.ImageMediaItem;
 import vidada.viewsFX.player.IMediaPlayerService;
 import vidada.viewsFX.player.IMediaPlayerService.IMediaPlayerComponent;
+import vidada.viewsFX.player.MediaPlayerFx;
 import vidada.viewsFX.util.AsyncImageProperty;
 import archimedesJ.events.EventArgs;
 import archimedesJ.events.EventListenerEx;
@@ -150,17 +150,16 @@ public class MediaItemView extends BorderPane {
 		player = mediaPlayerService.resolveMediaPlayer();
 		player.getRequestReleaseEvent().add(playerReleaseListener);
 
-		Canvas playerView = (Canvas)player.getSharedPlayer();
+		MediaPlayerFx playerView = player.getSharedPlayer();
 		primaryContent.getChildren().add(playerView);
 
 		playerView.setWidth(primaryContent.getWidth());
 		playerView.setHeight(primaryContent.getHeight());
-
-		player.getMediaController().playMedia(media.getSource().getPath());
+		playerView.getMediaController().playMedia(media.getSource().getPath());
 	}
 
 	private void removeMediaPlayer(){
-		player.getMediaController().stop();
+		player.getSharedPlayer().getMediaController().stop();
 		player.getRequestReleaseEvent().remove(playerReleaseListener);
 		primaryContent.getChildren().remove(player.getSharedPlayer());
 		player = null;

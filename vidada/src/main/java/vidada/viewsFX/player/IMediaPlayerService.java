@@ -1,6 +1,5 @@
 package vidada.viewsFX.player;
 
-import javafx.scene.Node;
 import archimedesJ.events.EventArgs;
 import archimedesJ.events.IEvent;
 
@@ -21,12 +20,7 @@ public interface IMediaPlayerService {
 		/**
 		 * Represents an shared media player visual Node
 		 */
-		Node getSharedPlayer();
-
-		/**
-		 * Represents the media player controller
-		 */
-		IMediaController getMediaController();
+		MediaPlayerFx getSharedPlayer();
 
 	}
 
