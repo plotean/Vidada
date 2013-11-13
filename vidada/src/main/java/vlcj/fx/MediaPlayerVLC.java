@@ -54,8 +54,8 @@ public class MediaPlayerVLC extends Canvas
 	private MediaPlayerFactory vlcfactory;
 	private MediaPlayer vlcMediaPlayer;
 
+	// FX rendering
 	private Timeline t;
-
 	private volatile ByteBuffer tmpbuffer = null;
 	private volatile BufferFormat tmpformat = null;
 
@@ -63,19 +63,21 @@ public class MediaPlayerVLC extends Canvas
 		pixelWriter = this.getGraphicsContext2D().getPixelWriter();
 		pixelFormat = PixelFormat.getByteBgraInstance();
 
-		getMediaPlayer();
+		getMediaPlayer(); // ensure the media player is loaded
 	}
 
 
-	private MediaPlayerEventListener mediaPlayerEventListener = new MediaPlayerEventAdapter(){
+	private final MediaPlayerEventListener mediaPlayerEventListener = new MediaPlayerEventAdapter(){
 
 		@Override
 		public void playing(MediaPlayer mediaPlayer) {
+			// when vlc starts rendering, we have to start our FX rendering
 			renderMovie(mediaPlayer.getFps());
 		}
 
 		@Override
 		public void stopped(MediaPlayer mediaPlayer) {
+			// we can stop updating the back buffer
 			stopRender();
 		}
 	};
@@ -115,8 +117,9 @@ public class MediaPlayerVLC extends Canvas
 
 	private final void updateFrame(){
 
-		ByteBuffer currentBuffer = tmpbuffer;
-		BufferFormat currentFormat = tmpformat;
+		// save the references (to avoid NPE race conditions)
+		final ByteBuffer currentBuffer = tmpbuffer;
+		final BufferFormat currentFormat = tmpformat;
 
 		if(currentBuffer != null && currentFormat != null)
 		{
@@ -150,14 +153,11 @@ public class MediaPlayerVLC extends Canvas
 	}
 
 	private MediaPlayerFactory getMediaPlayerFactory(){
-
 		if(vlcfactory == null){
 			vlcfactory = createFactory();
 			releasePlayer();
 		}
-
 		return vlcfactory;
-
 	}
 
 	private static String[] args = {"--no-plugins-cache",  "--no-video-title-show", "--no-snapshot-preview", "--quiet", "--quiet-synchro", "--intf", "dummy"};
