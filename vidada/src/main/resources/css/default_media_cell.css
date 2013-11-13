@@ -1,0 +1,21 @@
+
+
+#media-cell {
+	-fx-background-color: #FFFFFF;
+    -fx-padding: 5;
+}
+
+#media-cell:hover {
+    -fx-background-color: #A9C5EB;
+}
+
+#media-cell:selected {
+    -fx-background-color: #7BA7E1;
+    /*-fx-border-color: #00FF00;*/
+}
+
+
+
+#media-cell #description {
+
+}

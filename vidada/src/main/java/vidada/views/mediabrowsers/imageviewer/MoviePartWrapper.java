@@ -1,11 +1,10 @@
 package vidada.views.mediabrowsers.imageviewer;
 
-import java.awt.Image;
-
 import vidada.model.media.movies.MovieMediaItem;
 import vidada.model.settings.GlobalSettings;
+import archimedesJ.images.IMemoryImage;
 import archimedesJ.images.ImageContainer;
-import archimedesJ.swing.components.imageviewer.ISmartImage;
+import archimedesJ.images.viewer.ISmartImage;
 
 public class MoviePartWrapper implements ISmartImage {
 
@@ -22,18 +21,14 @@ public class MoviePartWrapper implements ISmartImage {
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Image getImage() {
-		Image image = null;
-
+	public IMemoryImage getImage() {
 		ImageContainer container = videoPart.getThumbnail(GlobalSettings.getMaxThumbResolution());
 
 		if(!container.isImageLoaded()){
 			container.awaitImage();
 		}
 
-		image = (Image)container.getRawImage();
-
-		return image;
+		return container.getRawImage();
 	}
 
 }

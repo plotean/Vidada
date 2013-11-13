@@ -1,28 +1,31 @@
 package vidada.views.mediabrowsers.imageviewer;
 
-import java.awt.Image;
 import java.io.IOException;
 import java.io.InputStream;
-
-import javax.imageio.ImageIO;
 
 import vidada.model.media.images.ImageMediaItem;
 import vidada.model.media.source.FileMediaSource;
 import vidada.model.media.source.MediaSource;
+import archimedesJ.images.IMemoryImage;
+import archimedesJ.images.IRawImageFactory;
+import archimedesJ.images.viewer.ISmartImage;
 import archimedesJ.io.locations.ResourceLocation;
-import archimedesJ.swing.components.imageviewer.ISmartImage;
 
 /**
+ * Wraps a SmartImage to a ImageMediaItem
  * 
  * @author IsNull
  *
  */
-public class ImagePartWrapper implements ISmartImage {
+public class SmartImageMediaItemAdapter implements ISmartImage {
 
-	private ImageMediaItem imageMedia;
-	private Image image;
+	private final ImageMediaItem imageMedia;
+	private final IRawImageFactory imageFactory;
 
-	public ImagePartWrapper(ImageMediaItem imageMedia){
+	private IMemoryImage image;
+
+	public SmartImageMediaItemAdapter(IRawImageFactory imageFactory, ImageMediaItem imageMedia){
+		this.imageFactory = imageFactory;
 		this.imageMedia = imageMedia;
 	}
 
@@ -32,7 +35,7 @@ public class ImagePartWrapper implements ISmartImage {
 	}
 
 	@Override
-	public Image getImage() {
+	public IMemoryImage getImage() {
 
 		if(imageMedia != null && image == null){
 			MediaSource source = imageMedia.getSource();
@@ -43,11 +46,7 @@ public class ImagePartWrapper implements ISmartImage {
 					InputStream is = null;
 					try {
 						is = resource.openInputStream();
-						image = ImageIO.read(is);
-
-					} catch (IOException e) {
-						System.err.println("can't read " + resource);
-						e.printStackTrace();
+						image = imageFactory.createImage(is);
 					}finally{
 						if(is != null){
 							try {

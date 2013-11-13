@@ -76,7 +76,7 @@ public class MediaBrowserPanel extends MediaBrowserBasePanel {
 		mediaService.getMediaDataChangedEvent().add(new EventListenerEx<EventArgsG<MediaItem>>() {
 			@Override
 			public void eventOccured(Object sender, EventArgsG<MediaItem> eventArgs) {
-				viewPortRenderer.onItemChanged(eventArgs.getValue());
+				//viewPortRenderer.onItemChanged(eventArgs.getValue());
 			}
 		});
 

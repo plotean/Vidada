@@ -61,7 +61,7 @@ public class DirectPlayTest {
 
 		//MediaPlayer mediaPlayer = directplayComponent.getMediaPlayer();
 		//mediaPlayer.enableOverlay(true);
-		directplayComponent.playMedia(file);
+		directplayComponent.getMediaController().playMedia(file);
 
 
 		//directplayComponent.doit();

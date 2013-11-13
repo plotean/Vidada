@@ -51,7 +51,7 @@ public class RegenerateThumbnailAction extends AbstractAction {
 						SwingUtilities.invokeLater(new Runnable() {
 							@Override
 							public void run() {
-								viewPortRenderer.onItemChanged(data);  //TODO invoke changed data on mediaservice
+								//viewPortRenderer.onItemChanged(data);  //TODO invoke changed data on mediaservice
 							}
 						});
 					}

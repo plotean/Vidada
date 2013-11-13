@@ -15,7 +15,11 @@ import archimedesJ.images.ImageContainer;
 
 public class ImageContainerBase implements ImageContainer, Runnable {
 
-
+	/**
+	 * Delegate for a image change event
+	 * @author IsNull
+	 *
+	 */
 	public static interface ImageChangedCallback {
 		/**
 		 * Occurs when the image has changed
@@ -43,7 +47,13 @@ public class ImageContainerBase implements ImageContainer, Runnable {
 	public IEvent<EventArgs> getImageChangedEvent() { return ImageChangedEvent; }
 
 
-	protected ImageContainerBase(ExecutorService imageLoaderPool, Callable<IMemoryImage> imageLoader, ImageChangedCallback  changedCallback){
+	/**
+	 * 
+	 * @param imageLoaderPool The context in which the image should be loaded
+	 * @param imageLoader The Image loader task (which will be called async) 
+	 * @param changedCallback Callback event when the image has changed
+	 */
+	public ImageContainerBase(ExecutorService imageLoaderPool, Callable<IMemoryImage> imageLoader, ImageChangedCallback  changedCallback){
 		this.imageLoaderPool = imageLoaderPool;
 		this.imageLoader = imageLoader;
 		this.changedCallback = changedCallback;

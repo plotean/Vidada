@@ -14,10 +14,10 @@ import java.util.Set;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 
 import vidada.model.ServiceProvider;
-import vidada.model.images.RawImageFactory;
 import archimedesJ.data.BiTuple;
 import archimedesJ.geometry.Size;
 import archimedesJ.images.IMemoryImage;
+import archimedesJ.images.IRawImageFactory;
 import archimedesJ.io.locations.DirectoiryLocation;
 import archimedesJ.io.locations.ResourceLocation;
 
@@ -36,7 +36,7 @@ public class ImageFileCache implements IImageCache {
 	private final DirectoiryLocation cacheRoot;
 	private final DirectoiryLocation scaledCacheDataBase;
 
-	private final RawImageFactory imageFactory = ServiceProvider.Resolve(RawImageFactory.class);
+	private final IRawImageFactory imageFactory = ServiceProvider.Resolve(IRawImageFactory.class);
 
 	// file path caches
 	private final Map<Integer, ResourceLocation> dimensionPathCache = new HashMap<Integer, ResourceLocation>(2000);

@@ -1,4 +1,4 @@
-package vidada.views.mediabrowsers.mediaBrowser.filter;
+package vidada.model.filters;
 
 import java.util.List;
 
@@ -13,6 +13,12 @@ import archimedesJ.util.Lists;
 
 import com.db4o.query.Query;
 
+/**
+ * Represents a cancelable task which executes a query
+ * @author IsNull
+ *
+ * @param <T>
+ */
 public class AsyncFetchData<T> extends CancelableTask<List<T>>{
 
 
@@ -29,9 +35,6 @@ public class AsyncFetchData<T> extends CancelableTask<List<T>>{
 			return token;
 		}
 	}
-
-
-
 
 	private EventHandlerEx<CancelTokenEventArgs<List<T>>> fetchingCompleteEvent = new  EventHandlerEx<CancelTokenEventArgs<List<T>>>();
 

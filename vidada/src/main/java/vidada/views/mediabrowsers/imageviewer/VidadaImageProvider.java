@@ -2,6 +2,7 @@ package vidada.views.mediabrowsers.imageviewer;
 
 import java.util.Map;
 
+import vidada.model.ServiceProvider;
 import vidada.model.compatibility.IHaveMediaData;
 import vidada.model.media.MediaItem;
 import vidada.model.media.images.ImageMediaItem;
@@ -11,23 +12,26 @@ import archimedesJ.events.EventArgs;
 import archimedesJ.events.EventHandlerEx;
 import archimedesJ.events.EventListenerEx;
 import archimedesJ.events.IEvent;
-import archimedesJ.swing.components.imageviewer.IImageProvider;
-import archimedesJ.swing.components.imageviewer.ISmartImage;
+import archimedesJ.images.IRawImageFactory;
+import archimedesJ.images.viewer.IImageProvider;
+import archimedesJ.images.viewer.ISmartImage;
 import archimedesJ.swing.components.thumbpresenter.JThumbInteractionController;
 import archimedesJ.swing.components.thumbpresenter.items.IBaseThumb;
 
 public class VidadaImageProvider implements IImageProvider {
 
-	Map<MediaItem, ISmartImage> imageCache = new LRUCache<MediaItem, ISmartImage>(100);
+	private final JThumbInteractionController interactionController;
 
-	private final EventHandlerEx<EventArgs> CurrentImageChanged = new EventHandlerEx<EventArgs>();
+	transient private final Map<MediaItem, ISmartImage> imageCache = new LRUCache<MediaItem, ISmartImage>(100);
+	transient private final EventHandlerEx<EventArgs> CurrentImageChanged = new EventHandlerEx<EventArgs>();
+	transient private final IRawImageFactory imageFactory = ServiceProvider.Resolve(IRawImageFactory.class);
+
+	private ISmartImage currentImage;
+
 
 	@Override
-	public IEvent<EventArgs> getCurrentImageChanged() {
-		return CurrentImageChanged;
-	}
+	public IEvent<EventArgs> getCurrentImageChanged() { return CurrentImageChanged; }
 
-	private JThumbInteractionController interactionController;
 
 	public VidadaImageProvider(JThumbInteractionController interactionController) {
 
@@ -53,20 +57,20 @@ public class VidadaImageProvider implements IImageProvider {
 	}
 
 	private void updateCurrentImage() {
-		smartImage = null;
+		currentImage = null;
 		IBaseThumb selectedThumb = interactionController.getFirstSelected();
 		if (selectedThumb instanceof IHaveMediaData) {
 
 			MediaItem media = ((IHaveMediaData) selectedThumb).getMediaData();
 			if (media instanceof ImageMediaItem) {
 				if (!imageCache.containsKey(media)) {
-					smartImage = new ImagePartWrapper((ImageMediaItem) media);
-					imageCache.put(media, smartImage);
+					currentImage = new SmartImageMediaItemAdapter(imageFactory, (ImageMediaItem) media);
+					imageCache.put(media, currentImage);
 				}
 			} else if (media instanceof MovieMediaItem) {
 				if (!imageCache.containsKey(media)) {
-					smartImage = new MoviePartWrapper((MovieMediaItem) media);
-					imageCache.put(media, smartImage);
+					currentImage = new MoviePartWrapper((MovieMediaItem) media);
+					imageCache.put(media, currentImage);
 				}
 			}
 			setCurrentImage(imageCache.get(media));
@@ -74,15 +78,15 @@ public class VidadaImageProvider implements IImageProvider {
 		}
 	}
 
-	ISmartImage smartImage;
+
 
 	@Override
 	public ISmartImage currentImage() {
-		return smartImage;
+		return currentImage;
 	}
 
 	protected void setCurrentImage(ISmartImage currentImage) {
-		smartImage = currentImage;
+		this.currentImage = currentImage;
 		CurrentImageChanged.fireEvent(this, EventArgs.Empty);
 	}
 

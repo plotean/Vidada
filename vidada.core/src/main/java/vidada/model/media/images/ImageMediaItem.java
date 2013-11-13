@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.net.URI;
 
 import vidada.model.ServiceProvider;
-import vidada.model.images.RawImageFactory;
 import vidada.model.libraries.MediaLibrary;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaType;
@@ -16,13 +15,14 @@ import archimedesJ.data.hashing.FileHashAlgorythms;
 import archimedesJ.data.hashing.IFileHashAlgorythm;
 import archimedesJ.geometry.Size;
 import archimedesJ.images.IMemoryImage;
+import archimedesJ.images.IRawImageFactory;
 import archimedesJ.io.locations.ResourceLocation;
 import archimedesJ.swing.images.ImageInfo;
 import archimedesJ.swing.images.SimpleImageInfo;
 
 public class ImageMediaItem extends MediaItem {
 
-	transient private final RawImageFactory imageFactory = ServiceProvider.Resolve(RawImageFactory.class);
+	transient private final IRawImageFactory imageFactory = ServiceProvider.Resolve(IRawImageFactory.class);
 
 	/**
 	 * Empty hibernate constructor

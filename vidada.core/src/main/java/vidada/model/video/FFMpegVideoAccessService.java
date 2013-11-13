@@ -9,15 +9,15 @@ import java.util.Map;
 import org.apache.commons.io.FileUtils;
 
 import vidada.model.ServiceProvider;
-import vidada.model.images.RawImageFactory;
 import archimedesJ.geometry.Size;
 import archimedesJ.images.IMemoryImage;
+import archimedesJ.images.IRawImageFactory;
 import ffmpeg.FFmpegException;
 import ffmpeg.Interop.FFmpegInterop;
 
 public class FFMpegVideoAccessService implements IVideoAccessService {
 
-	private final RawImageFactory imageFactory = ServiceProvider.Resolve(RawImageFactory.class);
+	private final IRawImageFactory imageFactory = ServiceProvider.Resolve(IRawImageFactory.class);
 	private final static FFmpegInterop ffmpeg = FFmpegInterop.instance();	
 	private final Map<String, VideoInfo> videoInfoCache = new HashMap<String, VideoInfo>();
 

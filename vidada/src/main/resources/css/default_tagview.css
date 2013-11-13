@@ -1,0 +1,71 @@
+
+
+.label { 
+	-fx-text-fill: black;
+    -fx-font: 10px "Verdana";
+}
+
+#tag-dot {
+    -fx-fill: LIGHTGREY;
+    -fx-stroke: #707070;
+}
+
+/* ----- allowed state  -------- */
+#tagview-allowed {
+    -fx-background-color: #9999CC;
+    -fx-border-color: #707070;
+    -fx-background-radius: 15 0 0 15;
+    -fx-border-radius: 15 0 0 15;
+    -fx-padding: 1 5 1 2;
+}
+
+
+#tagview-allowed:hover #tag-dot {
+    -fx-fill: white;
+}
+
+/* ----- required state -------- */
+
+#tagview-required {
+    -fx-background-color: #339966;
+    -fx-border-color: #707070;
+    -fx-background-radius: 15 0 0 15;
+    -fx-border-radius: 15 0 0 15;
+    -fx-padding: 1 5 1 2;
+}
+
+#tagview-required:hover #tag-dot {
+    -fx-fill: white;
+}
+
+/* ----- blocked state -------- */
+
+#tagview-blocked {
+    -fx-background-color: #993333;
+    -fx-border-color: #707070;
+    -fx-background-radius: 15 0 0 15;
+    -fx-border-radius: 15 0 0 15;
+    -fx-padding: 1 5 1 2;
+}
+
+#tagview-blocked:hover #tag-dot {
+    -fx-fill: white;
+}
+
+
+#tagview-blocked .label { 
+	-fx-text-fill: white;
+}
+
+
+
+.woot { 
+    -fx-background-color: #DDFFA4;
+    -fx-padding: 0 0 0 0;
+    -fx-background-insets: 0,1,2;
+    -fx-background-radius: 20;
+    -fx-border-radius: 20;
+    -fx-border-radius: 15, 0, 0, 15;
+    -fx-background-radius: 15, 0, 0, 15;
+    -fx-background-insets: 0, 1, 2 1 1 1;
+}

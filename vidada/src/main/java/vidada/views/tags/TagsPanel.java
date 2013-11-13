@@ -26,7 +26,7 @@ import archimedesJ.swing.layouts.WrapLayout;
  *
  */
 @SuppressWarnings("serial")
-public class TagsPanel extends JPanel {
+public class TagsPanel extends JPanel { //  implements ITagsView
 
 	/**
 	 * Event fired when the selected Tags have been changed

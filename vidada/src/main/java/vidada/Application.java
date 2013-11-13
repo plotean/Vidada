@@ -1,8 +1,5 @@
 package vidada;
 
-import java.awt.Color;
-import java.awt.EventQueue;
-import java.awt.Frame;
 import java.awt.Point;
 import java.util.concurrent.CountDownLatch;
 
@@ -10,19 +7,15 @@ import javax.imageio.ImageIO;
 import javax.swing.Action;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.UIDefaults;
-import javax.swing.UIManager;
-import javax.swing.UIManager.LookAndFeelInfo;
 
 import vidada.commands.AddNewMediaLibraryAction;
 import vidada.commands.UpdateMediaLibraryAction;
 import vidada.data.DatabaseConnectionException;
 import vidada.data.DefaultDataCreator;
 import vidada.data.SessionManager;
-import vidada.images.RawImageFactoryAwt;
+import vidada.images.RawImageFactoryFx;
 import vidada.model.ServiceProvider;
 import vidada.model.ServiceProvider.IServiceRegisterer;
-import vidada.model.images.RawImageFactory;
 import vidada.model.libraries.IMediaLibraryService;
 import vidada.model.security.ICredentialManager;
 import vidada.model.security.ICredentialManager.CredentialsChecker;
@@ -32,10 +25,13 @@ import vidada.model.settings.DatabaseSettings;
 import vidada.model.settings.GlobalSettings;
 import vidada.model.settings.VidadaDatabase;
 import vidada.model.system.ISystemService;
-import vidada.views.MainFrame;
-import vidada.views.VidadaSplash;
+import vidada.views.SwingMainContext;
 import vidada.views.dialoges.AuthenticateDialog;
 import vidada.views.dialoges.ChooseMediaDatabase;
+import vidada.viewsFX.ApplicationFX;
+import vidada.viewsFX.images.ImageViewerServiceFx;
+import archimedesJ.images.IRawImageFactory;
+import archimedesJ.images.viewer.IImageViewerService;
 import archimedesJ.security.CredentialType;
 import archimedesJ.security.Credentials;
 import archimedesJ.services.ServiceLocator;
@@ -49,7 +45,7 @@ import com.db4o.ObjectContainer;
 
 public class Application {
 
-	public static JFrame MainFrame;
+
 
 	/**
 	 * Primary entry point for this Application
@@ -87,45 +83,18 @@ public class Application {
 	}
 
 
-
-
-	static VidadaSplash customSplash;
+	transient private static final IMainUIContext mainUIContext = new SwingMainContext();
 
 	private static void startApplication(){
 
 		System.out.println("starting application main UI Thread");
 
-		EventQueue.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				try {
-
-					// create splash
-					customSplash = new VidadaSplash();
-					customSplash.setVisible(true);
-					customSplash.setAlwaysOnTop(true);
-					customSplash.toFront();
-					customSplash.setAlwaysOnTop(false);
-
-					// define visual appearance
-					setTheme();
-
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
+		mainUIContext.showSplash();
 
 		// start up application
 		new Application();
 
-		EventQueue.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				if(customSplash!= null && customSplash.isVisible())
-					customSplash.setVisible(false);
-			}
-		});
+
 	}
 
 
@@ -137,6 +106,13 @@ public class Application {
 		if(initialize()){
 			System.out.println("initalized successfully.");
 			afterStartup();
+
+			// Show MainFrame
+
+			//mainUIContext.showMainUI();
+			ApplicationFX cgtx = new ApplicationFX();
+			cgtx.showMainUI();
+
 		}else
 			System.exit(-1);
 	}
@@ -175,6 +151,7 @@ public class Application {
 			}
 	}
 
+	JFrame MainFrame = null;
 
 	private void configDatabase(){
 
@@ -185,7 +162,7 @@ public class Application {
 			System.out.println("database must be choosen by user:");
 
 			ChooseMediaDatabase<VidadaDatabase> dbchooserDialog = 
-					new ChooseMediaDatabase<VidadaDatabase>(Application.MainFrame, settings.getAvaiableDatabases());
+					new ChooseMediaDatabase<VidadaDatabase>(MainFrame, settings.getAvaiableDatabases());
 			dbchooserDialog.setVisible(true);
 
 			VidadaDatabase db = dbchooserDialog.getChoosenDB();
@@ -204,7 +181,9 @@ public class Application {
 			@Override
 			public void registerServices(ServiceLocator locator) {
 				locator.registerSingleton(ISystemService.class, SystemService.class);
-				locator.registerSingleton(RawImageFactory.class, RawImageFactoryAwt.class);
+				locator.registerSingleton(IRawImageFactory.class, RawImageFactoryFx.class);
+				locator.registerSingleton(IImageViewerService.class, ImageViewerServiceFx.class);
+
 
 				ICredentialManager credentialManager = locator.resolve(ICredentialManager.class);
 				credentialManager.register(authProvider);
@@ -276,15 +255,9 @@ public class Application {
 
 			if(privacyService.isAuthenticated() || !privacyService.isProtected())
 			{
-				// Show MainFrame
-				System.out.println("init application frame...");
-				MainFrame = new MainFrame();
-				MainFrame.setLocationRelativeTo(null);
-				MainFrame.setAlwaysOnTop(true);
-				MainFrame.toFront();
-				MainFrame.requestFocus();
-				MainFrame.setAlwaysOnTop(false);
-				MainFrame.setExtendedState(Frame.MAXIMIZED_BOTH);
+
+				mainUIContext.hideSplash();
+
 
 				return true;
 			}else {
@@ -341,8 +314,6 @@ public class Application {
 	};
 
 
-
-
 	private boolean requestAuthentication(final IPrivacyService privacyService, ICredentialManager credentialManager){
 
 		Credentials validCredentials = credentialManager.requestAuthentication(
@@ -359,35 +330,6 @@ public class Application {
 		return validCredentials != null;
 	}
 
-	static boolean useTheme = true;
-	private static void setTheme(){
 
-		if(useTheme && !OSValidator.isOSX()){
-			try {
-				// Default
-				//UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-
-				//Nimbus
-				for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-					if ("Nimbus".equals(info.getName())) {
-						UIManager.setLookAndFeel(info.getClassName());
-
-
-						UIDefaults defaults = UIManager.getLookAndFeelDefaults();
-						defaults.put("Panel.background", Color.WHITE); // we want a white background as an overall design rule
-						defaults.put("OptionPane.background", Color.WHITE); // dito
-						defaults.put("ToolPane.background", Color.DARK_GRAY);
-
-						break;
-					}
-				}
-			} catch (Exception e) {
-				// If Nimbus is not available, you can set the GUI to another look and feel.
-			}
-		}
-
-
-
-	}
 
 }

@@ -9,13 +9,15 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
 
 import javax.imageio.ImageIO;
 
-import vidada.model.images.RawImageFactory;
 import archimedesJ.images.IMemoryImage;
+import archimedesJ.images.IRawImageFactory;
+import archimedesJ.swing.images.MemoryImageAwt;
 
-public class RawImageFactoryAwt implements RawImageFactory {
+public class RawImageFactoryAwt implements IRawImageFactory {
 
 	public RawImageFactoryAwt(){
 
@@ -73,6 +75,16 @@ public class RawImageFactoryAwt implements RawImageFactory {
 	public IMemoryImage createImage(File file) {
 		try {
 			return new MemoryImageAwt(ImageIO.read(file));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	@Override
+	public IMemoryImage createImage(URI uri) {
+		try {
+			return new MemoryImageAwt(ImageIO.read(uri.toURL()));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

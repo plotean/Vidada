@@ -51,11 +51,11 @@ public class MainFrame extends JFrame{
 
 		getContentPane().add(panel, BorderLayout.NORTH);
 
-
 		JPanel mediaBrowserPanel = new PrimaryMediaBrowserPanel();
 		JPanel filesystemBrowser = new FileSystemBrowserPanel();
 
 		JTabbedPane presentationTab = new JTabbedPane(JTabbedPane.TOP);
+
 		presentationTab.addTab("Media Library", mediaBrowserPanel);
 		presentationTab.addTab("Browser", filesystemBrowser);
 

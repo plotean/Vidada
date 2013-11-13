@@ -2,6 +2,7 @@ package vidada.views.directplay;
 
 import javax.swing.JPanel;
 
+import vidada.viewsFX.player.IMediaController;
 import archimedesJ.util.OSValidator;
 
 /**
@@ -38,41 +39,6 @@ public abstract class DirectPlayBaseComponent extends JPanel {
 	}
 
 	/**
-	 * set aspect ration and zoom
-	 * 
-	 * @param aspectRatio
-	 */
-	public abstract void setCropGeometry(String aspectRatio);
-
-	public abstract void setScale(float factor);
-
-	/**
-	 * Play the given media file in this player
-	 * 
-	 * @param file
-	 */
-	public abstract void playMedia(String file);
-
-	/**
-	 * Set the player position to the given relative
-	 * 
-	 * @param pos
-	 */
-	public abstract void setPosition(float pos);
-
-	/**
-	 * Get the players current relative position
-	 * 
-	 * @return
-	 */
-	public abstract float getPosition();
-
-	/**
-	 * Stop the playback
-	 */
-	public abstract void stop();
-
-	/**
 	 * Set a video overlay renderer
 	 * 
 	 * @param videoOverlayRenderer
@@ -88,11 +54,14 @@ public abstract class DirectPlayBaseComponent extends JPanel {
 	@Override
 	public void setBounds(int x, int y, int width, int height) {
 		super.setBounds(x, y, width, height);
-		ensurePlayerSize();
+		getMediaController().refresh();
 	}
 
-	public abstract void ensurePlayerSize();
 
-	public abstract void pause();
+	/**
+	 * Get the media controller
+	 * @return
+	 */
+	public abstract IMediaController getMediaController();
 
 }

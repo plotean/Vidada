@@ -20,7 +20,7 @@ public class User extends BaseEntity {
 	private transient static User currentUser = null;
 	private String name;
 
-	public static User current(){
+	public synchronized static User current(){
 
 		if(currentUser == null)
 		{

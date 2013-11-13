@@ -52,6 +52,15 @@
 		</resources>
 		
 		<plugins>
+		    
+		  <plugin>
+	        <artifactId>maven-compiler-plugin</artifactId>
+	        <version>2.3.2</version>
+	        <configuration>
+	          <source>1.8</source>
+	          <target>1.8</target>
+	        </configuration>
+	      </plugin>
 		
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -97,7 +106,7 @@
 			     <version>1.0-alpha-1</version>
 			     <configuration>
 			         <mainClass>vidada.Application</mainClass>
-			         <jvmVersion>1.7+</jvmVersion>
+			         <jvmVersion>1.8+</jvmVersion>
 			         <iconFile>${basedir}/src/main/resources/images/logo.icns</iconFile>
 			         <javaApplicationStub>JavaApplicationStub</javaApplicationStub>
 			         <!-- 
@@ -200,7 +209,20 @@
  			<artifactId>junit</artifactId>
  			<version>4.11</version>
  		</dependency>
-
+ 		
+		<dependency>
+		    <groupId>com.aquafx-project</groupId>
+		    <artifactId>aquafx</artifactId>
+		    <version>0.1</version>
+		</dependency>
+		
+		<dependency>
+		    <groupId>org.controlsfx</groupId>
+		    <artifactId>controlsfx</artifactId>
+		    <version>8.0.2</version>
+		</dependency>
+		
+	
 	</dependencies>
    
    

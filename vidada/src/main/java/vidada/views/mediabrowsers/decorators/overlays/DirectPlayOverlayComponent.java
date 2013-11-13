@@ -20,6 +20,7 @@ import vidada.model.media.source.MediaSource;
 import vidada.views.directplay.DirectPlayBaseComponent;
 import vidada.views.directplay.IDecoupledRenderer;
 import vidada.views.mediabrowsers.decorators.JThumbOverlayDecorator;
+import vidada.viewsFX.player.IMediaController;
 import vlcj.VlcjUtil;
 import archimedesJ.events.EventArgs;
 import archimedesJ.events.EventArgsG;
@@ -106,7 +107,7 @@ public class DirectPlayOverlayComponent extends AbstractThumbOverlay {
 
 				if (thumbitem instanceof IHaveMediaData) {
 					MediaItem media = ((IHaveMediaData) thumbitem).getMediaData();
-					itemRenderer.drawVideoInformation(g, g.getClipBounds(), media, colorStaticBkgrd);
+					//itemRenderer.drawVideoInformation(g, g.getClipBounds(), media, colorStaticBkgrd);
 				}
 			}
 		});
@@ -143,7 +144,7 @@ public class DirectPlayOverlayComponent extends AbstractThumbOverlay {
 			public void actionPerformed(ActionEvent arg0) {
 
 				if (directplayOverlay != null && directplayOverlay.isVisible()) {
-					final float currentPos = directplayOverlay.getPosition();
+					final float currentPos = directplayOverlay.getMediaController().getPosition();
 
 					IBaseThumb thumbitem = selectionService.getFirstSelected();
 					if (thumbitem instanceof IHaveMediaData) {
@@ -158,7 +159,7 @@ public class DirectPlayOverlayComponent extends AbstractThumbOverlay {
 								SwingUtilities.invokeLater(new Runnable() {
 									@Override
 									public void run() {
-										viewPortRenderer.onItemChanged(currentPlayedMedia); // TODO Refactor
+										//viewPortRenderer.onItemChanged(currentPlayedMedia); // TODO Refactor
 										// invoke
 										// changed
 										// data
@@ -182,7 +183,7 @@ public class DirectPlayOverlayComponent extends AbstractThumbOverlay {
 	}
 
 	private void endDirectPlay() {
-		directplayOverlay.stop();
+		directplayOverlay.getMediaController().stop();
 		directplayOverlay.setVisible(false);
 	}
 
@@ -221,14 +222,15 @@ public class DirectPlayOverlayComponent extends AbstractThumbOverlay {
 				{
 					directplayOverlay.setVisible(true);
 
+					IMediaController mediaController = directplayOverlay.getMediaController();
 					// System.out.println(getAspectRatio());
 					// directplayOverlay.setCropGeometry("16:10");
-					directplayOverlay.playMedia(source.getPath());
-					directplayOverlay.setCropGeometry(getAspectRatio());
-					directplayOverlay.setPosition(0.2f);
+					mediaController.playMedia(source.getPath());
+					mediaController.setCropGeometry(getAspectRatio());
+					mediaController.setPosition(0.2f);
 
-					directplayOverlay.pause();
-					directplayOverlay.pause();
+					mediaController.togglePause();
+					mediaController.togglePause();
 					// directplayOverlay.setScale(0.01f);
 				}
 			}
