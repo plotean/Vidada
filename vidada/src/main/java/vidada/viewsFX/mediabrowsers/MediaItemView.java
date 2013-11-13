@@ -26,6 +26,7 @@ import vidada.viewsFX.player.IMediaPlayerService;
 import vidada.viewsFX.player.IMediaPlayerService.IMediaPlayerComponent;
 import vidada.viewsFX.player.MediaPlayerFx;
 import vidada.viewsFX.util.AsyncImageProperty;
+import vlcj.fx.MediaPlayerSeekBehaviour;
 import archimedesJ.events.EventArgs;
 import archimedesJ.events.EventListenerEx;
 import archimedesJ.geometry.Size;
@@ -151,6 +152,8 @@ public class MediaItemView extends BorderPane {
 		player.getRequestReleaseEvent().add(playerReleaseListener);
 
 		MediaPlayerFx playerView = player.getSharedPlayer();
+		playerView.addBehavior(MediaPlayerSeekBehaviour.Instance);
+
 		primaryContent.getChildren().add(playerView);
 
 		playerView.setWidth(primaryContent.getWidth());

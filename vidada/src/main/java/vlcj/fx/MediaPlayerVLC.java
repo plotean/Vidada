@@ -44,7 +44,6 @@ public class MediaPlayerVLC extends MediaPlayerFx
 	private static String[] directPlaySund = {"--no-audio"};
 
 
-	private float dpiMultiplier = 2.0f;
 
 	/**
 	 * The canvas in which the video is rendered
@@ -92,10 +91,15 @@ public class MediaPlayerVLC extends MediaPlayerFx
 
 	private void updateBackBuffer(){
 		createBackBuffer(
-				(int)(videopane.getFitWidth()*dpiMultiplier),
-				(int)(videopane.getFitHeight()*dpiMultiplier));
+				(int)(videopane.getFitWidth()*getDpiMultiplier()),
+				(int)(videopane.getFitHeight()*getDpiMultiplier()));
 	}
 
+	/**
+	 * Creates a image back buffer for the video
+	 * @param width Width (pixel count)
+	 * @param height Height (pixel count)
+	 */
 	private void createBackBuffer(int width, int height){
 		if(width > 0 && height > 0)
 		{
@@ -117,11 +121,22 @@ public class MediaPlayerVLC extends MediaPlayerFx
 		updateBackBuffer();
 	}
 
-
 	@Override
 	public void setHeight(double height) {
 		videopane.setFitHeight(height);
 		updateBackBuffer();
+	}
+
+
+	@Override
+	public double getRealWidth() {
+		return videopane.getFitWidth();
+	}
+
+
+	@Override
+	public double getRealHeight() {
+		return videopane.getFitHeight();
 	}
 
 
@@ -272,10 +287,10 @@ public class MediaPlayerVLC extends MediaPlayerFx
 		@Override
 		public BufferFormat getBufferFormat(int sourceWidth, int sourceHeight) {
 
-			int width = (int)(videopane.getFitWidth()*dpiMultiplier);
-			int height = (int)(videopane.getFitHeight()*dpiMultiplier);
+			int width = (int)(videopane.getFitWidth()*getDpiMultiplier());
+			int height = (int)(videopane.getFitHeight()*getDpiMultiplier());
 			System.out.println("MediaPlayerVLC:getBufferFormat: Media(" + width + " x " + height + ") "
-					+ "dpi: " + dpiMultiplier );
+					+ "dpi: " + getDpiMultiplier() );
 
 			return new RV32BufferFormat(width, height);
 		}
@@ -298,6 +313,9 @@ public class MediaPlayerVLC extends MediaPlayerFx
 			tmpformat = bufferFormat;
 		}
 	};
+
+
+
 
 
 
