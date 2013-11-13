@@ -36,8 +36,12 @@ public class MediaPlayerVLC extends Canvas
 {
 	private final DatabaseSettings applicationSettings = DatabaseSettings.getSettings();
 
+	// player factory config
+	private static String[] args = {"--no-plugins-cache",  "--no-video-title-show", "--no-snapshot-preview", "--quiet", "--quiet-synchro", "--intf", "dummy"};
+	private static String[] directPlaySund = {"--no-audio"};
+
 	/**
-	 * 
+	 * Media controller for the current player
 	 */
 	private final VLCMediaController mediaController = new VLCMediaController();
 
@@ -59,11 +63,33 @@ public class MediaPlayerVLC extends Canvas
 	private volatile ByteBuffer tmpbuffer = null;
 	private volatile BufferFormat tmpformat = null;
 
+
+	/**
+	 * Creates a new MediaPlayerVLC canvas
+	 */
 	public MediaPlayerVLC(){
 		pixelWriter = this.getGraphicsContext2D().getPixelWriter();
 		pixelFormat = PixelFormat.getByteBgraInstance();
 
 		getMediaPlayer(); // ensure the media player is loaded
+	}
+
+
+	public IMediaController getMediaController(){
+		return mediaController;
+	}
+
+	/**
+	 * Gets the MediaPlayer, it will be created if no cached instance is avaiable
+	 * @return
+	 */
+	public MediaPlayer getMediaPlayer(){
+		if(vlcMediaPlayer == null){
+			vlcMediaPlayer = createMediaPlayer();
+			mediaController.bind(vlcMediaPlayer);
+			vlcMediaPlayer.addMediaPlayerEventListener(mediaPlayerEventListener);
+		}
+		return vlcMediaPlayer;
 	}
 
 
@@ -82,9 +108,13 @@ public class MediaPlayerVLC extends Canvas
 		}
 	};
 
+	/**
+	 * Render the back-buffer into the canvas with the given fps
+	 * @param fps Update interval for the rendering
+	 */
 	private void renderMovie(final double fps){
 
-		System.out.println("render movie @ " + fps + " fps");
+		System.out.println("MediaPlayerVLC: render movie @ " + fps + " fps");
 
 		if(t != null)
 			stopRender();
@@ -102,7 +132,7 @@ public class MediaPlayerVLC extends Canvas
 	}
 
 	private void stopRender(){
-		System.out.println("stoped render movie");
+		System.out.println("MediaPlayerVLC: stoped render movie");
 		t.stop();
 		t = null;
 	}
@@ -115,6 +145,11 @@ public class MediaPlayerVLC extends Canvas
 		}
 	};
 
+	/**
+	 * Updates the current frame (copy back-buffer to the canvas)
+	 * 
+	 * Note: This method must be called in the FX Application thread
+	 */
 	private final void updateFrame(){
 
 		// save the references (to avoid NPE race conditions)
@@ -132,19 +167,6 @@ public class MediaPlayerVLC extends Canvas
 	}
 
 
-	public IMediaController getMediaController(){
-		return mediaController;
-	}
-
-	public MediaPlayer getMediaPlayer(){
-		if(vlcMediaPlayer == null){
-			vlcMediaPlayer = createMediaPlayer();
-			mediaController.bind(vlcMediaPlayer);
-			vlcMediaPlayer.addMediaPlayerEventListener(mediaPlayerEventListener);
-		}
-		return vlcMediaPlayer;
-	}
-
 	private MediaPlayer createMediaPlayer(){
 		MediaPlayer mediaPlayer = null;
 		MediaPlayerFactory playerFactory = getMediaPlayerFactory();
@@ -160,8 +182,7 @@ public class MediaPlayerVLC extends Canvas
 		return vlcfactory;
 	}
 
-	private static String[] args = {"--no-plugins-cache",  "--no-video-title-show", "--no-snapshot-preview", "--quiet", "--quiet-synchro", "--intf", "dummy"};
-	private static String[] directPlaySund = {"--no-audio"};
+
 
 	private MediaPlayerFactory createFactory(){
 		System.out.println("creating new MediaPlayerFactory...");
