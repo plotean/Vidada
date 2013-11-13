@@ -34,6 +34,7 @@ import com.sun.jna.Memory;
  */
 public class MediaPlayerVLC extends Canvas 
 {
+	// TODO refactore this dependency away
 	private final DatabaseSettings applicationSettings = DatabaseSettings.getSettings();
 
 	// player factory config
