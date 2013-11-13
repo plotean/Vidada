@@ -2,12 +2,18 @@ package vlcj.fx;
 
 import java.nio.ByteBuffer;
 
-import javafx.application.Platform;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritablePixelFormat;
+import javafx.util.Duration;
 import uk.co.caprica.vlcj.player.MediaPlayer;
+import uk.co.caprica.vlcj.player.MediaPlayerEventAdapter;
+import uk.co.caprica.vlcj.player.MediaPlayerEventListener;
 import uk.co.caprica.vlcj.player.MediaPlayerFactory;
 import uk.co.caprica.vlcj.player.direct.BufferFormat;
 import uk.co.caprica.vlcj.player.direct.BufferFormatCallback;
@@ -48,12 +54,78 @@ public class MediaPlayerVLC extends Canvas
 	private MediaPlayerFactory vlcfactory;
 	private MediaPlayer vlcMediaPlayer;
 
+	private Timeline t;
+
+	private volatile ByteBuffer tmpbuffer = null;
+	private volatile BufferFormat tmpformat = null;
 
 	public MediaPlayerVLC(){
 		pixelWriter = this.getGraphicsContext2D().getPixelWriter();
 		pixelFormat = PixelFormat.getByteBgraInstance();
-		getMediaPlayer();
 
+		getMediaPlayer();
+	}
+
+
+	private MediaPlayerEventListener mediaPlayerEventListener = new MediaPlayerEventAdapter(){
+
+		@Override
+		public void playing(MediaPlayer mediaPlayer) {
+			renderMovie(mediaPlayer.getFps());
+		}
+
+		@Override
+		public void stopped(MediaPlayer mediaPlayer) {
+			stopRender();
+		}
+	};
+
+	private void renderMovie(final double fps){
+
+		System.out.println("render movie @ " + fps + " fps");
+
+		if(t != null)
+			stopRender();
+
+		t = new Timeline();
+		t.setCycleCount(Timeline.INDEFINITE);
+
+		double duration = 1000 / fps;
+
+		t.getKeyFrames().add(
+				new KeyFrame(Duration.millis(duration),
+						onFinished));
+
+		t.playFromStart();
+	}
+
+	private void stopRender(){
+		System.out.println("stoped render movie");
+		t.stop();
+		t = null;
+	}
+
+
+	private final EventHandler<ActionEvent> onFinished = new EventHandler<ActionEvent>() {
+		@Override
+		public void handle(ActionEvent t) {
+			updateFrame();
+		}
+	};
+
+	private final void updateFrame(){
+
+		ByteBuffer currentBuffer = tmpbuffer;
+		BufferFormat currentFormat = tmpformat;
+
+		if(currentBuffer != null && currentFormat != null)
+		{
+			pixelWriter.setPixels(0, 0, 
+					currentFormat.getWidth(),
+					currentFormat.getHeight(),
+					pixelFormat, currentBuffer,
+					currentFormat.getWidth()*4);
+		}
 	}
 
 
@@ -65,6 +137,7 @@ public class MediaPlayerVLC extends Canvas
 		if(vlcMediaPlayer == null){
 			vlcMediaPlayer = createMediaPlayer();
 			mediaController.bind(vlcMediaPlayer);
+			vlcMediaPlayer.addMediaPlayerEventListener(mediaPlayerEventListener);
 		}
 		return vlcMediaPlayer;
 	}
@@ -104,6 +177,8 @@ public class MediaPlayerVLC extends Canvas
 	private void releasePlayer(){
 		if(vlcMediaPlayer != null){ 
 			vlcMediaPlayer.release();
+			vlcMediaPlayer.removeMediaPlayerEventListener(mediaPlayerEventListener);
+			mediaController.unbind(vlcMediaPlayer);
 			vlcMediaPlayer = null;
 		}
 	}
@@ -145,19 +220,9 @@ public class MediaPlayerVLC extends Canvas
 			final Memory nativeBuffer = nativeBuffers[0];
 			final ByteBuffer byteBuffer = nativeBuffer.getByteBuffer(0, nativeBuffer.size());
 
-			//
-			// JDK-8 requires that we access pixelwritter in FX-Thread
-			//
-			Platform.runLater(new Runnable () {
-				@Override
-				public void run() {
-					pixelWriter.setPixels(0, 0, 
-							bufferFormat.getWidth(),
-							bufferFormat.getHeight(),
-							pixelFormat, byteBuffer,
-							bufferFormat.getWidth()*4);
-				}
-			});
+			// we just store the latest references
+			tmpbuffer = byteBuffer;
+			tmpformat = bufferFormat;
 		}
 	};
 

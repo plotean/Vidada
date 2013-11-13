@@ -19,6 +19,11 @@ public class VLCMediaController implements IMediaController {
 		_mediaPlayer = mediaPlayerVLC;
 	}
 
+	public void unbind(MediaPlayer vlcMediaPlayer) {
+		if(_mediaPlayer == vlcMediaPlayer)
+			_mediaPlayer = null;
+	}
+
 	@Override
 	public void refresh() {
 		if(lastPlayedMedia != null)
@@ -105,6 +110,8 @@ public class VLCMediaController implements IMediaController {
 			System.err.println("media player not avaiable!");
 		}
 	}
+
+
 
 
 
