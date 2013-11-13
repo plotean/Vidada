@@ -52,11 +52,16 @@ public class ImagePane extends ScrollPane {
 		setContent(imageView);
 
 
+
 		imageProperty.addListener(imageChangeListener);
 	}
 
-	private ImageView getImageView(){
-		return imageView;
+	public void setPreserveRatio(boolean preserveRatio){
+		imageView.setPreserveRatio(preserveRatio);
+	}
+
+	public boolean isPreserveRatio(){
+		return imageView.isPreserveRatio();
 	}
 
 

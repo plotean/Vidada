@@ -35,6 +35,8 @@ public class SmartImagePanelFx extends BorderPane {
 	public SmartImagePanelFx(final IImageProvider imageProvider){
 		this.imageProvider = imageProvider;
 
+		imagePane.setPreserveRatio(true);
+
 		this.setCenter(imagePane);
 		this.setBottom(lblName);
 

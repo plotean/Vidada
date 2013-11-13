@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javafx.application.Platform;
+import javafx.beans.property.DoubleProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.layout.BorderPane;
@@ -15,16 +16,23 @@ import org.controlsfx.control.GridView;
 
 import vidada.model.browser.MediaBrowserModel;
 import vidada.model.media.MediaItem;
+import vidada.viewsFX.player.IMediaPlayerService;
+import vlcj.fx.MediaPlayerService;
 import archimedesJ.data.events.CollectionEventArg;
 import archimedesJ.events.EventListenerEx;
 
-
+/**
+ * Represents the media browser
+ * @author IsNull
+ *
+ */
 public class MediaBrowserFX extends BorderPane {
 
 	private MediaBrowserModel mediaModel;
-
 	private GridView<MediaItem> gridView;
+
 	transient private final ObservableList<MediaItem> observableMedias;
+	transient private final IMediaPlayerService mediaPlayerService = new MediaPlayerService();
 
 
 	public MediaBrowserFX(){
@@ -50,9 +58,6 @@ public class MediaBrowserFX extends BorderPane {
 
 
 		setItemSize(200, 140);
-
-		//setItemSize(200, 240);
-		//setItemSize(300, 300);
 
 		gridView.setItems(observableMedias);
 
@@ -112,11 +117,21 @@ public class MediaBrowserFX extends BorderPane {
 
 	class MediaGridItemCell extends GridCell<MediaItem> {
 
-		private final MediaItemView visual = new MediaItemView(
-				gridView.cellWidthProperty(),
-				gridView.cellHeightProperty());
+		private final MediaItemView visual; 
 
 		public MediaGridItemCell(){
+			visual = new MediaItemView(mediaPlayerService);
+
+			DoubleProperty desiredWidth = gridView.cellWidthProperty();
+			DoubleProperty desiredHeight = gridView.cellHeightProperty();
+
+			this.prefWidthProperty().bind(desiredWidth);
+			this.prefHeightProperty().bind(desiredHeight);
+			this.maxWidthProperty().bind(desiredWidth);
+			this.maxHeightProperty().bind(desiredHeight);
+			this.minWidthProperty().bind(desiredWidth);
+			this.minHeightProperty().bind(desiredHeight);
+
 			setGraphic(visual);
 		}
 

@@ -15,6 +15,8 @@ import uk.co.caprica.vlcj.player.direct.DirectMediaPlayer;
 import uk.co.caprica.vlcj.player.direct.RenderCallback;
 import uk.co.caprica.vlcj.player.direct.RenderCallbackAdapter;
 import vidada.model.settings.DatabaseSettings;
+import vidada.viewsFX.player.IMediaController;
+import vlcj.VLCMediaController;
 import vlcj.VideoSurfacePane;
 import vlcj.VlcjUtil;
 import archimedesJ.events.EventArgs;
@@ -34,7 +36,7 @@ public class DirectDrawPreviewer extends DirectPlayBaseComponent {
 	private final Object resourceLock = new Object();
 	private MediaPlayerFactory factory;
 
-	private String lastPlayedMedia;
+	//private String lastPlayedMedia;
 
 	private VideoSurfacePane _videoSurface;
 	protected DirectMediaPlayer _mediaPlayer;
@@ -106,6 +108,7 @@ public class DirectDrawPreviewer extends DirectPlayBaseComponent {
 
 			cleanUp();
 			_mediaPlayer = createMediaPlayer(width, height);
+			controller.bind(_mediaPlayer);
 			mediaPlayerSize.width = width;
 			mediaPlayerSize.height = height;
 		}
@@ -149,8 +152,6 @@ public class DirectDrawPreviewer extends DirectPlayBaseComponent {
 	}
 
 
-
-
 	private final MouseMotionListener mouseMotionListener = new MouseAdapter() {
 		@Override
 		public void mouseMoved(MouseEvent e) {
@@ -167,30 +168,19 @@ public class DirectDrawPreviewer extends DirectPlayBaseComponent {
 	};
 
 
-	@Override
 	public void playMedia(String file) {
-		lastPlayedMedia = file;
-		// vlc(j) path fix
-		file = file.replace("file:/", "file:///");
+		controller.playMedia(file);
 
-		boolean success = getMediaPlayer().playMedia(file);
-		System.out.println("playMedia succeeded? " + success + " - playing file: " + file);
 		this.validate();
 		this.invalidate();
 		this.repaint();
 	}
 
+	private VLCMediaController controller = new VLCMediaController();
+
 	@Override
-	public void ensurePlayerSize() {
-
-		if(lastPlayedMedia != null)
-		{
-			float lastPos = getPosition();
-
-			playMedia(lastPlayedMedia);
-			setPosition(lastPos);
-		}
-
+	public IMediaController getMediaController(){
+		return controller;
 	}
 
 
@@ -205,69 +195,6 @@ public class DirectDrawPreviewer extends DirectPlayBaseComponent {
 		@Override
 		protected void onDisplay(DirectMediaPlayer mediaPlayer, int[] rgbBuffer) {
 			imagePane.repaint();
-		}
-	}
-
-
-	@Override
-	public void setCropGeometry(String aspectRatio) {
-		MediaPlayer mediaPlayer = _mediaPlayer;
-		if(mediaPlayer != null){
-			mediaPlayer.setCropGeometry(aspectRatio);
-		}else {
-			System.err.println("media player not avaiable!");
-		}
-	}
-
-	@Override
-	public  void setScale(float factor){
-		MediaPlayer mediaPlayer = _mediaPlayer;
-		if(mediaPlayer != null){
-			mediaPlayer.setScale(factor);
-			System.out.println("scale set to " + factor + " scale is now " + mediaPlayer.getScale());
-		}else {
-			System.err.println("media player not avaiable!");
-		}
-	}
-
-	@Override
-	public float getPosition() {
-		float pos = 0;
-		MediaPlayer mediaPlayer = _mediaPlayer;
-		if(mediaPlayer != null){
-			pos = mediaPlayer.getPosition();
-		}
-		return pos;
-	}
-
-	@Override
-	public void setPosition(float pos) {
-		MediaPlayer mediaPlayer = _mediaPlayer;
-		if(mediaPlayer != null){
-			mediaPlayer.setPosition(pos);
-		}else{
-			System.err.println("media player not avaiable!");
-		}
-	}
-
-
-	@Override
-	public void stop() {
-		lastPlayedMedia = null;
-		MediaPlayer mediaPlayer = _mediaPlayer;
-		if(mediaPlayer != null){
-			mediaPlayer.stop();
-		}
-	}
-
-	@Override
-	public void pause(){
-		lastPlayedMedia = null;
-		MediaPlayer mediaPlayer = _mediaPlayer;
-		if(mediaPlayer != null){
-			mediaPlayer.pause();
-		}else{
-			System.err.println("media player not avaiable!");
 		}
 	}
 
