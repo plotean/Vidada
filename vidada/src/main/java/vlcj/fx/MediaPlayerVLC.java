@@ -217,14 +217,12 @@ public class MediaPlayerVLC extends Canvas
 	private final BufferFormatCallback formatCallback = new BufferFormatCallback() {
 		@Override
 		public BufferFormat getBufferFormat(int sourceWidth, int sourceHeight) {
-			int width;
-			int height;
 
-			width = (int)getWidth();
-			height = (int)getHeight();
-
+			int width = (int)getWidth();
+			int height = (int)getHeight();
 			System.out.println("MediaPlayerVLC:getBufferFormat: Media(" + width + " x " + height + ")");
 
+			// TODO: double size for retina displays
 			return new RV32BufferFormat(width, height);
 		}
 	};
