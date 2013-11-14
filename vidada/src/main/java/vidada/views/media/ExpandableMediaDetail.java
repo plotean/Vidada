@@ -53,7 +53,7 @@ public class ExpandableMediaDetail extends JPanel {
 	private final JXTaskPane taskPane;
 
 
-	private IMediaDetailModel currentDetailModel;
+	private IMediaViewModel currentDetailModel;
 
 	/**
 	 * Inits this panel - register events
@@ -144,7 +144,7 @@ public class ExpandableMediaDetail extends JPanel {
 
 
 
-	private void setDataContext(IMediaDetailModel data){
+	private void setDataContext(IMediaViewModel data){
 
 		System.out.println("MediaDetail.setDataContext: " + data);
 

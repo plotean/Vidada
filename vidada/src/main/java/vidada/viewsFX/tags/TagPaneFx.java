@@ -16,13 +16,14 @@ public class TagPaneFx extends BorderPane {
 
 	private TagStatesModel tagsModel = null;
 
-	public TagPaneFx(TagStatesModel tagsModel){
-
+	public TagPaneFx(){
 		setTop(tagsView);
-
 		tagsView.prefWidthProperty().bind(this.widthProperty());
 		tagsView.prefHeightProperty().bind(this.heightProperty());
+	}
 
+	public TagPaneFx(TagStatesModel tagsModel){
+		this();
 		setDataContext(tagsModel);
 	}
 

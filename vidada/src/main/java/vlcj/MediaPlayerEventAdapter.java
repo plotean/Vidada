@@ -1,9 +1,7 @@
 package vlcj;
 
-import uk.co.caprica.vlcj.binding.internal.libvlc_media_t;
-import uk.co.caprica.vlcj.player.MediaPlayer;
-import uk.co.caprica.vlcj.player.MediaPlayerEventListener;
 
+/*
 public class MediaPlayerEventAdapter implements MediaPlayerEventListener {
 
 
@@ -177,3 +175,4 @@ public class MediaPlayerEventAdapter implements MediaPlayerEventListener {
 
 	}
 }
+ */

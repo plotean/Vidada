@@ -18,7 +18,7 @@ import archimedesJ.util.Lists;
  * @author IsNull
  *
  */
-public class MultiMediaDetailModel implements IMediaDetailModel{
+public class MultiMediaDetailModel implements IMediaViewModel{
 
 	private final IMediaService mediaService = ServiceProvider.Resolve(IMediaService.class);
 	private final List<MediaItem> modelMedias;

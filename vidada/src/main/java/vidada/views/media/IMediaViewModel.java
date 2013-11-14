@@ -5,7 +5,12 @@ import archimedesJ.events.EventArgs;
 import archimedesJ.events.IEvent;
 import archimedesJ.swing.components.JMultiStateCheckBox.MultiCheckState;
 
-public interface IMediaDetailModel {
+/**
+ * ViewModel for a media item
+ * @author IsNull
+ *
+ */
+public interface IMediaViewModel {
 
 	/**
 	 * Event occurs when the tags have been changed

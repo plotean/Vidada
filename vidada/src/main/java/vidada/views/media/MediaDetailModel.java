@@ -15,7 +15,7 @@ import archimedesJ.exceptions.NotSupportedException;
 import archimedesJ.geometry.Size;
 import archimedesJ.swing.components.JMultiStateCheckBox.MultiCheckState;
 
-public class MediaDetailModel implements IMediaDetailModel {
+public class MediaDetailModel implements IMediaViewModel {
 
 	private transient final MediaItem mediaData;
 	private transient final IMediaService mediaService = ServiceProvider.Resolve(IMediaService.class);
@@ -156,8 +156,5 @@ public class MediaDetailModel implements IMediaDetailModel {
 		Size res = media.getResolution();
 		return res != null ? res.width + "x" + res.height : "unknown"; 
 	}
-
-
-
 
 }

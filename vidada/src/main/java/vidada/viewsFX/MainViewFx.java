@@ -13,6 +13,7 @@ import vidada.model.browser.TagServiceModelBinding;
 import vidada.model.tags.ITagService;
 import vidada.viewsFX.filters.FilterViewFx;
 import vidada.viewsFX.mediabrowsers.MediaBrowserFX;
+import vidada.viewsFX.medias.MediaDetailViewFx;
 
 import com.aquafx_project.AquaFx;
 import com.aquafx_project.controls.skin.styles.TabPaneType;
@@ -62,7 +63,6 @@ public class MainViewFx extends BorderPane {
 		browserTab.setContent(mediaBrowserFX);
 
 
-		// TODO: Controller?
 		mediaBrowserFX.setDataContext(browserModel);
 
 
@@ -71,6 +71,11 @@ public class MainViewFx extends BorderPane {
 
 		TitledPane filterPane = new TitledPane("Filter", filterView);
 		mediaBrowserFX.setTop(filterPane);
+
+		MediaDetailViewFx detailView = new MediaDetailViewFx();
+
+		TitledPane detailPane = new TitledPane("Detail", detailView);
+		mediaBrowserFX.setBottom(detailPane);
 
 
 		AquaFx.createTabPaneStyler().setType(TabPaneType.REGULAR).style(mainTab);
