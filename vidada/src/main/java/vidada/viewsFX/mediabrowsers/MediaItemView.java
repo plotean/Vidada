@@ -22,10 +22,12 @@ import org.controlsfx.dialog.Dialogs;
 import vidada.model.ServiceProvider;
 import vidada.model.media.MediaItem;
 import vidada.model.media.images.ImageMediaItem;
+import vidada.model.media.movies.MovieMediaItem;
 import vidada.viewsFX.player.IMediaPlayerService;
 import vidada.viewsFX.player.IMediaPlayerService.IMediaPlayerComponent;
 import vidada.viewsFX.player.MediaPlayerFx;
 import vidada.viewsFX.util.AsyncImageProperty;
+import vlcj.fx.IMediaPlayerBehavior;
 import vlcj.fx.MediaPlayerSeekBehaviour;
 import archimedesJ.events.EventArgs;
 import archimedesJ.events.EventListenerEx;
@@ -116,7 +118,7 @@ public class MediaItemView extends BorderPane {
 				if(me.getClickCount() == 2){
 					onMediaOpenAction();
 				}else if(me.getClickCount() == 1){
-					onMediaInspectAction();
+					onMediaInspectAction((float)(me.getX() / MediaItemView.this.getWidth()));
 				}
 			}
 		}
@@ -128,49 +130,61 @@ public class MediaItemView extends BorderPane {
 	/**
 	 * 
 	 */
-	private void onMediaInspectAction(){
+	private void onMediaInspectAction(float relativePos){
 
-		/*
-		Action response = Dialogs.create()
-				.owner(null)
-				.title("Test")
-				.masthead("On Media Inspect Action!")
-				.message("lets preview this")
-				.showWarning();*/
-		if(mediaPlayerService.isMediaPlayerAvaiable()){
-			addMediaPlayer();
-		}else {
-			System.err.println("No MediaPlayer is avaible!");
+		if(media instanceof MovieMediaItem)
+		{
+			if(mediaPlayerService.isMediaPlayerAvaiable()){
+				MediaPlayerFx playerView = addMediaPlayer();
+
+				// start playing and set initial position relative
+				playerView.getMediaController().playMedia(media.getSource().getPath());
+				playerView.getMediaController().setPosition(relativePos);
+
+			}else {
+				System.err.println("No MediaPlayer is avaible!");
+			}
 		}
-
 	}
 
+	private final static IMediaPlayerBehavior playerBehavior = new MediaPlayerSeekBehaviour();
 
-
-	private void addMediaPlayer(){
+	private MediaPlayerFx addMediaPlayer(){
 		player = mediaPlayerService.resolveMediaPlayer();
 		player.getRequestReleaseEvent().add(playerReleaseListener);
 
 		MediaPlayerFx playerView = player.getSharedPlayer();
-		playerView.addBehavior(MediaPlayerSeekBehaviour.Instance);
+		playerView.addBehavior(playerBehavior);
 
 		primaryContent.getChildren().add(playerView);
 
 		playerView.setWidth(primaryContent.getWidth());
 		playerView.setHeight(primaryContent.getHeight());
-		playerView.getMediaController().playMedia(media.getSource().getPath());
+
+
+		playerView.addEventHandler(MouseEvent.MOUSE_EXITED, mouseExitedListener);
+		return playerView;
 	}
 
 	private void removeMediaPlayer(){
-		player.getSharedPlayer().getMediaController().stop();
+		MediaPlayerFx playerView = player.getSharedPlayer();
+		playerView.getMediaController().stop();
 		player.getRequestReleaseEvent().remove(playerReleaseListener);
-		primaryContent.getChildren().remove(player.getSharedPlayer());
+		primaryContent.getChildren().remove(playerView);
+		playerView.removeEventHandler(MouseEvent.MOUSE_EXITED, mouseExitedListener);
 		player = null;
 	}
 
 	private final EventListenerEx<EventArgs> playerReleaseListener = new EventListenerEx<EventArgs>() {
 		@Override
 		public void eventOccured(Object sender, EventArgs eventArgs) {
+			removeMediaPlayer();
+		}
+	};
+
+	private final EventHandler<MouseEvent> mouseExitedListener = new EventHandler<MouseEvent>() {
+		@Override
+		public void handle(MouseEvent me) {
 			removeMediaPlayer();
 		}
 	};
