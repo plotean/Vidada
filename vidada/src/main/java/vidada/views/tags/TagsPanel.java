@@ -12,10 +12,10 @@ import java.util.Map;
 import javax.swing.JPanel;
 
 import vidada.model.tags.Tag;
+import vidada.model.tags.TagState;
 import archimedesJ.events.EventArgs;
 import archimedesJ.events.EventHandlerEx;
 import archimedesJ.swing.components.JMultiStateCheckBox;
-import archimedesJ.swing.components.JMultiStateCheckBox.MultiCheckState;
 import archimedesJ.swing.layouts.WrapLayout;
 
 /**
@@ -156,8 +156,8 @@ public class TagsPanel extends JPanel { //  implements ITagsView
 	 * @param tag
 	 * @param state
 	 */
-	public MultiCheckState getTagState(Tag tag){
-		return getCheckBox(tag).getState();
+	public TagState getTagState(Tag tag){
+		return TagStateWrapper.toModelState(getCheckBox(tag).getState());
 	}
 
 
@@ -166,21 +166,21 @@ public class TagsPanel extends JPanel { //  implements ITagsView
 	 * @param tag
 	 * @param state
 	 */
-	public void setTagState(Tag tag, MultiCheckState state){
-		getCheckBox(tag).setState(state);
+	public void setTagState(Tag tag, TagState state){
+		getCheckBox(tag).setState(TagStateWrapper.toViewState(state));
 	}
 
 	/**
 	 * Set the given state to all Tags
 	 * @param state
 	 */
-	public void setAllTagsTo(MultiCheckState state){
+	public void setAllTagsTo(TagState state){
 
 		for (java.awt.Component comp : this.getComponents()) {
 			if(comp instanceof TagCheckBox)
 			{
 				TagCheckBox checkBox = ((TagCheckBox)comp);
-				checkBox.setState(state);
+				checkBox.setState(TagStateWrapper.toViewState(state));
 			}
 		}
 	}
@@ -190,7 +190,7 @@ public class TagsPanel extends JPanel { //  implements ITagsView
 	 * @param state
 	 * @param tagsFilter
 	 */
-	public void setTagsState(MultiCheckState state, Collection<Tag> tagsFilter){
+	public void setTagsState(TagState state, Collection<Tag> tagsFilter){
 
 		for (java.awt.Component comp : this.getComponents()) {
 			if(comp instanceof TagCheckBox)
@@ -199,7 +199,7 @@ public class TagsPanel extends JPanel { //  implements ITagsView
 
 				if(tagsFilter.contains(checkBox.getTag()))
 				{
-					checkBox.setState(state);
+					checkBox.setState(TagStateWrapper.toViewState(state));
 				}
 			}
 		}
@@ -209,12 +209,12 @@ public class TagsPanel extends JPanel { //  implements ITagsView
 	 * Returns all Tags which have been checked
 	 * @return
 	 */
-	public List<Tag> getTagsWithState(MultiCheckState filterState){
+	public List<Tag> getTagsWithState(TagState filterState){
 
 		List<Tag> tags = new ArrayList<Tag>();
 
 		for (TagCheckBox chk : tagToViewMap.values()) {
-			if(chk.getState() == filterState)
+			if(TagStateWrapper.toModelState(chk.getState()) == filterState)
 			{
 				tags.add(chk.getTag());
 			}

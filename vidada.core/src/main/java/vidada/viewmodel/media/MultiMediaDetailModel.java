@@ -1,4 +1,4 @@
-package vidada.views.media;
+package vidada.viewmodel.media;
 
 import java.util.List;
 
@@ -6,15 +6,13 @@ import vidada.model.ServiceProvider;
 import vidada.model.media.IMediaService;
 import vidada.model.media.MediaItem;
 import vidada.model.tags.Tag;
-import archimedesJ.events.EventAggregate;
-import archimedesJ.events.EventArgs;
-import archimedesJ.events.EventArgsG;
-import archimedesJ.events.IEvent;
-import archimedesJ.swing.components.JMultiStateCheckBox.MultiCheckState;
+import vidada.model.tags.TagState;
+import vidada.viewmodel.ITagStatesVMProvider;
+import archimedesJ.exceptions.NotImplementedException;
 import archimedesJ.util.Lists;
 
 /**
- * 
+ * Media Detail Adapter for multiple medias
  * @author IsNull
  *
  */
@@ -23,11 +21,6 @@ public class MultiMediaDetailModel implements IMediaViewModel{
 	private final IMediaService mediaService = ServiceProvider.Resolve(IMediaService.class);
 	private final List<MediaItem> modelMedias;
 
-
-	private final EventAggregate<EventArgsG<Tag>> TagsChanged = new EventAggregate<EventArgsG<Tag>>();
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	@Override
-	public IEvent<EventArgs> getTagsChanged() { return (IEvent)TagsChanged; }
 
 
 	/**
@@ -39,9 +32,14 @@ public class MultiMediaDetailModel implements IMediaViewModel{
 
 		// redirect events to the tags changed event
 		for (MediaItem mediaData : modelMedias) {
-			TagsChanged.registerEvent(mediaData.getTagAddedEvent());
-			TagsChanged.registerEvent(mediaData.getTagRemovedEvent());
+			//TagsChanged.registerEvent(mediaData.getTagAddedEvent());
+			//TagsChanged.registerEvent(mediaData.getTagRemovedEvent());
 		}
+	}
+
+	@Override
+	public ITagStatesVMProvider getTagsVM() {
+		throw new NotImplementedException("getTagsVM");
 	}
 
 
@@ -52,27 +50,26 @@ public class MultiMediaDetailModel implements IMediaViewModel{
 	 * The state is unchecked if all media data don't have the Tag
 	 * The state is Indeterminate if the media data are not consistent
 	 */
-	@Override
-	public MultiCheckState getState(Tag tag) {
+	public TagState getTagState(Tag tag) {
 
-		MultiCheckState currentState = MultiCheckState.Indeterminate;
+		TagState currentState = TagState.Indeterminate;
 
 		for (MediaItem media : modelMedias) {
 			if(media.getTags().contains(tag)){
-				if(currentState == MultiCheckState.Unchecked)
+				if(currentState == TagState.Allowed)
 				{
-					currentState = MultiCheckState.Indeterminate;
+					currentState = TagState.Indeterminate;
 					break; 
 				}else{
-					currentState = MultiCheckState.Checked;
+					currentState = TagState.Required;
 				}
 			}else{
-				if(currentState == MultiCheckState.Checked)
+				if(currentState == TagState.Required)
 				{
-					currentState = MultiCheckState.Indeterminate;
+					currentState = TagState.Indeterminate;
 					break; 
 				}else{
-					currentState = MultiCheckState.Unchecked;
+					currentState = TagState.Allowed;
 				}
 			}
 		}
@@ -80,13 +77,13 @@ public class MultiMediaDetailModel implements IMediaViewModel{
 	}
 
 
-	@Override
-	public void setState(Tag tag, MultiCheckState newState) {
 
-		if(newState == MultiCheckState.Checked || newState == MultiCheckState.Unchecked)
+	public void setTagState(Tag tag, TagState newState) {
+
+		if(newState == TagState.Required || newState == TagState.Allowed)
 		{
 			for (MediaItem media : modelMedias) {
-				if(newState == MultiCheckState.Checked)
+				if(newState == TagState.Required)
 				{
 					media.addTag(tag);
 				}else{
@@ -131,7 +128,7 @@ public class MultiMediaDetailModel implements IMediaViewModel{
 	@Override
 	public String getResolution() {
 		if(modelMedias.size() == 1)
-			return MediaDetailModel.getResolutionString(modelMedias.get(0));
+			return MediaDetailViewModel.getResolutionString(modelMedias.get(0));
 		else return "unknown";
 	}
 
@@ -154,6 +151,9 @@ public class MultiMediaDetailModel implements IMediaViewModel{
 	public String getAddedDate() {
 		return "-";
 	}
+
+
+
 
 
 

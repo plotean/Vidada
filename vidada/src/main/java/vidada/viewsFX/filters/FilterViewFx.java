@@ -9,9 +9,9 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
-import vidada.model.browser.FilterModel;
 import vidada.model.media.MediaType;
 import vidada.model.media.OrderProperty;
+import vidada.viewmodel.FilterModel;
 import vidada.viewsFX.tags.TagPaneFx;
 import archimedesJ.util.Lists;
 

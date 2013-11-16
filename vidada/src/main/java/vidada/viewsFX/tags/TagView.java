@@ -7,8 +7,8 @@ import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.shape.Circle;
-import vidada.model.browser.TagViewModel;
-import vidada.model.tags.TagFilterState;
+import vidada.model.tags.TagState;
+import vidada.viewmodel.tags.TagViewModel;
 import vidada.viewsFX.util.IDataContext;
 import archimedesJ.events.EventArgsG;
 import archimedesJ.events.EventListenerEx;
@@ -35,7 +35,7 @@ public class TagView extends HBox implements IDataContext<TagViewModel> {
 
 	public TagView(){
 
-		setStateStyle(TagFilterState.Allowed);
+		setStateStyle(TagState.Allowed);
 		this.getStylesheets().add("css/default_tagview.css");
 
 		tagCircle = new Circle();
@@ -63,6 +63,11 @@ public class TagView extends HBox implements IDataContext<TagViewModel> {
 			}});
 	}
 
+	@Override
+	public TagViewModel getDataContext() {
+		return this.tag;
+	}
+
 
 	@Override
 	public void setDataContext(final TagViewModel tagvm) {
@@ -83,13 +88,13 @@ public class TagView extends HBox implements IDataContext<TagViewModel> {
 
 		}else {
 			tagname.setText("<no datacontext>");
-			setStateStyle(TagFilterState.Allowed);
+			setStateStyle(TagState.Allowed);
 		}
 
 	}
-	private void setStateStyle(TagFilterState state){
+	private void setStateStyle(TagState state){
 		String currentStyle = TAGVIEW_ID + "-"+ state.toString().toLowerCase();
-		System.out.println("set tag style: " + currentStyle);
+		//System.out.println("set tag style: " + currentStyle);
 		this.setId(currentStyle);
 	}
 
@@ -101,6 +106,8 @@ public class TagView extends HBox implements IDataContext<TagViewModel> {
 			updateTagView();
 		}
 	};
+
+
 
 
 }

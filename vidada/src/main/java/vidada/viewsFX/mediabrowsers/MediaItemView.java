@@ -20,9 +20,8 @@ import org.controlsfx.control.action.Action;
 import org.controlsfx.dialog.Dialogs;
 
 import vidada.model.ServiceProvider;
-import vidada.model.media.MediaItem;
-import vidada.model.media.images.ImageMediaItem;
-import vidada.model.media.movies.MovieMediaItem;
+import vidada.model.media.MediaType;
+import vidada.viewmodel.MediaViewModel;
 import vidada.viewsFX.player.IMediaPlayerService;
 import vidada.viewsFX.player.IMediaPlayerService.IMediaPlayerComponent;
 import vidada.viewsFX.player.MediaPlayerFx;
@@ -31,7 +30,6 @@ import vlcj.fx.IMediaPlayerBehavior;
 import vlcj.fx.MediaPlayerSeekBehaviour;
 import archimedesJ.events.EventArgs;
 import archimedesJ.events.EventListenerEx;
-import archimedesJ.geometry.Size;
 import archimedesJ.images.IRawImageFactory;
 import archimedesJ.images.ImageContainer;
 import archimedesJ.images.viewer.IImageViewerService;
@@ -62,14 +60,12 @@ public class MediaItemView extends BorderPane {
 	private double oldThumbHeight=0;
 
 	// Current DataContext
-	private MediaItem media = null;
+	private MediaViewModel media = null;
 
 
 	public MediaItemView(IMediaPlayerService mediaPlayerService){ 
 
 		this.mediaPlayerService = mediaPlayerService;
-
-		setId("media-cell");
 
 		// TODO: Refactor this fix to render crisp for retina display
 		rating.setScaleX(0.5);
@@ -84,11 +80,14 @@ public class MediaItemView extends BorderPane {
 		description.setAlignment(Pos.CENTER_LEFT);
 		description.setPadding(new Insets(10));
 
+
 		this.setCenter(primaryContent);
 		this.setBottom(description);
 
 		// event listener
-		this.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseClickedHandler);
+		imagePane.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseClickedHandler);
+		this.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseClickedSelectionHandler);
+
 
 		imagePane.widthProperty().addListener(new ChangeListener<Number>() {
 			@Override
@@ -107,7 +106,6 @@ public class MediaItemView extends BorderPane {
 
 	}
 
-
 	/**
 	 * Occurs when the user clicks on the media
 	 */
@@ -124,6 +122,20 @@ public class MediaItemView extends BorderPane {
 		}
 	};
 
+	/**
+	 * Occurs when the user clicks on the media
+	 */
+	transient private final EventHandler<MouseEvent> mouseClickedSelectionHandler = new EventHandler<MouseEvent>(){
+		@Override
+		public void handle(MouseEvent me) {
+			if(me.getButton().equals(MouseButton.PRIMARY)){
+				if(me.getClickCount() == 1){
+					media.setSelected(true);
+				}
+			}
+		}
+	};
+
 	transient private final IImageViewerService imageViewer = ServiceProvider.Resolve(IImageViewerService.class);
 	transient private final IRawImageFactory imageFactory = ServiceProvider.Resolve(IRawImageFactory.class);
 
@@ -132,13 +144,17 @@ public class MediaItemView extends BorderPane {
 	 */
 	private void onMediaInspectAction(float relativePos){
 
-		if(media instanceof MovieMediaItem)
+		System.out.println("inspect media: " + media.getMediaType());
+		if(media.getMediaType().equals(MediaType.MOVIE))
 		{
 			if(mediaPlayerService.isMediaPlayerAvaiable()){
+
+				System.out.println("MediaView: Starting directplay:");
+
 				MediaPlayerFx playerView = addMediaPlayer();
 
 				// start playing and set initial position relative
-				playerView.getMediaController().playMedia(media.getSource().getPath());
+				playerView.getMediaController().playMedia(media.getModel().getSource().getPath());
 				playerView.getMediaController().setPosition(relativePos);
 
 			}else {
@@ -194,13 +210,13 @@ public class MediaItemView extends BorderPane {
 	 * Occurs when a media is opened
 	 */
 	private void onMediaOpenAction(){
-		if(media instanceof ImageMediaItem){
+		if(media.getMediaType().equals(MediaType.IMAGE)){
 			//
 			// In case it is an image, show it in internal preview
 			//
 			ISmartImage smartImage;
 			try {
-				smartImage = new SmartImageLazy(imageFactory, new URI(media.getSource().getPath()));
+				smartImage = new SmartImageLazy(imageFactory, new URI(media.getModel().getSource().getPath()));
 				imageViewer.showImage(smartImage);
 			} catch (URISyntaxException e) {
 				e.printStackTrace();
@@ -212,7 +228,7 @@ public class MediaItemView extends BorderPane {
 						.title("Can not open Media")
 						.masthead("No media source found!")
 						.message("The file " + media.getTitle() + 
-								" could not be opened!" + FileSupport.NEWLINE + media.getSource())
+								" could not be opened!" + FileSupport.NEWLINE + media.getModel().getSource())
 								.showWarning();
 			}
 		}
@@ -234,19 +250,19 @@ public class MediaItemView extends BorderPane {
 			}
 		}
 
-		System.out.println("Image Size" + desiredWidth + " x " + desiredHeight);
+		//System.out.println("Image Size" + desiredWidth + " x " + desiredHeight);
 	}
 
 	private static double dpiMultiplier = 2.0;
 
 	private void requestThumb(int width, int height){
 		ImageContainer container = media.getThumbnail(
-				new Size((int)(width*dpiMultiplier), (int)(height*dpiMultiplier))
-				);
+				(int)(width*dpiMultiplier),
+				(int)(height*dpiMultiplier));
 		imageProperty.imageUrlProperty().set(container);
 	}
 
-	public void setDataContext(MediaItem media){
+	public void setDataContext(MediaViewModel media){
 		this.media = media;
 		imagePane.stopAnimation();
 		if(media != null){

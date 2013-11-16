@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javafx.application.Platform;
-import javafx.beans.property.DoubleProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.layout.BorderPane;
@@ -14,11 +13,15 @@ import javafx.util.Callback;
 import org.controlsfx.control.GridCell;
 import org.controlsfx.control.GridView;
 
-import vidada.model.browser.MediaBrowserModel;
 import vidada.model.media.MediaItem;
+import vidada.viewmodel.IVMFactory;
+import vidada.viewmodel.MediaBrowserModel;
+import vidada.viewmodel.MediaViewModel;
+import vidada.viewmodel.ViewModelPool;
 import vidada.viewsFX.player.IMediaPlayerService;
 import vlcj.fx.MediaPlayerService;
 import archimedesJ.data.events.CollectionEventArg;
+import archimedesJ.events.EventArgs;
 import archimedesJ.events.EventListenerEx;
 
 /**
@@ -29,30 +32,33 @@ import archimedesJ.events.EventListenerEx;
 public class MediaBrowserFX extends BorderPane {
 
 	private MediaBrowserModel mediaModel;
-	private GridView<MediaItem> gridView;
+	private GridView<MediaViewModel> gridView;
 
-	transient private final ObservableList<MediaItem> observableMedias;
+	transient private final ObservableList<MediaViewModel> observableMedias;
 	transient private final IMediaPlayerService mediaPlayerService = new MediaPlayerService();
 
 
 	public MediaBrowserFX(){
-		observableMedias = FXCollections.observableArrayList(new ArrayList<MediaItem>());
+		observableMedias = FXCollections.observableArrayList(new ArrayList<MediaViewModel>());
 		initView();		
 	}
 
 	private void initView(){
-		gridView = new GridView<MediaItem>();
+		gridView = new GridView<MediaViewModel>();
 
 		gridView.setStyle("-fx-background-color: #FFFFFF;");
 
 		gridView.getStylesheets().add("css/default_media_cell.css");
 
-		gridView.setCellFactory(new Callback<GridView<MediaItem>, GridCell<MediaItem>>() {
+		gridView.setCellFactory(new Callback<GridView<MediaViewModel>, GridCell<MediaViewModel>>() {
 			@Override
-			public GridCell<MediaItem> call(GridView<MediaItem> arg0) {
-				//createdCellNodes++;
-				//System.out.println("createdCellNodes: " + createdCellNodes);
-				return new MediaGridItemCell();
+			public GridCell<MediaViewModel> call(GridView<MediaViewModel> arg0) {
+
+				return new MediaGridItemCell(
+						new MediaItemView(mediaPlayerService),
+						gridView.cellWidthProperty(),
+						gridView.cellHeightProperty()
+						);
 			}
 		});
 
@@ -73,14 +79,21 @@ public class MediaBrowserFX extends BorderPane {
 
 	public void setDataContext(MediaBrowserModel mediaModel){
 
-		if(this.mediaModel != null)
+		if(this.mediaModel != null){
 			this.mediaModel.getMediasChangedEvent().remove(mediasChangedEventListener);
+			//mediaModel.getSelectionManager().getSelectionChanged().remove(selectionChangedListener);
+		}
 
 		this.mediaModel = mediaModel;
-		this.mediaModel.getMediasChangedEvent().add(mediasChangedEventListener);
+
+		if(mediaModel != null){
+			mediaModel.getMediasChangedEvent().add(mediasChangedEventListener);
+			//mediaModel.getSelectionManager().getSelectionChanged().add(selectionChangedListener);
+		}
 
 		updateView();
 	}
+
 
 
 	transient private EventListenerEx<CollectionEventArg<MediaItem>> mediasChangedEventListener 
@@ -91,6 +104,40 @@ public class MediaBrowserFX extends BorderPane {
 			updateView();
 		}
 	};
+
+	private MediaViewModel previousSelection;
+
+	transient private final EventListenerEx<EventArgs> VMselectionChangedListener = new EventListenerEx<EventArgs>() {
+
+		@Override
+		public void eventOccured(Object sender, EventArgs eventArgs) {
+
+			MediaViewModel vm = (MediaViewModel)sender;
+
+			if(previousSelection != null) previousSelection.setSelected(false);
+
+			mediaModel.getSelectionManager().trySelect(vm.getModel());
+
+			previousSelection = vm;
+		}
+	};
+
+
+
+
+	private IVMFactory<MediaItem, MediaViewModel> vmFactory = new IVMFactory<MediaItem, MediaViewModel>() {
+		@Override
+		public MediaViewModel create(MediaItem model) {
+			MediaViewModel vm = new MediaViewModel(model);
+			vm.SelectionChangedEvent.add(VMselectionChangedListener);
+			return vm;
+		}
+	};
+
+
+	transient private final ViewModelPool<MediaItem, MediaViewModel> mediaVMPool =
+			new ViewModelPool<MediaItem, MediaViewModel>(vmFactory);
+
 
 	private synchronized void updateView(){
 		Platform.runLater(new Runnable() {
@@ -104,10 +151,11 @@ public class MediaBrowserFX extends BorderPane {
 					final List<MediaItem> items = mediaModel.getRaw();
 					System.out.println("MediaBrowserFX:updateView items: " + items.size() + " empty?" + items.isEmpty());
 
-					if(!items.isEmpty()){
-						observableMedias.addAll(items);
+					final List<MediaViewModel> itemVMs = new ArrayList<>();
+					for (MediaItem mediaItem : items) {
+						itemVMs.add(mediaVMPool.viewModel(mediaItem));
 					}
-
+					observableMedias.addAll(itemVMs);
 				}else {
 					System.out.println("medias empty");
 				}
@@ -115,30 +163,5 @@ public class MediaBrowserFX extends BorderPane {
 		});
 	}
 
-	class MediaGridItemCell extends GridCell<MediaItem> {
 
-		private final MediaItemView visual; 
-
-		public MediaGridItemCell(){
-			visual = new MediaItemView(mediaPlayerService);
-
-			DoubleProperty desiredWidth = gridView.cellWidthProperty();
-			DoubleProperty desiredHeight = gridView.cellHeightProperty();
-
-			this.prefWidthProperty().bind(desiredWidth);
-			this.prefHeightProperty().bind(desiredHeight);
-			this.maxWidthProperty().bind(desiredWidth);
-			this.maxHeightProperty().bind(desiredHeight);
-			this.minWidthProperty().bind(desiredWidth);
-			this.minHeightProperty().bind(desiredHeight);
-
-			setGraphic(visual);
-		}
-
-		@Override
-		public void updateItem(MediaItem item, boolean empty) {
-			super.updateItem(item, empty);
-			visual.setDataContext(item);
-		}
-	}
 }

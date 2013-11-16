@@ -3,7 +3,7 @@ package vidada.controller.tags;
 import java.util.List;
 
 import vidada.model.tags.Tag;
-import vidada.model.tags.TagFilterState;
+import vidada.model.tags.TagState;
 
 public interface ITagsView {
 
@@ -12,6 +12,6 @@ public interface ITagsView {
 	 * @param checked
 	 * @return
 	 */
-	List<Tag> getTagsWithState(TagFilterState filterState);
+	List<Tag> getTagsWithState(TagState filterState);
 
 }

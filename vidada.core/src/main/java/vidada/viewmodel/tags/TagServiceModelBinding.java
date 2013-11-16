@@ -1,7 +1,8 @@
-package vidada.model.browser;
+package vidada.viewmodel.tags;
 
 import vidada.model.tags.ITagService;
 import vidada.model.tags.Tag;
+import vidada.viewmodel.ITagStatesVM;
 import archimedesJ.events.EventArgs;
 import archimedesJ.events.EventArgsG;
 import archimedesJ.events.EventListenerEx;
@@ -9,15 +10,15 @@ import archimedesJ.events.EventListenerEx;
 public class TagServiceModelBinding {
 
 	private final ITagService tagservice;
-	private final TagStatesModel tagsStateModel;
+	private final ITagStatesVM tagsStateModel;
 
 
-	public static TagServiceModelBinding bind(ITagService tagservice,TagStatesModel tageStateModel){
+	public static TagServiceModelBinding bind(ITagService tagservice, ITagStatesVM tageStateModel){
 		return new TagServiceModelBinding(tagservice, tageStateModel);
 	}
 
 
-	public TagServiceModelBinding(ITagService tagservice,TagStatesModel tageStateModel){
+	public TagServiceModelBinding(ITagService tagservice, ITagStatesVM tageStateModel){
 		this.tagservice = tagservice;
 		this.tagsStateModel = tageStateModel;
 
@@ -46,7 +47,7 @@ public class TagServiceModelBinding {
 		refreshModel();
 	}
 
-	public TagStatesModel getTagStatesModel(){
+	public ITagStatesVM getTagStatesModel(){
 		return tagsStateModel;
 	}
 

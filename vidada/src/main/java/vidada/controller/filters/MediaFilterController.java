@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import vidada.model.ServiceProvider;
-import vidada.model.browser.FilterModel;
-import vidada.model.browser.MediaBrowserModel;
 import vidada.model.filters.AsyncFetchData;
 import vidada.model.filters.AsyncFetchData.CancelTokenEventArgs;
 import vidada.model.libraries.IMediaLibraryService;
@@ -16,7 +14,9 @@ import vidada.model.media.OrderProperty;
 import vidada.model.media.QueryBuilder;
 import vidada.model.media.source.MediaSource;
 import vidada.model.tags.Tag;
-import vidada.model.tags.TagFilterState;
+import vidada.model.tags.TagState;
+import vidada.viewmodel.FilterModel;
+import vidada.viewmodel.MediaBrowserModel;
 import archimedesJ.events.EventArgs;
 import archimedesJ.events.EventListenerEx;
 import archimedesJ.expressions.Predicate;
@@ -107,7 +107,7 @@ public class MediaFilterController {
 	private Query buildCriteria(){
 
 		List<Tag> requiredTags = mediaBrowserModel.getTagStatesModel()
-				.getTagsWithState(TagFilterState.Required);
+				.getTagsWithState(TagState.Required);
 
 		MediaType selectedtype = (MediaType)filterModel.getMediaType();
 		OrderProperty selectedOrder = (OrderProperty)filterModel.getOrder();

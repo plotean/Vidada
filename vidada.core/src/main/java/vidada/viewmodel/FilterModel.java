@@ -1,4 +1,4 @@
-package vidada.model.browser;
+package vidada.viewmodel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,7 +7,8 @@ import vidada.model.libraries.MediaLibrary;
 import vidada.model.media.MediaType;
 import vidada.model.media.OrderProperty;
 import vidada.model.tags.Tag;
-import vidada.model.tags.TagFilterState;
+import vidada.model.tags.TagState;
+import vidada.viewmodel.tags.TagViewModel;
 import archimedesJ.events.EventArgs;
 import archimedesJ.events.EventArgsG;
 import archimedesJ.events.EventHandlerEx;
@@ -16,7 +17,7 @@ import archimedesJ.events.IEvent;
 
 public class FilterModel {
 
-	private final TagStatesModel tagStatesModel;
+	private final ITagStatesVMProvider tagStatesModel;
 
 	// filter state
 
@@ -37,7 +38,7 @@ public class FilterModel {
 
 
 
-	public FilterModel(TagStatesModel tagStatesModel){
+	public FilterModel(ITagStatesVMProvider tagStatesModel){
 		this.tagStatesModel = tagStatesModel;
 
 		tagStatesModel.getTagStateChangedEvent().add(new EventListenerEx<EventArgsG<TagViewModel>>() {
@@ -51,11 +52,11 @@ public class FilterModel {
 
 
 	public List<Tag> getRequiredTags() {
-		return tagStatesModel.getTagsWithState(TagFilterState.Required);
+		return tagStatesModel.getTagsWithState(TagState.Required);
 	}
 
 	public List<Tag> getBlockedTags() {
-		return tagStatesModel.getTagsWithState(TagFilterState.Blocked);
+		return tagStatesModel.getTagsWithState(TagState.Blocked);
 	}
 
 
@@ -127,7 +128,7 @@ public class FilterModel {
 
 
 
-	public TagStatesModel getTagStatesModel(){
+	public ITagStatesVMProvider getTagStatesModel(){
 		return tagStatesModel;
 	}
 

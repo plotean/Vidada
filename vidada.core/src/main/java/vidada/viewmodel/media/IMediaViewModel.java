@@ -1,9 +1,6 @@
-package vidada.views.media;
+package vidada.viewmodel.media;
 
-import vidada.model.tags.Tag;
-import archimedesJ.events.EventArgs;
-import archimedesJ.events.IEvent;
-import archimedesJ.swing.components.JMultiStateCheckBox.MultiCheckState;
+import vidada.viewmodel.ITagStatesVMProvider;
 
 /**
  * ViewModel for a media item
@@ -12,15 +9,8 @@ import archimedesJ.swing.components.JMultiStateCheckBox.MultiCheckState;
  */
 public interface IMediaViewModel {
 
-	/**
-	 * Event occurs when the tags have been changed
-	 * @return
-	 */
-	public abstract IEvent<EventArgs> getTagsChanged();
 
-	public abstract MultiCheckState getState(Tag tag);
-
-	public abstract void setState(Tag tag, MultiCheckState newState);
+	// media general info
 
 	public abstract void setRating(int selection);
 
@@ -42,5 +32,7 @@ public interface IMediaViewModel {
 	 * Persist the changes
 	 */
 	public abstract void persist();
+
+	public abstract ITagStatesVMProvider getTagsVM();
 
 }

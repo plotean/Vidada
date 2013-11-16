@@ -2,7 +2,7 @@
 
 .label { 
 	-fx-text-fill: black;
-    -fx-font: 10px "Verdana";
+    -fx-font: 12px "Verdana";
 }
 
 #tag-dot {

@@ -1,17 +1,46 @@
 package vidada.viewsFX.tags;
 
-import vidada.model.browser.TagStatesModel;
+import javafx.scene.layout.BorderPane;
+import vidada.model.tags.TagState;
+import vidada.viewmodel.ITagStatesVMProvider;
+import vidada.viewmodel.tags.TagViewModel;
+import archimedesJ.expressions.Predicate;
 
 
-public class MediaDetailTagPane extends TagPaneFx {
+public class MediaDetailTagPane extends BorderPane {
+
+	private final TagPaneFx currentTagsPanel;
+	private final TagPaneFx avaiableTagsPanel;
+
 
 	public MediaDetailTagPane() {
-		super();
+		currentTagsPanel = new TagPaneFx();
+		avaiableTagsPanel = new TagPaneFx();
+
+
+
+		currentTagsPanel.setFilter(new Predicate<TagViewModel>() {
+			@Override
+			public boolean where(TagViewModel value) {
+				return value.getState().equals(TagState.Required);
+			}
+		});
+
+		avaiableTagsPanel.setFilter(new Predicate<TagViewModel>() {
+			@Override
+			public boolean where(TagViewModel value) {
+				return value.getState().equals(TagState.Allowed);
+			}
+		});
+
+
+		this.setTop(avaiableTagsPanel);
+		this.setBottom(currentTagsPanel);
 	}
 
 
-	@Override
-	public void setDataContext(TagStatesModel tagsViewModel){
-		super.setDataContext(tagsViewModel);
+	public void setDataContext(ITagStatesVMProvider tagsViewModel){
+		currentTagsPanel.setDataContext(tagsViewModel);
+		avaiableTagsPanel.setDataContext(tagsViewModel);
 	}
 }

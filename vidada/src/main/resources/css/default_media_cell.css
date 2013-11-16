@@ -6,12 +6,17 @@
 }
 
 #media-cell:hover {
-    -fx-background-color: #A9C5EB;
+    -fx-background-color: #BBEBFF;
 }
 
 #media-cell:selected {
-    -fx-background-color: #7BA7E1;
-    /*-fx-border-color: #00FF00;*/
+    -fx-background-color: #A9C5EB;
+    -fx-border-color: #75B4FF;
+}
+
+#media-cell:hover:selected {
+    -fx-background-color: #BBEBFF;
+    -fx-border-color: #75B4FF;
 }
 
 

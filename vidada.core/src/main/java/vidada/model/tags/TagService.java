@@ -65,6 +65,7 @@ public class TagService implements ITagService {
 		for (Tag tag : newTags) {
 			tagAddedEvent.fireEvent(this, EventArgsG.build(tag));
 		}
+
 		db.commit();
 
 		notifyTagsChanged();

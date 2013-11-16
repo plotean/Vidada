@@ -5,7 +5,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.FlowLayout;
 
-import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
@@ -13,9 +12,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import vidada.model.ServiceProvider;
-import vidada.model.media.MediaItem;
-import vidada.views.media.ExpandableMediaDetail;
-import vidada.views.mediabrowsers.mediaBrowser.PrimaryMediaBrowserPanel;
 import vidada.views.mediabrowsers.mediaFileBrowser.FileSystemBrowserPanel;
 import archimedesJ.services.ISelectionService;
 
@@ -51,7 +47,8 @@ public class MainFrame extends JFrame{
 
 		getContentPane().add(panel, BorderLayout.NORTH);
 
-		JPanel mediaBrowserPanel = new PrimaryMediaBrowserPanel();
+		// JPanel mediaBrowserPanel = new PrimaryMediaBrowserPanel();
+		JPanel mediaBrowserPanel = new JPanel();
 		JPanel filesystemBrowser = new FileSystemBrowserPanel();
 
 		JTabbedPane presentationTab = new JTabbedPane(JTabbedPane.TOP);
@@ -63,10 +60,7 @@ public class MainFrame extends JFrame{
 		getContentPane().add(presentationTab, BorderLayout.CENTER);
 
 
-		ExpandableMediaDetail mediaDetailPanel = new ExpandableMediaDetail(selectionService.getSelectionManager(MediaItem.class));
-		mediaDetailPanel.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
-		getContentPane().add(mediaDetailPanel, BorderLayout.SOUTH);
-		//TODO DEBUG!!
+
 
 
 		presentationTab.addChangeListener(new ChangeListener() {
