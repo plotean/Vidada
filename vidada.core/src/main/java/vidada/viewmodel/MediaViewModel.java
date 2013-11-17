@@ -97,7 +97,7 @@ public class MediaViewModel implements IViewModel<MediaItem> {
 
 	public ImageContainer getThumbnail(int widthPxl, int heightPxl){
 		if(mediaData != null)
-			return mediaData.getThumbnail(new Size(widthPxl, widthPxl));
+			return mediaData.getThumbnail(new Size(widthPxl, heightPxl));
 		return null;
 	}
 
