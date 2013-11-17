@@ -54,7 +54,6 @@ public class MediaLibrary extends BaseEntity {
 	 */
 	public MediaLibrary(){	
 
-		System.err.println("media lib constructor :) ");
 	}
 
 
@@ -191,24 +190,6 @@ public class MediaLibrary extends BaseEntity {
 		} 
 		return null;
 	}
-
-	/**
-	 * Returns all Files from this library
-	 * @return
-
-	@Transient
-	public List<ResourceLocation> getAllFiles(){
-		return Lists.asTypedList(getLibraryRoot().listAll(
-				LocationFilters.AcceptAllFiles,
-				LocationFilters.AcceptAllDirectories));
-	}
-
-	@Transient
-	public List<ResourceLocation> getAllFiles(ILocationFilter filter){
-		DirectoiryLocation root = getLibraryRoot();
-		return Lists.asTypedList(root.listAll(filter, null));
-	}
-	 */
 
 
 	/**

@@ -166,6 +166,8 @@ public class MediaItemView extends BorderPane {
 	private final static IMediaPlayerBehavior playerBehavior = new MediaPlayerSeekBehaviour();
 
 	private MediaPlayerFx addMediaPlayer(){
+		System.out.println("MediaItemView: adding MediaPlayer");
+
 		player = mediaPlayerService.resolveMediaPlayer();
 		player.getRequestReleaseEvent().add(playerReleaseListener);
 
@@ -182,13 +184,19 @@ public class MediaItemView extends BorderPane {
 		return playerView;
 	}
 
-	private void removeMediaPlayer(){
-		MediaPlayerFx playerView = player.getSharedPlayer();
-		playerView.getMediaController().stop();
-		player.getRequestReleaseEvent().remove(playerReleaseListener);
-		primaryContent.getChildren().remove(playerView);
-		playerView.removeEventHandler(MouseEvent.MOUSE_EXITED, mouseExitedListener);
-		player = null;
+	private synchronized void removeMediaPlayer(){
+
+		if(player != null){
+
+			System.out.println("MediaItemView: removing MediaPlayer");
+
+			MediaPlayerFx playerView = player.getSharedPlayer();
+			playerView.getMediaController().stop();
+			player.getRequestReleaseEvent().remove(playerReleaseListener);
+			primaryContent.getChildren().remove(playerView);
+			playerView.removeEventHandler(MouseEvent.MOUSE_EXITED, mouseExitedListener);
+			player = null;
+		}
 	}
 
 	private final EventListenerEx<EventArgs> playerReleaseListener = new EventListenerEx<EventArgs>() {
