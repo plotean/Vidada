@@ -267,7 +267,7 @@ public class MediaItemView extends BorderPane {
 		imagePane.stopAnimation();
 		if(media != null){
 			description.setText(media.getFilename());
-			rating.setRating(1.0);
+			rating.setRating(media.getRating());
 			onItemImageChanged();
 		}else{
 			description.setText("");
