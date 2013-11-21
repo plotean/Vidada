@@ -1,5 +1,7 @@
 package vidada.viewmodel;
 
+import java.lang.ref.WeakReference;
+
 import org.joda.time.format.DateTimeFormat;
 
 import vidada.model.media.MediaItem;
@@ -8,6 +10,7 @@ import archimedesJ.events.EventArgs;
 import archimedesJ.events.EventHandlerEx;
 import archimedesJ.geometry.Size;
 import archimedesJ.images.ImageContainer;
+import archimedesJ.images.LoadPriority;
 
 /**
  * A simple view-model for a media item.
@@ -17,6 +20,7 @@ import archimedesJ.images.ImageContainer;
  *
  */
 public class MediaViewModel implements IViewModel<MediaItem> {
+	private WeakReference<ImageContainer> imageContainerRef;
 	private MediaItem mediaData;
 	private boolean isSelected = false;
 
@@ -35,6 +39,7 @@ public class MediaViewModel implements IViewModel<MediaItem> {
 	@Override
 	public void setModel(MediaItem model) {
 		mediaData = model;
+		imageContainerRef = null;
 	}
 
 
@@ -95,10 +100,17 @@ public class MediaViewModel implements IViewModel<MediaItem> {
 		return res != null ? res.width + "x" + res.height : "unknown"; 
 	}
 
+
+
 	public ImageContainer getThumbnail(int widthPxl, int heightPxl){
-		if(mediaData != null)
-			return mediaData.getThumbnail(new Size(widthPxl, heightPxl));
-		return null;
+		ImageContainer imageContainer = null;
+		if(mediaData != null){
+			imageContainer = mediaData.getThumbnail(new Size(widthPxl, heightPxl));
+			imageContainerRef = new WeakReference<ImageContainer>(imageContainer);
+		}else{
+			imageContainerRef = null;
+		}
+		return imageContainer;
 	}
 
 	public boolean open(){
@@ -123,6 +135,22 @@ public class MediaViewModel implements IViewModel<MediaItem> {
 		if(this.isSelected != isSelected){
 			this.isSelected = isSelected;
 			SelectionChangedEvent.fireEvent(this, EventArgs.Empty);
+		}
+	}
+
+	/**
+	 * Method is called when this media item is outside the view port
+	 */
+	public void outsideViewPort() {
+
+		// we have to notify the image container
+		// that the image is no longer required
+
+		if(imageContainerRef != null){
+			ImageContainer container = imageContainerRef.get();
+			if(container != null){
+				container.setLoadPriority(LoadPriority.Skip);
+			}
 		}
 	}
 

@@ -136,9 +136,10 @@ public class GridViewViewPort {
 				final IndexedCell lastVisibleRow = vf.getLastVisibleCell();
 
 				if(firstVisibleRow != null && lastVisibleRow != null){
-					GridCell firstVisibleCell = (GridCell)firstVisibleRow.getChildrenUnmodifiable().get(0);
-					ObservableList<Node> lasts = lastVisibleRow.getChildrenUnmodifiable();
-					GridCell lastVisibleCell = lasts.size() > 0 ? (GridCell)lasts.get(lasts.size()-1) : null;
+					final ObservableList<Node> firsts = firstVisibleRow.getChildrenUnmodifiable();
+					final GridCell firstVisibleCell =  firsts.size() > 0 ? (GridCell)firsts.get(0) : null;
+					final ObservableList<Node> lasts = lastVisibleRow.getChildrenUnmodifiable();
+					final GridCell lastVisibleCell = lasts.size() > 0 ? (GridCell)lasts.get(lasts.size()-1) : null;
 
 					outRange = new IndexRange(
 							firstVisibleCell != null ? firstVisibleCell.getIndex() : 0,

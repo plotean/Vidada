@@ -97,11 +97,22 @@ public class MediaBrowserFX extends BorderPane {
 		int[] dropped = IndexRange.unused(visibleCells, currentVisibleCells);
 
 		if(dropped.length != 0){
+
+			for (int i : dropped) {
+				if(observableMedias.size() > i){
+					MediaViewModel droppedVM = observableMedias.get(i);
+					droppedVM.outsideViewPort();
+				}
+			}
+
+			/*
+			// Just for debug purposes, print the dropped ones out:
 			System.out.print( visibleCells + " - " + currentVisibleCells + " Droped Cells: {");
 			for (int i : dropped) {
 				System.out.print(i+";");
 			}
 			System.out.println("}");
+			 */
 		}
 
 		visibleCells = currentVisibleCells;

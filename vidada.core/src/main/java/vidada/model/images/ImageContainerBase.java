@@ -12,6 +12,7 @@ import archimedesJ.events.EventHandlerEx;
 import archimedesJ.events.IEvent;
 import archimedesJ.images.IMemoryImage;
 import archimedesJ.images.ImageContainer;
+import archimedesJ.images.LoadPriority;
 
 public class ImageContainerBase implements ImageContainer, Runnable {
 
@@ -37,7 +38,8 @@ public class ImageContainerBase implements ImageContainer, Runnable {
 	// mutable
 	transient private volatile IMemoryImage rawImage; // since we don't use any locks, this ensures visibility to another thread
 	transient private Callable<IMemoryImage> imageLoader;
-	transient private Future<?> imageLoaderTask;
+	transient private Future<?> imageLoaderTask = null;
+	transient private LoadPriority priority = LoadPriority.High;
 
 
 	// Events
@@ -61,15 +63,21 @@ public class ImageContainerBase implements ImageContainer, Runnable {
 
 
 	/**
+	 * Requests that the given image is being loaded
 	 * This method returns immediately
 	 */
 	@Override
 	public void requestImage() {
+		requestImage(LoadPriority.High);
+	}
+
+	public void requestImage(LoadPriority priority) {
 		synchronized (requestImageLock) {
 			if(isImageLoaded()) return;
-			if(imageLoaderTask == null)
+			if(imageLoaderTask == null){
+				setLoadPriority(priority);
 				imageLoaderTask = imageLoaderPool.submit(this);
-			else {
+			}else {
 				// already a task running...
 			}
 		}
@@ -79,13 +87,13 @@ public class ImageContainerBase implements ImageContainer, Runnable {
 	 * Load the image in the callers thread
 	 * (Thus, should be called asynchronously)
 	 */
-	@Override
-	public void loadImageSync(){
+	private void loadImageSync(){
 
 		if(imageLoaderLock.tryLock()){
 			try{
 				if(imageLoader == null) return;
 				if(isImageLoaded()) return;
+				if(LoadPriority.Skip.equals(priority)) return; // just skip this
 
 				try {
 					IMemoryImage loadedImage = imageLoader.call();
@@ -97,7 +105,7 @@ public class ImageContainerBase implements ImageContainer, Runnable {
 				imageLoaderLock.unlock();
 			}
 		}
-		// if another thread already processing this image
+		// if another thread is already processing this image
 		// we can just skip here
 	}
 
@@ -165,6 +173,32 @@ public class ImageContainerBase implements ImageContainer, Runnable {
 				e.printStackTrace();
 			}
 
+		}
+	}
+
+
+	@Override
+	public void setLoadPriority(LoadPriority priority) {
+		if(!this.priority.equals(priority)){
+			this.priority = priority;
+			switch (priority) {
+			case Skip:
+
+				break;
+
+			case Idle:
+				if(!isImageLoaded())
+					requestImage();
+				break;
+
+			case High:
+				if(!isImageLoaded())
+					requestImage();
+				break;
+
+			default:
+				break;
+			}
 		}
 	}
 

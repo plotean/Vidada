@@ -92,21 +92,24 @@ public class IndexRange {
 		int[] unused = EmptyIntArray;
 
 		if(old != null){
-			int[] tmp = new int[old.LastCell-old.FirstCell+1];
-			int pfirst=-1;
-			int plast=-1;
+			final int arrSize = old.LastCell-old.FirstCell+1;
+			if(arrSize > 0){
+				int[] tmp = new int[arrSize];
+				int pfirst=-1;
+				int plast=-1;
 
-			int index = old.FirstCell;
-			for (int i = 0; i < tmp.length; i++) {
-				if(nuv == null || !nuv.contains(index)){
-					tmp[i] = index;
-					pfirst = (pfirst == -1) ? i : pfirst;
-					plast = i+1;
+				int index = old.FirstCell;
+				for (int i = 0; i < tmp.length; i++) {
+					if(nuv == null || !nuv.contains(index)){
+						tmp[i] = index;
+						pfirst = (pfirst == -1) ? i : pfirst;
+						plast = i+1;
+					}
+					index++;
 				}
-				index++;
+				if(pfirst != -1 && plast != -1)
+					unused = Arrays.copyOfRange(tmp, pfirst, plast);
 			}
-			if(pfirst != -1 && plast != -1)
-				unused = Arrays.copyOfRange(tmp, pfirst, plast);
 		}
 
 		return unused;
