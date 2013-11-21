@@ -4,16 +4,29 @@ import impl.org.controlsfx.skin.GridViewSkin;
 
 import java.lang.reflect.Field;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.IndexedCell;
+import javafx.scene.control.ScrollBar;
 
 import org.controlsfx.control.GridCell;
 import org.controlsfx.control.GridView;
 
+import archimedesJ.events.EventArgs;
+import archimedesJ.events.EventHandlerEx;
+import archimedesJ.events.IEvent;
+
 import com.sun.javafx.scene.control.skin.VirtualContainerBase;
 import com.sun.javafx.scene.control.skin.VirtualFlow;
 
+/**
+ * Workaround / Hack to get information and change events about the current view port.
+ * 
+ * @author IsNull
+ *
+ */
 public class GridViewViewPort {
 
 	private final GridView gridview;
@@ -31,6 +44,15 @@ public class GridViewViewPort {
 			e.printStackTrace();
 		}
 	}
+
+	private final EventHandlerEx<EventArgs> viewPortItemsChanged = new EventHandlerEx<>();
+
+	/**
+	 * Raised when the items in the current viewport have been changed
+	 * @return
+	 */
+	public IEvent<EventArgs> getViewPortItemsChanged(){ return viewPortItemsChanged; }
+
 
 	public GridViewViewPort(GridView gridview){
 		this.gridview = gridview;
@@ -53,16 +75,58 @@ public class GridViewViewPort {
 		return vf;
 	}
 
+	private boolean registered;
 
+	public void ensureViewportChangedListener(){
+		if(!registered){
+
+			for (Node node: gridview.lookupAll(".scroll-bar")) {
+				if (node instanceof ScrollBar) {
+					System.out.println("found scrollbar!");
+					registered = true;
+					final ScrollBar bar = (ScrollBar) node;
+					bar.valueProperty().addListener(new ChangeListener<Number>() {
+						@Override public void changed(ObservableValue<? extends Number> value, Number oldValue, Number newValue) {
+							//System.out.println(bar.getOrientation() + " " + newValue);
+							updateVisibleCells();
+						}
+					});
+				}
+			}
+		}
+	}
+
+	private IndexRange visibleCells = null;
+
+
+	public void updateVisibleCells(){
+		IndexRange currentVisibleCells = this.fetchVisibleCellRange();
+
+		if(!currentVisibleCells.equals(visibleCells))
+		{
+			visibleCells = currentVisibleCells;
+			viewPortItemsChanged.fireEvent(this, EventArgs.Empty);
+		}
+
+		visibleCells = currentVisibleCells;
+	}
+
+	/**
+	 * Gets the visible cell range (cached)
+	 * @return
+	 */
+	public IndexRange getVisibleCellRange(){
+		return visibleCells;
+	}
 
 	/**
 	 * Gets the visible cell range in this gridview viewport
 	 * @param outRange
 	 * @return
 	 */
-	public CellRange getVisibleCellRange(){
+	private IndexRange fetchVisibleCellRange(){
 
-		CellRange outRange = null; 
+		IndexRange outRange = null; 
 
 		try {
 			final VirtualFlow vf = getVirtualFlow();
@@ -76,7 +140,7 @@ public class GridViewViewPort {
 					ObservableList<Node> lasts = lastVisibleRow.getChildrenUnmodifiable();
 					GridCell lastVisibleCell = lasts.size() > 0 ? (GridCell)lasts.get(lasts.size()-1) : null;
 
-					outRange = new CellRange(
+					outRange = new IndexRange(
 							firstVisibleCell != null ? firstVisibleCell.getIndex() : 0,
 									lastVisibleCell != null ? lastVisibleCell.getIndex() : 0);
 				}else{
@@ -90,7 +154,7 @@ public class GridViewViewPort {
 		}
 
 		if(outRange == null){
-			outRange = CellRange.Undefined;
+			outRange = IndexRange.Undefined;
 			System.err.println("GridViewViewPort: outrange was NULL -> setting undefined");
 		}
 

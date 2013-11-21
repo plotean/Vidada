@@ -4,18 +4,18 @@ import java.util.Arrays;
 
 
 /**
- * Zero based cell range
+ * Represents an immutable range of indexes, for example index [0-10]
  * @author IsNull
  *
  */
-public class CellRange {
+public class IndexRange {
 
-	public static final CellRange Undefined = new CellRange(-1,-1);
+	public static final IndexRange Undefined = new IndexRange(-1,-1);
 
 	public final int FirstCell;
 	public final int LastCell;
 
-	public CellRange(int first, int last){
+	public IndexRange(int first, int last){
 		this.FirstCell = first;
 		this.LastCell = last;
 	}
@@ -57,7 +57,7 @@ public class CellRange {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		CellRange other = (CellRange) obj;
+		IndexRange other = (IndexRange) obj;
 		if (FirstCell != other.FirstCell)
 			return false;
 		if (LastCell != other.LastCell)
@@ -87,7 +87,7 @@ public class CellRange {
 	 * @param nuv
 	 * @return Returns an array which holds indexes no longer used
 	 */
-	public static int[] unused(final CellRange old, final CellRange nuv){
+	public static int[] unused(final IndexRange old, final IndexRange nuv){
 
 		int[] unused = EmptyIntArray;
 

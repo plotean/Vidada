@@ -5,12 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.Node;
-import javafx.scene.control.ScrollBar;
 import javafx.scene.layout.BorderPane;
 import javafx.util.Callback;
 
@@ -38,7 +34,7 @@ public class MediaBrowserFX extends BorderPane {
 	private MediaBrowserModel mediaModel;
 	private GridView<MediaViewModel> gridView;
 	private GridViewViewPort gridViewPort;
-	private CellRange visibleCells;
+	private IndexRange visibleCells;
 
 	transient private final ObservableList<MediaViewModel> observableMedias;
 	transient private final IMediaPlayerService mediaPlayerService = new MediaPlayerService();
@@ -51,7 +47,14 @@ public class MediaBrowserFX extends BorderPane {
 
 	private void initView(){
 		gridView = new GridView<MediaViewModel>();
+
 		gridViewPort = new GridViewViewPort(gridView);
+		gridViewPort.getViewPortItemsChanged().add(new EventListenerEx<EventArgs>() {
+			@Override
+			public void eventOccured(Object sender, EventArgs eventArgs) {
+				onVisibleItemsChanged();
+			}
+		});
 
 		gridView.setStyle("-fx-background-color: #FFFFFF;");
 
@@ -74,37 +77,13 @@ public class MediaBrowserFX extends BorderPane {
 
 		gridView.setItems(observableMedias);
 
-		registerScrollListeners();
-
 		this.setCenter(gridView);
 	}
 
-	private boolean registered = false;
-
-	private synchronized void registerScrollListeners(){
-
-		if(!registered){
-
-			for (Node node: gridView.lookupAll(".scroll-bar")) {
-				if (node instanceof ScrollBar) {
-					System.out.println("found scrollbar!");
-					registered = true;
-					final ScrollBar bar = (ScrollBar) node;
-					bar.valueProperty().addListener(new ChangeListener<Number>() {
-						@Override public void changed(ObservableValue<? extends Number> value, Number oldValue, Number newValue) {
-							System.out.println(bar.getOrientation() + " " + newValue);
-							onVisibleItemsChanged();
-						}
-					});
-				}
-			}
-		}
-	}
 
 	public void setItemSize(double width, double height){
 		gridView.setCellWidth(width);
 		gridView.setCellHeight(height);
-
 	}
 
 
@@ -114,16 +93,16 @@ public class MediaBrowserFX extends BorderPane {
 	 */
 	private void onVisibleItemsChanged(){
 
-		CellRange currentVisibleCells = gridViewPort.getVisibleCellRange();
-		int[] dropped = CellRange.unused(visibleCells, currentVisibleCells);
+		IndexRange currentVisibleCells = gridViewPort.getVisibleCellRange();
+		int[] dropped = IndexRange.unused(visibleCells, currentVisibleCells);
 
-
-		System.out.println( visibleCells + " - " + currentVisibleCells + " Droped Cells: ");
-		for (int i : dropped) {
-			System.out.print(i+";");
+		if(dropped.length != 0){
+			System.out.print( visibleCells + " - " + currentVisibleCells + " Droped Cells: {");
+			for (int i : dropped) {
+				System.out.print(i+";");
+			}
+			System.out.println("}");
 		}
-		System.out.println();
-
 
 		visibleCells = currentVisibleCells;
 	}
@@ -132,14 +111,12 @@ public class MediaBrowserFX extends BorderPane {
 
 		if(this.mediaModel != null){
 			this.mediaModel.getMediasChangedEvent().remove(mediasChangedEventListener);
-			//mediaModel.getSelectionManager().getSelectionChanged().remove(selectionChangedListener);
 		}
 
 		this.mediaModel = mediaModel;
 
 		if(mediaModel != null){
 			mediaModel.getMediasChangedEvent().add(mediasChangedEventListener);
-			//mediaModel.getSelectionManager().getSelectionChanged().add(selectionChangedListener);
 		}
 
 		updateView();
@@ -182,7 +159,8 @@ public class MediaBrowserFX extends BorderPane {
 			MediaViewModel vm = new MediaViewModel(model);
 			vm.SelectionChangedEvent.add(VMselectionChangedListener);
 
-			if(!registered){ registerScrollListeners(); } 
+			gridViewPort.ensureViewportChangedListener(); // Very hacky. (Should be called once after Scene is shown)
+
 			return vm;
 		}
 	};
