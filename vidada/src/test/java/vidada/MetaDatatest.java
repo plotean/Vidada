@@ -3,10 +3,10 @@ package vidada;
 import java.io.File;
 
 import org.junit.Ignore;
+import org.securityvision.metadata.MetaDataNotSupportedException;
 
 import vidada.model.metadata.MediaMetaAttribute;
 import vidada.model.metadata.MetaDataSupport;
-import archimedesJ.io.metadata.MetaDataNotSupportedException;
 
 public class MetaDatatest {
 

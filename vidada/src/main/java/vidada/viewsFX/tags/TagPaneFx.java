@@ -1,5 +1,6 @@
 package vidada.viewsFX.tags;
 
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
@@ -115,44 +116,62 @@ public class TagPaneFx extends BorderPane {
 
 
 	Insets tagMargrin = new Insets(5,5,0,0);
-	private void addTags(Iterable<TagViewModel> tags){
+	private synchronized void addTags(Iterable<TagViewModel> tags){
 		for (TagViewModel tag : tags) {
 			addTag(tag);
 		}
 	}
 
-	private void addTag(TagViewModel tag){
-
+	private synchronized void addTag(final TagViewModel tag){
 
 		if(tagFilter == null || tagFilter.where(tag))
 		{
-			//System.out.println("add Tag: " + tag);
 
-			TagView tview = new TagView(tag);
-			FlowPane.setMargin(tview, tagMargrin);
+			Platform.runLater(new Runnable() {
+				@Override
+				public void run() {
 
-			int pos = tagsView.getChildren().size();
-			for (int i = 0; i < tagsView.getChildren().size(); i++) {
-				TagView view = (TagView)tagsView.getChildren().get(i);
-				int comp = view.getDataContext().compareTo(tag);
-				//System.out.println("comp: " + comp + " -> " + view.getDataContext() + " : " + tag);
+					TagView tview = new TagView(tag);
+					FlowPane.setMargin(tview, tagMargrin);
 
-				if(comp > 0){
-					// current tag is greater
-					pos = i;
-					break;
+					int pos = tagsView.getChildren().size();
+					for (int i = 0; i < tagsView.getChildren().size(); i++) {
+						TagView view = (TagView)tagsView.getChildren().get(i);
+						int comp = view.getDataContext().compareTo(tag);
+						//System.out.println("comp: " + comp + " -> " + view.getDataContext() + " : " + tag);
+
+						if(comp > 0){
+							// current tag is greater
+							pos = i;
+							break;
+						}
+					}
+
+					tagsView.getChildren().add(pos, tview);
 				}
-			}
-			tagsView.getChildren().add(pos, tview);
+			});
+
 		}
 	}
 
-	private void removeTag(TagViewModel tag){
-		tagsView.getChildren().remove(tag);
+	private synchronized void removeTag(final TagViewModel tag){
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				tagsView.getChildren().remove(tag);
+			}
+		});
+
 	}
 
-	private void clearTags(){
-		tagsView.getChildren().clear();
+	private synchronized void clearTags(){
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				tagsView.getChildren().clear();
+			}
+		});
+
 	}
 
 

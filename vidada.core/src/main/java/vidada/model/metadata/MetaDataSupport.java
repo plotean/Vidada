@@ -3,9 +3,9 @@ package vidada.model.metadata;
 import java.io.File;
 import java.net.URI;
 
-import archimedesJ.io.metadata.FileMetaDataSupportFactory;
-import archimedesJ.io.metadata.IFileMetaDataSupport;
-import archimedesJ.io.metadata.MetaDataNotSupportedException;
+import org.securityvision.metadata.FileMetaDataSupportFactory;
+import org.securityvision.metadata.IFileMetaDataSupport;
+import org.securityvision.metadata.MetaDataNotSupportedException;
 
 /**
  * MetaData Support

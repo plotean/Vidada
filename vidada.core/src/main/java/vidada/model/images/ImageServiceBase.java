@@ -34,6 +34,9 @@ public class ImageServiceBase implements IImageService {
 
 	transient private final ICredentialManager credentialManager =  ServiceProvider.Resolve(ICredentialManager.class);
 	transient private final ExecutorService executorService = Executors.newFixedThreadPool(1);
+	/**
+	 * Maps the media id to a size specific image container
+	 */
 	transient private final Map<Long, Map<Size, ImageContainer>> imageContainerCache;
 	transient private final IImageCache localImageCache;
 

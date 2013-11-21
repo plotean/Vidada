@@ -41,8 +41,6 @@ class MediaGridItemCell extends GridCell<MediaViewModel> {
 		this.minHeightProperty().bind(desiredHeight);
 
 
-
-
 		setGraphic(visual);
 	}
 

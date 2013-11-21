@@ -10,6 +10,11 @@ import archimedesJ.images.ImageContainer;
 import archimedesJ.io.locations.DirectoiryLocation;
 import archimedesJ.services.IService;
 
+/**
+ * 
+ * @author IsNull
+ *
+ */
 public interface IImageService extends IService{
 
 	/**
