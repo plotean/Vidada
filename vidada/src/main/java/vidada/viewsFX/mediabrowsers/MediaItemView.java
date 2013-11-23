@@ -8,8 +8,8 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
@@ -52,8 +52,11 @@ public class MediaItemView extends BorderPane {
 	private final Rating rating = new Rating();
 	private final Label description = new Label("<no description>");
 
+	private final Button openButton = new Button();
+
+	private static double dpiMultiplier = 2.0;
 	private IMediaPlayerComponent player = null;
-	private ImageView thumb;
+
 	// desired width of the thumb image panel
 	// this is calculated dynamically
 	private double oldThumbWidth=0;
@@ -67,13 +70,21 @@ public class MediaItemView extends BorderPane {
 
 		this.mediaPlayerService = mediaPlayerService;
 
-		// TODO: Refactor this fix to render crisp for retina display
-		rating.setScaleX(0.5);
-		rating.setScaleY(0.5);
+		rating.setScaleX(1/dpiMultiplier);
+		rating.setScaleY(1/dpiMultiplier);
 
+		openButton.setText("open");
+
+
+		imagePane.setFadeDuration(600);
 
 		primaryContent.setAlignment(Pos.TOP_LEFT);
 		primaryContent.getChildren().add(imagePane);
+
+		StackPane.setMargin(openButton, new Insets(10));
+		StackPane.setAlignment(openButton, Pos.CENTER_RIGHT);
+		primaryContent.getChildren().add(openButton);
+
 		// primaryContent.getChildren().add(rating);  // some crazy bug with rating rendering in stackpane!
 
 		description.setId("description"); // style id
@@ -85,8 +96,9 @@ public class MediaItemView extends BorderPane {
 		this.setBottom(description);
 
 		// event listener
-		imagePane.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseClickedHandler);
+		imagePane.addEventFilter(MouseEvent.MOUSE_CLICKED, mouseInspectHandler);
 		this.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseClickedSelectionHandler);
+		openButton.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseOpenHandler);
 
 
 		imagePane.widthProperty().addListener(new ChangeListener<Number>() {
@@ -109,18 +121,42 @@ public class MediaItemView extends BorderPane {
 	/**
 	 * Occurs when the user clicks on the media
 	 */
-	transient private final EventHandler<MouseEvent> mouseClickedHandler = new EventHandler<MouseEvent>(){
+	transient private final EventHandler<MouseEvent> mouseOpenHandler = new EventHandler<MouseEvent>(){
 		@Override
 		public void handle(MouseEvent me) {
 			if(me.getButton().equals(MouseButton.PRIMARY)){
-				if(me.getClickCount() == 2){
+				onMediaOpenAction();
+			}
+		}
+	};
+
+	/**
+	 * Occurs when the user clicks on the media
+	 */
+	transient private final EventHandler<MouseEvent> mousePrevClickedHandler = new EventHandler<MouseEvent>(){
+		@Override
+		public void handle(MouseEvent me) {
+			if(me.getButton().equals(MouseButton.PRIMARY)){
+				if(me.getClickCount() > 1){
 					onMediaOpenAction();
-				}else if(me.getClickCount() == 1){
-					onMediaInspectAction((float)(me.getX() / MediaItemView.this.getWidth()));
 				}
 			}
 		}
 	};
+
+
+
+	/**
+	 * Occurs when the user clicks on the media
+	 */
+	transient private final EventHandler<MouseEvent> mouseInspectHandler = new EventHandler<MouseEvent>(){
+		@Override
+		public void handle(MouseEvent me) {
+			onMediaInspectAction((float)(me.getX() / MediaItemView.this.getWidth()));
+		}
+	};
+
+
 
 	/**
 	 * Occurs when the user clicks on the media
@@ -181,6 +217,8 @@ public class MediaItemView extends BorderPane {
 
 
 		playerView.addEventHandler(MouseEvent.MOUSE_EXITED, mouseExitedListener);
+		playerView.addEventHandler(MouseEvent.MOUSE_CLICKED, mousePrevClickedHandler);
+
 		return playerView;
 	}
 
@@ -195,6 +233,7 @@ public class MediaItemView extends BorderPane {
 			player.getRequestReleaseEvent().remove(playerReleaseListener);
 			primaryContent.getChildren().remove(playerView);
 			playerView.removeEventHandler(MouseEvent.MOUSE_EXITED, mouseExitedListener);
+			playerView.removeEventHandler(MouseEvent.MOUSE_CLICKED, mousePrevClickedHandler);
 			player = null;
 		}
 	}
@@ -230,6 +269,9 @@ public class MediaItemView extends BorderPane {
 				e.printStackTrace();
 			}
 		}else{
+
+			//removeMediaPlayer();
+
 			if(!media.open()){
 				Action response = Dialogs.create()
 						.owner(null)
@@ -257,11 +299,7 @@ public class MediaItemView extends BorderPane {
 				oldThumbHeight = desiredHeight;
 			}
 		}
-
-		//System.out.println("Image Size" + desiredWidth + " x " + desiredHeight);
 	}
-
-	private static double dpiMultiplier = 2.0;
 
 	private void requestThumb(int width, int height){
 		ImageContainer container = media.getThumbnail(

@@ -49,11 +49,16 @@ public class ImagePane extends ScrollPane {
 		fadeTransition.setAutoReverse(false);
 		fadeTransition.setCycleCount(1);
 
+
 		setContent(imageView);
 
 
-
 		imageProperty.addListener(imageChangeListener);
+	}
+
+	public void setFadeDuration(long durationMillis){
+		if(fadeTransition != null)
+			fadeTransition.setDuration(Duration.millis(durationMillis));
 	}
 
 	public void setPreserveRatio(boolean preserveRatio){
