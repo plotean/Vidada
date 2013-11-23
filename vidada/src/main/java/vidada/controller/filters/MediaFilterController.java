@@ -109,6 +109,10 @@ public class MediaFilterController {
 		List<Tag> requiredTags = mediaBrowserModel.getTagStatesModel()
 				.getTagsWithState(TagState.Required);
 
+		List<Tag> blockedTags = mediaBrowserModel.getTagStatesModel()
+				.getTagsWithState(TagState.Blocked);
+
+
 		MediaType selectedtype = (MediaType)filterModel.getMediaType();
 		OrderProperty selectedOrder = (OrderProperty)filterModel.getOrder();
 		List<MediaLibrary> requiredMediaLibs = mediaLibraryService.getAllLibraries();
@@ -132,6 +136,7 @@ public class MediaFilterController {
 				queryString,
 				selectedOrder,
 				requiredTags,
+				blockedTags,
 				requiredMediaLibs,
 				reverse);
 

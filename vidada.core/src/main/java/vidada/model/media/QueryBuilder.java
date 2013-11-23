@@ -59,6 +59,7 @@ public class QueryBuilder {
 			String query,
 			OrderProperty selectedOrder,
 			List<Tag> requiredTags,
+			List<Tag> blockedTags,
 			List<MediaLibrary> requiredMediaLibs,
 			boolean reverseOrder){
 
@@ -107,6 +108,10 @@ public class QueryBuilder {
 
 		for (Tag tag : requiredTags) {
 			q.descend("tags").constrain(tag);
+		}
+
+		for (Tag tag : blockedTags) {
+			q.descend("tags").constrain(tag).not();
 		}
 
 
