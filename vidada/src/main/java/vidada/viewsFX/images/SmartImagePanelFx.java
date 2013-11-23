@@ -71,9 +71,9 @@ public class SmartImagePanelFx extends BorderPane {
 
 	private void updateCurrentImage(){
 		if(imageProvider.currentImage() != null){
-			imageProperty.imageUrlProperty().set(getContainer(imageProvider.currentImage()));
+			imageProperty.imageContainerProperty().set(getContainer(imageProvider.currentImage()));
 		}else{
-			imageProperty.imageUrlProperty().set(null);
+			imageProperty.imageContainerProperty().set(null);
 		}
 	}
 

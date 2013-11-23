@@ -305,7 +305,7 @@ public class MediaItemView extends BorderPane {
 		ImageContainer container = media.getThumbnail(
 				(int)(width*dpiMultiplier),
 				(int)(height*dpiMultiplier));
-		imageProperty.imageUrlProperty().set(container);
+		imageProperty.imageContainerProperty().set(container);
 	}
 
 	public void setDataContext(MediaViewModel media){

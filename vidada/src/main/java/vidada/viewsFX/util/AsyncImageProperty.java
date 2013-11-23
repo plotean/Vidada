@@ -47,7 +47,7 @@ public class AsyncImageProperty extends SimpleObjectProperty<Image> {
 		});
 	}
 
-	public ObjectProperty<ImageContainer> imageUrlProperty() {
+	public ObjectProperty<ImageContainer> imageContainerProperty() {
 		return imageContainer;
 	}
 
