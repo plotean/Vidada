@@ -6,7 +6,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipException;
@@ -16,7 +15,7 @@ import org.joda.time.Duration;
 
 import vidada.model.video.VideoInfo;
 import archimedesJ.geometry.Size;
-import archimedesJ.io.ShellExecute;
+import archimedesJ.io.ShellExec;
 import archimedesJ.util.FileSupport;
 import archimedesJ.util.OSValidator;
 import archimedesJ.util.PackageUtil;
@@ -49,6 +48,11 @@ public abstract class FFmpegInterop {
 		return instance;
 	}
 
+	/**
+	 * Extracts the ffmpeg binary for the current platform
+	 * @param ffmpegPackagePath
+	 * @return Returns the path to the ffmpeg binary
+	 */
 	protected static File extractFFMpeg(String ffmpegPackagePath) {
 
 		File ffmpeg = null;
@@ -60,7 +64,7 @@ public abstract class FFmpegInterop {
 			ffmpeg = new File(ffmpegURI);
 			ffmpeg.setExecutable(true);
 
-			System.out.println("extracted ffmpeg to " + ffmpeg);
+			System.out.println("FFmpegInterop: Extracted ffmpeg to " + ffmpeg);
 
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
@@ -219,20 +223,18 @@ public abstract class FFmpegInterop {
 			System.out.println("shell: " + commandLine);
 			output.append("shell: " + commandLine + FileSupport.NEWLINE);
 
-			System.out.println("ffmpeg running. thread is waiting...");
+			System.out.println("FFmpegInterop: running ShellExecute.executeAndWait ...");
 
-			int exitVal = ShellExecute.executeAndWait(command, output, true, timeout);
+			int exitVal = ShellExec.executeAndWait(command, output, true, timeout);
 
-			System.out.println("ffmpeg Exited with error code " + exitVal);
-
-		} catch( TimeoutException e){
-			e.printStackTrace();
 		} catch( InterruptedException e){
 			e.printStackTrace();
 		} catch(Exception e) {
 			System.out.println(e.toString());
 			e.printStackTrace();
 		}
+
+		System.out.println("FFmpegInterop: ffmpeg done.");
 
 		return output.toString();
 	} 
