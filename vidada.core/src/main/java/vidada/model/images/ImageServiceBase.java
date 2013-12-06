@@ -19,7 +19,6 @@ import vidada.model.images.cache.crypto.ICacheKeyProvider;
 import vidada.model.images.cache.crypto.VidadaCacheKeyProvider;
 import vidada.model.libraries.MediaLibrary;
 import vidada.model.media.MediaItem;
-import vidada.model.media.source.FileMediaSource;
 import vidada.model.media.source.MediaSource;
 import vidada.model.security.AuthenticationException;
 import vidada.model.security.ICredentialManager;
@@ -96,8 +95,9 @@ public class ImageServiceBase implements IImageService {
 		IImageCache imageCache;
 
 		MediaSource source = media.getSource();
-		if(source instanceof FileMediaSource){
-			MediaLibrary library = ((FileMediaSource) source).getParentLibrary();
+		if(source != null)
+		{
+			MediaLibrary library = source.getParentLibrary();
 
 			imageCache = combinedCachesMap.get(library);
 

@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import vidada.model.media.images.ImageMediaItem;
-import vidada.model.media.source.FileMediaSource;
 import vidada.model.media.source.MediaSource;
 import archimedesJ.images.IMemoryImage;
 import archimedesJ.images.IRawImageFactory;
@@ -39,9 +38,9 @@ public class SmartImageMediaItemAdapter implements ISmartImage {
 
 		if(imageMedia != null && image == null){
 			MediaSource source = imageMedia.getSource();
-			if(source instanceof FileMediaSource && source.isAvailable())
+			if(source.isAvailable())
 			{
-				ResourceLocation resource = ((FileMediaSource)source).getAbsoluteFilePath();
+				ResourceLocation resource = source.getResourceLocation();
 				if(resource != null) {
 					InputStream is = null;
 					try {

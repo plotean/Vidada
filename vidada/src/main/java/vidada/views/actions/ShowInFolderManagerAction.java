@@ -8,7 +8,6 @@ import javax.swing.Action;
 import vidada.model.ServiceProvider;
 import vidada.model.compatibility.IHaveMediaData;
 import vidada.model.media.MediaItem;
-import vidada.model.media.source.FileMediaSource;
 import vidada.model.media.source.MediaSource;
 import vidada.model.system.ISystemService;
 import vidada.views.ImageResources;
@@ -47,10 +46,8 @@ public class ShowInFolderManagerAction extends AbstractAction{
 			MediaItem data = ((IHaveMediaData)selectedThumb).getMediaData();
 			if(data != null){
 				MediaSource source = data.getSource();
-				if(source instanceof FileMediaSource){
-					ISystemService systemService = ServiceProvider.Resolve(ISystemService.class);
-					systemService.showResourceHome(((FileMediaSource)source).getAbsoluteFilePath());
-				}
+				ISystemService systemService = ServiceProvider.Resolve(ISystemService.class);
+				systemService.showResourceHome(source.getResourceLocation());
 			}
 			else
 				System.err.println("can not retrive media data for thumb " + selectedThumb);

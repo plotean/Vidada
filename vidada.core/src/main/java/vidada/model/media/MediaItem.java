@@ -13,7 +13,6 @@ import vidada.model.entities.BaseEntity;
 import vidada.model.images.IImageService;
 import vidada.model.images.ImageContainerBase.ImageChangedCallback;
 import vidada.model.libraries.MediaLibrary;
-import vidada.model.media.source.FileMediaSource;
 import vidada.model.media.source.MediaSource;
 import vidada.model.tags.Tag;
 import archimedesJ.events.EventArgsG;
@@ -92,7 +91,7 @@ public abstract class MediaItem extends BaseEntity implements IMediaDataProvider
 	 * @param relativeFilePath
 	 */
 	protected MediaItem(MediaLibrary parentLibrary, URI relativeFilePath) {
-		this(new FileMediaSource(parentLibrary, relativeFilePath));
+		this(new MediaSource(parentLibrary, relativeFilePath));
 	}
 
 	/**
@@ -182,8 +181,7 @@ public abstract class MediaItem extends BaseEntity implements IMediaDataProvider
 	 */
 	public boolean isMemberofLibrary(MediaLibrary library) {
 		for (MediaSource s : this.getSources()) {
-			return(s instanceof FileMediaSource &&
-					((FileMediaSource) s).getParentLibrary().equals(library));
+			return s.getParentLibrary().equals(library);
 		}
 		return false;
 	}

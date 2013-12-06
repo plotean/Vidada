@@ -14,7 +14,6 @@ import vidada.model.libraries.IMediaLibraryService;
 import vidada.model.libraries.MediaLibrary;
 import vidada.model.media.images.ImageMediaItem;
 import vidada.model.media.movies.MovieMediaItem;
-import vidada.model.media.source.FileMediaSource;
 import vidada.model.media.source.MediaSource;
 import vidada.model.tags.ITagService;
 import vidada.model.tags.autoTag.AutoTagSupport;
@@ -244,8 +243,7 @@ public class MediaImportService implements IMediaImportService {
 		// Remove non existing file sources
 		Set<MediaSource> srcs = media.getSources();
 		for (MediaSource source : srcs) {
-			if(source instanceof FileMediaSource && 
-					((FileMediaSource) source).getParentLibrary().equals(library))
+			if(source.getParentLibrary().equals(library))
 			{
 				media.removeSource(source);
 			}
@@ -294,33 +292,31 @@ public class MediaImportService implements IMediaImportService {
 		boolean currentPathExisits = false;
 
 		for (MediaSource source : Lists.newList(existingMeida.getSources())) {
-			if(source instanceof FileMediaSource){
-				FileMediaSource fileSource = (FileMediaSource)source;
 
-				if(fileSource.getParentLibrary().equals(library))
-				{
-					// we only care about the current library-
-					fileSource.setIsAvailableDirty();
+			if(source.getParentLibrary().equals(library))
+			{
+				// we only care about the current library-
+				source.setIsAvailableDirty();
 
-					if(!fileSource.isAvailable()){
-						existingMeida.removeSource(fileSource);
-						hasChanges = true;
-					}else{
-						if(fileSource.getRelativeFilePath().equals(library.getRelativePath(currentPath)))
-						{
-							currentPathExisits = true;
-						}
+				if(!source.isAvailable()){
+					existingMeida.removeSource(source);
+					hasChanges = true;
+				}else{
+					if(source.getRelativeFilePath().equals(library.getRelativePath(currentPath)))
+					{
+						currentPathExisits = true;
 					}
 				}
-
 			}
+
+
 		}
 
 		if(!currentPathExisits)
 		{
 			URI relativePath = library.getRelativePath(currentPath);
 			if(relativePath != null){
-				FileMediaSource source = new FileMediaSource(library, relativePath);
+				MediaSource source = new MediaSource(library, relativePath);
 				db.store(source);
 				existingMeida.addSource(source);
 				hasChanges = true;

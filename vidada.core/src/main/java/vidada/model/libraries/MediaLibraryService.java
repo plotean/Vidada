@@ -5,7 +5,6 @@ import java.util.List;
 
 import vidada.data.SessionManager;
 import vidada.model.media.MediaItem;
-import vidada.model.media.source.FileMediaSource;
 import vidada.model.media.source.MediaSource;
 import archimedesJ.events.EventArgsG;
 import archimedesJ.events.EventHandlerEx;
@@ -82,8 +81,7 @@ public class MediaLibraryService implements IMediaLibraryService {
 				public boolean match(MediaItem media) {
 					for(MediaSource s : media.getSources())
 					{
-						if(s instanceof FileMediaSource)
-							return (((FileMediaSource) s).getParentLibrary() == lib);
+						if(s.getParentLibrary() == lib);
 					}
 					return false;
 				}
@@ -94,12 +92,11 @@ public class MediaLibraryService implements IMediaLibraryService {
 			for (MediaItem mediaItem : toDelete) {
 				for(MediaSource s : Lists.newList(mediaItem.getSources()))
 				{
-					if(s instanceof FileMediaSource)
-						if (((FileMediaSource) s).getParentLibrary() == lib){
-							mediaItem.removeSource(s);
-							db.store(mediaItem);
-							db.delete(s);
-						}
+					if (s.getParentLibrary() == lib){
+						mediaItem.removeSource(s);
+						db.store(mediaItem);
+						db.delete(s);
+					}
 				}
 
 				if(mediaItem.getSources().size() == 0)

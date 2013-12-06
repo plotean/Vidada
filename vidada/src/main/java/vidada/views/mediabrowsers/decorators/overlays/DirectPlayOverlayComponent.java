@@ -15,7 +15,6 @@ import javax.swing.SwingUtilities;
 import vidada.model.compatibility.IHaveMediaData;
 import vidada.model.media.MediaItem;
 import vidada.model.media.movies.MovieMediaItem;
-import vidada.model.media.source.FileMediaSource;
 import vidada.model.media.source.MediaSource;
 import vidada.views.directplay.DirectPlayBaseComponent;
 import vidada.views.directplay.IDecoupledRenderer;
@@ -218,7 +217,7 @@ public class DirectPlayOverlayComponent extends AbstractThumbOverlay {
 			if (mediaData instanceof MovieMediaItem) {
 				MovieMediaItem movie = (MovieMediaItem) mediaData;
 				MediaSource source = movie.getSource();
-				if(source instanceof FileMediaSource && source.isAvailable()) 
+				if(source.isAvailable()) 
 				{
 					directplayOverlay.setVisible(true);
 

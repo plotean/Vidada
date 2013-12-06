@@ -8,12 +8,10 @@ import java.util.concurrent.locks.ReentrantLock;
 import vidada.model.libraries.MediaLibrary;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaType;
-import vidada.model.media.source.FileMediaSource;
 import vidada.model.media.source.MediaSource;
 import vidada.model.settings.GlobalSettings;
 import vidada.model.video.Video;
 import vidada.model.video.VideoInfo;
-import archimedesJ.exceptions.NotSupportedException;
 import archimedesJ.geometry.Size;
 import archimedesJ.images.IMemoryImage;
 import archimedesJ.io.locations.ResourceLocation;
@@ -164,17 +162,12 @@ public class MovieMediaItem extends MediaItem implements Cloneable {
 		MediaSource source = getSource();
 		if(source != null && source.isAvailable())
 		{
-			if(source instanceof FileMediaSource)
-			{
-				FileMediaSource fileSource = (FileMediaSource)source;
-				ResourceLocation path = fileSource.getAbsoluteFilePath();
+			ResourceLocation path = source.getResourceLocation();
 
-				if (video == null && path != null) {
-					video = new Video(path);
-				} else
-					video.setPathToVideoFile(path);
-			}else
-				throw new NotSupportedException("Can not retrive video from this Source: " + source);
+			if (video == null && path != null) {
+				video = new Video(path);
+			} else
+				video.setPathToVideoFile(path);
 		}
 
 		return video;

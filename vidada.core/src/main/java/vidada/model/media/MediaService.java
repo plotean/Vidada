@@ -9,7 +9,6 @@ import vidada.data.SessionManager;
 import vidada.model.ServiceProvider;
 import vidada.model.libraries.IMediaLibraryService;
 import vidada.model.libraries.MediaLibrary;
-import vidada.model.media.source.FileMediaSource;
 import vidada.model.media.source.MediaSource;
 import archimedesJ.data.hashing.FileHashAlgorythms;
 import archimedesJ.data.hashing.IFileHashAlgorythm;
@@ -221,10 +220,9 @@ public class MediaService implements IMediaService {
 				public boolean match(MediaItem media) {
 
 					for (MediaSource s : media.getSources()) {
-						if(s instanceof FileMediaSource)
-							if(((FileMediaSource)s).getRelativeFilePath().equals(relativePath.getPath())){
-								return true;
-							}
+						if(s.getRelativeFilePath().equals(relativePath.getPath())){
+							return true;
+						}
 					}
 					return false;
 				}
