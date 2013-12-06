@@ -5,11 +5,15 @@ import java.net.URISyntaxException;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.geometry.Side;
 import javafx.scene.control.Button;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
@@ -20,7 +24,9 @@ import org.controlsfx.control.action.Action;
 import org.controlsfx.dialog.Dialogs;
 
 import vidada.model.ServiceProvider;
+import vidada.model.media.MediaItem;
 import vidada.model.media.MediaType;
+import vidada.model.system.ISystemService;
 import vidada.viewmodel.MediaViewModel;
 import vidada.viewsFX.player.IMediaPlayerService;
 import vidada.viewsFX.player.IMediaPlayerService.IMediaPlayerComponent;
@@ -45,6 +51,7 @@ import archimedesJ.util.FileSupport;
 public class MediaItemView extends BorderPane {
 
 	private final IMediaPlayerService mediaPlayerService;
+	private final ISystemService systemService = ServiceProvider.Resolve(ISystemService.class);
 
 	private final StackPane primaryContent = new StackPane();
 	private final AsyncImageProperty imageProperty = new AsyncImageProperty();
@@ -53,6 +60,8 @@ public class MediaItemView extends BorderPane {
 	private final Label description = new Label("<no description>");
 
 	private final Button openButton = new Button();
+
+	private final ContextMenu contextMenu;
 
 	private static double dpiMultiplier = 2.0;
 	private IMediaPlayerComponent player = null;
@@ -63,7 +72,7 @@ public class MediaItemView extends BorderPane {
 	private double oldThumbHeight=0;
 
 	// Current DataContext
-	private MediaViewModel media = null;
+	private MediaViewModel mediaViewModel = null;
 
 
 	public MediaItemView(IMediaPlayerService mediaPlayerService){ 
@@ -95,6 +104,8 @@ public class MediaItemView extends BorderPane {
 		this.setCenter(primaryContent);
 		this.setBottom(description);
 
+		contextMenu = createContextMenu();
+
 		// event listener
 		imagePane.addEventFilter(MouseEvent.MOUSE_CLICKED, mouseInspectHandler);
 		this.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseClickedSelectionHandler);
@@ -116,6 +127,24 @@ public class MediaItemView extends BorderPane {
 			}
 		});
 
+	}
+
+	private ContextMenu createContextMenu(){
+
+		final ContextMenu cm = new ContextMenu();
+
+		MenuItem cmItem1 = new MenuItem("Open Folder");
+		cmItem1.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent e) {
+				MediaItem media = mediaViewModel.getModel();
+				systemService.open(media.getSource().getResourceLocation());
+			}
+		});
+
+		cm.getItems().add(cmItem1);
+
+		return cm;
 	}
 
 	/**
@@ -166,9 +195,18 @@ public class MediaItemView extends BorderPane {
 		public void handle(MouseEvent me) {
 			if(me.getButton().equals(MouseButton.PRIMARY)){
 				if(me.getClickCount() == 1){
-					media.setSelected(true);
+					mediaViewModel.setSelected(true);
+				}
+			} else if(me.getButton().equals(MouseButton.SECONDARY)){
+
+				if(me.getClickCount() == 1){
+					System.out.println("showing context menu:");
+					//contextMenu.show(MediaItemView.this, me.getX(), me.getY());
+					contextMenu.show(MediaItemView.this, Side.RIGHT, 0,0);
 				}
 			}
+
+
 		}
 	};
 
@@ -180,8 +218,8 @@ public class MediaItemView extends BorderPane {
 	 */
 	private void onMediaInspectAction(float relativePos){
 
-		System.out.println("inspect media: " + media.getMediaType());
-		if(media.getMediaType().equals(MediaType.MOVIE))
+		System.out.println("inspect media: " + mediaViewModel.getMediaType());
+		if(mediaViewModel.getMediaType().equals(MediaType.MOVIE))
 		{
 			if(mediaPlayerService.isMediaPlayerAvaiable()){
 
@@ -190,7 +228,7 @@ public class MediaItemView extends BorderPane {
 				MediaPlayerFx playerView = addMediaPlayer();
 
 				// start playing and set initial position relative
-				playerView.getMediaController().playMedia(media.getModel().getSource().getPath());
+				playerView.getMediaController().playMedia(mediaViewModel.getModel().getSource().getPath());
 				playerView.getMediaController().setPosition(relativePos);
 
 			}else {
@@ -257,13 +295,13 @@ public class MediaItemView extends BorderPane {
 	 * Occurs when a media is opened
 	 */
 	private void onMediaOpenAction(){
-		if(media.getMediaType().equals(MediaType.IMAGE)){
+		if(mediaViewModel.getMediaType().equals(MediaType.IMAGE)){
 			//
 			// In case it is an image, show it in internal preview
 			//
 			ISmartImage smartImage;
 			try {
-				smartImage = new SmartImageLazy(imageFactory, new URI(media.getModel().getSource().getPath()));
+				smartImage = new SmartImageLazy(imageFactory, new URI(mediaViewModel.getModel().getSource().getPath()));
 				imageViewer.showImage(smartImage);
 			} catch (URISyntaxException e) {
 				e.printStackTrace();
@@ -272,13 +310,13 @@ public class MediaItemView extends BorderPane {
 
 			//removeMediaPlayer();
 
-			if(!media.open()){
+			if(!mediaViewModel.open()){
 				Action response = Dialogs.create()
 						.owner(null)
 						.title("Can not open Media")
 						.masthead("No media source found!")
-						.message("The file " + media.getTitle() + 
-								" could not be opened!" + FileSupport.NEWLINE + media.getModel().getSource())
+						.message("The file " + mediaViewModel.getTitle() + 
+								" could not be opened!" + FileSupport.NEWLINE + mediaViewModel.getModel().getSource())
 								.showWarning();
 			}
 		}
@@ -302,18 +340,18 @@ public class MediaItemView extends BorderPane {
 	}
 
 	private void requestThumb(int width, int height){
-		ImageContainer container = media.getThumbnail(
+		ImageContainer container = mediaViewModel.getThumbnail(
 				(int)(width*dpiMultiplier),
 				(int)(height*dpiMultiplier));
 		imageProperty.imageContainerProperty().set(container);
 	}
 
-	public void setDataContext(MediaViewModel media){
-		this.media = media;
+	public void setDataContext(MediaViewModel mediaViewModel){
+		this.mediaViewModel = mediaViewModel;
 		imagePane.stopAnimation();
-		if(media != null){
-			description.setText(media.getFilename());
-			rating.setRating(media.getRating());
+		if(mediaViewModel != null){
+			description.setText(mediaViewModel.getFilename());
+			rating.setRating(mediaViewModel.getRating());
 			onItemImageChanged();
 		}else{
 			description.setText("");
