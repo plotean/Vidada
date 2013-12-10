@@ -1,9 +1,7 @@
 package vidada.model.libraries;
 
 import java.beans.Transient;
-import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -13,17 +11,8 @@ import vidada.model.ServiceProvider;
 import vidada.model.entities.BaseEntity;
 import vidada.model.images.IImageService;
 import vidada.model.images.cache.IImageCache;
-import vidada.model.media.MediaFileInfo;
-import vidada.model.media.MediaType;
 import vidada.model.user.User;
 import archimedesJ.io.locations.DirectoiryLocation;
-import archimedesJ.io.locations.IDirectoryFilter;
-import archimedesJ.io.locations.ILocationFilter;
-import archimedesJ.io.locations.LocationFilters;
-import archimedesJ.io.locations.ResourceLocation;
-import archimedesJ.io.locations.UniformLocation;
-import archimedesJ.util.FileSupport;
-import archimedesJ.util.Lists;
 
 import com.db4o.ObjectContainer;
 import com.db4o.query.Query;
@@ -36,29 +25,61 @@ import com.db4o.query.Query;
 public class MediaLibrary extends BaseEntity {
 
 	private Set<LibraryEntry> libraryEntries = new HashSet<LibraryEntry>();
-
-
 	private boolean ignoreMovies;
 	private boolean ignoreImages;
+
 
 
 	// TODO DEBUG ONLY!?
 	transient private boolean useLibraryCache = true;
 
 	transient private LibraryEntry currentEntry = null;
-	transient private ILocationFilter mediaFilter = null;
 	transient private IImageCache imageCache = null;
+	transient private MediaDirectory mediaDirectory = null;
 
 	/**
-	 * 
+	 *
 	 */
 	public MediaLibrary(){	
+		//  Note: Empty constructor required by ORM
+	}
 
+
+	public boolean isIgnoreMovies() {
+		return ignoreMovies;
+	}
+
+	public void setIgnoreMovies(boolean ignoreMovies) {
+		this.ignoreMovies = ignoreMovies;
+		mediaDirectory = null;
+	}
+
+	public boolean isIgnoreImages() {
+		return ignoreImages;
+	}
+
+	public void setIgnoreImages(boolean ignoreImages) {
+		this.ignoreImages = ignoreImages;
+		mediaDirectory = null;
+	}
+
+
+	/**
+	 * Gets the media directory which represents the root of this media library
+	 * @return
+	 */
+	public MediaDirectory getMediaDirectory(){
+
+		if(mediaDirectory == null){
+			mediaDirectory = new MediaDirectory(getLibraryRoot(), ignoreImages, ignoreMovies);
+		}
+
+		return mediaDirectory;
 	}
 
 
 	@Transient
-	public DirectoiryLocation getLibraryRoot() {
+	private DirectoiryLocation getLibraryRoot() {
 		DirectoiryLocation root = null;
 		LibraryEntry entry = getCurrentEntry();
 
@@ -145,170 +166,12 @@ public class MediaLibrary extends BaseEntity {
 		}
 	}
 
-	/**
-	 * Constructs the relative path for the given file (must be a sub dir of this lib!)
-	 * @param absoluteLibraryFile
-	 * @return Returns the relative path or null, if a relative path could not be created
-	 */
-	@Transient
-	public URI getRelativePath(ResourceLocation absoluteLibraryFile){
 
-		URI relativeFile = FileSupport.getRelativePath(
-				absoluteLibraryFile.getUri(),
-				getLibraryRoot().getUri());
-
-		if(absoluteLibraryFile.getUri().getPath().equals(relativeFile.getPath()))
-			relativeFile = null;
-
-		if(relativeFile == null)
-		{
-			System.err.println("could not create relative path for:");
-			System.err.println("absolute: " + absoluteLibraryFile.getUri());
-			System.err.println("root: " + getLibraryRoot().getUri());
-		}
-
-		return relativeFile;
-	}
-
-	/**
-	 * Returns the absolute path for the given relative file path
-	 * @param relativeFile
-	 * @return
-	 */
-	@Transient
-	public ResourceLocation getAbsolutePath(URI relativeFile){		
-		try {
-			DirectoiryLocation location = getLibraryRoot();
-
-			if(location != null){
-				return  ResourceLocation.Factory.create(
-						new URI(location.getUri() + relativeFile.toString()),
-						location.getCreditals());
-			}
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
-		} 
-		return null;
-	}
-
-
-	/**
-	 * Returns all media files in this library
-	 * @return
-	 */
-	public List<ResourceLocation> getAllMediaFiles(){
-		DirectoiryLocation root = getLibraryRoot();
-		if(root != null)
-			return Lists.asTypedList(root.listAll(buildFilter(), ignoreVidadaThumbs));
-		return new ArrayList<ResourceLocation>();
-	}
-
-
-	/**
-	 * A simple filter to ignore meta data files (AppleDouble etc.)
-	 */
-	private transient static final ILocationFilter ignoreMetaDataFilter = new ILocationFilter() {
-
-		private static final String AppleDoublePrefix = "._";
-		private final int AppleDoublePrefixLen = AppleDoublePrefix.length();
-
-
-		@Override
-		public boolean accept(UniformLocation file) {
-
-
-			if(file instanceof ResourceLocation)
-			{
-				String name = ((ResourceLocation)file).getName();
-
-				if(name.length() >= AppleDoublePrefixLen){
-					return !name.substring(0, AppleDoublePrefixLen).equals(AppleDoublePrefix);
-				}
-			}
-
-			return true;
-		}
-	};
-
-	/**
-	 * A simple filter to igonre vidada generated thumbs
-	 */
-	private transient static final IDirectoryFilter ignoreVidadaThumbs = new IDirectoryFilter() {
-
-		private static final String VidataThumbsFolder = "vidada.thumbs";
-
-		@Override
-		public boolean accept(DirectoiryLocation directoiry) {
-			String name = directoiry.getName();
-			return !name.equals(VidataThumbsFolder);
-		}
-	};
-
-	/**
-	 * Build an IOFilter to filter files
-	 * which are applicable for this media library
-	 * @return
-	 */
-	@Transient
-	public ILocationFilter buildFilter(){
-
-		if(mediaFilter == null){
-			String[] allMediaExtensions = new String[0];
-
-			if(!this.isIgnoreImages())
-			{
-				allMediaExtensions = Lists.concat(
-						allMediaExtensions, 
-						MediaFileInfo.get(MediaType.IMAGE).getFileExtensions());
-			}
-
-			if(!this.isIgnoreMovies())
-			{
-				allMediaExtensions = Lists.concat(
-						allMediaExtensions, 
-						MediaFileInfo.get(MediaType.MOVIE).getFileExtensions());
-			}
-
-			mediaFilter = LocationFilters.extensionFilter(allMediaExtensions);
-			mediaFilter = LocationFilters.and(mediaFilter, ignoreMetaDataFilter);
-		}
-		return mediaFilter;
-	}
-
-	/**
-	 * Returns a filter who accepts all media files
-	 * 
-	 * Note:
-	 * The files are filtered by extension. Additionally, special meta data
-	 * files are suppressed.
-	 * @return
-	 */
-	@Transient
-	public static ILocationFilter buildAllMediaFilter(){
-		String[] extensions = MediaFileInfo.getAllMediaExtensions();
-		ILocationFilter extensionFilter = LocationFilters.extensionFilter(extensions);
-		return LocationFilters.and(extensionFilter, ignoreMetaDataFilter);
-	}
-
-	public boolean isIgnoreMovies() {
-		return ignoreMovies;
-	}
-
-	public void setIgnoreMovies(boolean ignoreMovies) {
-		this.ignoreMovies = ignoreMovies;
-	}
-
-	public boolean isIgnoreImages() {
-		return ignoreImages;
-	}
-
-	public void setIgnoreImages(boolean ignoreImages) {
-		this.ignoreImages = ignoreImages;
-	}
 
 	public void addEntry(LibraryEntry e){
 		libraryEntries.add(e);
 	}
+
 	public void removeEntry(LibraryEntry e){
 		libraryEntries.remove(e);
 	}
@@ -319,13 +182,6 @@ public class MediaLibrary extends BaseEntity {
 
 	protected void setLibraryEntries(Set<LibraryEntry> libraryEntries) {
 		this.libraryEntries = libraryEntries;
-	}
-
-
-	@Override
-	public String toString(){
-		DirectoiryLocation root = getLibraryRoot();
-		return root != null ? root.toString() : "DirectoiryLocation=NULL";
 	}
 
 	/**
@@ -365,4 +221,12 @@ public class MediaLibrary extends BaseEntity {
 
 		return entry;
 	}
+
+
+	@Override
+	public String toString(){
+		DirectoiryLocation root = getLibraryRoot();
+		return root != null ? root.toString() : "DirectoiryLocation=NULL";
+	}
+
 }

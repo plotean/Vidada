@@ -74,11 +74,12 @@ public class MediaImportService implements IMediaImportService {
 	 * @param progressListener
 	 * @param library
 	 */
-	private void scanAndUpdateLibrary(IProgressListener progressListener, MediaLibrary library)
+	@Override
+	public void scanAndUpdateLibrary(IProgressListener progressListener, MediaLibrary library)
 	{
-		progressListener.currentProgress(new ProgressEventArgs(0, "Scanning for media files in " + library + " ..."));
+		progressListener.currentProgress(new ProgressEventArgs(true, "Scanning for media files in " + library + " ..."));
 
-		List<ResourceLocation> mediafiles = library.getAllMediaFiles();
+		List<ResourceLocation> mediafiles = library.getMediaDirectory().getAllMediaFiles();
 
 
 		if(!mediafiles.isEmpty())
@@ -302,7 +303,7 @@ public class MediaImportService implements IMediaImportService {
 					existingMeida.removeSource(source);
 					hasChanges = true;
 				}else{
-					if(source.getRelativeFilePath().equals(library.getRelativePath(currentPath)))
+					if(source.getRelativeFilePath().equals(library.getMediaDirectory().getRelativePath(currentPath)))
 					{
 						currentPathExisits = true;
 					}
@@ -314,7 +315,7 @@ public class MediaImportService implements IMediaImportService {
 
 		if(!currentPathExisits)
 		{
-			URI relativePath = library.getRelativePath(currentPath);
+			URI relativePath = library.getMediaDirectory().getRelativePath(currentPath);
 			if(relativePath != null){
 				MediaSource source = new MediaSource(library, relativePath);
 				db.store(source);
@@ -388,13 +389,13 @@ public class MediaImportService implements IMediaImportService {
 		if(MediaFileInfo.get(MediaType.MOVIE).isFileofThisType(filePath))
 		{
 			newDataPart = new MovieMediaItem(parentlibrary,
-					parentlibrary.getRelativePath(filePath),
+					parentlibrary.getMediaDirectory().getRelativePath(filePath),
 					filehash);
 
 		}else if(MediaFileInfo.get(MediaType.IMAGE).isFileofThisType(filePath)){
 
 			newDataPart = new ImageMediaItem(parentlibrary,
-					parentlibrary.getRelativePath(filePath),
+					parentlibrary.getMediaDirectory().getRelativePath(filePath),
 					filehash);
 
 		}else {

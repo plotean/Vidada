@@ -128,8 +128,10 @@ public class ManageLibraryFoldersDialog extends JDialog {
 			public void valueChanged(ListSelectionEvent e) {
 
 				MediaLibrary library = (MediaLibrary)listAllLibraries.getSelectedValue();
-				if(library != null)
-					txtCurrentPath.setFilePath("" + library.getLibraryRoot());
+				if(library != null){
+					DirectoiryLocation location = library.getMediaDirectory().getDirectory();
+					txtCurrentPath.setFilePath(location.toString());
+				}
 
 				updateState();
 			}
@@ -220,7 +222,8 @@ public class ManageLibraryFoldersDialog extends JDialog {
 			txtCurrentPath = new FileChooserPanel(new Predicate<File>() {
 				@Override
 				public boolean where(File value) {
-					return value.isDirectory();
+					// TODO proper checking
+					return true; //value.isDirectory();
 				}
 			}, false, true);
 

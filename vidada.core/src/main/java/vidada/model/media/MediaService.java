@@ -212,7 +212,7 @@ public class MediaService implements IMediaService {
 
 		if(library != null)
 		{
-			final URI relativePath = library.getRelativePath(file);
+			final URI relativePath = library.getMediaDirectory().getRelativePath(file);
 
 
 			List<MediaItem> medias = db.query(new Predicate<MediaItem>() {

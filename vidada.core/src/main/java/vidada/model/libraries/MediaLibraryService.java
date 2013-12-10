@@ -123,7 +123,7 @@ public class MediaLibraryService implements IMediaLibraryService {
 		List<MediaLibrary> allLibs = getAllLibraries();
 
 		for (MediaLibrary mediaLibrary : allLibs) {
-			URI relPath = mediaLibrary.getRelativePath(file);
+			URI relPath = mediaLibrary.getMediaDirectory().getRelativePath(file);
 
 			if(relPath != null)
 				return mediaLibrary;

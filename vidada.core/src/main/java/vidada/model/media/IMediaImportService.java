@@ -1,12 +1,23 @@
 package vidada.model.media;
 
+import vidada.model.libraries.MediaLibrary;
 import archimedesJ.threading.IProgressListener;
 
 public interface IMediaImportService {
 
-	/* (non-Javadoc)
-	 * @see vidada.model.items.IMediaService#scanAndUpdateDatabases(archimedesJ.threading.IProgressListener)
+	/**
+	 * Scans all existing media libraries and updates the media files
+	 * 
+	 * @param progressListener Callback for progress status updates
 	 */
-	public abstract void scanAndUpdateDatabases(IProgressListener progressListener);
+	void scanAndUpdateDatabases(IProgressListener progressListener);
+
+
+	/**
+	 * Scans the given media library and updates the media files
+	 * @param progressListener
+	 * @param library
+	 */
+	void scanAndUpdateLibrary(IProgressListener progressListener, MediaLibrary library);
 
 }

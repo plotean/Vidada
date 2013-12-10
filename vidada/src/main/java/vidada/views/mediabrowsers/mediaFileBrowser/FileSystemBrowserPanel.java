@@ -66,7 +66,7 @@ public class FileSystemBrowserPanel extends JPanel implements IContentPresenter{
 		IBaseTreeItem root = null;
 		if(lib != null)
 		{
-			DirectoiryLocation libPath = lib.getLibraryRoot();
+			DirectoiryLocation libPath = lib.getMediaDirectory().getDirectory();
 			if(libPath != null)
 				root = new RootLocationTreeNode(libPath, thumbFactory);
 			else {
