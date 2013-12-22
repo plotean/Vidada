@@ -116,14 +116,14 @@ public class MediaItemView extends BorderPane {
 			@Override
 			public void changed(ObservableValue<? extends Number> arg0,
 					Number old, Number newWidth) {
-				onItemImageChanged();
+				onItemImageChanged(false);
 			}
 		});
 		imagePane.heightProperty().addListener(new ChangeListener<Number>() {
 			@Override
 			public void changed(ObservableValue<? extends Number> arg0,
 					Number old, Number newHeight) {
-				onItemImageChanged();
+				onItemImageChanged(false);
 			}
 		});
 
@@ -322,14 +322,14 @@ public class MediaItemView extends BorderPane {
 		}
 	}
 
-	private void onItemImageChanged(){
+	private void onItemImageChanged(boolean force){
 		int desiredWidth = (int)imagePane.getWidth(); 
 		int desiredHeight = (int)imagePane.getHeight();
 
 		if(desiredWidth > 0 && desiredHeight > 0){
 
 			// any change to previous setting?
-			if(desiredWidth != oldThumbWidth || desiredHeight != oldThumbHeight)
+			if(force || (desiredWidth != oldThumbWidth || desiredHeight != oldThumbHeight))
 			{
 				requestThumb(desiredWidth, desiredHeight);
 
@@ -352,10 +352,10 @@ public class MediaItemView extends BorderPane {
 		if(mediaViewModel != null){
 			description.setText(mediaViewModel.getFilename());
 			rating.setRating(mediaViewModel.getRating());
-			onItemImageChanged();
 		}else{
 			description.setText("");
 		}
+		onItemImageChanged(true);
 	}
 
 }

@@ -22,17 +22,13 @@ public class AsyncImageProperty extends SimpleObjectProperty<Image> {
 			public void changed(ObservableValue<? extends State> observable, State oldValue, State value) {
 				if(value == State.SUCCEEDED) {
 					set(imageLoadService.getValue());
-					//System.out.println("success image loaded");
-				}
-				if(value == State.FAILED) {
+				}else if(value == State.FAILED) {
 					set(null);
-					System.err.println("failed image not loaded");
-				}
-				if(value == State.SUCCEEDED || value == State.CANCELLED || value == State.FAILED) {
-					ImageContainer handle = imageContainer.get();
-					if(handle != null && !handle.equals(imageLoadService.container)) {
-						loadImageInBackground(handle);
-					}
+					System.err.println("AsyncImageProperty.imageLoadService: image failed to load.");
+				}else if(value == State.CANCELLED) {
+
+					// loading has been canceled
+					set(null);
 				}
 			}
 		});
@@ -40,9 +36,12 @@ public class AsyncImageProperty extends SimpleObjectProperty<Image> {
 		imageContainer.addListener(new ChangeListener<ImageContainer>() {
 			@Override
 			public void changed(ObservableValue<? extends ImageContainer> observable, ImageContainer oldValue, ImageContainer value) {
-				if(!imageLoadService.isRunning()) {
-					loadImageInBackground(imageContainer.getValue());
+
+				if(imageLoadService.isRunning()) {
+					imageLoadService.cancel();
 				}
+
+				loadImageInBackground();
 			}
 		});
 	}
@@ -51,29 +50,24 @@ public class AsyncImageProperty extends SimpleObjectProperty<Image> {
 		return imageContainer;
 	}
 
-	private void loadImageInBackground(ImageContainer imageContainer) {
+	private void loadImageInBackground() {
 		synchronized(imageLoadService) {
 			if(imageContainer != null) {
-				imageLoadService.setImageContainer(imageContainer);
 				imageLoadService.restart();
 			}
 		}
 	}
 
-	private static class ImageLoadService extends Service<Image> {
-		private ImageContainer container;
-
-		public void setImageContainer(ImageContainer container) {
-			this.container = container;
-		}
+	private class ImageLoadService extends Service<Image> {
 
 		@Override
 		protected Task<Image> createTask() {
-			final ImageContainer container = this.container;
 
 			return new Task<Image>() {
 				@Override
 				protected Image call() {
+
+					final ImageContainer container = imageContainer.getValue();
 
 					container.requestImage();
 					container.awaitImage();
