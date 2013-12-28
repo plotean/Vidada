@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import vidada.model.ServiceProvider;
+import vidada.model.browser.BrowserMediaItem;
+import vidada.model.browser.IBrowserItem;
+import vidada.model.browser.MediaBrowserModel;
 import vidada.model.filters.AsyncFetchData;
 import vidada.model.filters.AsyncFetchData.CancelTokenEventArgs;
 import vidada.model.libraries.IMediaLibraryService;
@@ -16,7 +19,6 @@ import vidada.model.media.source.MediaSource;
 import vidada.model.tags.Tag;
 import vidada.model.tags.TagState;
 import vidada.viewmodel.FilterModel;
-import vidada.viewmodel.MediaBrowserModel;
 import archimedesJ.events.EventArgs;
 import archimedesJ.events.EventListenerEx;
 import archimedesJ.expressions.Predicate;
@@ -94,7 +96,13 @@ public class MediaFilterController {
 
 			List<MediaItem> medias = eventArgs.getValue();
 			System.out.println("Data async fetched! " + medias.size());
-			mediaBrowserModel.addAll(medias);
+
+			List<IBrowserItem> browserItems = new ArrayList<IBrowserItem>(medias.size());
+			for (MediaItem mediaItem : medias) {
+				browserItems.add(new BrowserMediaItem(mediaItem));
+			}
+
+			mediaBrowserModel.addAll(browserItems);
 		}
 	};
 

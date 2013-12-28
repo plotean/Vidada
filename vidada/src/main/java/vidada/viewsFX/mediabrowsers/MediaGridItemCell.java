@@ -8,12 +8,15 @@ import javafx.beans.property.DoubleProperty;
 import org.controlsfx.control.GridCell;
 
 import vidada.viewmodel.MediaViewModel;
+import vidada.viewmodel.browser.BrowserItemVM;
+import vidada.viewsFX.player.IMediaPlayerService;
 import archimedesJ.events.EventArgs;
 import archimedesJ.events.EventListenerEx;
 
-class MediaGridItemCell extends GridCell<MediaViewModel> {
+class MediaGridItemCell extends GridCell<BrowserItemVM> {
 
-	private final MediaItemView visual; 
+	private final MediaItemView mediaView; 
+	private final FolderView folderView;
 	private static Method setSelectionMethod;
 
 
@@ -28,8 +31,10 @@ class MediaGridItemCell extends GridCell<MediaViewModel> {
 
 	private static boolean tog = false;
 
-	public MediaGridItemCell(MediaItemView mediaView, DoubleProperty desiredWidth, DoubleProperty desiredHeight){
-		visual = mediaView;
+	public MediaGridItemCell(IMediaPlayerService mediaPlayerService, DoubleProperty desiredWidth, DoubleProperty desiredHeight){
+
+		mediaView = new MediaItemView(mediaPlayerService);
+		folderView = new FolderView();
 
 		setId("media-cell");
 
@@ -40,8 +45,7 @@ class MediaGridItemCell extends GridCell<MediaViewModel> {
 		this.minWidthProperty().bind(desiredWidth);
 		this.minHeightProperty().bind(desiredHeight);
 
-
-		setGraphic(visual);
+		setGraphic(mediaView);
 	}
 
 
@@ -60,21 +64,35 @@ class MediaGridItemCell extends GridCell<MediaViewModel> {
 		}
 	}
 
-	private MediaViewModel item;
+	private BrowserItemVM item;
 
 	@Override
-	public void updateItem(MediaViewModel item, boolean empty) {
+	public void updateItem(BrowserItemVM item, boolean empty) {
 
 		if(this.item != null) 
 			this.item.SelectionChangedEvent.remove(selectionListener);
 
 		super.updateItem(item, empty);
-		visual.setDataContext(item);
+
+		updateVisualTemplate(item);
 
 		this.item = item;
 		updateSelection();
 
 		if(item != null) item.SelectionChangedEvent.add(selectionListener);
+	}
+
+	private void updateVisualTemplate(BrowserItemVM item){
+		if(mediaView != null) mediaView.setDataContext(null);
+		if(folderView != null) folderView.setDataContext(null);
+
+		if(item instanceof MediaViewModel){
+			mediaView.setDataContext((MediaViewModel)item);
+			setGraphic(mediaView);
+		}else{
+			folderView.setDataContext(item);
+			setGraphic(folderView);
+		}
 	}
 
 	private final EventListenerEx<EventArgs> selectionListener = new EventListenerEx<EventArgs>() {

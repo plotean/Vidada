@@ -1,9 +1,9 @@
-package vidada.viewmodel;
+package vidada.model.browser;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import vidada.model.media.MediaItem;
+import vidada.viewmodel.ITagStatesVM;
 import vidada.viewmodel.tags.TagStatesModel;
 import vidada.viewmodel.tags.TagViewModel;
 import archimedesJ.data.events.CollectionEventArg;
@@ -13,22 +13,26 @@ import archimedesJ.services.ISelectionManager;
 import archimedesJ.services.SelectionManager;
 
 
-
+/**
+ * MediaBrowserModel for the MediaBrowserFX
+ * @author IsNull
+ *
+ */
 public class MediaBrowserModel {
 
-	private final ISelectionManager<MediaItem> selectionManager = new SelectionManager<MediaItem>();
-	private final List<MediaItem> medias = new ArrayList<MediaItem>();
+	private final ISelectionManager<IBrowserItem> selectionManager = new SelectionManager<IBrowserItem>();
+	private final List<IBrowserItem> medias = new ArrayList<IBrowserItem>();
 	private final ITagStatesVM tagStatesModel = new TagStatesModel(TagViewModel.VMFactory);
 
 
 	//
 	// Events
 	//
-	private final EventHandlerEx<CollectionEventArg<MediaItem>> mediasChangedEvent = new EventHandlerEx<CollectionEventArg<MediaItem>>();
+	private final EventHandlerEx<CollectionEventArg<IBrowserItem>> mediasChangedEvent = new EventHandlerEx<CollectionEventArg<IBrowserItem>>();
 	/**
 	 * Raised when the media model has changed
 	 */
-	public IEvent<CollectionEventArg<MediaItem>> getMediasChangedEvent() {return mediasChangedEvent;}
+	public IEvent<CollectionEventArg<IBrowserItem>> getMediasChangedEvent() {return mediasChangedEvent;}
 
 
 	public MediaBrowserModel(){
@@ -44,13 +48,13 @@ public class MediaBrowserModel {
 		mediasChangedEvent.fireEvent(this, CollectionEventArg.Cleared);
 	}
 
-	public void addAll(List<MediaItem> newMedias) {
+	public void addAll(List<IBrowserItem> newMedias) {
 		medias.addAll(newMedias);
 		mediasChangedEvent.fireEvent(this, CollectionEventArg.Invalidated);
 	}
 
 
-	public MediaItem getItem(int index){
+	public IBrowserItem getItem(int index){
 		return medias.get(index);
 	}
 
@@ -58,8 +62,8 @@ public class MediaBrowserModel {
 	 * Gets a copy of the internal media list
 	 * @return
 	 */
-	public List<MediaItem> getSnapshot(){
-		return new ArrayList<MediaItem>(medias);
+	public List<IBrowserItem> getSnapshot(){
+		return new ArrayList<IBrowserItem>(medias);
 	}
 
 
@@ -76,7 +80,7 @@ public class MediaBrowserModel {
 	 * Returns the internal list reference
 	 * @return
 	 */
-	public List<MediaItem> getRaw() {
+	public List<IBrowserItem> getRaw() {
 		return medias;
 	}
 
@@ -84,7 +88,7 @@ public class MediaBrowserModel {
 	 * Gets the selection manager
 	 * @return
 	 */
-	public ISelectionManager<MediaItem> getSelectionManager() {
+	public ISelectionManager<IBrowserItem> getSelectionManager() {
 		return selectionManager;
 	}
 

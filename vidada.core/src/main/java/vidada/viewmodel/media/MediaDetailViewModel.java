@@ -1,6 +1,7 @@
 package vidada.viewmodel.media;
 
 import vidada.model.ServiceProvider;
+import vidada.model.browser.BrowserMediaItem;
 import vidada.model.media.IMediaService;
 import vidada.model.media.MediaItem;
 import vidada.model.tags.Tag;
@@ -12,6 +13,11 @@ import vidada.viewmodel.tags.TagViewModel;
 import archimedesJ.events.EventArgsG;
 import archimedesJ.events.EventListenerEx;
 
+/**
+ * Represents a single media item
+ * @author IsNull
+ *
+ */
 public class MediaDetailViewModel extends MediaViewModel implements IMediaViewModel {
 
 	transient private final IMediaService mediaService = ServiceProvider.Resolve(IMediaService.class);
@@ -35,8 +41,9 @@ public class MediaDetailViewModel extends MediaViewModel implements IMediaViewMo
 	private MediaItem previousModel = null;
 
 	@Override
-	public void setModel(MediaItem model) {
-		super.setModel(model);
+	public void setModel(BrowserMediaItem item) {
+		super.setModel(item);
+		MediaItem model = (item != null) ? item.getData() : null;
 
 		if(previousModel != null){
 			model.getTagAddedEvent().remove(tagAddedListener);
@@ -57,8 +64,9 @@ public class MediaDetailViewModel extends MediaViewModel implements IMediaViewMo
 
 		ignoreUpdates = true;
 
-		MediaItem media = getModel();
-		if(media != null){
+		BrowserMediaItem item = getModel();
+		if(item != null && item.getData() != null){
+			MediaItem media = item.getData();
 			System.out.println("update tag view: " + media.getTags());
 			System.out.println("all tags: " + tagsVM.getTagViewModels());
 
@@ -94,7 +102,9 @@ public class MediaDetailViewModel extends MediaViewModel implements IMediaViewMo
 		public void eventOccured(Object sender, EventArgsG<TagViewModel> eventArgs) {
 
 
-			MediaItem media = getModel();
+			BrowserMediaItem item = getModel();
+			if(item == null) return;
+			MediaItem media = item.getData();
 
 			if(media == null || ignoreUpdates) return;
 
@@ -129,7 +139,7 @@ public class MediaDetailViewModel extends MediaViewModel implements IMediaViewMo
 	 */
 	@Override
 	public void persist(){
-		mediaService.update(getModel());
+		mediaService.update(getModel().getData());
 	}
 
 

@@ -8,14 +8,14 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.layout.BorderPane;
 import vidada.controller.filters.MediaFilterController;
 import vidada.model.ServiceProvider;
-import vidada.model.media.MediaItem;
+import vidada.model.browser.IBrowserItem;
+import vidada.model.browser.MediaBrowserModel;
 import vidada.model.tags.ITagService;
 import vidada.model.tags.Tag;
 import vidada.model.tags.TagState;
 import vidada.viewmodel.FilterModel;
 import vidada.viewmodel.ITagStatesVM;
 import vidada.viewmodel.IVMFactory;
-import vidada.viewmodel.MediaBrowserModel;
 import vidada.viewmodel.media.IMediaViewModel;
 import vidada.viewmodel.media.MediaDetailViewModel;
 import vidada.viewmodel.tags.TagServiceModelBinding;
@@ -116,13 +116,10 @@ public class MainViewFx extends BorderPane {
 	}
 
 
-	private  IMediaViewModel getMediaDetailVM(ISelectionManager<MediaItem> mediaSelection){
+	private  IMediaViewModel getMediaDetailVM(ISelectionManager<IBrowserItem> mediaSelection){
 		if(mediaSelection.getSelection().size() <= 1){
-
 			singleMediaDetailVM.setModel(mediaSelection.getFirstSelected());
-
 			return singleMediaDetailVM;
-
 		}else{
 			// currently only single selection supported
 			throw new NotImplementedException("MainViewFx: Multiple Selection not supported!");

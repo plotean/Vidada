@@ -4,10 +4,10 @@ import java.lang.ref.WeakReference;
 
 import org.joda.time.format.DateTimeFormat;
 
+import vidada.model.browser.BrowserMediaItem;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaType;
-import archimedesJ.events.EventArgs;
-import archimedesJ.events.EventHandlerEx;
+import vidada.viewmodel.browser.BrowserItemVM;
 import archimedesJ.geometry.Size;
 import archimedesJ.images.ImageContainer;
 import archimedesJ.images.LoadPriority;
@@ -19,27 +19,24 @@ import archimedesJ.images.LoadPriority;
  * @author IsNull
  *
  */
-public class MediaViewModel implements IViewModel<MediaItem> {
+public class MediaViewModel extends BrowserItemVM {
 	private WeakReference<ImageContainer> imageContainerRef;
 	private MediaItem mediaData;
-	private boolean isSelected = false;
 
-	public final EventHandlerEx<EventArgs> SelectionChangedEvent = new EventHandlerEx<EventArgs>();
 
-	public MediaViewModel(MediaItem media){
-		setModel(media);
+	public MediaViewModel(BrowserMediaItem mediaItem){
+		setModel(mediaItem);
 	}
 
 
 	@Override
-	public MediaItem getModel() {
-		return mediaData;
+	public BrowserMediaItem getModel() {
+		return (BrowserMediaItem)super.getModel();
 	}
 
-	@Override
-	public void setModel(MediaItem model) {
-		mediaData = model;
-		imageContainerRef = null;
+	public void setModel(BrowserMediaItem model) {
+		super.setModel(model);
+		mediaData = model != null ? model.getData() : null;
 	}
 
 
@@ -126,21 +123,11 @@ public class MediaViewModel implements IViewModel<MediaItem> {
 	}
 
 
-	public boolean isSelected() {
-		return isSelected;
-	}
-
-
-	public void setSelected(boolean isSelected) {
-		if(this.isSelected != isSelected){
-			this.isSelected = isSelected;
-			SelectionChangedEvent.fireEvent(this, EventArgs.Empty);
-		}
-	}
 
 	/**
 	 * Method is called when this media item is outside the view port
 	 */
+	@Override
 	public void outsideViewPort() {
 
 		// we have to notify the image container

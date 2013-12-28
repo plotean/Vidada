@@ -9,14 +9,12 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.geometry.Side;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 
 import org.controlsfx.control.Rating;
@@ -28,6 +26,7 @@ import vidada.model.media.MediaItem;
 import vidada.model.media.MediaType;
 import vidada.model.system.ISystemService;
 import vidada.viewmodel.MediaViewModel;
+import vidada.viewmodel.browser.BrowserItemVM;
 import vidada.viewsFX.player.IMediaPlayerService;
 import vidada.viewsFX.player.IMediaPlayerService.IMediaPlayerComponent;
 import vidada.viewsFX.player.MediaPlayerFx;
@@ -36,6 +35,7 @@ import vlcj.fx.IMediaPlayerBehavior;
 import vlcj.fx.MediaPlayerSeekBehaviour;
 import archimedesJ.events.EventArgs;
 import archimedesJ.events.EventListenerEx;
+import archimedesJ.exceptions.NotSupportedException;
 import archimedesJ.images.IRawImageFactory;
 import archimedesJ.images.ImageContainer;
 import archimedesJ.images.viewer.IImageViewerService;
@@ -48,7 +48,7 @@ import archimedesJ.util.FileSupport;
  * @author IsNull
  *
  */
-public class MediaItemView extends BorderPane {
+public class MediaItemView extends BrowserCellView {
 
 	private final IMediaPlayerService mediaPlayerService;
 	private final ISystemService systemService = ServiceProvider.Resolve(ISystemService.class);
@@ -60,8 +60,6 @@ public class MediaItemView extends BorderPane {
 	private final Label description = new Label("<no description>");
 
 	private final Button openButton = new Button();
-
-	private final ContextMenu contextMenu;
 
 	private static double dpiMultiplier = 2.0;
 	private IMediaPlayerComponent player = null;
@@ -104,11 +102,8 @@ public class MediaItemView extends BorderPane {
 		this.setCenter(primaryContent);
 		this.setBottom(description);
 
-		contextMenu = createContextMenu();
-
 		// event listener
 		imagePane.addEventFilter(MouseEvent.MOUSE_CLICKED, mouseInspectHandler);
-		this.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseClickedSelectionHandler);
 		openButton.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseOpenHandler);
 
 
@@ -129,7 +124,8 @@ public class MediaItemView extends BorderPane {
 
 	}
 
-	private ContextMenu createContextMenu(){
+	@Override
+	protected ContextMenu createContextMenu(){
 
 		final ContextMenu cm = new ContextMenu();
 
@@ -137,7 +133,7 @@ public class MediaItemView extends BorderPane {
 		cmItem1.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
-				MediaItem media = mediaViewModel.getModel();
+				MediaItem media = mediaViewModel.getModel().getData();
 				systemService.open(media.getSource().getResourceLocation());
 			}
 		});
@@ -186,30 +182,6 @@ public class MediaItemView extends BorderPane {
 	};
 
 
-
-	/**
-	 * Occurs when the user clicks on the media
-	 */
-	transient private final EventHandler<MouseEvent> mouseClickedSelectionHandler = new EventHandler<MouseEvent>(){
-		@Override
-		public void handle(MouseEvent me) {
-			if(me.getButton().equals(MouseButton.PRIMARY)){
-				if(me.getClickCount() == 1){
-					mediaViewModel.setSelected(true);
-				}
-			} else if(me.getButton().equals(MouseButton.SECONDARY)){
-
-				if(me.getClickCount() == 1){
-					System.out.println("showing context menu:");
-					//contextMenu.show(MediaItemView.this, me.getX(), me.getY());
-					contextMenu.show(MediaItemView.this, Side.RIGHT, 0,0);
-				}
-			}
-
-
-		}
-	};
-
 	transient private final IImageViewerService imageViewer = ServiceProvider.Resolve(IImageViewerService.class);
 	transient private final IRawImageFactory imageFactory = ServiceProvider.Resolve(IRawImageFactory.class);
 
@@ -228,7 +200,7 @@ public class MediaItemView extends BorderPane {
 				MediaPlayerFx playerView = addMediaPlayer();
 
 				// start playing and set initial position relative
-				playerView.getMediaController().playMedia(mediaViewModel.getModel().getSource().getPath());
+				playerView.getMediaController().playMedia(mediaViewModel.getModel().getData().getSource().getPath());
 				playerView.getMediaController().setPosition(relativePos);
 
 			}else {
@@ -301,7 +273,8 @@ public class MediaItemView extends BorderPane {
 			//
 			ISmartImage smartImage;
 			try {
-				smartImage = new SmartImageLazy(imageFactory, new URI(mediaViewModel.getModel().getSource().getPath()));
+				smartImage = new SmartImageLazy(imageFactory, 
+						new URI(mediaViewModel.getModel().getData().getSource().getPath()));
 				imageViewer.showImage(smartImage);
 			} catch (URISyntaxException e) {
 				e.printStackTrace();
@@ -316,7 +289,8 @@ public class MediaItemView extends BorderPane {
 						.title("Can not open Media")
 						.masthead("No media source found!")
 						.message("The file " + mediaViewModel.getTitle() + 
-								" could not be opened!" + FileSupport.NEWLINE + mediaViewModel.getModel().getSource())
+								" could not be opened!" +
+								FileSupport.NEWLINE + mediaViewModel.getModel().getData().getSource())
 								.showWarning();
 			}
 		}
@@ -340,22 +314,35 @@ public class MediaItemView extends BorderPane {
 	}
 
 	private void requestThumb(int width, int height){
-		ImageContainer container = mediaViewModel.getThumbnail(
-				(int)(width*dpiMultiplier),
-				(int)(height*dpiMultiplier));
-		imageProperty.imageContainerProperty().set(container);
+		if(mediaViewModel != null)
+		{
+			ImageContainer container = mediaViewModel.getThumbnail(
+					(int)(width*dpiMultiplier),
+					(int)(height*dpiMultiplier));
+			imageProperty.imageContainerProperty().set(container);
+		}
 	}
 
-	public void setDataContext(MediaViewModel mediaViewModel){
-		this.mediaViewModel = mediaViewModel;
-		imagePane.stopAnimation();
-		if(mediaViewModel != null){
-			description.setText(mediaViewModel.getFilename());
-			rating.setRating(mediaViewModel.getRating());
-		}else{
-			description.setText("");
-		}
-		onItemImageChanged(true);
+
+	@Override
+	public void setDataContext(BrowserItemVM viewmodel) {
+		super.setDataContext(viewmodel);
+
+		if(viewmodel == null || viewmodel instanceof MediaViewModel){
+			this.mediaViewModel = (MediaViewModel)viewmodel;
+			imagePane.stopAnimation();
+
+			System.out.println(viewmodel);
+
+			if(mediaViewModel != null){
+				description.setText(mediaViewModel.getFilename());
+				rating.setRating(mediaViewModel.getRating());
+			}else{
+				description.setText("<null>");
+			}
+			onItemImageChanged(true);
+		}else
+			throw new NotSupportedException("MediaItemView requires a datacontext of type MediaViewModel!");
 	}
 
 }
