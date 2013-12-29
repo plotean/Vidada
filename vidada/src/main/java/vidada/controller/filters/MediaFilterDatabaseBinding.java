@@ -26,7 +26,17 @@ import archimedesJ.threading.CancellationTokenSource;
 
 import com.db4o.query.Query;
 
-public class MediaFilterController {
+/**
+ * Represents a binding between a mediabrowser model an filter settings.
+ * The datasource for the query which is internally performed is the primary database,
+ * thus this binding is not really flexible. 
+ * 
+ * TODO: Refactor this binding to support arbitrary data sources
+ * 
+ * @author IsNull
+ *
+ */
+public class MediaFilterDatabaseBinding {
 
 	private final FilterModel filterModel;
 	private final MediaBrowserModel mediaBrowserModel;
@@ -34,7 +44,13 @@ public class MediaFilterController {
 	private final IMediaLibraryService mediaLibraryService = ServiceProvider.Resolve(IMediaLibraryService.class);
 	private final QueryBuilder queryBuilder = new QueryBuilder();
 
-	public MediaFilterController(FilterModel filterModel, MediaBrowserModel mediaBrowserModel){
+
+	public static MediaFilterDatabaseBinding bind(FilterModel filterModel, MediaBrowserModel mediaBrowserModel){
+		return new MediaFilterDatabaseBinding(filterModel, mediaBrowserModel);
+	}
+
+
+	protected MediaFilterDatabaseBinding(FilterModel filterModel, MediaBrowserModel mediaBrowserModel){
 		this.filterModel = filterModel;
 		this.mediaBrowserModel = mediaBrowserModel;
 

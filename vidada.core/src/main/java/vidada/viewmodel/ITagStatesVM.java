@@ -4,6 +4,11 @@ import java.util.List;
 
 import vidada.model.tags.Tag;
 
+/**
+ * This view model provides tag-states and additionally tag add/remove operations
+ * @author IsNull
+ *
+ */
 public interface ITagStatesVM extends ITagStatesVMProvider {
 
 	/**
