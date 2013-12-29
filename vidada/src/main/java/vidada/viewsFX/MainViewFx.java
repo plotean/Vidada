@@ -7,6 +7,7 @@ import javafx.scene.layout.BorderPane;
 import vidada.model.ServiceProvider;
 import vidada.model.browser.MediaBrowserModel;
 import vidada.model.tags.ITagService;
+import vidada.viewsFX.mediaexplorer.PrimaryMediaExplorerFX;
 
 import com.aquafx_project.AquaFx;
 import com.aquafx_project.controls.skin.styles.TabPaneType;
@@ -45,6 +46,7 @@ public class MainViewFx extends BorderPane {
 		mainTab.getTabs().add(fileBrowserTab);
 
 		browserTab.setContent(new PrimaryMediaBrowserFX(browserModel, tagService));
+		fileBrowserTab.setContent(new PrimaryMediaExplorerFX());
 
 		AquaFx.createTabPaneStyler().setType(TabPaneType.REGULAR).style(mainTab);
 		return mainTab;

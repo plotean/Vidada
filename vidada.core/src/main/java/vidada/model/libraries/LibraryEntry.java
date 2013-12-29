@@ -2,7 +2,7 @@ package vidada.model.libraries;
 
 import vidada.model.entities.BaseEntity;
 import vidada.model.user.User;
-import archimedesJ.io.locations.DirectoiryLocation;
+import archimedesJ.io.locations.DirectoryLocation;
 
 import com.db4o.foundation.ArgumentNullException;
 
@@ -16,7 +16,7 @@ public class LibraryEntry extends BaseEntity {
 	private User user;
 	private MediaLibrary parentLibrary;
 
-	private DirectoiryLocation libraryRoot;
+	private DirectoryLocation libraryRoot;
 
 
 	/**
@@ -28,7 +28,7 @@ public class LibraryEntry extends BaseEntity {
 	 * 
 	 * @throws ArgumentNullException
 	 */
-	public LibraryEntry(MediaLibrary parentLibrary, User user, DirectoiryLocation libraryRoot){
+	public LibraryEntry(MediaLibrary parentLibrary, User user, DirectoryLocation libraryRoot){
 
 		/*
 		if(user == null)
@@ -42,11 +42,11 @@ public class LibraryEntry extends BaseEntity {
 		this.libraryRoot = libraryRoot;
 	}
 
-	public DirectoiryLocation getLibraryRoot() {
+	public DirectoryLocation getLibraryRoot() {
 		return libraryRoot;
 	}
 
-	public void setLibraryRoot(DirectoiryLocation libraryRoot) {
+	public void setLibraryRoot(DirectoryLocation libraryRoot) {
 		this.libraryRoot = libraryRoot;
 	}
 

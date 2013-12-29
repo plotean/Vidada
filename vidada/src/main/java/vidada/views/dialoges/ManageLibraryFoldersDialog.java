@@ -39,7 +39,7 @@ import vidada.views.ImageResources;
 import archimedesJ.events.EventArgsG;
 import archimedesJ.events.EventListenerEx;
 import archimedesJ.expressions.Predicate;
-import archimedesJ.io.locations.DirectoiryLocation;
+import archimedesJ.io.locations.DirectoryLocation;
 import archimedesJ.swing.ImageListCellRenderer;
 import archimedesJ.swing.JImageButton;
 import archimedesJ.swing.components.FileChooserPanel;
@@ -93,7 +93,7 @@ public class ManageLibraryFoldersDialog extends JDialog {
 				if(library != null)
 				{
 					URI location = txtCurrentPath.getFile().toURI();
-					library.setLibraryRoot(DirectoiryLocation.Factory.create(location, null));
+					library.setLibraryRoot(DirectoryLocation.Factory.create(location, null));
 				}
 			}
 		};
@@ -129,7 +129,7 @@ public class ManageLibraryFoldersDialog extends JDialog {
 
 				MediaLibrary library = (MediaLibrary)listAllLibraries.getSelectedValue();
 				if(library != null){
-					DirectoiryLocation location = library.getMediaDirectory().getDirectory();
+					DirectoryLocation location = library.getMediaDirectory().getDirectory();
 					txtCurrentPath.setFilePath(location.toString());
 				}
 

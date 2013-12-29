@@ -12,7 +12,7 @@ import vidada.views.IContentPresenter;
 import vidada.views.mediabrowsers.MediaBrowserContainer;
 import archimedesJ.events.EventArgsG;
 import archimedesJ.events.EventListenerEx;
-import archimedesJ.io.locations.DirectoiryLocation;
+import archimedesJ.io.locations.DirectoryLocation;
 import archimedesJ.swing.components.thumbexplorer.IBaseTreeItem;
 import archimedesJ.swing.components.thumbexplorer.JThumbExplorerRenderer;
 import archimedesJ.swing.components.thumbexplorer.NavigationDecoratorPanel;
@@ -66,7 +66,7 @@ public class FileSystemBrowserPanel extends JPanel implements IContentPresenter{
 		IBaseTreeItem root = null;
 		if(lib != null)
 		{
-			DirectoiryLocation libPath = lib.getMediaDirectory().getDirectory();
+			DirectoryLocation libPath = lib.getMediaDirectory().getDirectory();
 			if(libPath != null)
 				root = new RootLocationTreeNode(libPath, thumbFactory);
 			else {

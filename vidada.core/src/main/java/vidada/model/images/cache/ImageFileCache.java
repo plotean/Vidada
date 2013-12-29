@@ -18,7 +18,7 @@ import archimedesJ.data.BiTuple;
 import archimedesJ.geometry.Size;
 import archimedesJ.images.IMemoryImage;
 import archimedesJ.images.IRawImageFactory;
-import archimedesJ.io.locations.DirectoiryLocation;
+import archimedesJ.io.locations.DirectoryLocation;
 import archimedesJ.io.locations.ResourceLocation;
 
 
@@ -33,14 +33,14 @@ public class ImageFileCache implements IImageCache {
 
 	private static final String RESOLUTION_DELEMITER = "_";
 
-	private final DirectoiryLocation cacheRoot;
-	private final DirectoiryLocation scaledCacheDataBase;
+	private final DirectoryLocation cacheRoot;
+	private final DirectoryLocation scaledCacheDataBase;
 
 	private final IRawImageFactory imageFactory = ServiceProvider.Resolve(IRawImageFactory.class);
 
 	// file path caches
 	private final Map<Integer, ResourceLocation> dimensionPathCache = new HashMap<Integer, ResourceLocation>(2000);
-	private final Map<Size, DirectoiryLocation> resolutionFolders = new HashMap<Size, DirectoiryLocation>(10);
+	private final Map<Size, DirectoryLocation> resolutionFolders = new HashMap<Size, DirectoryLocation>(10);
 
 
 
@@ -55,7 +55,7 @@ public class ImageFileCache implements IImageCache {
 	 * 
 	 * @param cacheRoot The root folder for the cache
 	 */
-	public ImageFileCache(DirectoiryLocation cacheRoot){
+	public ImageFileCache(DirectoryLocation cacheRoot){
 
 		this.cacheRoot = cacheRoot;
 		scaledCacheDataBase = getScaledCache(cacheRoot);
@@ -64,11 +64,11 @@ public class ImageFileCache implements IImageCache {
 		//
 		// initially, read the existing scaled resolutions
 		//
-		List<DirectoiryLocation> resolutionFolders = scaledCacheDataBase.listDirs();
+		List<DirectoryLocation> resolutionFolders = scaledCacheDataBase.listDirs();
 
 		if(resolutionFolders != null && !resolutionFolders.isEmpty())
 		{
-			for (DirectoiryLocation folder : resolutionFolders) {
+			for (DirectoryLocation folder : resolutionFolders) {
 				String[] parts  = folder.getName().split(RESOLUTION_DELEMITER);
 				if(parts.length == 2){
 					try {
@@ -83,13 +83,13 @@ public class ImageFileCache implements IImageCache {
 
 
 
-	public DirectoiryLocation getCacheRoot() {
+	public DirectoryLocation getCacheRoot() {
 		return cacheRoot;
 	}
 
-	private static DirectoiryLocation getScaledCache(DirectoiryLocation cacheRoot){
+	private static DirectoryLocation getScaledCache(DirectoryLocation cacheRoot){
 		try {
-			return DirectoiryLocation.Factory.create(cacheRoot, "scaled");
+			return DirectoryLocation.Factory.create(cacheRoot, "scaled");
 		} catch (URISyntaxException e1) {
 			e1.printStackTrace();
 		}
@@ -270,7 +270,7 @@ public class ImageFileCache implements IImageCache {
 
 		if(cachedThumb == null)
 		{
-			DirectoiryLocation folder = getFolderForResolution( size );
+			DirectoryLocation folder = getFolderForResolution( size );
 			try {
 				cachedThumb = ResourceLocation.Factory.create(folder, id + getImageExtension());
 				dimensionPathCache.put(combindedHash, cachedThumb); 
@@ -287,16 +287,16 @@ public class ImageFileCache implements IImageCache {
 	}
 
 
-	private DirectoiryLocation getFolderForResolution(Size size){
+	private DirectoryLocation getFolderForResolution(Size size){
 
-		DirectoiryLocation resolutionFolder = resolutionFolders.get(size);
+		DirectoryLocation resolutionFolder = resolutionFolders.get(size);
 
 		if(resolutionFolder == null){
 
 			String resolutionName = size.width + RESOLUTION_DELEMITER + size.height;
 
 			try {
-				resolutionFolder = DirectoiryLocation.Factory
+				resolutionFolder = DirectoryLocation.Factory
 						.create(scaledCacheDataBase, resolutionName);
 			} catch (URISyntaxException e) {
 				e.printStackTrace();

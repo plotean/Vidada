@@ -8,7 +8,7 @@ import java.util.List;
 
 import vidada.model.media.MediaFileInfo;
 import vidada.model.media.MediaType;
-import archimedesJ.io.locations.DirectoiryLocation;
+import archimedesJ.io.locations.DirectoryLocation;
 import archimedesJ.io.locations.IDirectoryFilter;
 import archimedesJ.io.locations.ILocationFilter;
 import archimedesJ.io.locations.LocationFilters;
@@ -27,7 +27,7 @@ import archimedesJ.util.Lists;
  */
 public final class MediaDirectory {
 
-	private final DirectoiryLocation directory;
+	private final DirectoryLocation directory;
 
 	private final boolean ignoreMovies;
 	private final boolean ignoreImages;
@@ -36,14 +36,14 @@ public final class MediaDirectory {
 
 
 
-	public MediaDirectory(DirectoiryLocation directory, boolean ignoreImages, boolean ignoreMovies) { 
+	public MediaDirectory(DirectoryLocation directory, boolean ignoreImages, boolean ignoreMovies) { 
 		this.directory = directory;
 		this.ignoreImages = ignoreImages;
 		this.ignoreMovies = ignoreMovies;
 	}
 
 
-	public DirectoiryLocation getDirectory() {
+	public DirectoryLocation getDirectory() {
 		return directory;
 	}
 
@@ -209,7 +209,7 @@ public final class MediaDirectory {
 		private static final String VidataThumbsFolder = "vidada.thumbs";
 
 		@Override
-		public boolean accept(DirectoiryLocation directoiry) {
+		public boolean accept(DirectoryLocation directoiry) {
 			String name = directoiry.getName();
 			return !name.equals(VidataThumbsFolder);
 		}

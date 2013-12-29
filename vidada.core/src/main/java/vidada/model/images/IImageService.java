@@ -7,7 +7,7 @@ import vidada.model.security.ICredentialManager;
 import archimedesJ.geometry.Size;
 import archimedesJ.images.IMemoryImage;
 import archimedesJ.images.ImageContainer;
-import archimedesJ.io.locations.DirectoiryLocation;
+import archimedesJ.io.locations.DirectoryLocation;
 import archimedesJ.services.IService;
 
 /**
@@ -51,12 +51,12 @@ public interface IImageService extends IService{
 	 * @param credentialManager Credital manager to use if a password is required.
 	 * @return
 	 */
-	IImageCache openEncryptedCache(DirectoiryLocation cacheLocation, ICredentialManager credentialManager);
+	IImageCache openEncryptedCache(DirectoryLocation cacheLocation, ICredentialManager credentialManager);
 
 	/**
 	 * Open a non encrypted cache
 	 * @param cacheLocation
 	 * @return
 	 */
-	IImageCache openCache(DirectoiryLocation cacheLocation);
+	IImageCache openCache(DirectoryLocation cacheLocation);
 }

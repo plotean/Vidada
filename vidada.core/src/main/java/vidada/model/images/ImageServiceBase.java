@@ -27,7 +27,7 @@ import archimedesJ.data.caching.LRUCache;
 import archimedesJ.geometry.Size;
 import archimedesJ.images.IMemoryImage;
 import archimedesJ.images.ImageContainer;
-import archimedesJ.io.locations.DirectoiryLocation;
+import archimedesJ.io.locations.DirectoryLocation;
 
 public class ImageServiceBase implements IImageService {
 
@@ -52,9 +52,9 @@ public class ImageServiceBase implements IImageService {
 	 * @return
 	 */
 	private IImageCache openLocalCache() {
-		DirectoiryLocation localCacheLocation = null;
+		DirectoryLocation localCacheLocation = null;
 		try {
-			localCacheLocation = DirectoiryLocation.Factory.create(
+			localCacheLocation = DirectoryLocation.Factory.create(
 					GlobalSettings.getInstance().getAbsoluteCachePath().toString());
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
@@ -161,7 +161,7 @@ public class ImageServiceBase implements IImageService {
 	 * depends on the location type.
 	 */
 	@Override
-	public IImageCache openEncryptedCache(DirectoiryLocation cacheLocation, ICredentialManager credentialManager) {
+	public IImageCache openEncryptedCache(DirectoryLocation cacheLocation, ICredentialManager credentialManager) {
 		ICacheKeyProvider cacheKeyProvider = new VidadaCacheKeyProvider(credentialManager);
 		IImageCache cache = null;
 		try {
@@ -177,7 +177,7 @@ public class ImageServiceBase implements IImageService {
 	 * Opens an non encrypted cache. 
 	 */
 	@Override
-	public IImageCache openCache(DirectoiryLocation cacheLocation) {
+	public IImageCache openCache(DirectoryLocation cacheLocation) {
 		return new ImageFileCache(cacheLocation);
 	}
 

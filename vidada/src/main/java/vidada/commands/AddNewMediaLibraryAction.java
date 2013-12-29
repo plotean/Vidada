@@ -14,7 +14,7 @@ import vidada.model.libraries.MediaLibrary;
 import vidada.model.settings.DatabaseSettings;
 import vidada.views.ImageResources;
 import archimedesJ.expressions.Predicate;
-import archimedesJ.io.locations.DirectoiryLocation;
+import archimedesJ.io.locations.DirectoryLocation;
 import archimedesJ.swing.components.ChooseFileDialog;
 
 
@@ -64,7 +64,7 @@ public class AddNewMediaLibraryAction extends AbstractAction{
 			library.setIgnoreMovies(settings.isIgnoreMovies());
 			libService.addLibrary(library);
 
-			DirectoiryLocation location = DirectoiryLocation.Factory.create(dialog.getFile().toURI());
+			DirectoryLocation location = DirectoryLocation.Factory.create(dialog.getFile().toURI());
 			library.setLibraryRoot(location);
 			System.out.println("AddNewMediaLibraryAction: Added media libarary @" + library.getMediaDirectory());
 

@@ -12,7 +12,7 @@ import vidada.model.entities.BaseEntity;
 import vidada.model.images.IImageService;
 import vidada.model.images.cache.IImageCache;
 import vidada.model.user.User;
-import archimedesJ.io.locations.DirectoiryLocation;
+import archimedesJ.io.locations.DirectoryLocation;
 
 import com.db4o.ObjectContainer;
 import com.db4o.query.Query;
@@ -79,8 +79,8 @@ public class MediaLibrary extends BaseEntity {
 
 
 	@Transient
-	private DirectoiryLocation getLibraryRoot() {
-		DirectoiryLocation root = null;
+	private DirectoryLocation getLibraryRoot() {
+		DirectoryLocation root = null;
 		LibraryEntry entry = getCurrentEntry();
 
 		if(entry != null){
@@ -105,10 +105,10 @@ public class MediaLibrary extends BaseEntity {
 
 			IImageService imageService = ServiceProvider.Resolve(IImageService.class);
 
-			DirectoiryLocation libraryRoot = getLibraryRoot();
+			DirectoryLocation libraryRoot = getLibraryRoot();
 			if(libraryRoot != null && libraryRoot.exists()){
 				try {
-					DirectoiryLocation libCache = DirectoiryLocation.Factory.create(libraryRoot, "vidada.thumbs");
+					DirectoryLocation libCache = DirectoryLocation.Factory.create(libraryRoot, "vidada.thumbs");
 					System.out.println("opening new library cache...");
 					imageCache = imageService.openCache(libCache);
 				} catch (URISyntaxException e1) {
@@ -125,7 +125,7 @@ public class MediaLibrary extends BaseEntity {
 	 */
 	@Transient
 	public boolean isAvailable(){
-		DirectoiryLocation root = getLibraryRoot();
+		DirectoryLocation root = getLibraryRoot();
 		return root != null && root.exists();
 	}
 
@@ -188,7 +188,7 @@ public class MediaLibrary extends BaseEntity {
 	 * Set the root path of this media library
 	 * @param libraryRoot
 	 */
-	public void setLibraryRoot(DirectoiryLocation libraryRoot) {
+	public void setLibraryRoot(DirectoryLocation libraryRoot) {
 		ObjectContainer db = SessionManager.getObjectContainer();
 		LibraryEntry entry = findOrCreateEntry();
 
@@ -225,7 +225,7 @@ public class MediaLibrary extends BaseEntity {
 
 	@Override
 	public String toString(){
-		DirectoiryLocation root = getLibraryRoot();
+		DirectoryLocation root = getLibraryRoot();
 		return root != null ? root.toString() : "DirectoiryLocation=NULL";
 	}
 

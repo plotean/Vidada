@@ -5,7 +5,7 @@ import java.util.List;
 
 import javax.swing.tree.TreeNode;
 
-import archimedesJ.io.locations.DirectoiryLocation;
+import archimedesJ.io.locations.DirectoryLocation;
 import archimedesJ.io.locations.ResourceLocation;
 import archimedesJ.swing.components.thumbexplorer.IBaseTreeItem;
 import archimedesJ.swing.components.thumbexplorer.model.IThumbNodeFactory;
@@ -28,12 +28,12 @@ public class VidadaThumbNodeFactory implements IThumbNodeFactory {
 		if(parent instanceof ThumbDirectoryNode)
 		{
 			ThumbDirectoryNode parentNode = (ThumbDirectoryNode) parent;
-			DirectoiryLocation directory = parentNode.getLocation();
+			DirectoryLocation directory = parentNode.getLocation();
 
-			List<DirectoiryLocation> dirs = directory.listDirs();
+			List<DirectoryLocation> dirs = directory.listDirs();
 			List<ResourceLocation> resurces = directory.listFiles();
 
-			for (DirectoiryLocation dir : dirs) {
+			for (DirectoryLocation dir : dirs) {
 				nodes.add(createNodeForFolder(parentNode, dir));
 			}
 
@@ -51,7 +51,7 @@ public class VidadaThumbNodeFactory implements IThumbNodeFactory {
 		return new VidadaFileTreeNodeWrapper(parent, file);
 	}
 
-	protected TreeNode createNodeForFolder(ThumbDirectoryNode parent, DirectoiryLocation folder) {
+	protected TreeNode createNodeForFolder(ThumbDirectoryNode parent, DirectoryLocation folder) {
 		return new VidadaFolderTreeNodeWrapper(parent, folder, this);
 	}
 

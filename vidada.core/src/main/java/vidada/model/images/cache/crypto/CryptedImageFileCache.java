@@ -9,7 +9,7 @@ import vidada.model.security.AuthenticationException;
 import archimedesJ.crypto.IByteBufferEncryption;
 import archimedesJ.crypto.XORByteCrypter;
 import archimedesJ.images.IMemoryImage;
-import archimedesJ.io.locations.DirectoiryLocation;
+import archimedesJ.io.locations.DirectoryLocation;
 import archimedesJ.io.locations.ResourceLocation;
 
 /**
@@ -34,7 +34,7 @@ public class CryptedImageFileCache extends ImageFileCache {
 	 * 
 	 * @param keyProvider Cache keypad provider
 	 */
-	public CryptedImageFileCache(DirectoiryLocation cacheRoot, ICacheKeyProvider keyProvider) throws AuthenticationException{
+	public CryptedImageFileCache(DirectoryLocation cacheRoot, ICacheKeyProvider keyProvider) throws AuthenticationException{
 		this(cacheRoot, new XORByteCrypter(), keyProvider);
 	}
 
@@ -44,7 +44,7 @@ public class CryptedImageFileCache extends ImageFileCache {
 	 * @param encryption Buffer encryption strategy
 	 * @param keyProvider Cache keypad provider
 	 */
-	protected CryptedImageFileCache(DirectoiryLocation cacheRoot,
+	protected CryptedImageFileCache(DirectoryLocation cacheRoot,
 			IByteBufferEncryption encryption,  ICacheKeyProvider keyProvider)throws AuthenticationException{
 		super(cacheRoot);
 

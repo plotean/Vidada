@@ -11,7 +11,7 @@ import archimedesJ.crypto.KeyCurruptedException;
 import archimedesJ.crypto.KeyPad;
 import archimedesJ.crypto.XORByteCrypter;
 import archimedesJ.exceptions.NotSupportedException;
-import archimedesJ.io.locations.DirectoiryLocation;
+import archimedesJ.io.locations.DirectoryLocation;
 import archimedesJ.io.locations.ResourceLocation;
 import archimedesJ.security.CredentialType;
 import archimedesJ.security.Credentials;
@@ -31,7 +31,7 @@ public class CryptedCacheUtil {
 	 * @param root
 	 * @return
 	 */
-	public static byte[] getEncryptionKeyPad(DirectoiryLocation root, ICredentialManager credentialManager) {
+	public static byte[] getEncryptionKeyPad(DirectoryLocation root, ICredentialManager credentialManager) {
 
 		byte[] keyPad = null;
 
@@ -170,7 +170,7 @@ public class CryptedCacheUtil {
 	 * @param root
 	 * @param password
 	 */
-	public static void encryptWithPassword(DirectoiryLocation root, Credentials credentials){
+	public static void encryptWithPassword(DirectoryLocation root, Credentials credentials){
 
 		ResourceLocation keyFile;
 		ResourceLocation enckeyFile;
@@ -209,7 +209,7 @@ public class CryptedCacheUtil {
 	 * @param root
 	 * @param password
 	 */
-	public static void removeEncryption(DirectoiryLocation root, Credentials oldPass){
+	public static void removeEncryption(DirectoryLocation root, Credentials oldPass){
 
 		ResourceLocation keyFile;
 		ResourceLocation enckeyFile;

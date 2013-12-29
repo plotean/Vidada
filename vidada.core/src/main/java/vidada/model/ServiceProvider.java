@@ -20,7 +20,7 @@ import vidada.model.tags.ITagService;
 import vidada.model.tags.TagService;
 import archimedesJ.events.EventArgs;
 import archimedesJ.events.EventListenerEx;
-import archimedesJ.io.locations.DirectoiryLocation;
+import archimedesJ.io.locations.DirectoryLocation;
 import archimedesJ.services.ILocator;
 import archimedesJ.services.ISelectionService;
 import archimedesJ.services.IService;
@@ -124,7 +124,7 @@ public class ServiceProvider implements ILocator {
 				@Override
 				public void eventOccured(Object sender, EventArgs eventArgs) {
 					try {
-						final DirectoiryLocation localCache = DirectoiryLocation.Factory
+						final DirectoryLocation localCache = DirectoryLocation.Factory
 								.create(GlobalSettings.getInstance().getAbsoluteCachePath());
 
 						System.out.println(privacyService.getCredentials().toString());
@@ -141,7 +141,7 @@ public class ServiceProvider implements ILocator {
 				@Override
 				public void eventOccured(Object sender, EventArgs eventArgs) {
 					try {
-						final DirectoiryLocation localCache = DirectoiryLocation.Factory
+						final DirectoryLocation localCache = DirectoryLocation.Factory
 								.create(GlobalSettings.getInstance().getAbsoluteCachePath());
 
 						CryptedCacheUtil.removeEncryption( localCache, privacyService.getCredentials());
