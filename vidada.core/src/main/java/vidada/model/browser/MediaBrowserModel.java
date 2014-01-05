@@ -9,8 +9,6 @@ import vidada.viewmodel.tags.TagViewModel;
 import archimedesJ.data.events.CollectionEventArg;
 import archimedesJ.events.EventHandlerEx;
 import archimedesJ.events.IEvent;
-import archimedesJ.services.ISelectionManager;
-import archimedesJ.services.SelectionManager;
 
 
 /**
@@ -18,9 +16,8 @@ import archimedesJ.services.SelectionManager;
  * @author IsNull
  *
  */
-public class MediaBrowserModel {
+public class MediaBrowserModel implements IListProvider<IBrowserItem> {
 
-	private final ISelectionManager<IBrowserItem> selectionManager = new SelectionManager<IBrowserItem>();
 	private final List<IBrowserItem> medias = new ArrayList<IBrowserItem>();
 	private final ITagStatesVM tagStatesModel = new TagStatesModel(TagViewModel.VMFactory);
 
@@ -32,7 +29,8 @@ public class MediaBrowserModel {
 	/**
 	 * Raised when the media model has changed
 	 */
-	public IEvent<CollectionEventArg<IBrowserItem>> getMediasChangedEvent() {return mediasChangedEvent;}
+	@Override
+	public IEvent<CollectionEventArg<IBrowserItem>> getItemsChangedEvent() {return mediasChangedEvent;}
 
 
 	public MediaBrowserModel(){
@@ -53,8 +51,11 @@ public class MediaBrowserModel {
 		mediasChangedEvent.fireEvent(this, CollectionEventArg.Invalidated);
 	}
 
-
-	public IBrowserItem getItem(int index){
+	/**
+	 * Gets the item at the specific index
+	 */
+	@Override
+	public IBrowserItem get(int index){
 		return medias.get(index);
 	}
 
@@ -67,11 +68,13 @@ public class MediaBrowserModel {
 	}
 
 
+	@Override
 	public int size() {
 		return medias.size();
 	}
 
 
+	@Override
 	public boolean isEmpty() {
 		return medias.isEmpty();
 	}
@@ -83,15 +86,5 @@ public class MediaBrowserModel {
 	public List<IBrowserItem> getRaw() {
 		return medias;
 	}
-
-	/**
-	 * Gets the selection manager
-	 * @return
-	 */
-	public ISelectionManager<IBrowserItem> getSelectionManager() {
-		return selectionManager;
-	}
-
-
 
 }

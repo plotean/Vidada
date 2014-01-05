@@ -113,19 +113,30 @@ public final class MediaDirectory {
 
 
 	/**
-	 * Returns all media files in this library
+	 * Returns all media files recursively in this library
 	 * @return
 	 */
-	public List<ResourceLocation> getAllMediaFiles(){
+	public List<ResourceLocation> getAllMediaFilesRecursive(){
 		if(directory != null)
 			return Lists.asTypedList(directory.listAll(buildFilter(), ignoreVidadaThumbs));
 		return new ArrayList<ResourceLocation>();
 	}
 
+	/**
+	 * Returns all media files and folders in this directory
+	 * @return
+	 */
+	public List<UniformLocation> getMediasAndFolders(){
+		if(directory != null){
 
+			ILocationFilter filter = LocationFilters.or(
+					LocationFilters.AcceptAllDirs,
+					buildFilter());
 
-
-
+			return Lists.asTypedList(directory.listAll(filter));
+		}
+		return new ArrayList<UniformLocation>();
+	}
 
 
 	/**

@@ -47,7 +47,6 @@ public class PrimaryMediaBrowserFX extends BorderPane {
 	private MediaDetailViewModel singleMediaDetailVM = new MediaDetailViewModel(mediaDetailTagstates);
 
 
-
 	public PrimaryMediaBrowserFX(MediaBrowserModel browserModel, ITagService tagService){
 		this.tagService = tagService;
 		this.browserModel = browserModel;
@@ -62,7 +61,7 @@ public class PrimaryMediaBrowserFX extends BorderPane {
 		// setup views
 
 		// Browser View
-		MediaBrowserFX mediaBrowserFX = new MediaBrowserFX();
+		final MediaBrowserFX mediaBrowserFX = new MediaBrowserFX();
 		mediaBrowserFX.setDataContext(browserModel);
 		this.setCenter(mediaBrowserFX);
 
@@ -79,11 +78,10 @@ public class PrimaryMediaBrowserFX extends BorderPane {
 
 
 
-		browserModel.getSelectionManager().getSelectionChanged().add(new EventListenerEx<EventArgs>() {
+		mediaBrowserFX.getSelectionManager().getSelectionChanged().add(new EventListenerEx<EventArgs>() {
 			@Override
 			public void eventOccured(Object sender, EventArgs eventArgs) {
-				IMediaViewModel vm = getMediaDetailVM(PrimaryMediaBrowserFX.this
-						.browserModel.getSelectionManager());	
+				IMediaViewModel vm = getMediaDetailVM(mediaBrowserFX.getSelectionManager());	
 				detailView.setDataContext(vm);
 			}
 		});

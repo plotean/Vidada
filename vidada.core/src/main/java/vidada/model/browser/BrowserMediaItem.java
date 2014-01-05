@@ -23,12 +23,12 @@ public class BrowserMediaItem implements IBrowserItem {
 	}*/
 
 	@Override
-	public List<IBrowserItem> getChildren() {
+	public final List<IBrowserItem> getChildren() {
 		return null;
 	}
 
 	@Override
-	public boolean isFolder() {
+	public final boolean isFolder() {
 		return false;
 	}
 

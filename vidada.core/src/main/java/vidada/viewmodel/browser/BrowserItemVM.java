@@ -25,6 +25,12 @@ public abstract class BrowserItemVM implements IViewModel<IBrowserItem>{
 	}
 
 	/**
+	 * Default open action
+	 * @return
+	 */
+	public abstract boolean open();
+
+	/**
 	 * Method is called when this media item is outside the view port
 	 */
 	public abstract void outsideViewPort();

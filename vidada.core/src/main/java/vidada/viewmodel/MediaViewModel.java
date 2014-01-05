@@ -110,6 +110,8 @@ public class MediaViewModel extends BrowserItemVM {
 		return imageContainer;
 	}
 
+
+	@Override
 	public boolean open(){
 		if(mediaData != null)
 			return mediaData.open();

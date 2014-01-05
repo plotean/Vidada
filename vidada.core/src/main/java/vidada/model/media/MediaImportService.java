@@ -79,7 +79,7 @@ public class MediaImportService implements IMediaImportService {
 	{
 		progressListener.currentProgress(new ProgressEventArgs(true, "Scanning for media files in " + library + " ..."));
 
-		List<ResourceLocation> mediafiles = library.getMediaDirectory().getAllMediaFiles();
+		List<ResourceLocation> mediafiles = library.getMediaDirectory().getAllMediaFilesRecursive();
 
 
 		if(!mediafiles.isEmpty())

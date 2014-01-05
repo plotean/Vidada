@@ -11,8 +11,16 @@ public class BrowserFolderItemVM extends BrowserItemVM{
 	}
 
 
+	@Override
 	public String getName(){
 		return model.getName();
+	}
+
+	@Override
+	public boolean open() {
+		// open this folder
+		model.requestOpen();
+		return true;
 	}
 
 	@Override
@@ -36,4 +44,7 @@ public class BrowserFolderItemVM extends BrowserItemVM{
 	public String toString(){
 		return getName();
 	}
+
+
+
 }
