@@ -1,8 +1,13 @@
 package vidada.viewsFX.mediaexplorer;
 
+
+import javafx.scene.Node;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.BorderPane;
 import vidada.viewmodel.explorer.MediaExplorerVM;
+import vidada.viewsFX.breadcrumbs.BreadCrumbBar;
+import vidada.viewsFX.breadcrumbs.BreadCrumbBarModel;
+import vidada.viewsFX.breadcrumbs.SimpleBreadCrumbModel;
 import vidada.viewsFX.mediabrowsers.MediaBrowserFX;
 import archimedesJ.events.EventArgs;
 import archimedesJ.events.EventListenerEx;
@@ -11,18 +16,41 @@ public class PrimaryMediaExplorerFX extends BorderPane {
 	private final MediaBrowserFX mediaBrowserFX;
 	private final ExplorerFilterFX filterView;
 
+	private final BreadCrumbBarModel breadCrumbModel = new BreadCrumbBarModel();
 	private MediaExplorerVM explorerViewModel;
+
 
 	public PrimaryMediaExplorerFX(){
 
+
+		breadCrumbModel.add(
+				new SimpleBreadCrumbModel("Home"),
+				new SimpleBreadCrumbModel("This"),
+				new SimpleBreadCrumbModel("Is"),
+				new SimpleBreadCrumbModel("A (small)"),
+				new SimpleBreadCrumbModel("Folder"));
+
+
 		// Browser View
 		mediaBrowserFX = new MediaBrowserFX();
-		this.setCenter(mediaBrowserFX);
+
+		this.setTop(createNavigation());
+
+		this.setCenter(createNavigation());
+		//this.setCenter(mediaBrowserFX);
+
 
 		// Filter View
 		filterView = new ExplorerFilterFX();
 		TitledPane filterPane = new TitledPane("Source", filterView);
 		this.setTop(filterPane);
+	}
+
+
+	private Node createNavigation(){
+		BreadCrumbBar breadCrumbBar = new BreadCrumbBar();
+		breadCrumbBar.setDataContext(breadCrumbModel);
+		return breadCrumbBar;
 	}
 
 
