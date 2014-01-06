@@ -5,6 +5,12 @@ import javafx.scene.layout.HBox;
 import archimedesJ.data.events.CollectionEventArg;
 import archimedesJ.events.EventListenerEx;
 
+/**
+ * Represents a BreadCrumbBar
+ * 
+ * @author IsNull
+ *
+ */
 public class BreadCrumbBar extends HBox {
 
 	private BreadCrumbBarModel model;
@@ -13,6 +19,10 @@ public class BreadCrumbBar extends HBox {
 
 	}
 
+	/**
+	 * Set the data context of this view
+	 * @param model
+	 */
 	public void setDataContext(BreadCrumbBarModel model){
 		if(this.model != null){
 			this.model.getItemsChangedEvent().remove(itemsChangedListener);
@@ -32,22 +42,14 @@ public class BreadCrumbBar extends HBox {
 		this.getChildren().clear();
 
 		if(model != null){
-			System.out.println("BreadCrumbBar::updateView with " + model.size() + " items");
 			for (int i=0; model.size() > i; i++) {
 
 				boolean first = i==0;
 				BreadCrumbButton item = createCrumb(model.get(i), first);
 
 				int ins = item.getArrowWidth() / 2;
-				double right = 0;
-				double left = 0;
-
-				if(!first){
-					right = -ins;
-					left = right;
-				}else{
-					right = -ins;
-				}
+				double right = -ins;
+				double left = (!first) ? right : 0;
 
 				//Insets double top, double right, double bottom, double left
 				HBox.setMargin(item, new Insets(0, right, 0, left));
