@@ -1,6 +1,7 @@
 package vidada.viewsFX.mediaexplorer;
 
 
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.BorderPane;
@@ -36,6 +37,7 @@ public class PrimaryMediaExplorerFX extends BorderPane {
 
 		this.setTop(createNavigation());
 
+
 		this.setCenter(createNavigation());
 		//this.setCenter(mediaBrowserFX);
 
@@ -48,8 +50,12 @@ public class PrimaryMediaExplorerFX extends BorderPane {
 
 
 	private Node createNavigation(){
+
 		BreadCrumbBar breadCrumbBar = new BreadCrumbBar();
 		breadCrumbBar.setDataContext(breadCrumbModel);
+
+		BorderPane.setMargin(breadCrumbBar, new Insets(10));
+
 		return breadCrumbBar;
 	}
 
