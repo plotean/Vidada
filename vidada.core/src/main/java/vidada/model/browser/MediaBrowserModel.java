@@ -16,7 +16,7 @@ import archimedesJ.events.IEvent;
  * @author IsNull
  *
  */
-public class MediaBrowserModel implements IListProvider<IBrowserItem> {
+public class MediaBrowserModel implements IDataProvider<IBrowserItem> {
 
 	private final List<IBrowserItem> medias = new ArrayList<IBrowserItem>();
 	private final ITagStatesVM tagStatesModel = new TagStatesModel(TagViewModel.VMFactory);

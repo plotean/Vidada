@@ -13,7 +13,7 @@ import archimedesJ.events.IEvent;
  * @author IsNull
  *
  */
-public abstract class BrowserFolderItem implements IBrowserItem, IListProvider<IBrowserItem>{
+public abstract class BrowserFolderItem implements IBrowserItem, IDataProvider<IBrowserItem>{
 
 	private List<IBrowserItem> children = null;
 

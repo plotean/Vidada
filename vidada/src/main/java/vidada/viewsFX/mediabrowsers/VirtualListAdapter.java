@@ -16,8 +16,7 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
-import vidada.model.browser.IBrowserItem;
-import vidada.model.browser.IListProvider;
+import vidada.model.browser.IDataProvider;
 import archimedesJ.data.events.CollectionEventArg;
 import archimedesJ.events.EventHandlerEx;
 import archimedesJ.events.IEvent;
@@ -32,20 +31,20 @@ import archimedesJ.exceptions.NotSupportedException;
  * @param <T>
  * @param <ST>
  */
-public class VirtualListAdapter<T, ST> implements IListProvider<T>, ObservableList<T> {
+public class VirtualListAdapter<T, ST> implements IDataProvider<T>, ObservableList<T> {
 
 	public static interface ITransform<T,ST> { T transform(ST source); }
 
 	private final ITransform<T,ST> transformer;
-	private final IListProvider<ST> source;
+	private final IDataProvider<ST> source;
 
-	private final EventHandlerEx<CollectionEventArg<IBrowserItem>> mediasChangedEvent = new EventHandlerEx<CollectionEventArg<IBrowserItem>>();
+	private final EventHandlerEx<CollectionEventArg<T>> mediasChangedEvent = new EventHandlerEx<CollectionEventArg<T>>();
 
 	@Override
-	public IEvent<CollectionEventArg<IBrowserItem>> getItemsChangedEvent() { return mediasChangedEvent; }
+	public IEvent<CollectionEventArg<T>> getItemsChangedEvent() { return mediasChangedEvent; }
 
 
-	public VirtualListAdapter(IListProvider<ST> source, ITransform<T,ST> transformer){
+	public VirtualListAdapter(IDataProvider<ST> source, ITransform<T,ST> transformer){
 		this.source = source;
 		this.transformer = transformer;
 	}

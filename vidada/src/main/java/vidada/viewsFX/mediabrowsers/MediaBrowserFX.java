@@ -12,7 +12,7 @@ import org.controlsfx.control.GridView;
 import vidada.model.browser.BrowserFolderItem;
 import vidada.model.browser.BrowserMediaItem;
 import vidada.model.browser.IBrowserItem;
-import vidada.model.browser.IListProvider;
+import vidada.model.browser.IDataProvider;
 import vidada.viewmodel.IVMFactory;
 import vidada.viewmodel.MediaViewModel;
 import vidada.viewmodel.ViewModelPool;
@@ -36,7 +36,7 @@ public class MediaBrowserFX extends BorderPane {
 
 	private final ISelectionManager<IBrowserItem> selectionManager = new SelectionManager<IBrowserItem>();
 
-	private IListProvider<IBrowserItem> mediaModel;
+	private IDataProvider<IBrowserItem> mediaModel;
 	private GridView<BrowserItemVM> gridView;
 	private GridViewViewPort gridViewPort;
 	private IndexRange visibleCells;
@@ -117,7 +117,7 @@ public class MediaBrowserFX extends BorderPane {
 		visibleCells = currentVisibleCells;
 	}
 
-	public void setDataContext(IListProvider<IBrowserItem> mediaModel){
+	public void setDataContext(IDataProvider<IBrowserItem> mediaModel){
 
 		selectionManager.clear();
 

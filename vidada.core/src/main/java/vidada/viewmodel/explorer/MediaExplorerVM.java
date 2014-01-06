@@ -4,7 +4,7 @@ import vidada.model.ServiceProvider;
 import vidada.model.browser.BrowserFolderItem;
 import vidada.model.browser.BrowserFolderItemLocation;
 import vidada.model.browser.IBrowserItem;
-import vidada.model.browser.IListProvider;
+import vidada.model.browser.IDataProvider;
 import vidada.model.media.IMediaService;
 import archimedesJ.events.EventArgs;
 import archimedesJ.events.EventHandlerEx;
@@ -14,7 +14,7 @@ import archimedesJ.io.locations.DirectoryLocation;
 public class MediaExplorerVM {
 
 	private final IMediaService mediaService = ServiceProvider.Resolve(IMediaService.class);
-	private  IListProvider<IBrowserItem> browserModel;
+	private  IDataProvider<IBrowserItem> browserModel;
 
 	private EventHandlerEx<EventArgs> browserModelChangedEvent = new EventHandlerEx<EventArgs>();
 	public IEvent<EventArgs> getBrowserModelChangedEvent() { return browserModelChangedEvent; }
@@ -36,7 +36,7 @@ public class MediaExplorerVM {
 	 * Get the media browser model
 	 * @return
 	 */
-	public IListProvider<IBrowserItem> getBrowserModel(){
+	public IDataProvider<IBrowserItem> getBrowserModel(){
 		return browserModel;
 	}
 }
