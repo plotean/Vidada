@@ -47,11 +47,12 @@ public class BreadCrumbBar extends HBox {
 				boolean first = i==0;
 				BreadCrumbButton item = createCrumb(model.get(i), first);
 
+				// We have to position the bread crumbs slightly overlapping
+				// thus we have to create negative Insets
 				int ins = item.getArrowWidth() / 2;
 				double right = -ins;
-				double left = (!first) ? right : 0;
+				double left = (!first) ? right : 0; // Omit the first button
 
-				//Insets double top, double right, double bottom, double left
 				HBox.setMargin(item, new Insets(0, right, 0, left));
 				this.getChildren().add(item);
 			}

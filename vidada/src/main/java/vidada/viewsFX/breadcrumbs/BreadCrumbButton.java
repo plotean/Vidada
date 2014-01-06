@@ -11,6 +11,11 @@ import javafx.scene.shape.Path;
 
 /**
  * Represents a BreadCrumb Button
+ * ----------
+ *	\         \
+ *	/         /
+ * ----------
+ * 
  * 
  * @author IsNull
  *
@@ -20,11 +25,22 @@ public class BreadCrumbButton extends Button {
 	private final int arrowWidth = 5;
 	private final int arrowHeight = 20;
 
-
+	/**
+	 * Create a BreadCrumbButton
+	 * 
+	 * @param text Buttons text
+	 * @param first Is this the first / home button?
+	 */
 	public BreadCrumbButton(String text, boolean first){
 		this(text, null, first);
 	}
 
+	/**
+	 * Create a BreadCrumbButton
+	 * @param text Buttons text
+	 * @param gfx Gfx of the Button
+	 * @param first Is this the first / home button?
+	 */
 	public BreadCrumbButton(String text, Node gfx, boolean first){
 		super(text, gfx);
 		// set path as button shape
