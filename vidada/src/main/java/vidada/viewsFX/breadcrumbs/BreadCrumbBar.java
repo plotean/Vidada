@@ -2,6 +2,7 @@ package vidada.viewsFX.breadcrumbs;
 
 import javafx.geometry.Insets;
 import javafx.scene.layout.HBox;
+import vidada.model.browser.IDataProvider;
 import archimedesJ.data.events.CollectionEventArg;
 import archimedesJ.events.EventListenerEx;
 
@@ -13,7 +14,7 @@ import archimedesJ.events.EventListenerEx;
  */
 public class BreadCrumbBar extends HBox {
 
-	private BreadCrumbBarModel model;
+	private IDataProvider<IBreadCrumbModel> model;
 
 	public BreadCrumbBar(){
 
@@ -23,7 +24,7 @@ public class BreadCrumbBar extends HBox {
 	 * Set the data context of this view
 	 * @param model
 	 */
-	public void setDataContext(BreadCrumbBarModel model){
+	public void setDataContext(IDataProvider<IBreadCrumbModel> model){
 		if(this.model != null){
 			this.model.getItemsChangedEvent().remove(itemsChangedListener);
 		}
@@ -49,8 +50,8 @@ public class BreadCrumbBar extends HBox {
 
 				// We have to position the bread crumbs slightly overlapping
 				// thus we have to create negative Insets
-				int ins = item.getArrowWidth() / 2;
-				double right = -ins;
+				double ins = item.getArrowWidth() / 2.0;
+				double right = -ins - 0.1d;
 				double left = (!first) ? right : 0; // Omit the first button
 
 				HBox.setMargin(item, new Insets(0, right, 0, left));

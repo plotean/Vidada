@@ -22,8 +22,8 @@ import javafx.scene.shape.Path;
  */
 public class BreadCrumbButton extends Button {
 
-	private final int arrowWidth = 5;
-	private final int arrowHeight = 20;
+	private final double arrowWidth = 5;
+	private final double arrowHeight = 20;
 
 	/**
 	 * Create a BreadCrumbButton
@@ -47,7 +47,7 @@ public class BreadCrumbButton extends Button {
 		this.setShape(createButtonShape(first));
 	}
 
-	public int getArrowWidth(){
+	public double getArrowWidth(){
 		return arrowWidth;
 	}
 
