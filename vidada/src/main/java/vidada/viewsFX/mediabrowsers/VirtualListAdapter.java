@@ -51,20 +51,22 @@ public class VirtualListAdapter<T, ST> implements IDataProvider<T>, ObservableLi
 
 	@Override
 	public void addListener(InvalidationListener listener) {
+		System.out.println("VirtualListAdapter add InvalidationListener");
 	}
 
 	@Override
 	public void removeListener(InvalidationListener listener) {
+		System.out.println("VirtualListAdapter remove InvalidationListener");
 	}
 
 	@Override
 	public void addListener(ListChangeListener<? super T> arg0) {
-
+		System.out.println("VirtualListAdapter add ListChangeListener");
 	}
 
 	@Override
 	public void removeListener(ListChangeListener<? super T> arg0) {
-
+		System.out.println("VirtualListAdapter remove ListChangeListener");
 	}
 
 
@@ -180,7 +182,7 @@ public class VirtualListAdapter<T, ST> implements IDataProvider<T>, ObservableLi
 
 	@Override
 	public ListIterator<T> listIterator() {
-		throw new NotSupportedException();
+		return new VirtualListIterator();
 	}
 
 	@Override
@@ -269,6 +271,64 @@ public class VirtualListAdapter<T, ST> implements IDataProvider<T>, ObservableLi
 	}
 
 
+	private class VirtualListIterator implements ListIterator<T> {
+
+		int pos = 0;
+
+		@Override
+		public void forEachRemaining(Consumer<? super T> action) {
+			throw new NotSupportedException();
+		}
+
+		@Override
+		public boolean hasNext() {
+			return size() > 0;
+		}
+
+		@Override
+		public T next() {
+			pos++;
+			return get(pos);
+		}
+
+		@Override
+		public boolean hasPrevious() {
+			return pos > 0;
+		}
+
+		@Override
+		public T previous() {
+			pos--;
+			return get(pos);
+		}
+
+		@Override
+		public int nextIndex() {
+			return pos + 1;
+		}
+
+		@Override
+		public int previousIndex() {
+			return pos - 1;
+		}
+
+		@Override
+		public void remove() {
+			throw new NotSupportedException();
+		}
+
+		@Override
+		public void set(T e) {
+			throw new NotSupportedException();
+
+		}
+
+		@Override
+		public void add(T e) {
+			throw new NotSupportedException();
+		}
+
+	}
 
 
 

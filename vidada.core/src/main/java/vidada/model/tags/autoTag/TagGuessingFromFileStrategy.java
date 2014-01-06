@@ -46,11 +46,11 @@ public class TagGuessingFromFileStrategy implements ITagGuessingStrategy  {
 		String[] tokens2 = absolutePathString2.split(splitRegEx);
 
 		for (String token : tokens) {
-			System.out.println(token);
+			System.out.println("TagGuessingFromFileStrategy: " + token);
 		}
 		System.out.println("*nix path:");
 		for (String token : tokens2) {
-			System.out.println(token);
+			System.out.println("TagGuessingFromFileStrategy:" + token);
 		}
 	}
 

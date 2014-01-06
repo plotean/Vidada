@@ -80,6 +80,10 @@ public abstract class BrowserFolderItem implements IBrowserItem, IDataProvider<I
 		return getChildren().isEmpty();
 	}
 
+	@Override
+	public String toString(){
+		return "[" + getName() + "]";
+	}
 
 
 }

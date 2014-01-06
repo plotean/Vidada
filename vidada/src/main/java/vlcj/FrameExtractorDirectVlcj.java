@@ -107,7 +107,7 @@ public class FrameExtractorDirectVlcj {
 			Memory nativeBuffer = nativeBuffers[0];
 
 
-			System.out.println("nativeBuffer size:" + nativeBuffer.size());
+			System.out.println("FrameExtractorDirectVlcj: nativeBuffer size:" + nativeBuffer.size());
 
 			DirectMediaPlayer player = getMediaPlayer();
 
@@ -118,7 +118,7 @@ public class FrameExtractorDirectVlcj {
 
 			Dimension nativeSize = player.getVideoDimension();
 
-			System.out.println("position " + player.getPosition());
+			System.out.println("FrameExtractorDirectVlcj: position " + player.getPosition());
 			System.out.println(nativeSize.width + " / " + nativeSize.height);
 
 

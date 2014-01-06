@@ -36,4 +36,9 @@ public class BrowserMediaItem implements IBrowserItem {
 	public String getName() {
 		return getData().getFilename();
 	}
+
+	@Override
+	public String toString(){
+		return getName();
+	}
 }

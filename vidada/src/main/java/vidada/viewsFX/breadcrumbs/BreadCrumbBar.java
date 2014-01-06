@@ -1,6 +1,9 @@
 package vidada.viewsFX.breadcrumbs;
 
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import vidada.model.browser.IDataProvider;
 import archimedesJ.data.events.CollectionEventArg;
@@ -61,15 +64,31 @@ public class BreadCrumbBar extends HBox {
 	}
 
 	private BreadCrumbButton createCrumb(IBreadCrumbModel model, boolean home){
-		return new BreadCrumbButton(model.getName(), home);
+		BreadCrumbButton crumb = new BreadCrumbButton(model.getName(), home);
+		crumb.addEventHandler(MouseEvent.MOUSE_CLICKED, new BreadCrumbClickHandler(model));
+		return crumb;
 	}
-
 
 	private final EventListenerEx<CollectionEventArg<IBreadCrumbModel>> itemsChangedListener =
 			new EventListenerEx<CollectionEventArg<IBreadCrumbModel>>() {
 		@Override
 		public void eventOccured(Object sender, CollectionEventArg<IBreadCrumbModel> eventArgs) {
 			updateView();
+		}
+	};
+
+
+	private static class BreadCrumbClickHandler implements EventHandler<MouseEvent>
+	{
+		private final IBreadCrumbModel model;
+		public BreadCrumbClickHandler(IBreadCrumbModel model){
+			this.model = model;
+		}
+		@Override
+		public void handle(MouseEvent me) {
+			if(me.getButton().equals(MouseButton.PRIMARY)){
+				model.open();
+			}
 		}
 	};
 }

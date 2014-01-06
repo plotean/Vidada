@@ -82,16 +82,15 @@ public class MediaHashUtil {
 
 		if(!forceUpdateMetaData){
 			hash = metaDataSupport.readMetaData(mediaPath.getUri(), MediaMetaAttribute.FileHash);
-
 		}
 
 		if(hash == null)
 		{
 			hash = calculateHash(mediaPath);
 			metaDataSupport.writeMetaData(mediaPath.getUri(), MediaMetaAttribute.FileHash, hash);
-			System.out.println("hash calculated and saved in meta data: " + hash);
+			System.out.println("MediaHashUtil: hash calculated and saved in meta data: " + hash);
 		}else{
-			System.out.println("hash readed from metadata: " + hash);
+			//System.out.println("MediaHashUtil: hash readed from metadata: " + hash);
 		}
 
 		return hash;

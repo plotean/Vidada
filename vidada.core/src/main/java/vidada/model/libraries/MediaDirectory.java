@@ -80,13 +80,6 @@ public final class MediaDirectory {
 		if(absoluteLibraryFile.getUri().getPath().equals(relativeFile.getPath()))
 			relativeFile = null;
 
-		if(relativeFile == null)
-		{
-			System.err.println("could not create relative path for:");
-			System.err.println("absolute: " + absoluteLibraryFile.getUri());
-			System.err.println("root: " + directory.getUri());
-		}
-
 		return relativeFile;
 	}
 

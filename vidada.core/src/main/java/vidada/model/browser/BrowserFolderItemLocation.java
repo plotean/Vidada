@@ -21,6 +21,10 @@ public class BrowserFolderItemLocation extends BrowserFolderItem {
 	}
 
 
+	public DirectoryLocation getDirectoryLocation(){
+		return directory;
+	}
+
 	@Override
 	public String getName() {
 		return directory.getName();
@@ -47,6 +51,11 @@ public class BrowserFolderItemLocation extends BrowserFolderItem {
 		}
 
 		return children;
+	}
+
+	@Override
+	public String toString(){
+		return "BrowserFolder:: " + getDirectoryLocation();
 	}
 
 }

@@ -64,13 +64,12 @@ public class FolderView extends BrowserCellView {
 	public void setDataContext(BrowserItemVM viewmodel) {
 		super.setDataContext(viewmodel);
 
-		if(viewmodel == null || viewmodel instanceof BrowserFolderItemVM){
+		if(viewmodel instanceof BrowserFolderItemVM){
 			this.viewmodel = (BrowserFolderItemVM)viewmodel;
-
-			if(viewmodel != null){
-				description.setText(viewmodel.getName());
-			}
-		}	
+			description.setText(viewmodel.getName());
+		}else{
+			description.setText("<"+viewmodel+">");
+		}
 	}
 
 	@Override

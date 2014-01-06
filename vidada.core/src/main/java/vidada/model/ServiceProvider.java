@@ -127,7 +127,7 @@ public class ServiceProvider implements ILocator {
 						final DirectoryLocation localCache = DirectoryLocation.Factory
 								.create(GlobalSettings.getInstance().getAbsoluteCachePath());
 
-						System.out.println(privacyService.getCredentials().toString());
+						System.out.println("ServiceProvider: " + privacyService.getCredentials().toString());
 						CryptedCacheUtil.encryptWithPassword(localCache, privacyService.getCredentials());
 					} catch (AuthenticationRequieredException e) {
 						e.printStackTrace();

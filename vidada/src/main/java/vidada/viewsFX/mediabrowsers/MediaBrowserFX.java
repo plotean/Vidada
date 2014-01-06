@@ -119,6 +119,9 @@ public class MediaBrowserFX extends BorderPane {
 
 	public void setDataContext(IDataProvider<IBrowserItem> mediaModel){
 
+		System.out.println("MediaBrowserFX: setDataContext" + mediaModel);
+
+
 		selectionManager.clear();
 
 		if(this.mediaModel != null){
@@ -182,17 +185,16 @@ public class MediaBrowserFX extends BorderPane {
 		}
 	};
 
+	/**
+	 * Occurs when a folderItem was opened
+	 * @param folderItem
+	 */
+	protected void onItemFolderOpen(BrowserFolderItem folderItem){
+		//setDataContext(folderItem);
+	}
+
 	transient private final ViewModelPool<IBrowserItem, BrowserItemVM> mediaVMPool =
 			new ViewModelPool<IBrowserItem, BrowserItemVM>(vmFactory);
-
-
-	private EventListenerEx<EventArgs> folderOpenListener = new EventListenerEx<EventArgs>() {
-		@Override
-		public void eventOccured(Object sender, EventArgs eventArgs) {
-			BrowserFolderItem folderToOpen = (BrowserFolderItem)sender;
-			setDataContext(folderToOpen);
-		}
-	};
 
 
 	private synchronized void updateView(){
@@ -201,18 +203,17 @@ public class MediaBrowserFX extends BorderPane {
 			public void run() {
 				if(mediaModel != null){
 
-					System.out.println("MediaBrowserFX:updateView items: " + mediaModel.size() + " empty?" + mediaModel.isEmpty());
+					System.out.println("MediaBrowserFX:updateView items: " + mediaModel.size() + " empty?" + mediaModel.isEmpty() + " :: " + mediaModel);
+
+					for (int i = 0; i <  mediaModel.size() ; i++) {
+						System.out.println();
+					}
 
 					VirtualListAdapter<BrowserItemVM, IBrowserItem> listAdapter =
 							new VirtualListAdapter<>(mediaModel, new ITransform<BrowserItemVM, IBrowserItem>() {
 								@Override
 								public BrowserItemVM transform(IBrowserItem source) {
-
-									if(source instanceof BrowserFolderItem){
-										//TODO when to remove listener??
-										((BrowserFolderItem) source).getOpenRequestEvent().add(folderOpenListener);
-									}
-									return mediaVMPool.viewModel(source);
+									return mediaVMPool.viewModel(source); //vmFactory.create(source); //
 								}
 							});
 

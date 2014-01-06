@@ -47,9 +47,9 @@ public class ExplorerFilterFX extends BorderPane {
 			public void changed(ObservableValue ov, MediaLibrary t, MediaLibrary t1) {                
 				MediaLibrary currentLibrary = cboMediaLibrary.getValue();
 				DirectoryLocation dir = currentLibrary.getMediaDirectory().getDirectory();
-				if(mediaExplorerVm != null)
-					mediaExplorerVm.setCurrentLocation(dir);
-				else
+				if(mediaExplorerVm != null){
+					mediaExplorerVm.setHomeLocation(dir);
+				}else
 					System.err.println("ExplorerFilterFX: mediaExplorerVm is NULL!");
 			}    
 		});

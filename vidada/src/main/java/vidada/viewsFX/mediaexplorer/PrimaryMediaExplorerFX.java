@@ -5,24 +5,25 @@ import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
 import vidada.viewmodel.explorer.MediaExplorerVM;
 import vidada.viewsFX.breadcrumbs.BreadCrumbBar;
-import vidada.viewsFX.breadcrumbs.BreadCrumbBarModel;
+import vidada.viewsFX.breadcrumbs.IBreadCrumbModel;
 import vidada.viewsFX.breadcrumbs.SimpleBreadCrumbModel;
 import vidada.viewsFX.mediabrowsers.MediaBrowserFX;
 import archimedesJ.events.EventArgs;
+import archimedesJ.events.EventArgsG;
 import archimedesJ.events.EventListenerEx;
 
 public class PrimaryMediaExplorerFX extends BorderPane {
 	private final MediaBrowserFX mediaBrowserFX;
 	private final ExplorerFilterFX filterView;
 
-	private final BreadCrumbBarModel breadCrumbModel = new BreadCrumbBarModel();
+	private final LocationBreadCrumbBarModel breadCrumbModel = new LocationBreadCrumbBarModel();
 	private MediaExplorerVM explorerViewModel;
 
 
 	public PrimaryMediaExplorerFX(){
-
 
 		breadCrumbModel.add(
 				new SimpleBreadCrumbModel("Home"),
@@ -31,20 +32,36 @@ public class PrimaryMediaExplorerFX extends BorderPane {
 				new SimpleBreadCrumbModel("A (small)"),
 				new SimpleBreadCrumbModel("Folder"));
 
+		breadCrumbModel.getBreadCrumbOpenEvent().add(new EventListenerEx<EventArgsG<IBreadCrumbModel>>() {
+			@Override
+			public void eventOccured(Object sender, EventArgsG<IBreadCrumbModel> eventArgs) {
+				if(eventArgs.getValue() instanceof LocationBreadCrumb){
+					LocationBreadCrumb crumb = (LocationBreadCrumb)eventArgs.getValue();
+					explorerViewModel.setCurrentLocation(crumb.getDirectoryLocation());
+				}else{
+					System.err.println("PrimaryMediaExplorerFX: Breadcrumb model has unexpected children: " + eventArgs.getValue());
+				}
+			}
+		});
+
 
 		// Browser View
 		mediaBrowserFX = new MediaBrowserFX();
 
-		this.setTop(createNavigation());
-
-
-		this.setCenter(createNavigation());
+		this.setCenter(mediaBrowserFX);
 		//this.setCenter(mediaBrowserFX);
-
 
 		// Filter View
 		filterView = new ExplorerFilterFX();
-		TitledPane filterPane = new TitledPane("Source", filterView);
+
+		// Navigation / Breadcrumb
+		Node navNode = createNavigation();
+
+		VBox topBox = new VBox();
+		topBox.getChildren().add(filterView);
+		topBox.getChildren().add(navNode);
+
+		TitledPane filterPane = new TitledPane("Source", topBox);
 		this.setTop(filterPane);
 	}
 
@@ -53,7 +70,6 @@ public class PrimaryMediaExplorerFX extends BorderPane {
 
 		BreadCrumbBar breadCrumbBar = new BreadCrumbBar();
 		breadCrumbBar.setDataContext(breadCrumbModel);
-
 		BorderPane.setMargin(breadCrumbBar, new Insets(10));
 
 		return breadCrumbBar;
@@ -82,12 +98,17 @@ public class PrimaryMediaExplorerFX extends BorderPane {
 
 
 	private void updateBrowserModel(){
+
+		System.out.println("PrimaryMediaExplorerFX updateBrowserModel!");
+
 		if(explorerViewModel != null){
 			mediaBrowserFX.setDataContext(explorerViewModel.getBrowserModel());
 			filterView.setDataContext(explorerViewModel);
+			breadCrumbModel.setDirectory(explorerViewModel.getHomeLocation(), explorerViewModel.getCurrentDirectory());
 		}else{
 			mediaBrowserFX.setDataContext(null);
 			filterView.setDataContext(null);
+			breadCrumbModel.setDirectory(null, null);
 		}
 	}
 

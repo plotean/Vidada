@@ -139,7 +139,7 @@ public class MediaLibrary extends BaseEntity {
 
 			printAllEntrys();
 
-			System.out.println("searching LibraryEntry for user: " + current);
+			System.out.println("MediaLibrary: searching LibraryEntry for user: " + current);
 			for (LibraryEntry entry : getLibraryEntries()) {
 				System.out.println(entry);
 				if(current.equals(entry.getUser())){

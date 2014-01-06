@@ -112,7 +112,7 @@ public class MediaService implements IMediaService {
 			}
 			db.commit();
 		}catch(Exception e){
-			Debug.printAllLines("Failed to add following medias:", mediadata);
+			Debug.printAllLines("MediaService: Failed to add following medias:", mediadata);
 			e.printStackTrace();
 		}
 		mediaDatasChangedEvent.fireEvent(this, EventArgs.Empty);
@@ -152,14 +152,11 @@ public class MediaService implements IMediaService {
 
 	@Override
 	public List<MediaItem> getAllMediaData() {
-		System.out.println("getAllMediaData --> getObjectContainer");
 		ObjectContainer db =  SessionManager.getObjectContainer();
-		System.out.println("getAllMediaData --> creating query...");
 		Query query = db.query();
 		query.constrain(MediaItem.class);
-		System.out.println("execute media data query ...");
-		List<MediaItem> medias = query.execute();
 
+		List<MediaItem> medias = query.execute();
 		return Lists.newList(medias); 
 	}
 
@@ -192,9 +189,6 @@ public class MediaService implements IMediaService {
 
 		if(!medias.isEmpty())
 			mediaData = medias.get(0);
-		else{
-			System.err.println("findMediaData: Could not find file hash: " +  hash);
-		}
 		return mediaData;
 	}
 
@@ -218,7 +212,6 @@ public class MediaService implements IMediaService {
 			List<MediaItem> medias = db.query(new Predicate<MediaItem>() {
 				@Override
 				public boolean match(MediaItem media) {
-
 					for (MediaSource s : media.getSources()) {
 						if(s.getRelativeFilePath().equals(relativePath.getPath())){
 							return true;
@@ -231,7 +224,7 @@ public class MediaService implements IMediaService {
 			if(!medias.isEmpty())
 				mediaData = medias.get(0);
 			else{
-				System.err.println("findMediaData: Could not find file in lib. " +  file);
+				//System.err.println("findMediaDataByFilePath: Could not find file in lib. " +  file);
 			}
 
 		}else{
