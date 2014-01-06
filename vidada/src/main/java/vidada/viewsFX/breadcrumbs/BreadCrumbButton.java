@@ -3,6 +3,7 @@ package vidada.viewsFX.breadcrumbs;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.ArcTo;
 import javafx.scene.shape.ClosePath;
 import javafx.scene.shape.HLineTo;
 import javafx.scene.shape.LineTo;
@@ -61,6 +62,7 @@ public class BreadCrumbButton extends Button {
 	 */
 	private Path createButtonShape(boolean first){
 		// build the following shape (or home without left arrow)
+
 		//   --------
 		//  \         \
 		//  /         /
@@ -100,6 +102,15 @@ public class BreadCrumbButton extends Button {
 			// we simply can omit it for the first Button
 			LineTo e6 = new LineTo(arrowWidth, arrowHeight / 2.0);
 			path.getElements().add(e6);
+		}else{
+			ArcTo arcTo = new ArcTo();
+
+			arcTo.setSweepFlag(true);
+			arcTo.setX(0);
+			arcTo.setY(0);
+			arcTo.setRadiusX(15.0f);
+			arcTo.setRadiusY(15.0f);
+			path.getElements().add(arcTo);
 		}
 
 		// close path
