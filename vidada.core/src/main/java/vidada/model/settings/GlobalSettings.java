@@ -44,9 +44,6 @@ public class GlobalSettings extends JsonSettings {
 
 	}
 
-
-
-
 	transient private String versionInfo = null;
 
 
@@ -140,11 +137,14 @@ public class GlobalSettings extends JsonSettings {
 	 * @return
 	 */
 	public VidadaDatabase getCurrentDBConfig() {
-		if(currentDBConfig == null)
-		{
-			throw new NotSupportedException("no currentDBConfig available!");
-		}
 		return currentDBConfig;
+	}
+
+	private void checkDatabaseConfig() throws NotSupportedException{
+		if(getCurrentDBConfig() == null)
+		{
+			throw new NotSupportedException("Database is not configured!");
+		}
 	}
 
 	public void setCurrentDBConfig(VidadaDatabase db){
@@ -153,6 +153,7 @@ public class GlobalSettings extends JsonSettings {
 	}
 
 	public File getAbsoluteDBPath(){
+		checkDatabaseConfig();
 		return toAbsolutePath(getCurrentDBConfig().getDataBasePath());
 	}
 
@@ -161,6 +162,7 @@ public class GlobalSettings extends JsonSettings {
 	 * @return
 	 */
 	public File getAbsoluteCachePath() {
+		checkDatabaseConfig();
 		return toAbsolutePath(getCurrentDBConfig().getFileCachePath());
 	}
 

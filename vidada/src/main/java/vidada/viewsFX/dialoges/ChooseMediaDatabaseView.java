@@ -27,6 +27,10 @@ public class ChooseMediaDatabaseView extends BorderPane {
 		//this.add(new Label("Password"), 0, 1);
 		//this.add(txPassword, 1, 1);
 		//GridPane.setHgrow(txPassword, Priority.ALWAYS);
+
+		if(availableDbs.size() > 0)
+			cboDatabase.getSelectionModel().select(availableDbs.get(0));
+
 		this.setCenter(content);
 	}
 
