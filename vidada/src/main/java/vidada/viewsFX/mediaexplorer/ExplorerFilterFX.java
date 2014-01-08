@@ -13,6 +13,8 @@ import vidada.model.ServiceProvider;
 import vidada.model.libraries.IMediaLibraryService;
 import vidada.model.libraries.MediaLibrary;
 import vidada.viewmodel.explorer.MediaExplorerVM;
+import archimedesJ.events.EventArgsG;
+import archimedesJ.events.EventListenerEx;
 import archimedesJ.io.locations.DirectoryLocation;
 
 public class ExplorerFilterFX extends BorderPane {
@@ -52,6 +54,20 @@ public class ExplorerFilterFX extends BorderPane {
 				}else
 					System.err.println("ExplorerFilterFX: mediaExplorerVm is NULL!");
 			}    
+		});
+
+		mediaLibraryService.getLibraryAddedEvent().add(new EventListenerEx<EventArgsG<MediaLibrary>>() {
+			@Override
+			public void eventOccured(Object sender, EventArgsG<MediaLibrary> eventArgs) {
+				observableMedias.add(eventArgs.getValue());
+			}
+		});
+
+		mediaLibraryService.getLibraryRemovedEvent().add(new EventListenerEx<EventArgsG<MediaLibrary>>() {
+			@Override
+			public void eventOccured(Object sender, EventArgsG<MediaLibrary> eventArgs) {
+				observableMedias.remove(eventArgs.getValue());
+			}
 		});
 
 		setCenter(box);
