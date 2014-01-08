@@ -2,6 +2,7 @@ package vidada.viewmodel.media;
 
 import vidada.model.ServiceProvider;
 import vidada.model.browser.BrowserMediaItem;
+import vidada.model.browser.IBrowserItem;
 import vidada.model.media.IMediaService;
 import vidada.model.media.MediaItem;
 import vidada.model.tags.Tag;
@@ -12,6 +13,7 @@ import vidada.viewmodel.MediaViewModel;
 import vidada.viewmodel.tags.TagViewModel;
 import archimedesJ.events.EventArgsG;
 import archimedesJ.events.EventListenerEx;
+import archimedesJ.exceptions.NotSupportedException;
 
 /**
  * Represents a single media item
@@ -41,23 +43,26 @@ public class MediaDetailViewModel extends MediaViewModel implements IMediaViewMo
 	private MediaItem previousModel = null;
 
 	@Override
-	public void setModel(BrowserMediaItem item) {
-		super.setModel(item);
-		MediaItem model = (item != null) ? item.getData() : null;
+	public void setModel(IBrowserItem item) {
+		if(item == null || item instanceof BrowserMediaItem){
+			super.setModel(item);
+			MediaItem model = (item != null) ? item.getData() : null;
 
-		if(previousModel != null){
-			model.getTagAddedEvent().remove(tagAddedListener);
-			model.getTagRemovedEvent().remove(tagRemovedListener);
-		}
+			if(previousModel != null){
+				model.getTagAddedEvent().remove(tagAddedListener);
+				model.getTagRemovedEvent().remove(tagRemovedListener);
+			}
 
-		if(model != null){
-			model.getTagAddedEvent().add(tagAddedListener);
-			model.getTagRemovedEvent().add(tagRemovedListener);
-		}
+			if(model != null){
+				model.getTagAddedEvent().add(tagAddedListener);
+				model.getTagRemovedEvent().add(tagRemovedListener);
+			}
 
-		updateTagStates();
+			updateTagStates();
 
-		previousModel = model;
+			previousModel = model;
+		}else
+			throw new NotSupportedException("Parameter model must be of type BrowserMediaItem");
 	}
 
 	private synchronized void updateTagStates(){
@@ -130,10 +135,6 @@ public class MediaDetailViewModel extends MediaViewModel implements IMediaViewMo
 	};
 
 
-
-
-
-
 	/* (non-Javadoc)
 	 * @see vidada.views.media.IMediaDetailModel#persist()
 	 */
@@ -148,4 +149,9 @@ public class MediaDetailViewModel extends MediaViewModel implements IMediaViewMo
 		return tagsVM;
 	}
 
+
+	@Override
+	public String toString(){
+		return "MediaDetailViewModel:" + getModel();
+	}
 }

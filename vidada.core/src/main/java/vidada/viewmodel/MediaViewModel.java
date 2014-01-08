@@ -5,9 +5,11 @@ import java.lang.ref.WeakReference;
 import org.joda.time.format.DateTimeFormat;
 
 import vidada.model.browser.BrowserMediaItem;
+import vidada.model.browser.IBrowserItem;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaType;
 import vidada.viewmodel.browser.BrowserItemVM;
+import archimedesJ.exceptions.NotSupportedException;
 import archimedesJ.geometry.Size;
 import archimedesJ.images.ImageContainer;
 import archimedesJ.images.LoadPriority;
@@ -34,9 +36,13 @@ public class MediaViewModel extends BrowserItemVM {
 		return (BrowserMediaItem)super.getModel();
 	}
 
-	public void setModel(BrowserMediaItem model) {
-		super.setModel(model);
-		mediaData = model != null ? model.getData() : null;
+	@Override
+	public void setModel(IBrowserItem model) {
+		if(model == null || model instanceof BrowserMediaItem){
+			super.setModel(model);
+			mediaData = model != null ? model.getData() : null;
+		}else
+			throw new NotSupportedException("Parameter model must be of type BrowserMediaItem");
 	}
 
 
