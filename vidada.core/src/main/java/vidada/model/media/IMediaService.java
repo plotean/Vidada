@@ -5,8 +5,8 @@ import java.util.List;
 import org.apache.commons.io.filefilter.IOFileFilter;
 
 import vidada.model.libraries.MediaLibrary;
+import archimedesJ.data.events.CollectionEventArg;
 import archimedesJ.data.hashing.IFileHashAlgorythm;
-import archimedesJ.events.EventArgs;
 import archimedesJ.events.EventArgsG;
 import archimedesJ.events.IEvent;
 import archimedesJ.io.locations.ResourceLocation;
@@ -18,22 +18,10 @@ public interface IMediaService extends IService{
 	// Events
 
 	/**
-	 * Raised when a new Media has been added to the Library
+	 * Raised when medias have changed in any way
 	 * @return
 	 */
-	public abstract IEvent<EventArgsG<MediaItem>> getMediaDataAddedEvent();
-
-	/**
-	 * Raised when a Media has been removed from the Library
-	 * @return
-	 */
-	public abstract IEvent<EventArgsG<MediaItem>> getMediaDataRemovedEvent();
-
-	/**
-	 * Raised when Media Datas have changed
-	 * @return
-	 */
-	public abstract IEvent<EventArgs> getMediaDatasChangedEvent();
+	public IEvent<CollectionEventArg<MediaItem>> getMediasChangedEvent();
 
 	/**
 	 * Raised when the given Media Data has been changed

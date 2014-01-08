@@ -6,6 +6,7 @@ import javafx.scene.layout.BorderPane;
 import vidada.controller.filters.MediaFilterDatabaseBinding;
 import vidada.model.browser.IBrowserItem;
 import vidada.model.browser.MediaBrowserModel;
+import vidada.model.media.IMediaService;
 import vidada.model.tags.ITagService;
 import vidada.model.tags.Tag;
 import vidada.model.tags.TagState;
@@ -47,10 +48,10 @@ public class PrimaryMediaBrowserFX extends BorderPane {
 	private MediaDetailViewModel singleMediaDetailVM = new MediaDetailViewModel(mediaDetailTagstates);
 
 
-	public PrimaryMediaBrowserFX(MediaBrowserModel browserModel, ITagService tagService){
+	public PrimaryMediaBrowserFX(MediaBrowserModel browserModel, ITagService tagService, IMediaService mediaService){
 		this.tagService = tagService;
 		this.browserModel = browserModel;
-		this.filterModel  = new FilterModel(browserModel.getTagStatesModel());;
+		this.filterModel  = new FilterModel(browserModel.getTagStatesModel(), mediaService);;
 
 		// bind the different models together
 

@@ -12,9 +12,10 @@ import vidada.model.libraries.MediaLibrary;
 import vidada.model.media.images.ImageMediaItem;
 import vidada.model.media.movies.MovieMediaItem;
 import vidada.model.media.source.MediaSource;
+import archimedesJ.data.events.CollectionChangeType;
+import archimedesJ.data.events.CollectionEventArg;
 import archimedesJ.data.hashing.FileHashAlgorythms;
 import archimedesJ.data.hashing.IFileHashAlgorythm;
-import archimedesJ.events.EventArgs;
 import archimedesJ.events.EventArgsG;
 import archimedesJ.events.EventHandlerEx;
 import archimedesJ.events.IEvent;
@@ -46,24 +47,14 @@ public class MediaService implements IMediaService {
 	private transient IOFileFilter allMediaFileFilter;
 
 
-	private EventHandlerEx<EventArgsG<MediaItem>> mediaDataAddedEvent = new EventHandlerEx<EventArgsG<MediaItem>>();
+
+	private EventHandlerEx<CollectionEventArg<MediaItem>> mediasChangedEvent = new EventHandlerEx<CollectionEventArg<MediaItem>>();
 	/* (non-Javadoc)
 	 * @see vidada.model.media.IMediaService2#getMediaDataAddedEvent()
 	 */
 	@Override
-	public IEvent<EventArgsG<MediaItem>> getMediaDataAddedEvent() { return mediaDataAddedEvent; }
+	public IEvent<CollectionEventArg<MediaItem>> getMediasChangedEvent() { return mediasChangedEvent; }
 
-	private EventHandlerEx<EventArgsG<MediaItem>> mediaDataRemovedEvent = new EventHandlerEx<EventArgsG<MediaItem>>();
-	/* (non-Javadoc)
-	 * @see vidada.model.media.IMediaService2#getMediaDataRemovedEvent()
-	 */
-	@Override
-	public IEvent<EventArgsG<MediaItem>> getMediaDataRemovedEvent() { return mediaDataRemovedEvent; }
-
-
-	private EventHandlerEx<EventArgs> mediaDatasChangedEvent = new EventHandlerEx<EventArgs>();
-	@Override
-	public IEvent<EventArgs> getMediaDatasChangedEvent() { return mediaDatasChangedEvent; }
 
 
 	private EventHandlerEx<EventArgsG<MediaItem>> mediaDataChangedEvent = new EventHandlerEx<EventArgsG<MediaItem>>();
@@ -103,23 +94,23 @@ public class MediaService implements IMediaService {
 	 * @see vidada.model.media.IMediaService2#addMediaData(java.util.List)
 	 */
 	@Override
-	public void addMediaData(List<MediaItem> mediadata){
+	public void addMediaData(List<MediaItem> mediadatas){
 
-		if(mediadata.isEmpty()) return;
+		if(mediadatas.isEmpty()) return;
 
 		ObjectContainer db =  SessionManager.getObjectContainer();
 		try{
 
-			for (MediaItem md : mediadata) {
+			for (MediaItem md : mediadatas) {
 				db.store(md);
 				onMediaDataAdded(md);
 			}
 			db.commit();
 		}catch(Exception e){
-			Debug.printAllLines("MediaService: Failed to add following medias:", mediadata);
+			Debug.printAllLines("MediaService: Failed to add following medias:", mediadatas);
 			e.printStackTrace();
 		}
-		mediaDatasChangedEvent.fireEvent(this, EventArgs.Empty);
+		onMediaDataAdded(mediadatas.toArray(new MediaItem[0]));
 	}
 
 
@@ -132,24 +123,24 @@ public class MediaService implements IMediaService {
 	 * @see vidada.model.media.IMediaService2#removeMediaData(java.util.List)
 	 */
 	@Override
-	public void removeMediaData(List<MediaItem> mediadata){
+	public void removeMediaData(List<MediaItem> mediadatas){
 		ObjectContainer db =  SessionManager.getObjectContainer();
 
-		for (MediaItem md : mediadata) {
+		for (MediaItem md : mediadatas) {
 			db.delete(md);
 			onMediaDataRemoved(md);
 		}
 		db.commit();
-		mediaDatasChangedEvent.fireEvent(this, EventArgs.Empty);
+		onMediaDataRemoved(mediadatas.toArray(new MediaItem[0]));
 	}
 
 
-	protected void onMediaDataAdded(MediaItem mediadata){
-		mediaDataAddedEvent.fireEvent(this, EventArgsG.build(mediadata));
+	protected void onMediaDataAdded(MediaItem... mediadata){
+		mediasChangedEvent.fireEvent(this, new CollectionEventArg<MediaItem>(CollectionChangeType.Added, mediadata));
 	}
 
-	protected void onMediaDataRemoved(MediaItem mediadata){
-		mediaDataRemovedEvent.fireEvent(this, EventArgsG.build(mediadata));
+	protected void onMediaDataRemoved(MediaItem... mediadata){
+		mediasChangedEvent.fireEvent(this, new CollectionEventArg<MediaItem>(CollectionChangeType.Removed, mediadata));
 	}
 
 
@@ -195,7 +186,7 @@ public class MediaService implements IMediaService {
 			db.delete(md);
 		}
 		db.commit();
-		mediaDatasChangedEvent.fireEvent(this, EventArgs.Empty);
+		mediasChangedEvent.fireEvent(this, CollectionEventArg.Cleared);
 	}
 
 

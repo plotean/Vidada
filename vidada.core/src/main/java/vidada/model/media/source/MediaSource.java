@@ -101,9 +101,13 @@ public class MediaSource extends BaseEntity {
 		ResourceLocation absolutePath = null;
 		URI relativePath = getRelativeFilePath();
 		if(relativePath != null){
-			absolutePath = getParentLibrary().getMediaDirectory().getAbsolutePath(relativePath);
+			MediaLibrary parentLib = getParentLibrary();
+			if(parentLib != null){
+				absolutePath = parentLib.getMediaDirectory().getAbsolutePath(relativePath);
+			}else
+				System.err.println("Source::getResourceLocation: parent library is null from " + this);
 		}else {
-			System.err.println("Source:getAbsoluteFilePath: relativePath is NULL!");
+			System.err.println("Source::getResourceLocation: relativePath is NULL!");
 		}
 		return absolutePath;
 	}

@@ -56,7 +56,7 @@ public class VidadaToolBar extends ToolBar{
 														.message("The media libraries have changed which means that your current media database needs to be updated. Do you want to update now?")
 														.showConfirm();
 
-												if(response == Dialog.Actions.OK){
+												if(response == Dialog.Actions.YES){
 													Action updateMediaLibraryAction = new UpdateMediaLibraryAction(null); 
 													updateMediaLibraryAction.actionPerformed(null);
 												}

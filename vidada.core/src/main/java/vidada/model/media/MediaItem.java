@@ -180,8 +180,19 @@ public abstract class MediaItem extends BaseEntity implements IMediaDataProvider
 	 * @return
 	 */
 	public boolean isMemberofLibrary(MediaLibrary library) {
+		if(library == null) throw new IllegalArgumentException("library must not be NULL!");
+
 		for (MediaSource s : this.getSources()) {
-			return s.getParentLibrary().equals(library);
+			if(s != null){
+				MediaLibrary parentLib = s.getParentLibrary();
+				if(parentLib != null){
+					return parentLib.equals(library);
+				}else{
+					System.err.println("MediaItem::isMemberofLibrary: parent library of " + s + " was NULL!");
+				}
+			}else{
+				System.err.println("MediaItem::isMemberofLibrary: media source of " + this + " was NULL!");
+			}
 		}
 		return false;
 	}
