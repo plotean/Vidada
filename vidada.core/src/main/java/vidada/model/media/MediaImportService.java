@@ -2,6 +2,7 @@ package vidada.model.media;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -168,29 +169,38 @@ public class MediaImportService implements IMediaImportService {
 
 		Map<String, ResourceLocation> newFiles = new HashMap<String, ResourceLocation>();
 		Map<MediaItem, Boolean> realExistingMediaDatas = new HashMap<MediaItem, Boolean>();
-
 		Map<String, MediaItem> existingMediaData = fetchCurrentMedias();
 
-
+		progressListener.currentProgress(new ProgressEventArgs(true, "Retriving ObjectContainer..."));
 		ObjectContainer db =  SessionManager.getObjectContainer();
 		{
 
-			for (MediaItem mediaData : existingMediaData.values()) {
-				// check if the parent library is still correct
-				if(mediaData.isMemberofLibrary(library))
-				{
-					// add the media data to the probably existing, but default the exists to false
-					realExistingMediaDatas.put(mediaData, false);
+			try{
+				progressListener.currentProgress(new ProgressEventArgs(true, "Checking " + existingMediaData.size() + " medias..."));
+				Collection<MediaItem>  mediashm = existingMediaData.values();
+				List<MediaItem> medias = new ArrayList<MediaItem>(mediashm);
 
-					// update resolution
-					if(!mediaData.hasResolution()){
-						mediaData.resolveResolution();
-						db.store(mediaData);
+				for (MediaItem mediaData : medias) {
+					// check if the parent library is still correct
+					if(mediaData.isMemberofLibrary(library))
+					{
+						// add the media data to the probably existing, but default the exists to false
+						realExistingMediaDatas.put(mediaData, false);
+
+						// update resolution
+						if(!mediaData.hasResolution()){
+							mediaData.resolveResolution();
+							db.store(mediaData);
+						}
 					}
 				}
+			}catch(Exception e){
+				e.printStackTrace();
+				return null;
 			}
 
-			// compare the physical existing files with the current index media items
+			//
+			progressListener.currentProgress(new ProgressEventArgs(true, "Compare the " + fileContentMap.size() + " physical existing files with the current index media items"));
 
 			int i = 0;
 			double fileMapSize = fileContentMap.size();

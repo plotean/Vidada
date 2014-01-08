@@ -19,9 +19,9 @@ import org.controlsfx.dialog.Dialogs;
 import vidada.commands.UpdateMediaLibraryAction;
 import vidada.views.dialoges.ManageLibraryFoldersDialog;
 import vidada.views.dialoges.ManageTagsDialog;
-import vidada.views.dialoges.ScanAndUpdateDialog;
 import vidada.views.dialoges.SettingsDialog;
 import vidada.viewsFX.ImageResources.IconType;
+import vidada.viewsFX.dialoges.SynchronizeDialog;
 
 public class VidadaToolBar extends ToolBar{
 
@@ -38,34 +38,33 @@ public class VidadaToolBar extends ToolBar{
 
 					@Override
 					public void run() {
+						final Callback<Void,Void> cb = new Callback<Void,Void>(){
+							@Override
+							public Void call(Void arg0) {
+
+								Platform.runLater(new Runnable() {
+									@Override
+									public void run() {
+										org.controlsfx.control.action.Action response = Dialogs.create()
+												.title("Vidada - Libraries have changed")
+												.masthead("Do you want to synchronize your media library?")
+												.message("The media libraries have changed which means that your current media database needs to be updated. Do you want to update now?")
+												.showConfirm();
+
+										if(response == Dialog.Actions.YES){
+											Action updateMediaLibraryAction = new UpdateMediaLibraryAction(null); 
+											updateMediaLibraryAction.actionPerformed(null);
+										}
+									}
+								});
+								return null;
+							}
+						};
 
 						EventQueue.invokeLater(new Runnable() {
 							@Override
 							public void run() {
-
-								Callback<Void,Void> cb = new Callback<Void,Void>(){
-									@Override
-									public Void call(Void arg0) {
-
-										Platform.runLater(new Runnable() {
-											@Override
-											public void run() {
-												org.controlsfx.control.action.Action response = Dialogs.create()
-														.title("Vidada - Libraries have changed")
-														.masthead("Do you want to synchronize your media library?")
-														.message("The media libraries have changed which means that your current media database needs to be updated. Do you want to update now?")
-														.showConfirm();
-
-												if(response == Dialog.Actions.YES){
-													Action updateMediaLibraryAction = new UpdateMediaLibraryAction(null); 
-													updateMediaLibraryAction.actionPerformed(null);
-												}
-											}
-										});
-										return null;
-									}
-								};
-
+								// TODO Replace with JavaFX dialog
 								ManageLibraryFoldersDialog libDialog = new ManageLibraryFoldersDialog(null, cb);
 								libDialog.setLocationRelativeTo(null);
 								libDialog.setVisible(true);
@@ -81,14 +80,16 @@ public class VidadaToolBar extends ToolBar{
 					@Override
 					public void run() {
 
-						EventQueue.invokeLater(new Runnable() {
+						Platform.runLater(new Runnable() {
+
 							@Override
 							public void run() {
-								ScanAndUpdateDialog scanUpdateDialog = new ScanAndUpdateDialog(null);
-								scanUpdateDialog.setLocationRelativeTo(null);
-								scanUpdateDialog.setVisible(true);
+								SynchronizeDialog scanUpdateDialog = new SynchronizeDialog(null);
+								scanUpdateDialog.show();
 							}
 						});
+
+
 					}
 				}));
 

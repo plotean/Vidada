@@ -207,12 +207,13 @@ public abstract class MediaItem extends BaseEntity implements IMediaDataProvider
 	public MediaSource getSource(){
 		if(source == null || !source.isAvailable())
 		{
-			Set<MediaSource> sources = getSources(); 
-			for (MediaSource s : sources) {
-				if(s.isAvailable())
-					source = s;
-			}
-			if(source == null && !sources.isEmpty())
+			Set<MediaSource> sources = getSources();
+			if(sources != null)
+				for (MediaSource s : sources) {
+					if(s.isAvailable())
+						source = s;
+				}
+			if(source != null && !sources.isEmpty())
 				source = Lists.getFirst(sources);
 		}
 		return source;

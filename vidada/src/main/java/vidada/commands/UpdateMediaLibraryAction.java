@@ -7,7 +7,7 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 
 import vidada.views.ImageResources;
-import vidada.views.dialoges.ScanAndUpdateDialog;
+import vidada.viewsFX.dialoges.SynchronizeDialog;
 
 /**
  * Updates all media libraries
@@ -28,9 +28,8 @@ public class UpdateMediaLibraryAction extends AbstractAction {
 
 	@Override
 	public void actionPerformed(ActionEvent evt) {
-		ScanAndUpdateDialog scanUpdateDialog = new ScanAndUpdateDialog(owner);
-		scanUpdateDialog.setLocationRelativeTo(null);
-		scanUpdateDialog.setVisible(true);
+		SynchronizeDialog scanUpdateDialog = new SynchronizeDialog(null);
+		scanUpdateDialog.show();
 	}
 
 }
