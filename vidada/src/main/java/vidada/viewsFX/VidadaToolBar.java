@@ -2,12 +2,21 @@ package vidada.viewsFX;
 
 import java.awt.EventQueue;
 
+import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.control.Separator;
 import javafx.scene.control.ToolBar;
 import javafx.scene.effect.Glow;
 import javafx.scene.input.MouseEvent;
+import javafx.util.Callback;
+
+import javax.swing.Action;
+
+import org.controlsfx.dialog.Dialog;
+import org.controlsfx.dialog.Dialogs;
+
+import vidada.commands.UpdateMediaLibraryAction;
 import vidada.views.dialoges.ManageLibraryFoldersDialog;
 import vidada.views.dialoges.ManageTagsDialog;
 import vidada.views.dialoges.ScanAndUpdateDialog;
@@ -33,7 +42,31 @@ public class VidadaToolBar extends ToolBar{
 						EventQueue.invokeLater(new Runnable() {
 							@Override
 							public void run() {
-								ManageLibraryFoldersDialog libDialog = new ManageLibraryFoldersDialog(null);
+
+								Callback<Void,Void> cb = new Callback<Void,Void>(){
+									@Override
+									public Void call(Void arg0) {
+
+										Platform.runLater(new Runnable() {
+											@Override
+											public void run() {
+												org.controlsfx.control.action.Action response = Dialogs.create()
+														.title("Vidada - Libraries have changed")
+														.masthead("Do you want to synchronize your media library?")
+														.message("The media libraries have changed which means that your current media database needs to be updated. Do you want to update now?")
+														.showConfirm();
+
+												if(response == Dialog.Actions.OK){
+													Action updateMediaLibraryAction = new UpdateMediaLibraryAction(null); 
+													updateMediaLibraryAction.actionPerformed(null);
+												}
+											}
+										});
+										return null;
+									}
+								};
+
+								ManageLibraryFoldersDialog libDialog = new ManageLibraryFoldersDialog(null, cb);
 								libDialog.setLocationRelativeTo(null);
 								libDialog.setVisible(true);
 							}

@@ -13,6 +13,8 @@ import java.io.File;
 import java.net.URI;
 import java.util.List;
 
+import javafx.util.Callback;
+
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
@@ -31,7 +33,6 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import vidada.commands.AddNewMediaLibraryAction;
-import vidada.commands.UpdateMediaLibraryAction;
 import vidada.model.ServiceProvider;
 import vidada.model.libraries.IMediaLibraryService;
 import vidada.model.libraries.MediaLibrary;
@@ -58,6 +59,10 @@ public class ManageLibraryFoldersDialog extends JDialog {
 	private Action removeLibraryAction;
 	private Action addLibraryAction;
 	private Action saveCurrentLibAction;
+
+
+	boolean librariesHasChanged = false;
+	private Callback<Void, Void> libraryChangedCallback;
 
 
 	private void init(){
@@ -130,13 +135,12 @@ public class ManageLibraryFoldersDialog extends JDialog {
 				MediaLibrary library = (MediaLibrary)listAllLibraries.getSelectedValue();
 				if(library != null){
 					DirectoryLocation location = library.getMediaDirectory().getDirectory();
-					txtCurrentPath.setFilePath(location.toString());
+					txtCurrentPath.setFilePath(location != null ? location.toString() : "");
 				}
 
 				updateState();
 			}
 		});
-
 	}
 
 	private void updateState(){
@@ -148,9 +152,10 @@ public class ManageLibraryFoldersDialog extends JDialog {
 	/**
 	 * Create the dialog.
 	 */
-	public ManageLibraryFoldersDialog(JFrame owner) {
+	public ManageLibraryFoldersDialog(JFrame owner, Callback<Void, Void> callback) {
 		super(owner, true);
 
+		libraryChangedCallback = callback;
 
 		init();
 
@@ -253,7 +258,13 @@ public class ManageLibraryFoldersDialog extends JDialog {
 					public void actionPerformed(ActionEvent arg0) {
 						setVisible(false);
 						dispose();
-						onDialogClosing();
+						if(librariesHasChanged)
+						{
+							if(libraryChangedCallback != null)
+								libraryChangedCallback.call(null);
+							else
+								System.err.println("ManageLibraryFoldersDialog: libraryChangedCallback == null");
+						}
 					}
 				});
 				okButton.setActionCommand("OK");
@@ -268,14 +279,9 @@ public class ManageLibraryFoldersDialog extends JDialog {
 		postInit();
 	}
 
-	boolean librariesHasChanged = false;
 
-	private void onDialogClosing(){
-		if(librariesHasChanged){
-			Action updateMediaLibraryAction = new UpdateMediaLibraryAction(getOwner()); 
-			updateMediaLibraryAction.actionPerformed(null);
-		}
+	public void setLibraryChangedCallback(Callback<Void, Void> callback){
+		this.libraryChangedCallback = callback;
 	}
-
 
 }
