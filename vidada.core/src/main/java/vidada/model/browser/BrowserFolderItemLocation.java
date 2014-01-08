@@ -44,7 +44,7 @@ public class BrowserFolderItemLocation extends BrowserFolderItem {
 				item = new BrowserFolderItemLocation((DirectoryLocation)location, mediaService);
 			}else if(location instanceof ResourceLocation){
 				ResourceLocation resource = (ResourceLocation)location;
-				MediaItem media = mediaService.findMediaData(resource);
+				MediaItem media = mediaService.findOrCreateMedia(resource, true);
 				if(media != null)
 					item = new BrowserMediaItem(media);
 				else{
