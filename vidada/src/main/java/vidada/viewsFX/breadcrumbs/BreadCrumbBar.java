@@ -1,13 +1,19 @@
 package vidada.viewsFX.breadcrumbs;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
-import vidada.model.browser.IDataProvider;
-import archimedesJ.data.events.CollectionEventArg;
-import archimedesJ.events.EventListenerEx;
 
 /**
  * Represents a BreadCrumbBar
@@ -15,41 +21,91 @@ import archimedesJ.events.EventListenerEx;
  * @author IsNull
  *
  */
-public class BreadCrumbBar extends HBox {
+public class BreadCrumbBar<T extends IBreadCrumbModel> extends HBox {
 
-	private IDataProvider<IBreadCrumbModel> model;
 
-	public BreadCrumbBar(){
+	public static interface BreadCrumbOpenListener<I> { 
+		void openBreadCrumb(I crumb); 
+	}
 
+
+	private final ObjectProperty<ObservableList<T>> items = new SimpleObjectProperty<ObservableList<T>>(this, "items");
+
+	public BreadCrumbBar(){ 
+		items.addListener(new ChangeListener<ObservableList<T>>() {
+			@Override
+			public void changed(
+					ObservableValue<? extends ObservableList<T>> observable,
+							ObservableList<T> oldValue, ObservableList<T> newValue) {
+
+				if(oldValue != null) 
+					oldValue.removeListener(itemsListener);
+
+				if(newValue != null)
+					newValue.addListener(itemsListener);
+
+				updateView();
+			}
+		});
+	}
+
+	private final List<BreadCrumbOpenListener<T>> openListeners = new ArrayList<>();
+
+	public void addOpenListener(BreadCrumbOpenListener<T> listener){
+		openListeners.add(listener);
+	}
+
+	public void removeOpenListener(BreadCrumbOpenListener<T> listener){
+		openListeners.remove(listener);
+	}
+
+	protected void fireBreadCrumbOpen(T crumb){
+		for (BreadCrumbOpenListener<T> listener : openListeners) {
+			listener.openBreadCrumb(crumb);
+		}
+	}
+
+
+	transient private final ListChangeListener<T> itemsListener = new ListChangeListener<T>(){
+		@Override
+		public void onChanged(ListChangeListener.Change<? extends T> arg) {
+			// TODO Optimize depending on actual change event
+			updateView();
+		}
+	};
+
+
+	public final ObjectProperty<ObservableList<T>> itemsProperty() {
+		return items;
 	}
 
 	/**
-	 * Set the data context of this view
-	 * @param model
+	 * Sets a new {@link ObservableList} as the items list underlying GridView.
+	 * The old items list will be discarded.
 	 */
-	public void setDataContext(IDataProvider<IBreadCrumbModel> model){
-		if(this.model != null){
-			this.model.getItemsChangedEvent().remove(itemsChangedListener);
-		}
-
-		this.model = model;
-
-		if(model != null){
-			model.getItemsChangedEvent().add(itemsChangedListener);
-		}
-
-		updateView();
+	public final void setItems(ObservableList<T> value) {
+		itemsProperty().set(value);
 	}
+
+	/**
+	 * Returns the currently-in-use items list that is being used by the
+	 * BreadCrumbBar.
+	 */
+	public final ObservableList<T> getItems() {
+		return items == null ? null : items.get();
+	}
+
 
 	private void updateView(){
 
 		this.getChildren().clear();
 
-		if(model != null){
-			for (int i=0; model.size() > i; i++) {
+		ObservableList<T> items = getItems();
+		if(items != null){
+			for (int i=0; items.size() > i; i++) {
 
 				boolean first = i==0;
-				BreadCrumbButton item = createCrumb(model.get(i), first);
+				BreadCrumbButton item = createCrumb(items.get(i), first);
 
 				// We have to position the bread crumbs slightly overlapping
 				// thus we have to create negative Insets
@@ -63,32 +119,17 @@ public class BreadCrumbBar extends HBox {
 		}
 	}
 
-	private BreadCrumbButton createCrumb(IBreadCrumbModel model, boolean home){
-		BreadCrumbButton crumb = new BreadCrumbButton(model.getName(), home);
-		crumb.addEventHandler(MouseEvent.MOUSE_CLICKED, new BreadCrumbClickHandler(model));
+	private BreadCrumbButton createCrumb(final T crumbModel, boolean home){
+		BreadCrumbButton crumb = new BreadCrumbButton(crumbModel.getName(), home);
+		crumb.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>(){
+			@Override
+			public void handle(MouseEvent me) {
+				if(me.getButton().equals(MouseButton.PRIMARY)){
+					crumbModel.open();
+					fireBreadCrumbOpen(crumbModel);
+				}
+			}
+		});
 		return crumb;
 	}
-
-	private final EventListenerEx<CollectionEventArg<IBreadCrumbModel>> itemsChangedListener =
-			new EventListenerEx<CollectionEventArg<IBreadCrumbModel>>() {
-		@Override
-		public void eventOccured(Object sender, CollectionEventArg<IBreadCrumbModel> eventArgs) {
-			updateView();
-		}
-	};
-
-
-	private static class BreadCrumbClickHandler implements EventHandler<MouseEvent>
-	{
-		private final IBreadCrumbModel model;
-		public BreadCrumbClickHandler(IBreadCrumbModel model){
-			this.model = model;
-		}
-		@Override
-		public void handle(MouseEvent me) {
-			if(me.getButton().equals(MouseButton.PRIMARY)){
-				model.open();
-			}
-		}
-	};
 }

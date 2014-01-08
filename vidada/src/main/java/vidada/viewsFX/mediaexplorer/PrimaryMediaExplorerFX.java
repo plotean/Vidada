@@ -8,12 +8,11 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import vidada.viewmodel.explorer.MediaExplorerVM;
 import vidada.viewsFX.breadcrumbs.BreadCrumbBar;
-import vidada.viewsFX.breadcrumbs.IBreadCrumbModel;
-import vidada.viewsFX.breadcrumbs.SimpleBreadCrumbModel;
+import vidada.viewsFX.breadcrumbs.BreadCrumbBar.BreadCrumbOpenListener;
 import vidada.viewsFX.mediabrowsers.MediaBrowserFX;
 import archimedesJ.events.EventArgs;
-import archimedesJ.events.EventArgsG;
 import archimedesJ.events.EventListenerEx;
+import archimedesJ.io.locations.DirectoryLocation;
 
 public class PrimaryMediaExplorerFX extends BorderPane {
 	private final MediaBrowserFX mediaBrowserFX;
@@ -24,26 +23,6 @@ public class PrimaryMediaExplorerFX extends BorderPane {
 
 
 	public PrimaryMediaExplorerFX(){
-
-		breadCrumbModel.add(
-				new SimpleBreadCrumbModel("Home"),
-				new SimpleBreadCrumbModel("This"),
-				new SimpleBreadCrumbModel("Is"),
-				new SimpleBreadCrumbModel("A (small)"),
-				new SimpleBreadCrumbModel("Folder"));
-
-		breadCrumbModel.getBreadCrumbOpenEvent().add(new EventListenerEx<EventArgsG<IBreadCrumbModel>>() {
-			@Override
-			public void eventOccured(Object sender, EventArgsG<IBreadCrumbModel> eventArgs) {
-				if(eventArgs.getValue() instanceof LocationBreadCrumb){
-					LocationBreadCrumb crumb = (LocationBreadCrumb)eventArgs.getValue();
-					explorerViewModel.setCurrentLocation(crumb.getDirectoryLocation());
-				}else{
-					System.err.println("PrimaryMediaExplorerFX: Breadcrumb model has unexpected children: " + eventArgs.getValue());
-				}
-			}
-		});
-
 
 		// Browser View
 		mediaBrowserFX = new MediaBrowserFX();
@@ -68,8 +47,20 @@ public class PrimaryMediaExplorerFX extends BorderPane {
 
 	private Node createNavigation(){
 
-		BreadCrumbBar breadCrumbBar = new BreadCrumbBar();
-		breadCrumbBar.setDataContext(breadCrumbModel);
+		BreadCrumbBar<LocationBreadCrumb> breadCrumbBar = new BreadCrumbBar<LocationBreadCrumb>();
+
+		breadCrumbBar.addOpenListener(new BreadCrumbOpenListener<LocationBreadCrumb>(){
+			@Override
+			public void openBreadCrumb(LocationBreadCrumb crumb) {
+
+				DirectoryLocation dir = crumb.getDirectoryLocation();
+
+				explorerViewModel.setCurrentLocation(dir);
+				breadCrumbModel.setDirectory(breadCrumbModel.getHomeDirectory(), dir);
+			}
+		});
+
+		breadCrumbBar.setItems(breadCrumbModel);
 		BorderPane.setMargin(breadCrumbBar, new Insets(10));
 
 		return breadCrumbBar;

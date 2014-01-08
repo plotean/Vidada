@@ -4,14 +4,18 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import vidada.viewsFX.breadcrumbs.BreadCrumbBarModel;
-import vidada.viewsFX.breadcrumbs.IBreadCrumbModel;
+import vidada.viewsFX.util.ObservableListProxy;
+import javafx.collections.FXCollections;
 import archimedesJ.io.locations.DirectoryLocation;
 
-public class LocationBreadCrumbBarModel extends BreadCrumbBarModel{
+public class LocationBreadCrumbBarModel extends ObservableListProxy<LocationBreadCrumb> {
 
 	private DirectoryLocation home;
 	private DirectoryLocation directory;
+
+	public LocationBreadCrumbBarModel(){
+		super(FXCollections.observableArrayList(new ArrayList<LocationBreadCrumb>()));
+	}
 
 	public void setDirectory(DirectoryLocation home, DirectoryLocation directory){
 
@@ -24,19 +28,6 @@ public class LocationBreadCrumbBarModel extends BreadCrumbBarModel{
 		updateModel();
 	}
 
-	@Override
-	protected void onBreadCrumbOpenRequest(IBreadCrumbModel crumb){
-		super.onBreadCrumbOpenRequest(crumb);
-
-		if(crumb instanceof LocationBreadCrumb){
-			DirectoryLocation dir = ((LocationBreadCrumb)crumb).getDirectoryLocation();
-			setDirectory(getHomeDirectory(), dir);
-		}else{
-			System.err.println("LocationBreadCrumbBarModel::onBreadCrumbOpenRequest: "
-					+ "Got children which are not LocationBreadCrumb but: " + crumb);
-		}
-	}
-
 	public DirectoryLocation getHomeDirectory(){
 		return home;
 	}
@@ -46,28 +37,21 @@ public class LocationBreadCrumbBarModel extends BreadCrumbBarModel{
 
 		if(home != null && directory != null){
 
-			List<IBreadCrumbModel> crumbs = new ArrayList<IBreadCrumbModel>();
+			List<LocationBreadCrumb> crumbs = new ArrayList<LocationBreadCrumb>();
 			DirectoryLocation dir = directory;
-
-			System.out.println("LocationBreadCrumbBarModel: searching home... ");
 
 			boolean foundHome = false;
 			while(dir != null){
-				crumbs.add((IBreadCrumbModel)new LocationBreadCrumb(dir));
+				crumbs.add(new LocationBreadCrumb(dir));
 				if(dir.equals(home)){
 					foundHome = true;
 					break;
-				}else{
-					System.out.println("Not Equal:");
-					System.out.println("Home  : " + home);
-					System.out.println("Target: " + dir);
 				}
 				dir = dir.getParent();
 			}
-			System.out.println("LocationBreadCrumbBarModel: searching home done.");
 			if(foundHome){
 				Collections.reverse(crumbs);
-				this.add(crumbs);
+				addAll(crumbs);
 			}else{
 				System.err.println("LocationBreadCrumbBarModel could not backtrack from directory to home dir:");
 				System.err.println("Home  : " + home);
