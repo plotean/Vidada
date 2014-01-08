@@ -12,8 +12,6 @@ import vidada.data.SessionManager;
 import vidada.model.ServiceProvider;
 import vidada.model.libraries.IMediaLibraryService;
 import vidada.model.libraries.MediaLibrary;
-import vidada.model.media.images.ImageMediaItem;
-import vidada.model.media.movies.MovieMediaItem;
 import vidada.model.media.source.MediaSource;
 import vidada.model.tags.ITagService;
 import vidada.model.tags.autoTag.AutoTagSupport;
@@ -347,8 +345,7 @@ public class MediaImportService implements IMediaImportService {
 			int progress = (int)(100d / fileMapSize * (double)i);
 			progressListener.currentProgress(new ProgressEventArgs(progress, "Importing new media:\t" + entry.getValue().getName()));
 
-
-			MediaItem newDataPart = buildMediaData(parentlibrary, entry.getValue(), entry.getKey());
+			MediaItem newDataPart = mediaService.buildMedia(entry.getValue(), parentlibrary, entry.getKey());
 
 			if(newDataPart != null)
 			{
@@ -364,46 +361,7 @@ public class MediaImportService implements IMediaImportService {
 		mediaService.addMediaData(newmedias);
 	}
 
-	/**
-	 * Builds a new MediaData from the given filepath
-	 * @param parentlibrary
-	 * @param filePath
-	 * @return
-	 */
-	public MediaItem buildMediaData(MediaLibrary parentlibrary, ResourceLocation filePath){
-		String hash = mediaHashUtil.retriveFileHash(filePath);
-		return buildMediaData(parentlibrary, filePath, hash);
-	}
 
-	/**
-	 * Builds a new MediaData from the given filepath
-	 * @param parentlibrary
-	 * @param filePath
-	 * @param filehash the pre calculated file hash
-	 * @return
-	 */
-	public MediaItem buildMediaData(MediaLibrary parentlibrary, ResourceLocation filePath, String filehash){
-
-		MediaItem newDataPart = null;
-
-		if(MediaFileInfo.get(MediaType.MOVIE).isFileofThisType(filePath))
-		{
-			newDataPart = new MovieMediaItem(parentlibrary,
-					parentlibrary.getMediaDirectory().getRelativePath(filePath),
-					filehash);
-
-		}else if(MediaFileInfo.get(MediaType.IMAGE).isFileofThisType(filePath)){
-
-			newDataPart = new ImageMediaItem(parentlibrary,
-					parentlibrary.getMediaDirectory().getRelativePath(filePath),
-					filehash);
-
-		}else {
-			System.err.println("can not handle " + filePath.toString());
-		}
-
-		return newDataPart;
-	}
 
 
 

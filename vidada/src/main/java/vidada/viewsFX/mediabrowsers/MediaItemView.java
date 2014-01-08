@@ -332,8 +332,6 @@ public class MediaItemView extends BrowserCellView {
 			this.mediaViewModel = (MediaViewModel)viewmodel;
 			imagePane.stopAnimation();
 
-			//System.out.println("MediaItemView: " + viewmodel);
-
 			if(mediaViewModel != null){
 				description.setText(mediaViewModel.getFilename());
 				rating.setRating(mediaViewModel.getRating());

@@ -6,12 +6,15 @@ import archimedesJ.events.EventArgs;
 import archimedesJ.events.EventHandlerEx;
 
 
-public abstract class BrowserItemVM implements IViewModel<IBrowserItem>{
+public class BrowserItemVM implements IViewModel<IBrowserItem>{
 	private boolean isSelected = false;
 	private IBrowserItem item;
 
 	public final EventHandlerEx<EventArgs> SelectionChangedEvent = new EventHandlerEx<EventArgs>();
 
+	public BrowserItemVM() {}
+
+	public BrowserItemVM(IBrowserItem item) { setModel(item); }
 
 	public boolean isSelected() {
 		return isSelected;
@@ -28,12 +31,12 @@ public abstract class BrowserItemVM implements IViewModel<IBrowserItem>{
 	 * Default open action
 	 * @return
 	 */
-	public abstract boolean open();
+	public boolean open() { return false; }
 
 	/**
 	 * Method is called when this media item is outside the view port
 	 */
-	public abstract void outsideViewPort();
+	public void outsideViewPort() {  }
 
 	public String getName(){
 		return item != null ? item.getName() : "<null>";

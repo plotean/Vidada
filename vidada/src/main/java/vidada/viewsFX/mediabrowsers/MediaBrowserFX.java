@@ -165,20 +165,22 @@ public class MediaBrowserFX extends BorderPane {
 		}
 	};
 
-
-
 	private IVMFactory<IBrowserItem, BrowserItemVM> vmFactory = new IVMFactory<IBrowserItem, BrowserItemVM>() {
 		@Override
 		public BrowserItemVM create(IBrowserItem model) {
 			BrowserItemVM vm;
-			if(!model.isFolder()){
-				vm = new MediaViewModel((BrowserMediaItem)model);
-			}else{
+
+			if(model instanceof BrowserFolderItem){
 				BrowserFolderItem folder = (BrowserFolderItem)model;
 				vm = new BrowserFolderItemVM(folder);
+			}else if(model instanceof BrowserMediaItem){
+				vm = new MediaViewModel((BrowserMediaItem)model);
+			}else{
+				vm = new BrowserItemVM(model);
 			}
 
 			vm.SelectionChangedEvent.add(VMselectionChangedListener);
+
 			gridViewPort.ensureViewportChangedListener(); // Very hacky. (Should be called once after Scene is shown)
 
 			return vm;

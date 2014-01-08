@@ -17,6 +17,5 @@ public interface IBrowserItem {
 
 	public abstract boolean isFolder();
 
-
 	public abstract MediaItem getData();
 }

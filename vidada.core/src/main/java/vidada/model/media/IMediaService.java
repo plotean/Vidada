@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.commons.io.filefilter.IOFileFilter;
 
+import vidada.model.libraries.MediaLibrary;
 import archimedesJ.data.hashing.IFileHashAlgorythm;
 import archimedesJ.events.EventArgs;
 import archimedesJ.events.EventArgsG;
@@ -39,6 +40,7 @@ public interface IMediaService extends IService{
 	 * @return
 	 */
 	public abstract IEvent<EventArgsG<MediaItem>> getMediaDataChangedEvent();
+
 
 
 	/**
@@ -93,6 +95,32 @@ public interface IMediaService extends IService{
 	 * @return
 	 */
 	public abstract MediaItem findMediaData(ResourceLocation file);
+
+
+	/**
+	 * Build a new Media from the given mediaLocation. The created media will not be added to this media service. 
+	 * 
+	 * Warning: This method will NOT check if already a media exists for this media-file!
+	 * 
+	 * @param mediaLocation
+	 * @param parentlibrary
+	 * @param mediahash The hash of the media. If null, will be calulcated by this method.
+	 * @return
+	 */
+	public abstract MediaItem buildMedia(ResourceLocation mediaLocation, MediaLibrary parentlibrary, String mediahash);
+
+
+	/**
+	 * Searches for a media in the media database which matches the given file.
+	 * If no match was found, a new media item will be created and returned.
+	 * 
+	 * If persist is true, a new created media will be added to this media service.
+	 * 
+	 * @param file
+	 * @return
+	 */
+	public abstract MediaItem findOrCreateMedia(ResourceLocation file, boolean persist);
+
 
 	public abstract IOFileFilter getAllMediaFileFilter();
 

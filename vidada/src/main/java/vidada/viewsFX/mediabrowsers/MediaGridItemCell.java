@@ -8,6 +8,7 @@ import javafx.beans.property.DoubleProperty;
 import org.controlsfx.control.GridCell;
 
 import vidada.viewmodel.MediaViewModel;
+import vidada.viewmodel.browser.BrowserFolderItemVM;
 import vidada.viewmodel.browser.BrowserItemVM;
 import vidada.viewsFX.player.IMediaPlayerService;
 import archimedesJ.events.EventArgs;
@@ -17,6 +18,8 @@ class MediaGridItemCell extends GridCell<BrowserItemVM> {
 
 	private final MediaItemView mediaView; 
 	private final FolderView folderView;
+	private final SimpleCellItemView simpleView;
+
 	private static Method setSelectionMethod;
 
 
@@ -35,6 +38,7 @@ class MediaGridItemCell extends GridCell<BrowserItemVM> {
 
 		mediaView = new MediaItemView(mediaPlayerService);
 		folderView = new FolderView();
+		simpleView = new SimpleCellItemView();
 
 		setId("media-cell");
 
@@ -83,15 +87,20 @@ class MediaGridItemCell extends GridCell<BrowserItemVM> {
 	}
 
 	private void updateVisualTemplate(BrowserItemVM item){
+
 		if(mediaView != null) mediaView.setDataContext(null);
 		if(folderView != null) folderView.setDataContext(null);
+		if(simpleView != null) simpleView.setDataContext(null);
 
 		if(item instanceof MediaViewModel){
-			mediaView.setDataContext((MediaViewModel)item);
+			mediaView.setDataContext(item);
 			setGraphic(mediaView);
-		}else{
+		}else if(item instanceof BrowserFolderItemVM){
 			folderView.setDataContext(item);
 			setGraphic(folderView);
+		}else{
+			simpleView.setDataContext(item);
+			setGraphic(simpleView);
 		}
 	}
 

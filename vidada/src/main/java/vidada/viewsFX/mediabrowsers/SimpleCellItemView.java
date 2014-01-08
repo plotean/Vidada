@@ -1,6 +1,5 @@
 package vidada.viewsFX.mediabrowsers;
 
-
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -14,23 +13,19 @@ import org.controlsfx.glyphfont.Glyph;
 import org.controlsfx.glyphfont.GlyphFont;
 import org.controlsfx.glyphfont.GlyphFontRegistry;
 
-import vidada.viewmodel.browser.BrowserFolderItemVM;
 import vidada.viewmodel.browser.BrowserItemVM;
 
-
-public class FolderView extends BrowserCellView {
+public class SimpleCellItemView extends BrowserCellView {
 
 	private final Label description = new Label("<no description>");
-	private BrowserFolderItemVM viewmodel;
 
-	public FolderView(){
-
+	public SimpleCellItemView(){
 		description.setId("description"); // style id
 		description.setAlignment(Pos.CENTER_LEFT);
 		description.setPadding(new Insets(10));
 
 		GlyphFont font = GlyphFontRegistry.font("FontAwesome");
-		Glyph folderViewNode = font.fontSize(100).create(FontAwesome.Glyph.FOLDER_CLOSE_ALT.name());
+		Glyph folderViewNode = font.fontSize(100).create(FontAwesome.Glyph.FILE_ALT.name());
 
 		this.addEventFilter(MouseEvent.MOUSE_CLICKED, mouseOpenHandler);
 
@@ -39,6 +34,23 @@ public class FolderView extends BrowserCellView {
 	}
 
 
+	@Override
+	protected ContextMenu createContextMenu() {
+		return null;
+	}
+
+	@Override
+	public void setDataContext(BrowserItemVM viewmodel) {
+		super.setDataContext(viewmodel);
+
+		if(viewmodel != null){
+			description.setText(viewmodel.getName());
+		}else{
+			description.setText("null");
+		}
+
+	}
+
 	/**
 	 * Occurs when the user clicks on the media
 	 */
@@ -46,31 +58,12 @@ public class FolderView extends BrowserCellView {
 		@Override
 		public void handle(MouseEvent me) {
 			if(me.getButton().equals(MouseButton.PRIMARY)){
-				if(viewmodel != null){
-					viewmodel.open();
+				if(getDataContext() != null){
+					getDataContext().open();
 				}
 			}
 		}
 	};
 
 
-
-
-	@Override
-	public void setDataContext(BrowserItemVM viewmodel) {
-		super.setDataContext(viewmodel);
-
-		if(viewmodel instanceof BrowserFolderItemVM){
-			this.viewmodel = (BrowserFolderItemVM)viewmodel;
-			description.setText(viewmodel.getName());
-		}else{
-			description.setText("<"+viewmodel+">");
-		}
-	}
-
-	@Override
-	protected ContextMenu createContextMenu() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }
