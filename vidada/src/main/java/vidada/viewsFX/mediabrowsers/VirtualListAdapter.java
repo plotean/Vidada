@@ -152,7 +152,8 @@ public class VirtualListAdapter<T, ST> implements IDataProvider<T>, ObservableLi
 
 	@Override
 	public T get(int index) {
-		return transformer.transform(source.get(index));
+		ST objSt = source.get(index);
+		return objSt != null ? transformer.transform(objSt) : null;
 	}
 
 	@Override

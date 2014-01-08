@@ -56,7 +56,7 @@ public class MediaBrowserModel implements IDataProvider<IBrowserItem> {
 	 */
 	@Override
 	public IBrowserItem get(int index){
-		return medias.get(index);
+		return medias.size() > index ? medias.get(index) : null;
 	}
 
 	/**
