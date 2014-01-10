@@ -225,7 +225,11 @@ public abstract class MediaItem extends BaseEntity implements IMediaDataProvider
 	 * @return
 	 */
 	public Set<MediaSource> getSources() {
-		return new HashSet<MediaSource>(this.sources);
+		if(this.sources != null)
+			return new HashSet<MediaSource>(this.sources);
+		else {
+			return new HashSet<MediaSource>();
+		}
 	}
 
 	/**

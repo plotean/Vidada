@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -62,7 +63,6 @@ public class MediaImportService implements IMediaImportService {
 				scanAndUpdateLibrary(progressListener, lib);
 			}
 		};
-
 
 		progressListener.currentProgress(new ProgressEventArgs(100, "Done."));
 	}
@@ -168,74 +168,79 @@ public class MediaImportService implements IMediaImportService {
 		progressListener.currentProgress(new ProgressEventArgs(true, "Comparing with current db..."));
 
 		Map<String, ResourceLocation> newFiles = new HashMap<String, ResourceLocation>();
+		Set<MediaItem> removeMedias = new HashSet<MediaItem>();
+		Set<MediaItem> updateMedias = new HashSet<MediaItem>();
+
 		Map<MediaItem, Boolean> realExistingMediaDatas = new HashMap<MediaItem, Boolean>();
 		Map<String, MediaItem> existingMediaData = fetchCurrentMedias();
 
 		progressListener.currentProgress(new ProgressEventArgs(true, "Retriving ObjectContainer..."));
-		ObjectContainer db =  SessionManager.getObjectContainer();
-		{
 
-			try{
-				progressListener.currentProgress(new ProgressEventArgs(true, "Checking " + existingMediaData.size() + " medias..."));
-				Collection<MediaItem>  mediashm = existingMediaData.values();
-				List<MediaItem> medias = new ArrayList<MediaItem>(mediashm);
+		try{
+			progressListener.currentProgress(new ProgressEventArgs(true, "Checking " + existingMediaData.size() + " medias..."));
+			Collection<MediaItem>  mediashm = existingMediaData.values();
+			List<MediaItem> medias = new ArrayList<MediaItem>(mediashm);
 
-				for (MediaItem mediaData : medias) {
-					// check if the parent library is still correct
-					if(mediaData.isMemberofLibrary(library))
-					{
-						// add the media data to the probably existing, but default the exists to false
-						realExistingMediaDatas.put(mediaData, false);
+			for (MediaItem mediaData : medias) {
+				// check if the parent library is still correct
+				if(mediaData.isMemberofLibrary(library))
+				{
+					// add the media data to the probably existing, but default the exists to false
+					realExistingMediaDatas.put(mediaData, false);
 
-						// update resolution
-						if(!mediaData.hasResolution()){
-							mediaData.resolveResolution();
-							db.store(mediaData);
-						}
+					// update resolution
+					if(!mediaData.hasResolution()){
+						mediaData.resolveResolution();
+						updateMedias.add(mediaData);
 					}
 				}
-			}catch(Exception e){
-				e.printStackTrace();
-				return null;
 			}
-
-			//
-			progressListener.currentProgress(new ProgressEventArgs(true, "Compare the " + fileContentMap.size() + " physical existing files with the current index media items"));
-
-			int i = 0;
-			double fileMapSize = fileContentMap.size();
-			for (Entry<ResourceLocation, String> entry : fileContentMap.entrySet()) {
-
-				if(existingMediaData.containsKey(entry.getValue()))
-				{	
-					MediaItem existingMeida = existingMediaData.get(entry.getValue());
-					realExistingMediaDatas.put(existingMeida, true); // mark the media data as real existing
-
-					//
-					// this file hash was already present in our media lib. 
-					// check if the details are still the same and update it if necessary
-					//
-					if(updateExistingMedia(db, library, existingMeida, entry))
-						db.store(existingMeida);
-
-				}else{
-					newFiles.put(entry.getValue(), entry.getKey());
-				}
-
-				int progress = (int)(100d / fileMapSize * (double)i);
-				progressListener.currentProgress(new ProgressEventArgs(progress, "Importing:\t" + entry.getKey().getName()));
-				i++;
-			}
-
-			// collect the no longer existing media files in the current media library
-			for (Entry<MediaItem, Boolean> mediaDataExistence : realExistingMediaDatas.entrySet()) {
-				if(!mediaDataExistence.getValue())
-					handleNonExistingMedia(db, library, mediaDataExistence.getKey());
-			}
-
-			db.commit();
+		}catch(Exception e){
+			e.printStackTrace();
+			return null;
 		}
 
+		//
+		progressListener.currentProgress(new ProgressEventArgs(true, "Compare the " + fileContentMap.size() + " physical existing files with the current index media items"));
+
+		int i = 0;
+		double fileMapSize = fileContentMap.size();
+		for (Entry<ResourceLocation, String> entry : fileContentMap.entrySet()) {
+
+			if(existingMediaData.containsKey(entry.getValue()))
+			{	
+				MediaItem existingMeida = existingMediaData.get(entry.getValue());
+				realExistingMediaDatas.put(existingMeida, true); // mark the media data as real existing
+
+				//
+				// this file hash was already present in our media lib. 
+				// check if the details are still the same and update it if necessary
+				//
+				if(updateExistingMedia(library, existingMeida, entry))
+					updateMedias.add(existingMeida);
+
+			}else{
+				newFiles.put(entry.getValue(), entry.getKey());
+			}
+
+			int progress = (int)(100d / fileMapSize * (double)i);
+			progressListener.currentProgress(new ProgressEventArgs(progress, "Importing:\t" + entry.getKey().getName()));
+			i++;
+		}
+
+		// collect the no longer existing media files in the current media library
+		for (Entry<MediaItem, Boolean> mediaDataExistence : realExistingMediaDatas.entrySet()) {
+			if(!mediaDataExistence.getValue()){
+				MediaItem m =  mediaDataExistence.getKey();
+				if(canMediaBeDeleted(library, m)){
+					removeMedias.add(m);
+				}
+			}
+		}
+
+		// bulk update 
+		mediaService.removeMediaData(removeMedias);
+		mediaService.update(updateMedias);
 
 		return newFiles;
 	}
@@ -245,7 +250,7 @@ public class MediaImportService implements IMediaImportService {
 	 * @param em
 	 * @param media
 	 */
-	private void handleNonExistingMedia(ObjectContainer db, MediaLibrary library, MediaItem media) {
+	private boolean canMediaBeDeleted(MediaLibrary library, MediaItem media) {
 
 		System.out.println("handleNonExistingMedia: " + media );
 
@@ -258,9 +263,8 @@ public class MediaImportService implements IMediaImportService {
 			}
 		}
 
-		// If the media has no sources left, we remove it completely from the db
-		if(media.getSources().size() == 0)
-			db.delete(media);
+		// If the media has no sources left, we mark it as to be deleted
+		return (media.getSources().size() == 0);
 	}
 
 
@@ -272,11 +276,11 @@ public class MediaImportService implements IMediaImportService {
 	 * @param entry
 	 * @return
 	 */
-	private boolean updateExistingMedia(ObjectContainer db, MediaLibrary library, MediaItem existingMeida, Entry<ResourceLocation, String> entry){
+	private boolean updateExistingMedia(MediaLibrary library, MediaItem existingMeida, Entry<ResourceLocation, String> entry){
 		boolean hasChanges = false;
 
 
-		updateExistingMediaSources(db, library, existingMeida, entry.getKey());
+		updateExistingMediaSources(library, existingMeida, entry.getKey());
 
 		// Update Tags From file path
 		if(tagguesser != null && AutoTagSupport.updateTags(tagguesser, existingMeida)){
@@ -295,14 +299,17 @@ public class MediaImportService implements IMediaImportService {
 	 * @param currentPath
 	 * @return
 	 */
-	private boolean updateExistingMediaSources(ObjectContainer db, MediaLibrary library, MediaItem existingMeida, ResourceLocation currentPath){
+	private boolean updateExistingMediaSources(MediaLibrary library, MediaItem existingMeida, ResourceLocation currentPath){
 		boolean hasChanges = false;
 
 		boolean currentPathExisits = false;
 
 		for (MediaSource source : Lists.newList(existingMeida.getSources())) {
 
-			if(source.getParentLibrary().equals(library))
+			if(source.getParentLibrary() == null){
+				existingMeida.removeSource(source);
+				hasChanges = true;
+			}else if(source.getParentLibrary().equals(library))
 			{
 				// we only care about the current library-
 				source.setIsAvailableDirty();
@@ -317,16 +324,14 @@ public class MediaImportService implements IMediaImportService {
 					}
 				}
 			}
-
-
 		}
 
+		// if the media has not yet this library as source, try to add it as one
 		if(!currentPathExisits)
 		{
 			URI relativePath = library.getMediaDirectory().getRelativePath(currentPath);
 			if(relativePath != null){
 				MediaSource source = new MediaSource(library, relativePath);
-				db.store(source);
 				existingMeida.addSource(source);
 				hasChanges = true;
 			}

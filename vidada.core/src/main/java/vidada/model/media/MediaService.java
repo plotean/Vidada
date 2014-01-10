@@ -94,23 +94,20 @@ public class MediaService implements IMediaService {
 	 * @see vidada.model.media.IMediaService2#addMediaData(java.util.List)
 	 */
 	@Override
-	public void addMediaData(List<MediaItem> mediadatas){
-
-		if(mediadatas.isEmpty()) return;
+	public void addMediaData(Iterable<MediaItem> mediadatas){
 
 		ObjectContainer db =  SessionManager.getObjectContainer();
 		try{
 
 			for (MediaItem md : mediadatas) {
 				db.store(md);
-				onMediaDataAdded(md);
 			}
 			db.commit();
 		}catch(Exception e){
 			Debug.printAllLines("MediaService: Failed to add following medias:", mediadatas);
 			e.printStackTrace();
 		}
-		onMediaDataAdded(mediadatas.toArray(new MediaItem[0]));
+		onMediaDataAdded(Lists.toList(mediadatas));
 	}
 
 
@@ -123,24 +120,26 @@ public class MediaService implements IMediaService {
 	 * @see vidada.model.media.IMediaService2#removeMediaData(java.util.List)
 	 */
 	@Override
-	public void removeMediaData(List<MediaItem> mediadatas){
-		ObjectContainer db =  SessionManager.getObjectContainer();
+	public void removeMediaData(Iterable<MediaItem> mediadatas){
 
-		for (MediaItem md : mediadatas) {
-			db.delete(md);
-			onMediaDataRemoved(md);
+		ObjectContainer db =  SessionManager.getObjectContainer();
+		{
+			for (MediaItem md : mediadatas) {
+				db.delete(md);
+			}
 		}
 		db.commit();
-		onMediaDataRemoved(mediadatas.toArray(new MediaItem[0]));
+
+		onMediaDataRemoved(Lists.toList(mediadatas));
 	}
 
 
-	protected void onMediaDataAdded(MediaItem... mediadata){
-		mediasChangedEvent.fireEvent(this, new CollectionEventArg<MediaItem>(CollectionChangeType.Added, mediadata));
+	protected void onMediaDataAdded(List<MediaItem> mediadatas){
+		mediasChangedEvent.fireEvent(this, new CollectionEventArg<MediaItem>(CollectionChangeType.Added, mediadatas));
 	}
 
-	protected void onMediaDataRemoved(MediaItem... mediadata){
-		mediasChangedEvent.fireEvent(this, new CollectionEventArg<MediaItem>(CollectionChangeType.Removed, mediadata));
+	protected void onMediaDataRemoved(List<MediaItem> mediadatas){
+		mediasChangedEvent.fireEvent(this, new CollectionEventArg<MediaItem>(CollectionChangeType.Removed, mediadatas));
 	}
 
 

@@ -49,13 +49,13 @@ public interface IMediaService extends IService{
 	 * Add the given mediadatas to this service and persist it.
 	 * @param mediadata
 	 */
-	public abstract void addMediaData(List<MediaItem> mediadata);
+	public abstract void addMediaData(Iterable<MediaItem> mediadata);
 
 	/**
 	 * Removes the given mediadata from this service
 	 * @param mediadata
 	 */
-	public abstract void removeMediaData(List<MediaItem> mediadata);
+	public abstract void removeMediaData(Iterable<MediaItem> mediadata);
 
 	/**
 	 * Persists the given mediadata
