@@ -6,9 +6,16 @@ import javafx.scene.Node;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+
+import org.controlsfx.glyphfont.FontAwesome;
+import org.controlsfx.glyphfont.GlyphFont;
+import org.controlsfx.glyphfont.GlyphFontRegistry;
+
 import vidada.viewmodel.explorer.MediaExplorerVM;
 import vidada.viewsFX.breadcrumbs.BreadCrumbBar;
+import vidada.viewsFX.breadcrumbs.BreadCrumbBar.BreadCrumbNodeFactory;
 import vidada.viewsFX.breadcrumbs.BreadCrumbBar.BreadCrumbOpenListener;
+import vidada.viewsFX.breadcrumbs.BreadCrumbButton;
 import vidada.viewsFX.mediabrowsers.MediaBrowserFX;
 import archimedesJ.events.EventArgs;
 import archimedesJ.events.EventListenerEx;
@@ -17,12 +24,19 @@ import archimedesJ.io.locations.DirectoryLocation;
 public class PrimaryMediaExplorerFX extends BorderPane {
 	private final MediaBrowserFX mediaBrowserFX;
 	private final ExplorerFilterFX filterView;
+	private final BreadCrumbBar<LocationBreadCrumb> breadCrumbBar;
 
-	private final LocationBreadCrumbBarModel breadCrumbModel = new LocationBreadCrumbBarModel();
+	private final LocationBreadCrumbBarModel breadCrumbModel = new LocationBreadCrumbBarModel(new HomeLocationBreadCrumb());
 	private MediaExplorerVM explorerViewModel;
+
+	private final Node homeView;
 
 
 	public PrimaryMediaExplorerFX(){
+
+
+		GlyphFont font = GlyphFontRegistry.font("FontAwesome");
+		homeView = font.fontSize(16).create(FontAwesome.Glyph.HOME.name());
 
 		// Browser View
 		mediaBrowserFX = new MediaBrowserFX();
@@ -34,36 +48,53 @@ public class PrimaryMediaExplorerFX extends BorderPane {
 		filterView = new ExplorerFilterFX();
 
 		// Navigation / Breadcrumb
-		Node navNode = createNavigation();
+		breadCrumbBar = createNavigation();
 
 		VBox topBox = new VBox();
 		topBox.getChildren().add(filterView);
-		topBox.getChildren().add(navNode);
+		topBox.getChildren().add(breadCrumbBar);
 
 		TitledPane filterPane = new TitledPane("Source", topBox);
 		this.setTop(filterPane);
 	}
 
 
-	private Node createNavigation(){
+	private BreadCrumbBar<LocationBreadCrumb> createNavigation(){
 
-		BreadCrumbBar<LocationBreadCrumb> breadCrumbBar = new BreadCrumbBar<LocationBreadCrumb>();
+		BreadCrumbBar<LocationBreadCrumb> bar = new BreadCrumbBar<LocationBreadCrumb>();
 
-		breadCrumbBar.addOpenListener(new BreadCrumbOpenListener<LocationBreadCrumb>(){
+		bar.setCrumbFactory(new BreadCrumbNodeFactory<LocationBreadCrumb>() {
 			@Override
-			public void openBreadCrumb(LocationBreadCrumb crumb) {
+			public BreadCrumbButton createBreadCrumbButton(LocationBreadCrumb crumbModel, int index) {
+				BreadCrumbButton crumbView = null;
 
-				DirectoryLocation dir = crumb.getDirectoryLocation();
-
-				explorerViewModel.setCurrentLocation(dir);
-				breadCrumbModel.setDirectory(breadCrumbModel.getHomeDirectory(), dir);
+				if(index == 0){
+					crumbView = new BreadCrumbButton("", homeView, true);
+				}else{
+					crumbView = new BreadCrumbButton(crumbModel.getName(), false);
+				}
+				return crumbView;
 			}
 		});
 
-		breadCrumbBar.setItems(breadCrumbModel);
-		BorderPane.setMargin(breadCrumbBar, new Insets(10));
+		bar.addOpenListener(new BreadCrumbOpenListener<LocationBreadCrumb>(){
+			@Override
+			public void openBreadCrumb(LocationBreadCrumb crumb) {
 
-		return breadCrumbBar;
+				if(crumb instanceof HomeLocationBreadCrumb){
+					System.out.println("home pressed...");
+				}else{
+					DirectoryLocation dir = crumb.getDirectoryLocation();
+					explorerViewModel.setCurrentLocation(dir);
+					breadCrumbModel.setDirectory(breadCrumbModel.getHomeDirectory(), dir);
+				}
+			}
+		});
+
+		bar.setItems(breadCrumbModel);
+		BorderPane.setMargin(bar, new Insets(10));
+
+		return bar;
 	}
 
 

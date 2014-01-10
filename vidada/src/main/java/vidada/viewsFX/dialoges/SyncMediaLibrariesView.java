@@ -3,11 +3,10 @@ package vidada.viewsFX.dialoges;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import vidada.model.ServiceProvider;
 import vidada.model.media.IMediaImportService;
@@ -17,7 +16,7 @@ import archimedesJ.events.EventHandlerEx;
 import archimedesJ.threading.IProgressListener;
 import archimedesJ.threading.ProgressEventArgs;
 
-public class SyncMediaLibrariesView extends BorderPane {
+public class SyncMediaLibrariesView extends GridPane {
 
 	private final ProgressBar bar = new ProgressBar();
 	private final Label currentActivity = new Label("Ready.");
@@ -27,17 +26,20 @@ public class SyncMediaLibrariesView extends BorderPane {
 
 	public SyncMediaLibrariesView(){
 
-		BorderPane.setAlignment(bar, Pos.CENTER);
+		Insets inset = new Insets(10);
 
-		HBox progressBox = new HBox();
-		progressBox.getChildren().add(bar);
-		HBox.setHgrow(bar, Priority.ALWAYS);
+		this.setHgap(inset.getRight());
+		this.setVgap(inset.getTop());
 
-		BorderPane.setMargin(progressBox, new Insets(10));
-		BorderPane.setMargin(currentActivity, new Insets(10));
+		this.add(bar, 0, 0);
+		GridPane.setHgrow(bar, Priority.ALWAYS);
+		bar.prefWidthProperty().bind(this.widthProperty().subtract(inset.getRight()));
+		this.add(currentActivity, 0, 1);
+		GridPane.setHgrow(currentActivity, Priority.ALWAYS);
 
-		setCenter(progressBox);
-		setBottom(currentActivity);
+		BorderPane.setMargin(bar, inset);
+		BorderPane.setMargin(currentActivity, inset);
+
 
 		startSync();
 	}
