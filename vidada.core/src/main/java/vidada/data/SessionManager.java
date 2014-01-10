@@ -6,6 +6,9 @@ import org.joda.time.base.AbstractDateTime;
 import org.joda.time.base.AbstractInstant;
 import org.joda.time.base.BaseDateTime;
 
+import vidada.model.libraries.MediaLibrary;
+import vidada.model.media.MediaItem;
+import vidada.model.media.source.MediaSource;
 import vidada.model.settings.GlobalSettings;
 
 import com.db4o.Db4oEmbedded;
@@ -88,12 +91,17 @@ public class SessionManager {
 			config.common().objectClass(BaseDateTime.class).translate(new TNull()); 
 			config.common().objectClass(AbstractDateTime.class).translate(new TNull()); 
 			config.common().objectClass(AbstractInstant.class).translate(new TNull()); 
-
 			config.common().objectClass(File.class).translate(new TFile());
 			config.common().objectClass(URI.class).translate(new TURI());
 
 			// generate world wide unique uuids for each stored object
 			// config.file().generateUUIDs(ConfigScope.GLOBALLY);
+
+			// cascade delte config
+			config.common().objectClass(MediaItem.class).objectField("sources").cascadeOnDelete(true);
+			config.common().objectClass(MediaSource.class).objectField("relativeFilePath").cascadeOnDelete(true);
+			config.common().objectClass(MediaLibrary.class).objectField("libraryEntries").cascadeOnDelete(true);
+
 
 			// ensure that the path (folders) exist
 			File dbFolder = dbPath.getParentFile();
