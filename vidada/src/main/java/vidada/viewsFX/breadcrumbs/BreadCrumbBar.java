@@ -23,14 +23,22 @@ import javafx.scene.layout.HBox;
  */
 public class BreadCrumbBar<T extends IBreadCrumbModel> extends HBox {
 
-
 	public static interface BreadCrumbOpenListener<I> { 
 		void openBreadCrumb(I crumb); 
 	}
 
+	public static interface BreadCrumbNodeFactory<T> { 
+		BreadCrumbButton createBreadCrumbButton(T crumb, int index); 
+	}
 
+	private final List<BreadCrumbOpenListener<T>> openListeners = new ArrayList<>();
 	private final ObjectProperty<ObservableList<T>> items = new SimpleObjectProperty<ObservableList<T>>(this, "items");
+	private final ObjectProperty<BreadCrumbNodeFactory<T>> crumbFactory = new SimpleObjectProperty<BreadCrumbNodeFactory<T>>(this, "crumbFactory");
 
+
+	/**
+	 * Create a new BreadCrumbBar
+	 */
 	public BreadCrumbBar(){ 
 		items.addListener(new ChangeListener<ObservableList<T>>() {
 			@Override
@@ -47,9 +55,25 @@ public class BreadCrumbBar<T extends IBreadCrumbModel> extends HBox {
 				updateView();
 			}
 		});
+
+		crumbFactory.addListener(new ChangeListener<BreadCrumbNodeFactory<T>>() {
+			@Override
+			public void changed(
+					ObservableValue<? extends BreadCrumbNodeFactory<T>> observable,
+							BreadCrumbNodeFactory<T> oldValue, BreadCrumbNodeFactory<T> newValue){ 
+				updateView();
+			}
+		});
+
 	}
 
-	private final List<BreadCrumbOpenListener<T>> openListeners = new ArrayList<>();
+	transient final private BreadCrumbNodeFactory<T> breadCrumbNodeFactoryDefault = new BreadCrumbNodeFactory<T>() {
+		@Override
+		public BreadCrumbButton createBreadCrumbButton(T crumb, int index) {
+			return  new BreadCrumbButton(crumb.getName(), index == 0);
+		}
+	};
+
 
 	public void addOpenListener(BreadCrumbOpenListener<T> listener){
 		openListeners.add(listener);
@@ -80,6 +104,18 @@ public class BreadCrumbBar<T extends IBreadCrumbModel> extends HBox {
 	}
 
 	/**
+	 * Set the BreadCrumb factory used to create all the crumbs in the bar
+	 * @param factory
+	 */
+	public final void setCrumbFactory(BreadCrumbNodeFactory<T> factory){
+		crumbFactory.setValue(factory);
+	}
+
+	public final BreadCrumbNodeFactory<T> getCrumbFactory(){
+		return crumbFactory.getValue();
+	}
+
+	/**
 	 * Sets a new {@link ObservableList} as the items list underlying GridView.
 	 * The old items list will be discarded.
 	 */
@@ -96,7 +132,7 @@ public class BreadCrumbBar<T extends IBreadCrumbModel> extends HBox {
 	}
 
 
-	private void updateView(){
+	protected void updateView(){
 
 		this.getChildren().clear();
 
@@ -104,32 +140,48 @@ public class BreadCrumbBar<T extends IBreadCrumbModel> extends HBox {
 		if(items != null){
 			for (int i=0; items.size() > i; i++) {
 
-				boolean first = i==0;
-				BreadCrumbButton item = createCrumb(items.get(i), first);
+				BreadCrumbButton item = createCrumb(items.get(i), i);
 
-				// We have to position the bread crumbs slightly overlapping
-				// thus we have to create negative Insets
-				double ins = item.getArrowWidth() / 2.0;
-				double right = -ins - 0.1d;
-				double left = (!first) ? right : 0; // Omit the first button
+				if(item != null){
+					// We have to position the bread crumbs slightly overlapping
+					// thus we have to create negative Insets
+					double ins = item.getArrowWidth() / 2.0;
+					double right = -ins - 0.1d;
+					double left = !(i==0) ? right : 0; // Omit the first button
 
-				HBox.setMargin(item, new Insets(0, right, 0, left));
-				this.getChildren().add(item);
+					HBox.setMargin(item, new Insets(0, right, 0, left));
+					this.getChildren().add(item);
+				}
 			}
 		}
 	}
 
-	private BreadCrumbButton createCrumb(final T crumbModel, boolean home){
-		BreadCrumbButton crumb = new BreadCrumbButton(crumbModel.getName(), home);
-		crumb.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>(){
-			@Override
-			public void handle(MouseEvent me) {
-				if(me.getButton().equals(MouseButton.PRIMARY)){
-					crumbModel.open();
-					fireBreadCrumbOpen(crumbModel);
+	private final BreadCrumbButton createCrumb(final T crumbModel, int index){
+		BreadCrumbNodeFactory<T> factory = getCrumbFactory();
+		if(factory == null){
+			// fall back to default factory
+			factory = breadCrumbNodeFactoryDefault;
+		}
+
+		BreadCrumbButton crumb = factory.createBreadCrumbButton(crumbModel, index);
+
+		if(crumb != null){
+
+			// We want all buttons to have the same height
+			// so we bind their preferred height to this enclosing container
+			crumb.prefHeightProperty().bind(this.heightProperty());
+
+			crumb.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>(){
+				@Override
+				public void handle(MouseEvent me) {
+					if(me.getButton().equals(MouseButton.PRIMARY)){
+						crumbModel.open();
+						fireBreadCrumbOpen(crumbModel);
+					}
 				}
-			}
-		});
+			});
+		}
+
 		return crumb;
 	}
 }
