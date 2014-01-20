@@ -32,7 +32,6 @@ public class BreadCrumbBar<T extends IBreadCrumbModel> extends HBox {
 	}
 
 	private final List<BreadCrumbOpenListener<T>> openListeners = new ArrayList<>();
-	private final ObjectProperty<ObservableList<T>> items = new SimpleObjectProperty<ObservableList<T>>(this, "items");
 	private final ObjectProperty<BreadCrumbNodeFactory<T>> crumbFactory = new SimpleObjectProperty<BreadCrumbNodeFactory<T>>(this, "crumbFactory");
 
 
@@ -99,9 +98,7 @@ public class BreadCrumbBar<T extends IBreadCrumbModel> extends HBox {
 	};
 
 
-	public final ObjectProperty<ObservableList<T>> itemsProperty() {
-		return items;
-	}
+
 
 	/**
 	 * Set the BreadCrumb factory used to create all the crumbs in the bar
@@ -113,6 +110,16 @@ public class BreadCrumbBar<T extends IBreadCrumbModel> extends HBox {
 
 	public final BreadCrumbNodeFactory<T> getCrumbFactory(){
 		return crumbFactory.getValue();
+	}
+
+
+
+
+	private final ObjectProperty<ObservableList<T>> items = new SimpleObjectProperty<ObservableList<T>>(this, "items");
+
+
+	public final ObjectProperty<ObservableList<T>> itemsProperty() {
+		return items;
 	}
 
 	/**

@@ -1,5 +1,6 @@
 package vidada.viewsFX.mediaexplorer;
 
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -45,28 +46,44 @@ public class ExplorerFilterFX extends BorderPane {
 		cboMediaLibrary.setItems(observableMedias);
 
 		cboMediaLibrary.valueProperty().addListener(new ChangeListener<MediaLibrary>() {
-			@Override 
-			public void changed(ObservableValue ov, MediaLibrary t, MediaLibrary t1) {                
+
+			@Override
+			public void changed(ObservableValue<? extends MediaLibrary> obs, MediaLibrary arg1, MediaLibrary arg2) {
+
 				MediaLibrary currentLibrary = cboMediaLibrary.getValue();
-				DirectoryLocation dir = currentLibrary.getMediaDirectory().getDirectory();
-				if(mediaExplorerVm != null){
-					mediaExplorerVm.setHomeLocation(dir);
-				}else
-					System.err.println("ExplorerFilterFX: mediaExplorerVm is NULL!");
-			}    
+				if(currentLibrary != null){
+					DirectoryLocation dir = currentLibrary.getMediaDirectory().getDirectory();
+					if(mediaExplorerVm != null){
+						mediaExplorerVm.setHomeLocation(dir);
+					}else
+						System.err.println("ExplorerFilterFX: mediaExplorerVm is NULL!");
+				}
+			}
+
 		});
 
 		mediaLibraryService.getLibraryAddedEvent().add(new EventListenerEx<EventArgsG<MediaLibrary>>() {
 			@Override
-			public void eventOccured(Object sender, EventArgsG<MediaLibrary> eventArgs) {
-				observableMedias.add(eventArgs.getValue());
+			public void eventOccured(Object sender, final EventArgsG<MediaLibrary> eventArgs) {
+				Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+						observableMedias.add(eventArgs.getValue());
+					}
+				});
+
 			}
 		});
 
 		mediaLibraryService.getLibraryRemovedEvent().add(new EventListenerEx<EventArgsG<MediaLibrary>>() {
 			@Override
-			public void eventOccured(Object sender, EventArgsG<MediaLibrary> eventArgs) {
-				observableMedias.remove(eventArgs.getValue());
+			public void eventOccured(Object sender, final EventArgsG<MediaLibrary> eventArgs) {
+				Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+						observableMedias.remove(eventArgs.getValue());
+					}
+				});
 			}
 		});
 

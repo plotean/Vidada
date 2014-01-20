@@ -69,7 +69,8 @@ public class PrimaryMediaExplorerFX extends BorderPane {
 				BreadCrumbButton crumbView = null;
 
 				if(index == 0){
-					crumbView = new BreadCrumbButton("", homeView, true);
+					crumbView = new HomeBreadcrumbButton("", homeView);
+
 				}else{
 					crumbView = new BreadCrumbButton(crumbModel.getName(), false);
 				}
