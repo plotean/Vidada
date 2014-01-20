@@ -83,6 +83,11 @@ public class SessionManager {
 
 		try{
 			EmbeddedConfiguration config = Db4oEmbedded.newConfiguration();
+
+			config.file().storage(new EncryptedStorage("vidada"));
+
+			System.out.println("storage type: " + config.file().storage());
+
 			config.common().callConstructors(true);
 			config.common().updateDepth(2);
 
