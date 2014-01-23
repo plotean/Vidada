@@ -4,8 +4,10 @@ import java.lang.ref.WeakReference;
 
 import org.joda.time.format.DateTimeFormat;
 
+import vidada.model.ServiceProvider;
 import vidada.model.browser.BrowserMediaItem;
 import vidada.model.browser.IBrowserItem;
+import vidada.model.images.IImageService;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaType;
 import vidada.viewmodel.browser.BrowserItemVM;
@@ -25,6 +27,7 @@ public class MediaViewModel extends BrowserItemVM {
 	private WeakReference<ImageContainer> imageContainerRef;
 	private MediaItem mediaData;
 
+	private final IImageService imageService = ServiceProvider.Resolve(IImageService.class);
 
 	public MediaViewModel(BrowserMediaItem mediaItem){
 		setModel(mediaItem);
@@ -108,7 +111,7 @@ public class MediaViewModel extends BrowserItemVM {
 	public ImageContainer getThumbnail(int widthPxl, int heightPxl){
 		ImageContainer imageContainer = null;
 		if(mediaData != null){
-			imageContainer = mediaData.getThumbnail(new Size(widthPxl, heightPxl));
+			imageContainer = mediaData.getThumbnail(imageService, new Size(widthPxl, heightPxl));
 			imageContainerRef = new WeakReference<ImageContainer>(imageContainer);
 		}else{
 			imageContainerRef = null;

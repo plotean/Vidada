@@ -7,8 +7,6 @@ import java.util.Set;
 
 import org.joda.time.DateTime;
 
-import vidada.model.ServiceProvider;
-import vidada.model.compatibility.IHaveMediaData;
 import vidada.model.entities.BaseEntity;
 import vidada.model.images.IImageService;
 import vidada.model.images.ImageContainerBase.ImageChangedCallback;
@@ -20,21 +18,17 @@ import archimedesJ.events.EventHandlerEx;
 import archimedesJ.events.IEvent;
 import archimedesJ.geometry.Size;
 import archimedesJ.images.ImageContainer;
-import archimedesJ.swing.components.thumbpresenter.model.IMediaDataProvider;
 import archimedesJ.util.Lists;
 
 import com.db4o.config.annotations.Indexed;
 
 /**
- * Represents a single media item which can be indexed
+ * Represents a single media item
  * 
  * @author IsNull
  * 
  */
-public abstract class MediaItem extends BaseEntity implements IMediaDataProvider, IHaveMediaData {
-
-	transient protected final IImageService imageService = ServiceProvider.Resolve(IImageService.class);
-
+public abstract class MediaItem extends BaseEntity {
 
 	private Set<MediaSource> sources = new HashSet<MediaSource>();
 	private Set<Tag> tags = new HashSet<Tag>();
@@ -58,9 +52,6 @@ public abstract class MediaItem extends BaseEntity implements IMediaDataProvider
 	transient private MediaSource source;
 	transient private final EventHandlerEx<EventArgsG<Tag>> tagAddedEvent = new EventHandlerEx<EventArgsG<Tag>>();
 	transient private final EventHandlerEx<EventArgsG<Tag>> tagRemovedEvent = new EventHandlerEx<EventArgsG<Tag>>();
-
-
-
 
 
 	/**
@@ -385,7 +376,7 @@ public abstract class MediaItem extends BaseEntity implements IMediaDataProvider
 			success = source.open();
 			if(success){
 				setOpened(getOpened() + 1);
-				persist();
+				//persist();
 			}
 		}
 
@@ -393,8 +384,7 @@ public abstract class MediaItem extends BaseEntity implements IMediaDataProvider
 	}
 
 
-	@Override
-	public synchronized ImageContainer getThumbnail(Size size) {
+	public synchronized ImageContainer getThumbnail(IImageService imageService, Size size) {
 		ImageContainer container = imageService.retrieveImageContainer(
 				this,
 				size,
@@ -406,7 +396,6 @@ public abstract class MediaItem extends BaseEntity implements IMediaDataProvider
 	transient private final ImageChangedCallback imageChangedCallBack = new ImageChangedCallback(){
 		@Override
 		public void imageChanged(ImageContainer container) {
-			//System.out.println("imageChangedCallBack: --> firePropertyChange('thumbnail'): raw-image: " + container.getRawImage());
 			firePropertyChange("thumbnail");
 		}
 	};
@@ -462,26 +451,6 @@ public abstract class MediaItem extends BaseEntity implements IMediaDataProvider
 		return filehash != null;
 	}
 
-
-
-	/**
-	 * Get the display title of this media
-	 */
-	@Transient
-	@Override
-	public String getTitle() {
-		return getFilename();
-	}
-
-	/**
-	 * Get the description of this media
-	 */
-	@Transient
-	@Override
-	public String getDescription() {
-		return "<no description>";
-	}
-
 	/**
 	 * Get the image/video resolution of this media
 	 * @return
@@ -530,15 +499,6 @@ public abstract class MediaItem extends BaseEntity implements IMediaDataProvider
 	}
 
 	/**
-	 * Persist changes made to this media item
-	 */
-	public synchronized void persist() {
-		IMediaService mediaService = ServiceProvider.Resolve(IMediaService.class);
-		mediaService.update(this);
-	}
-
-
-	/**
 	 * Informs that a property has been changed
 	 */
 	@Override
@@ -552,18 +512,13 @@ public abstract class MediaItem extends BaseEntity implements IMediaDataProvider
 		return this.getFilename() + "hash: " + this.getFilehash() + " src: " + getSource();
 	}
 
-	@Transient
-	@Override
-	public MediaItem getMediaData() {
-		return this;
-	}
 
+	// HACK: Used by the android grid-cell view to handle selection
+	// TODO: Refactor this away since this belongs not in the model layer
 	transient private boolean selected = false;
-
 	public void setSelection(boolean state) {
 		selected = state;
 	}
-
 	public boolean isSelected() {
 		return selected;
 	}

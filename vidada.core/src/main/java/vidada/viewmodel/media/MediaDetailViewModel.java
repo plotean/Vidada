@@ -117,13 +117,13 @@ public class MediaDetailViewModel extends MediaViewModel implements IMediaViewMo
 			switch (tagVm.getState()) {
 			case Allowed:
 				media.removeTag(tagVm.getModel());
-				media.persist();
+				mediaService.update(media);
 				System.out.println("removing required tag " + tagVm.getModel() + " from " + media.getFilename());
 				break;
 
 			case Required:
 				media.addTag(tagVm.getModel());
-				media.persist();
+				mediaService.update(media);
 				System.out.println("adding required tag " + tagVm.getModel() + " from " + media.getFilename());
 				break;
 

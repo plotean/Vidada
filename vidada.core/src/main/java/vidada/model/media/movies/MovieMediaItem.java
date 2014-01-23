@@ -2,20 +2,14 @@ package vidada.model.media.movies;
 
 import java.beans.Transient;
 import java.net.URI;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 import vidada.model.libraries.MediaLibrary;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaType;
 import vidada.model.media.source.MediaSource;
-import vidada.model.settings.GlobalSettings;
 import vidada.model.video.Video;
 import vidada.model.video.VideoInfo;
-import archimedesJ.geometry.Size;
-import archimedesJ.images.IMemoryImage;
 import archimedesJ.io.locations.ResourceLocation;
-import archimedesJ.threading.TaskResult;
 
 /**
  * Represents a playable MoviePart. A full Movie can be composed of multiple
@@ -29,7 +23,7 @@ public class MovieMediaItem extends MediaItem implements Cloneable {
 	transient public final static int INVALID_POSITION = -1;
 	transient private final static int MAX_THUMB_RETRY_COUT = 2;
 	transient private Video video;
-	transient private final Lock thumbnailCreatorLock = new ReentrantLock();
+	//transient private final Lock thumbnailCreatorLock = new ReentrantLock();
 
 
 	private float preferredThumbPosition = INVALID_POSITION;
@@ -81,6 +75,15 @@ public class MovieMediaItem extends MediaItem implements Cloneable {
 		this.thumbCreationFails = thumbCreationFails;
 	}
 
+	public void onThumbCreationFailed(){
+		// increment failure counter
+		setThumbCreationFails(getThumbCreationFails()+1);
+	}
+
+	public void onThumbCreationSuccess(){
+		setThumbCreationFails(0);
+	}
+
 	/**
 	 * Get the preferred thumb position of this movie
 	 * 
@@ -129,7 +132,7 @@ public class MovieMediaItem extends MediaItem implements Cloneable {
 	 * 
 	 * This will clear the current preferred thumb and replace it with the new
 	 * one
-	 */
+
 	public void createNewRandomThumb() {
 		setCurrentThumbPosition(INVALID_POSITION);
 		setPreferredThumbPosition(INVALID_POSITION);
@@ -137,19 +140,19 @@ public class MovieMediaItem extends MediaItem implements Cloneable {
 		setCurrentThumbAsPreferred();
 
 		this.persist();
-	}
+	} */
 
 	/**
 	 * Create a new cached thumb at the given position
 	 * 
 	 * @param position
-	 */
+
 	public void createNewCachedThumb(float position) {
 		setPreferredThumbPosition(position);
 		extractPreferedFrameCached(GlobalSettings.getMaxThumbResolution());
 
 		this.persist();
-	}
+	} */
 
 	/**
 	 * Get the native video
@@ -158,7 +161,6 @@ public class MovieMediaItem extends MediaItem implements Cloneable {
 	 */
 	@Transient
 	public Video getVideo() {
-
 		MediaSource source = getSource();
 		if(source != null && source.isAvailable())
 		{
@@ -169,7 +171,6 @@ public class MovieMediaItem extends MediaItem implements Cloneable {
 			} else
 				video.setPathToVideoFile(path);
 		}
-
 		return video;
 	}
 
@@ -177,34 +178,24 @@ public class MovieMediaItem extends MediaItem implements Cloneable {
 	 * Is it possible to create a thumb of this movie part?
 	 * 
 	 * Generally, the file must be available and a video encoder for this format
-	 * must be present as well.
+	 * must be present, lastly previous fails must be below <code>MAX_THUMB_RETRY_COUT</code>
 	 * 
 	 */
-	@Override
-	@Transient
 	public boolean canCreateThumbnail() {
-		return thumbCreationFails <= MAX_THUMB_RETRY_COUT 
-				// ensure we do not
-				// try forever when
-				// the movie is
-				// defect
-				&& Video.isGenericEncoderPresent() && isAvailable();
+		// Ensure we do not try forever when we deal with defect viedeos
+		return thumbCreationFails <= MAX_THUMB_RETRY_COUT  && isAvailable();
 	}
 
-
-	/**
-	 * Creates a thumbnail of the requested size and stores it in the cache. This method may block the
-	 * current thread for some time!
-	 */
-	@Override
-	public  void createThumbnailCached(Size size) {
-		TaskResult success = TaskResult.Failed;
-
-		synchronized (thumbnailCreatorLock) {
-			extractPreferedFrameCached(size);
+	public float getThumbPos(){
+		float pos;
+		if (getPreferredThumbPosition() != MovieMediaItem.INVALID_POSITION) {
+			pos = getPreferredThumbPosition();
+		} else if (getCurrentThumbPosition() != MovieMediaItem.INVALID_POSITION) {
+			pos = getCurrentThumbPosition();
+		} else {
+			pos = (float)Math.random();
 		}
-
-		//return success;
+		return pos;
 	}
 
 	@Override
@@ -220,72 +211,5 @@ public class MovieMediaItem extends MediaItem implements Cloneable {
 	}
 
 
-	/**
-	 * Extract a native frame from this movie.
-	 * The extracted frame is cached upon success.
-	 * 
-	 * @return The new extracted frame (or null upon failure)
-	 */
-	private IMemoryImage extractPreferedFrameCached(Size size) {
-		IMemoryImage frame = null;
-
-		// first, remove old cached images
-		imageService.removeImage(this);
-
-		float pos;
-
-		if (getPreferredThumbPosition() != INVALID_POSITION) {
-			pos = getPreferredThumbPosition();
-		} else if (getCurrentThumbPosition() != INVALID_POSITION) {
-			pos = getCurrentThumbPosition();
-		} else {
-			pos = getRandomThumbpos();
-		}
-
-		frame = extractNativeFrameAt(pos, size);
-
-		if(frame != null){
-			System.out.println("native framw extracted successfull. storing it in the image cache...");
-			imageService.storeImage(this, frame);
-		}else {
-			System.err.println("extractNativeSizeFrame: Extracting native frame failed (frame = NULL)");
-		}
-
-		return frame;
-	}
-
-	/**
-	 * Get a frame from this media, at a random position. The frame is returned
-	 * in its native size from the video
-	 */
-	private float getRandomThumbpos() {
-		return (float) Math.random();
-	}
-
-	/**
-	 * Create a thumb at the given position.
-	 * 
-	 * @param size
-	 * @param position
-	 *            0.0 - 1.0
-	 * @return
-	 */
-	private IMemoryImage extractNativeFrameAt(float position, Size size) {
-
-		Video video = getVideo();
-
-		IMemoryImage frame = video.getFrame(position, size);
-		if (frame != null) {
-			resolveResolution();
-			setCurrentThumbPosition(position);
-			thumbCreationFails = 0;
-		}else {
-			// the thumb could not be generated
-			setThumbCreationFails(getThumbCreationFails() + 1);
-		}
-		persist();
-
-		return frame;
-	}
 
 }

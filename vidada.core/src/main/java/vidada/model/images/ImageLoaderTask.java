@@ -18,9 +18,10 @@ public class ImageLoaderTask implements Callable<IMemoryImage>
 {
 	transient private static final Size maxThumbSize = GlobalSettings.getInstance().getMaxThumbResolution();
 
+	transient private final IThumbImageCreator thumbImageCreator = new ThumbImageExtractor();
 
 	transient private final IImageCache imageCache;
-	transient private final  MediaItem media;
+	transient private final MediaItem media;
 	transient private final Size size;
 
 
@@ -28,7 +29,6 @@ public class ImageLoaderTask implements Callable<IMemoryImage>
 		this.imageCache = imageCache;
 		this.media = media;
 		this.size = size;
-
 	}
 
 
@@ -42,7 +42,6 @@ public class ImageLoaderTask implements Callable<IMemoryImage>
 
 
 		//Thread.sleep(100);  TODO:
-
 		// the image may already be cached
 
 		loadedImage = imageCache.getImageById(media.getFilehash(), size);
@@ -61,15 +60,14 @@ public class ImageLoaderTask implements Callable<IMemoryImage>
 
 			// we need to fetch the thumb directly from the source
 
-			if(media.canCreateThumbnail()){
+			if(thumbImageCreator.canExtractThumb(media)){
 
-				media.createThumbnailCached(maxThumbSize);
+				IMemoryImage maxThumb = thumbImageCreator.extractThumb(media, maxThumbSize);
 
-				// Now we expect the thumb to be stored in the cache
-
-				IMemoryImage maxThumb = imageCache.getImageById(media.getFilehash(), maxThumbSize);
 				if(maxThumb != null){
+
 					imageCache.storeImage(media.getFilehash(), maxThumb);
+
 					if(size.equals(maxThumbSize)){
 						loadedImage = maxThumb;
 					}else{

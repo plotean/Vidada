@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 
-import vidada.model.ServiceProvider;
 import vidada.model.libraries.MediaLibrary;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaType;
@@ -13,15 +12,13 @@ import vidada.model.media.source.MediaSource;
 import archimedesJ.data.hashing.FileHashAlgorythms;
 import archimedesJ.data.hashing.IFileHashAlgorythm;
 import archimedesJ.geometry.Size;
-import archimedesJ.images.IMemoryImage;
-import archimedesJ.images.IRawImageFactory;
 import archimedesJ.io.locations.ResourceLocation;
 import archimedesJ.swing.images.ImageInfo;
 import archimedesJ.swing.images.SimpleImageInfo;
 
 public class ImageMediaItem extends MediaItem {
 
-	transient private final IRawImageFactory imageFactory = ServiceProvider.Resolve(IRawImageFactory.class);
+
 
 	/**
 	 * Empty hibernate constructor
@@ -50,6 +47,7 @@ public class ImageMediaItem extends MediaItem {
 		setMediaType(MediaType.IMAGE);
 	}
 
+	/*
 	@Override
 	public void createThumbnailCached(Size size) {
 
@@ -59,7 +57,7 @@ public class ImageMediaItem extends MediaItem {
 		else {
 			System.err.println("Reading image failed: " + this);
 		}
-	}
+	}*/
 
 	@Override
 	@Transient
@@ -94,53 +92,8 @@ public class ImageMediaItem extends MediaItem {
 		}
 	}
 
-
-
-	/**
-	 * On plain images, this will just read the image
-	 */
-	private IMemoryImage readImage(Size size) {
-		IMemoryImage bufferedImage = null;
-
-
-		MediaSource source = getSource();
-
-		ResourceLocation filePath = source.getResourceLocation();
-		if (filePath != null && filePath.exists()) {
-			System.out.println("reading image...");
-			InputStream is = null;
-			try {
-				is = filePath.openInputStream();
-				bufferedImage = imageFactory.createImage(is);
-				if(!hasResolution())
-					setResolution(new Size(bufferedImage.getWidth(), bufferedImage.getHeight()));
-
-				bufferedImage = bufferedImage.rescale(size.width, size.height);
-
-			} catch (Exception e) {
-				System.err.println("Can not read image" + filePath.toString());
-			}finally{
-				if(is != null){
-					try {
-						is.close();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
-			}
-		}
-
-
-		return bufferedImage;
-	}
-
 	@Transient
 	public static IFileHashAlgorythm getHashStrategy() {
 		return FileHashAlgorythms.instance().getButtikscheHashAlgorythm();
-	}
-
-	@Override
-	public boolean canCreateThumbnail() {
-		return true;
 	}
 }

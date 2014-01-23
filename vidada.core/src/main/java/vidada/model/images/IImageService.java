@@ -11,7 +11,7 @@ import archimedesJ.io.locations.DirectoryLocation;
 import archimedesJ.services.IService;
 
 /**
- * 
+ * IImageService handles all the image / thumbnails loading and life time management
  * @author IsNull
  *
  */
