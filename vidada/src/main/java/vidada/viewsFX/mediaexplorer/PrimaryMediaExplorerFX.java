@@ -1,21 +1,22 @@
 package vidada.viewsFX.mediaexplorer;
 
 
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 
+import org.controlsfx.control.breadcrumbs.BreadCrumbBar;
+import org.controlsfx.control.breadcrumbs.BreadCrumbBar.BreadCrumbActionEvent;
+import org.controlsfx.control.breadcrumbs.BreadCrumbButton;
+import org.controlsfx.control.breadcrumbs.BreadCrumbNodeFactory;
 import org.controlsfx.glyphfont.FontAwesome;
 import org.controlsfx.glyphfont.GlyphFont;
 import org.controlsfx.glyphfont.GlyphFontRegistry;
 
 import vidada.viewmodel.explorer.MediaExplorerVM;
-import vidada.viewsFX.breadcrumbs.BreadCrumbBar;
-import vidada.viewsFX.breadcrumbs.BreadCrumbBar.BreadCrumbNodeFactory;
-import vidada.viewsFX.breadcrumbs.BreadCrumbBar.BreadCrumbOpenListener;
-import vidada.viewsFX.breadcrumbs.BreadCrumbButton;
 import vidada.viewsFX.mediabrowsers.MediaBrowserFX;
 import archimedesJ.events.EventArgs;
 import archimedesJ.events.EventListenerEx;
@@ -26,7 +27,7 @@ public class PrimaryMediaExplorerFX extends BorderPane {
 	private final ExplorerFilterFX filterView;
 	private final BreadCrumbBar<LocationBreadCrumb> breadCrumbBar;
 
-	private final LocationBreadCrumbBarModel breadCrumbModel = new LocationBreadCrumbBarModel(new HomeLocationBreadCrumb());
+	private final BreadCrumbNavigationDecorator breadCrumbModel;
 	private MediaExplorerVM explorerViewModel;
 
 	private final Node homeView;
@@ -49,6 +50,7 @@ public class PrimaryMediaExplorerFX extends BorderPane {
 
 		// Navigation / Breadcrumb
 		breadCrumbBar = createNavigation();
+		breadCrumbModel = new BreadCrumbNavigationDecorator(breadCrumbBar, new HomeLocationBreadCrumb());
 
 		VBox topBox = new VBox();
 		topBox.getChildren().add(filterView);
@@ -78,9 +80,12 @@ public class PrimaryMediaExplorerFX extends BorderPane {
 			}
 		});
 
-		bar.addOpenListener(new BreadCrumbOpenListener<LocationBreadCrumb>(){
+		bar.setOnBreadCrumbAction(new EventHandler<BreadCrumbBar.BreadCrumbActionEvent<LocationBreadCrumb>>() {
 			@Override
-			public void openBreadCrumb(LocationBreadCrumb crumb) {
+			public void handle(BreadCrumbActionEvent<LocationBreadCrumb> crumbArgs) {
+
+				SimpleBreadCrumbModel crumbModel = crumbArgs.getCrumbModel();
+				LocationBreadCrumb crumb = (LocationBreadCrumb)crumbModel;
 
 				if(crumb instanceof HomeLocationBreadCrumb){
 					System.out.println("home pressed...");
@@ -91,8 +96,6 @@ public class PrimaryMediaExplorerFX extends BorderPane {
 				}
 			}
 		});
-
-		bar.setItems(breadCrumbModel);
 		BorderPane.setMargin(bar, new Insets(10));
 
 		return bar;

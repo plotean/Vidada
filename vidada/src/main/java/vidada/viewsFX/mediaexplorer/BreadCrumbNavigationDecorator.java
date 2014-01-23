@@ -4,20 +4,22 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javafx.collections.FXCollections;
-import vidada.viewsFX.util.ObservableListProxy;
+import org.controlsfx.control.breadcrumbs.BreadCrumbBar;
+
 import archimedesJ.io.locations.DirectoryLocation;
 
-public class LocationBreadCrumbBarModel extends ObservableListProxy<LocationBreadCrumb> {
+public class BreadCrumbNavigationDecorator {
 
 	private final HomeLocationBreadCrumb home;
-
+	private final BreadCrumbBar<LocationBreadCrumb> breadCrumbBar;
 	private DirectoryLocation root;
 	private DirectoryLocation directory;
 
-	public LocationBreadCrumbBarModel(HomeLocationBreadCrumb home){
-		super(FXCollections.observableArrayList(new ArrayList<LocationBreadCrumb>()));
+	public BreadCrumbNavigationDecorator(BreadCrumbBar<LocationBreadCrumb> breadCrumbBar, HomeLocationBreadCrumb home){
 		this.home = home;
+		this.breadCrumbBar = breadCrumbBar;
+
+		updateModel();
 	}
 
 	public void setDirectory(DirectoryLocation home, DirectoryLocation directory){
@@ -36,7 +38,7 @@ public class LocationBreadCrumbBarModel extends ObservableListProxy<LocationBrea
 	}
 
 	private void updateModel(){
-		clear();
+		breadCrumbBar.getCrumbs().clear();
 
 		List<LocationBreadCrumb> crumbs = new ArrayList<LocationBreadCrumb>();
 
@@ -63,7 +65,7 @@ public class LocationBreadCrumbBarModel extends ObservableListProxy<LocationBrea
 		crumbs.add(home); // add home crumb
 
 		Collections.reverse(crumbs);
-		addAll(crumbs);
+		breadCrumbBar.getCrumbs().addAll(crumbs);
 	}
 
 }

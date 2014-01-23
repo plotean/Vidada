@@ -11,7 +11,5 @@ public final class HomeLocationBreadCrumb extends LocationBreadCrumb {
 	public HomeLocationBreadCrumb() {
 		super(null);
 
-
-
 	}
 }
