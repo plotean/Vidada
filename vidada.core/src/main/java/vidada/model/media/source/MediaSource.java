@@ -128,8 +128,7 @@ public class MediaSource extends BaseEntity {
 	}
 
 	/**
-	 * Get the parent library of this media
-	 * That is, the library holding this media
+	 * Get the parent library which holds this media source
 	 * @return
 	 */
 	public MediaLibrary getParentLibrary() {

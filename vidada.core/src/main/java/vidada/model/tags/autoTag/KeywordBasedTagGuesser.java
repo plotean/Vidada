@@ -46,7 +46,7 @@ public class KeywordBasedTagGuesser  implements ITagGuessingStrategy {
 
 		for (Tag tag : tags) {
 			if(doesMediaMatchTag(media, tag)){
-				System.out.println("media " + media + " --> matches Tag: " + tag);
+				//System.out.println("media " + media + " --> matches Tag: " + tag);
 				matchingTags.add(tag);
 			}
 		}
@@ -69,7 +69,7 @@ public class KeywordBasedTagGuesser  implements ITagGuessingStrategy {
 		}
 		String absolutePathString = path.toLowerCase();
 
-		System.out.println("path: " + absolutePathString);
+		//System.out.println("path: " + absolutePathString);
 
 		//split the path in single tokens
 		String[] tokens = absolutePathString.split(splitRegEx);
@@ -78,7 +78,7 @@ public class KeywordBasedTagGuesser  implements ITagGuessingStrategy {
 		//combine the tokens to provide one single source file
 		String [] combinedTokens = Lists.concat(tokens, pathTokens);
 
-		Debug.printAll("combinedTokens:", combinedTokens);
+		//Debug.printAll("combinedTokens:", combinedTokens);
 
 		for (TagKeyoword keyword : tag.getKeyWords()) {
 			for (int i = 0; i < combinedTokens.length; i++) {

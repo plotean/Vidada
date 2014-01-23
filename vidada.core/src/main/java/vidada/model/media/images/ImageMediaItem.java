@@ -53,15 +53,12 @@ public class ImageMediaItem extends MediaItem {
 	@Override
 	public void createThumbnailCached(Size size) {
 
-		//TaskResult state;
-
 		IMemoryImage frame = readImage(size);
 		if(frame != null)
 			imageService.storeImage(this, frame);
 		else {
 			System.err.println("Reading image failed: " + this);
 		}
-		//return state;
 	}
 
 	@Override
