@@ -21,7 +21,7 @@ import vidada.data.SessionManager;
 import vidada.images.RawImageFactoryFx;
 import vidada.model.ServiceProvider;
 import vidada.model.ServiceProvider.IServiceRegisterer;
-import vidada.model.libraries.IMediaLibraryService;
+import vidada.model.media.store.libraries.IMediaLibraryService;
 import vidada.model.security.ICredentialManager;
 import vidada.model.security.ICredentialManager.CredentialsChecker;
 import vidada.model.security.IPrivacyService;

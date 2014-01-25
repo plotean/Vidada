@@ -34,8 +34,8 @@ import javax.swing.event.ListSelectionListener;
 
 import vidada.commands.AddNewMediaLibraryAction;
 import vidada.model.ServiceProvider;
-import vidada.model.libraries.IMediaLibraryService;
-import vidada.model.libraries.MediaLibrary;
+import vidada.model.media.store.libraries.IMediaLibraryService;
+import vidada.model.media.store.libraries.MediaLibrary;
 import vidada.views.ImageResources;
 import archimedesJ.events.EventArgsG;
 import archimedesJ.events.EventListenerEx;

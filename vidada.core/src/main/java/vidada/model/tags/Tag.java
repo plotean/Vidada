@@ -89,18 +89,6 @@ public class Tag extends BaseEntity implements Comparable<Tag>{
 		keywordRemovedEvent.fireEvent(this, EventArgsG.build(keyoword));
 	}
 
-	/*
-	private TagKeyoword findByName(String keywordName){
-		for (TagKeyoword keyoword : keyWords) {
-			if(keyoword.getKeyword().equals(keywordName))
-			{
-				return keyoword;
-			}
-		}
-		return null;
-	}
-	 */
-
 
 	@Override
 	public String toString(){

@@ -44,6 +44,8 @@ public interface IImageService extends IService{
 	void storeImage(MediaItem media, IMemoryImage image);
 
 
+	// ImageCache Factories
+
 	/**
 	 * Open the image cache at the given location.
 	 * 

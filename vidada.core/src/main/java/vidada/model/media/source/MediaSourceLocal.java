@@ -3,11 +3,8 @@ package vidada.model.media.source;
 import java.beans.Transient;
 import java.net.URI;
 
-import vidada.model.ServiceProvider;
 import vidada.model.entities.BaseEntity;
-import vidada.model.libraries.MediaLibrary;
-import vidada.model.media.MediaHashUtil;
-import vidada.model.system.ISystemService;
+import vidada.model.media.store.libraries.MediaLibrary;
 import archimedesJ.io.locations.ResourceLocation;
 
 import com.db4o.foundation.ArgumentNullException;
@@ -19,7 +16,7 @@ import com.db4o.foundation.ArgumentNullException;
  * @author IsNull
  *
  */
-public class MediaSource extends BaseEntity {
+public class MediaSourceLocal extends BaseEntity implements IMediaSource {
 
 	private MediaLibrary parentLibrary = null;
 	private URI relativeFilePath = null;
@@ -27,9 +24,9 @@ public class MediaSource extends BaseEntity {
 	transient private boolean isFileAvaiableDirty = true;
 	transient private boolean isFileAvaiable;
 
-	public MediaSource(){}
+	public MediaSourceLocal(){}
 
-	public MediaSource(MediaLibrary parentLibrary, URI relativeFilePath)
+	public MediaSourceLocal(MediaLibrary parentLibrary, URI relativeFilePath)
 	{
 		if(parentLibrary == null)
 			throw new ArgumentNullException("parentLibrary");
@@ -54,6 +51,8 @@ public class MediaSource extends BaseEntity {
 		isFileAvaiableDirty = true;
 	}
 
+
+	@Override
 	public boolean isAvailable() {
 		if (isFileAvaiableDirty) {
 			ResourceLocation absolutePath = getResourceLocation();
@@ -63,39 +62,21 @@ public class MediaSource extends BaseEntity {
 		return isFileAvaiable;
 	}
 
-
-	/**
-	 * Open this media By default, the media is opened with the standard tool
-	 * registered in the current Operating System
-	 */
-	@Transient
-	public boolean open() {
-		setIsAvailableDirty();
-		ResourceLocation resource = getResourceLocation();
-		ISystemService systemService = ServiceProvider.Resolve(ISystemService.class);
-		return systemService.open(resource);
-	}
-
-	@Transient
-	public String retriveHash() {
-		return MediaHashUtil.getDefaultMediaHashUtil()
-				.retriveFileHash(getResourceLocation());
-	}
-
+	/*
 	@Transient
 	public String getPath() {
 		return getResourceLocation().toString();
-	}
+	}*/
 
 
 	// ----------------
 
 
 
-	/**
-	 * Gets the absolute file path to this media source
-	 * @return
+	/* (non-Javadoc)
+	 * @see vidada.model.media.source.IMediaSource#getResourceLocation()
 	 */
+	@Override
 	@Transient
 	public ResourceLocation getResourceLocation() {
 		ResourceLocation absolutePath = null;

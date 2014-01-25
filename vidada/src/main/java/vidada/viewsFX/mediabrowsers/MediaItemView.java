@@ -24,6 +24,7 @@ import org.controlsfx.dialog.Dialogs;
 import vidada.model.ServiceProvider;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaType;
+import vidada.model.media.source.IMediaSource;
 import vidada.model.system.ISystemService;
 import vidada.viewmodel.MediaViewModel;
 import vidada.viewmodel.browser.BrowserItemVM;
@@ -200,7 +201,8 @@ public class MediaItemView extends BrowserCellView {
 				MediaPlayerFx playerView = addMediaPlayer();
 
 				// start playing and set initial position relative
-				playerView.getMediaController().playMedia(mediaViewModel.getModel().getData().getSource().getPath());
+				IMediaSource source = mediaViewModel.getModel().getData().getSource();
+				playerView.getMediaController().playMedia(source.getResourceLocation().getUriString());
 				playerView.getMediaController().setPosition(relativePos);
 
 			}else {
@@ -273,8 +275,9 @@ public class MediaItemView extends BrowserCellView {
 			//
 			ISmartImage smartImage;
 			try {
-				smartImage = new SmartImageLazy(imageFactory, 
-						new URI(mediaViewModel.getModel().getData().getSource().getPath()));
+				IMediaSource source = mediaViewModel.getModel().getData().getSource();
+
+				smartImage = new SmartImageLazy(imageFactory, new URI(source.getResourceLocation().toString()));
 				imageViewer.showImage(smartImage);
 			} catch (URISyntaxException e) {
 				e.printStackTrace();

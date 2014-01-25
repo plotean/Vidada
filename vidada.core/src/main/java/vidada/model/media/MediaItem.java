@@ -10,8 +10,9 @@ import org.joda.time.DateTime;
 import vidada.model.entities.BaseEntity;
 import vidada.model.images.IImageService;
 import vidada.model.images.ImageContainerBase.ImageChangedCallback;
-import vidada.model.libraries.MediaLibrary;
-import vidada.model.media.source.MediaSource;
+import vidada.model.media.source.IMediaSource;
+import vidada.model.media.source.MediaSourceLocal;
+import vidada.model.media.store.libraries.MediaLibrary;
 import vidada.model.tags.Tag;
 import archimedesJ.events.EventArgsG;
 import archimedesJ.events.EventHandlerEx;
@@ -30,7 +31,7 @@ import com.db4o.config.annotations.Indexed;
  */
 public abstract class MediaItem extends BaseEntity {
 
-	private Set<MediaSource> sources = new HashSet<MediaSource>();
+	private Set<IMediaSource> sources = new HashSet<IMediaSource>();
 	private Set<Tag> tags = new HashSet<Tag>();
 
 	@Indexed
@@ -49,7 +50,7 @@ public abstract class MediaItem extends BaseEntity {
 	private MediaType mediaType;
 
 
-	transient private MediaSource source;
+	transient private IMediaSource source;
 	transient private final EventHandlerEx<EventArgsG<Tag>> tagAddedEvent = new EventHandlerEx<EventArgsG<Tag>>();
 	transient private final EventHandlerEx<EventArgsG<Tag>> tagRemovedEvent = new EventHandlerEx<EventArgsG<Tag>>();
 
@@ -82,7 +83,7 @@ public abstract class MediaItem extends BaseEntity {
 	 * @param relativeFilePath
 	 */
 	protected MediaItem(MediaLibrary parentLibrary, URI relativeFilePath) {
-		this(new MediaSource(parentLibrary, relativeFilePath));
+		this(new MediaSourceLocal(parentLibrary, relativeFilePath));
 	}
 
 	/**
@@ -92,7 +93,7 @@ public abstract class MediaItem extends BaseEntity {
 	 * @param parentLibrary
 	 * @param relativeFilePath
 	 */
-	protected MediaItem(MediaSource mediaSource) {
+	protected MediaItem(MediaSourceLocal mediaSource) {
 		addSource(mediaSource);
 		setFilename(prettifyName(mediaSource.getName()));
 	}
@@ -160,7 +161,7 @@ public abstract class MediaItem extends BaseEntity {
 	 */
 	@Transient
 	public boolean isAvailable(){
-		MediaSource source = getSource();
+		IMediaSource source = getSource();
 		return source != null && source.isAvailable();
 	}
 
@@ -169,11 +170,11 @@ public abstract class MediaItem extends BaseEntity {
 	 * 
 	 * @param library
 	 * @return
-	 */
+
 	public boolean isMemberofLibrary(MediaLibrary library) {
 		if(library == null) throw new IllegalArgumentException("library must not be NULL!");
 
-		for (MediaSource s : this.getSources()) {
+		for (IMediaSource s : this.getSources()) {
 			if(s != null){
 				MediaLibrary parentLib = s.getParentLibrary();
 				if(parentLib != null){
@@ -187,7 +188,7 @@ public abstract class MediaItem extends BaseEntity {
 		}
 		return false;
 	}
-
+	 */
 
 	/**
 	 * Gets the best source for this media item. 
@@ -195,12 +196,12 @@ public abstract class MediaItem extends BaseEntity {
 	 * @return
 	 */
 	@Transient
-	public MediaSource getSource(){
+	public IMediaSource getSource(){
 		if(source == null || !source.isAvailable())
 		{
-			Set<MediaSource> sources = getSources();
+			Set<IMediaSource> sources = getSources();
 			if(sources != null)
-				for (MediaSource s : sources) {
+				for (IMediaSource s : sources) {
 					if(s.isAvailable())
 						source = s;
 				}
@@ -215,11 +216,11 @@ public abstract class MediaItem extends BaseEntity {
 	 * 
 	 * @return
 	 */
-	public Set<MediaSource> getSources() {
+	public Set<IMediaSource> getSources() {
 		if(this.sources != null)
-			return new HashSet<MediaSource>(this.sources);
+			return new HashSet<IMediaSource>(this.sources);
 		else {
-			return new HashSet<MediaSource>();
+			return new HashSet<IMediaSource>();
 		}
 	}
 
@@ -228,7 +229,7 @@ public abstract class MediaItem extends BaseEntity {
 	 * 
 	 * @param tags
 	 */
-	protected void setSources(Set<MediaSource> sources) {
+	protected void setSources(Set<IMediaSource> sources) {
 		this.sources = sources;
 		firePropertyChange("sources");
 	}
@@ -238,7 +239,7 @@ public abstract class MediaItem extends BaseEntity {
 	 * 
 	 * @param tag
 	 */
-	public void addSource(MediaSource source) {
+	public void addSource(MediaSourceLocal source) {
 		if (!getSources().contains(source)) {
 			this.sources.add(source);
 			firePropertyChange("sources");
@@ -250,7 +251,7 @@ public abstract class MediaItem extends BaseEntity {
 	 * 
 	 * @param tag
 	 */
-	public void removeSource(MediaSource source) {
+	public void removeSource(IMediaSource source) {
 		if (getSources().contains(source)) {
 			this.sources.remove(source);
 			firePropertyChange("sources");
@@ -359,28 +360,9 @@ public abstract class MediaItem extends BaseEntity {
 	 * 
 	 * @param opened
 	 */
-	protected void setOpened(int opened) {
+	public void setOpened(int opened) {
 		this.opened = opened;
 		firePropertyChange("opened");
-	}
-
-	/**
-	 * Open this media By default, the media is opened with the standard tool
-	 * registered in the current Operating System
-	 */
-	public boolean open() {
-		boolean success = false;
-
-		MediaSource source = getSource();
-		if(source != null && source.isAvailable()){
-			success = source.open();
-			if(success){
-				setOpened(getOpened() + 1);
-				//persist();
-			}
-		}
-
-		return success;
 	}
 
 
@@ -421,9 +403,12 @@ public abstract class MediaItem extends BaseEntity {
 	 */
 	public String getFilehash() {
 		if (!isHashCalculated()) {
-			MediaSource source = getSource();
-			if(source != null)
-				setFilehash(source.retriveHash());
+			IMediaSource source = getSource();
+			if(source != null && source.isAvailable()){
+				MediaHashUtil hashUtil = MediaHashUtil.getDefaultMediaHashUtil();
+				String hash =  hashUtil.retriveFileHash(source.getResourceLocation());
+				setFilehash(hash);
+			}
 		}
 		return filehash;
 	}
@@ -496,14 +481,6 @@ public abstract class MediaItem extends BaseEntity {
 	public void setRating(int rating) {
 		this.rating = rating;
 		firePropertyChange("rating");
-	}
-
-	/**
-	 * Informs that a property has been changed
-	 */
-	@Override
-	protected void firePropertyChange(String propertyName, Object oldValue, Object newValue){
-		super.firePropertyChange(propertyName, oldValue, newValue);
 	}
 
 

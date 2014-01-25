@@ -6,8 +6,6 @@ import vidada.model.connectivity.IConnectivityService;
 import vidada.model.images.IImageService;
 import vidada.model.images.ImageServiceBase;
 import vidada.model.images.cache.crypto.CryptedCacheUtil;
-import vidada.model.libraries.IMediaLibraryService;
-import vidada.model.libraries.MediaLibraryService;
 import vidada.model.media.IMediaService;
 import vidada.model.media.MediaService;
 import vidada.model.security.AuthenticationRequieredException;
@@ -101,7 +99,6 @@ public class ServiceProvider implements ILocator {
 		serviceLocator.registerSingleton(IConnectivityService.class, ConnectivityService.class);
 		serviceLocator.registerSingleton(IPrivacyService.class, PrivacyService.class);
 		serviceLocator.registerSingleton(ISelectionService.class, SelectionService.class);
-		serviceLocator.registerSingleton(IMediaLibraryService.class, MediaLibraryService.class);
 		serviceLocator.registerSingleton(IMediaService.class, MediaService.class);
 		serviceLocator.registerSingleton(ITagService.class, TagService.class);
 		serviceLocator.registerSingleton(IImageService.class, ImageServiceBase.class);

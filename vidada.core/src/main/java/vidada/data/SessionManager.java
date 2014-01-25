@@ -6,9 +6,9 @@ import org.joda.time.base.AbstractDateTime;
 import org.joda.time.base.AbstractInstant;
 import org.joda.time.base.BaseDateTime;
 
-import vidada.model.libraries.MediaLibrary;
 import vidada.model.media.MediaItem;
-import vidada.model.media.source.MediaSource;
+import vidada.model.media.source.MediaSourceLocal;
+import vidada.model.media.store.libraries.MediaLibrary;
 import vidada.model.settings.GlobalSettings;
 
 import com.db4o.Db4oEmbedded;
@@ -104,7 +104,7 @@ public class SessionManager {
 
 			// cascade delte config
 			config.common().objectClass(MediaItem.class).objectField("sources").cascadeOnDelete(true);
-			config.common().objectClass(MediaSource.class).objectField("relativeFilePath").cascadeOnDelete(true);
+			config.common().objectClass(MediaSourceLocal.class).objectField("relativeFilePath").cascadeOnDelete(true);
 			config.common().objectClass(MediaLibrary.class).objectField("libraryEntries").cascadeOnDelete(true);
 
 

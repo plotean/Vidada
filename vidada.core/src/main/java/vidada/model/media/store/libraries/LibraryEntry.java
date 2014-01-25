@@ -1,4 +1,4 @@
-package vidada.model.libraries;
+package vidada.model.media.store.libraries;
 
 import vidada.model.entities.BaseEntity;
 import vidada.model.user.User;

@@ -1,4 +1,4 @@
-package vidada.model.media;
+package vidada.model.media.store.local;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -12,9 +12,12 @@ import java.util.Set;
 
 import vidada.data.SessionManager;
 import vidada.model.ServiceProvider;
-import vidada.model.libraries.IMediaLibraryService;
-import vidada.model.libraries.MediaLibrary;
-import vidada.model.media.source.MediaSource;
+import vidada.model.media.MediaHashUtil;
+import vidada.model.media.MediaItem;
+import vidada.model.media.source.IMediaSource;
+import vidada.model.media.source.MediaSourceLocal;
+import vidada.model.media.store.libraries.IMediaLibraryService;
+import vidada.model.media.store.libraries.MediaLibrary;
 import vidada.model.tags.ITagService;
 import vidada.model.tags.autoTag.AutoTagSupport;
 import vidada.model.tags.autoTag.ITagGuessingStrategy;
@@ -33,21 +36,22 @@ import com.db4o.query.Query;
  */
 public class MediaImportService implements IMediaImportService {
 
-	private final IMediaService mediaService;
-	private final IMediaLibraryService libraryService = ServiceProvider.Resolve(IMediaLibraryService.class);
+	private final LocalMediaStore localStore;
+	private final IMediaLibraryService libraryService;
 	private final ITagService tagService = ServiceProvider.Resolve(ITagService.class);
 
 	private MediaHashUtil mediaHashUtil;
 	private ITagGuessingStrategy tagguesser;
 
-	public MediaImportService(IMediaService mediaService){
-		this.mediaService = mediaService;
+	public MediaImportService(LocalMediaStore mediaService){
+		this.localStore = mediaService;
+		libraryService = localStore.getMediaLibraryManager();
 	}
 
 	@Override
 	public void scanAndUpdateDatabases(IProgressListener progressListener){
 
-		mediaHashUtil = new MediaHashUtil(mediaService);
+		mediaHashUtil =  MediaHashUtil.getDefaultMediaHashUtil();
 
 		if(!tagService.getAllTags().isEmpty()){
 			tagguesser = tagService.createTagGuesser();
@@ -183,7 +187,7 @@ public class MediaImportService implements IMediaImportService {
 
 			for (MediaItem mediaData : medias) {
 				// check if the parent library is still correct
-				if(mediaData.isMemberofLibrary(library))
+				if(isMemberofLibrary(mediaData, library))
 				{
 					// add the media data to the probably existing, but default the exists to false
 					realExistingMediaDatas.put(mediaData, false);
@@ -239,8 +243,8 @@ public class MediaImportService implements IMediaImportService {
 		}
 
 		// bulk update 
-		mediaService.removeMediaData(removeMedias);
-		mediaService.update(updateMedias);
+		localStore.delete(removeMedias);
+		localStore.update(updateMedias);
 
 		return newFiles;
 	}
@@ -255,16 +259,40 @@ public class MediaImportService implements IMediaImportService {
 		System.out.println("handleNonExistingMedia: " + media );
 
 		// Remove non existing file sources
-		Set<MediaSource> srcs = media.getSources();
-		for (MediaSource source : srcs) {
+		Set<IMediaSource> srcs = media.getSources();
+		for (IMediaSource msource : srcs) {
+			MediaSourceLocal source = (MediaSourceLocal)msource;
 			if(source.getParentLibrary().equals(library))
 			{
 				media.removeSource(source);
 			}
 		}
-
 		// If the media has no sources left, we mark it as to be deleted
 		return (media.getSources().size() == 0);
+	}
+
+	/**
+	 * Is this media a member of the given library?
+	 * 
+	 * @param library
+	 * @return
+	 */
+	private boolean isMemberofLibrary(MediaItem media, MediaLibrary library) {
+		if(library == null) throw new IllegalArgumentException("library must not be NULL!");
+
+		for (IMediaSource s : media.getSources()) {
+			if(s != null && s instanceof MediaSourceLocal){
+				MediaLibrary parentLib = ((MediaSourceLocal)s).getParentLibrary();
+				if(parentLib != null){
+					return parentLib.equals(library);
+				}else{
+					System.err.println("MediaItem::isMemberofLibrary: parent library of " + s + " was NULL!");
+				}
+			}else{
+				System.err.println("MediaItem::isMemberofLibrary: media source of " + this + " was NULL!");
+			}
+		}
+		return false;
 	}
 
 
@@ -304,7 +332,9 @@ public class MediaImportService implements IMediaImportService {
 
 		boolean currentPathExisits = false;
 
-		for (MediaSource source : Lists.newList(existingMeida.getSources())) {
+		for (IMediaSource msource : Lists.newList(existingMeida.getSources())) {
+
+			MediaSourceLocal source = (MediaSourceLocal)msource;
 
 			if(source.getParentLibrary() == null){
 				existingMeida.removeSource(source);
@@ -331,7 +361,7 @@ public class MediaImportService implements IMediaImportService {
 		{
 			URI relativePath = library.getMediaDirectory().getRelativePath(currentPath);
 			if(relativePath != null){
-				MediaSource source = new MediaSource(library, relativePath);
+				MediaSourceLocal source = new MediaSourceLocal(library, relativePath);
 				existingMeida.addSource(source);
 				hasChanges = true;
 			}
@@ -360,7 +390,7 @@ public class MediaImportService implements IMediaImportService {
 			int progress = (int)(100d / fileMapSize * (double)i);
 			progressListener.currentProgress(new ProgressEventArgs(progress, "Importing new media:\t" + entry.getValue().getName()));
 
-			MediaItem newDataPart = mediaService.buildMedia(entry.getValue(), parentlibrary, entry.getKey());
+			MediaItem newDataPart = localStore.buildMedia(entry.getValue(), parentlibrary, entry.getKey());
 
 			if(newDataPart != null)
 			{
@@ -373,7 +403,7 @@ public class MediaImportService implements IMediaImportService {
 
 		String msg = "Adding " + newmedias.size() + " new medias to the Library...";
 		progressListener.currentProgress(new ProgressEventArgs(true, msg));
-		mediaService.addMediaData(newmedias);
+		localStore.store(newmedias);
 	}
 
 

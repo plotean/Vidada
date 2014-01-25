@@ -1,4 +1,4 @@
-package vidada.model.libraries;
+package vidada.model.media.store.libraries;
 
 import java.beans.Transient;
 import java.net.URI;
@@ -19,7 +19,7 @@ import archimedesJ.util.Lists;
 
 /**
  * Represents an abstract directory containing media files
- * Provides convient standard filters for images / videos
+ * Provides convenient methods to (recursively) list all matching media items.
  * 
  * This implementation is immutable
  * @author IsNull
@@ -35,7 +35,13 @@ public final class MediaDirectory {
 	transient private ILocationFilter mediaFilter = null;
 
 
-
+	/**
+	 * Creates a new MediaDirectory with the specified filter settings.
+	 * 
+	 * @param directory Root directory
+	 * @param ignoreImages Ignore images files
+	 * @param ignoreMovies Inore movie files
+	 */
 	public MediaDirectory(DirectoryLocation directory, boolean ignoreImages, boolean ignoreMovies) { 
 		this.directory = directory;
 		this.ignoreImages = ignoreImages;
@@ -209,13 +215,10 @@ public final class MediaDirectory {
 	 * A simple filter to igonre vidada generated thumbs
 	 */
 	private transient static final IDirectoryFilter ignoreVidadaThumbs = new IDirectoryFilter() {
-
-		private static final String VidataThumbsFolder = "vidada.thumbs";
-
 		@Override
 		public boolean accept(DirectoryLocation directoiry) {
 			String name = directoiry.getName();
-			return !name.equals(VidataThumbsFolder);
+			return !name.equals(MediaLibrary.VidataThumbsFolder);
 		}
 	};
 

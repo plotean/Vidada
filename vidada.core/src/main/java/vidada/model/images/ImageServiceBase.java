@@ -17,9 +17,9 @@ import vidada.model.images.cache.MemoryImageCache;
 import vidada.model.images.cache.crypto.CryptedImageFileCache;
 import vidada.model.images.cache.crypto.ICacheKeyProvider;
 import vidada.model.images.cache.crypto.VidadaCacheKeyProvider;
-import vidada.model.libraries.MediaLibrary;
 import vidada.model.media.MediaItem;
-import vidada.model.media.source.MediaSource;
+import vidada.model.media.source.IMediaSource;
+import vidada.model.media.store.libraries.MediaLibrary;
 import vidada.model.security.AuthenticationException;
 import vidada.model.security.ICredentialManager;
 import vidada.model.settings.GlobalSettings;
@@ -63,7 +63,7 @@ public class ImageServiceBase implements IImageService {
 		if(cache != null){
 			return cache;
 		}else{
-			System.out.println("Injecting a MemoryCache to replace LocalFile Cache");
+			System.err.println("Injecting a MemoryCache to replace LocalFile Cache");
 			return new MemoryImageCache(new ImageCacheProxyBase(null));
 		}
 	}
@@ -94,7 +94,7 @@ public class ImageServiceBase implements IImageService {
 	private IImageCache getImageCache(MediaItem media){
 		IImageCache imageCache;
 
-		MediaSource source = media.getSource();
+		IMediaSource source = media.getSource();
 		if(source != null)
 		{
 			MediaLibrary library = source.getParentLibrary();

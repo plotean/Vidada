@@ -4,8 +4,8 @@ import java.io.File;
 import java.util.List;
 
 import vidada.data.SessionManager;
-import vidada.model.libraries.LibraryEntry;
-import vidada.model.libraries.MediaLibrary;
+import vidada.model.media.store.libraries.LibraryEntry;
+import vidada.model.media.store.libraries.MediaLibrary;
 import vidada.model.user.User;
 
 import com.db4o.ObjectContainer;

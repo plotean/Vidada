@@ -1,4 +1,4 @@
-package vidada.model.libraries;
+package vidada.model.media.store.libraries;
 
 import java.beans.Transient;
 import java.net.URISyntaxException;
@@ -18,20 +18,18 @@ import com.db4o.ObjectContainer;
 import com.db4o.query.Query;
 
 /**
- * Represents an MediaLibrary
+ * Represents an local MediaLibrary
+ * 
  * @author IsNull
  *
  */
 public class MediaLibrary extends BaseEntity {
 
+	public static final String VidataThumbsFolder = "vidada.thumbs";
+
 	private Set<LibraryEntry> libraryEntries = new HashSet<LibraryEntry>();
 	private boolean ignoreMovies;
 	private boolean ignoreImages;
-
-
-
-	// TODO DEBUG ONLY!?
-	transient private boolean useLibraryCache = true;
 
 	transient private LibraryEntry currentEntry = null;
 	transient private IImageCache imageCache = null;
@@ -99,8 +97,6 @@ public class MediaLibrary extends BaseEntity {
 	 */
 	public synchronized IImageCache getLibraryCache(){
 
-		if(!useLibraryCache) return null;
-
 		if(imageCache == null){
 
 			IImageService imageService = ServiceProvider.Resolve(IImageService.class);
@@ -108,7 +104,7 @@ public class MediaLibrary extends BaseEntity {
 			DirectoryLocation libraryRoot = getLibraryRoot();
 			if(libraryRoot != null && libraryRoot.exists()){
 				try {
-					DirectoryLocation libCache = DirectoryLocation.Factory.create(libraryRoot, "vidada.thumbs");
+					DirectoryLocation libCache = DirectoryLocation.Factory.create(libraryRoot, VidataThumbsFolder);
 					System.out.println("opening new library cache...");
 					imageCache = imageService.openCache(libCache);
 				} catch (URISyntaxException e1) {
@@ -226,7 +222,7 @@ public class MediaLibrary extends BaseEntity {
 	@Override
 	public String toString(){
 		DirectoryLocation root = getLibraryRoot();
-		return root != null ? root.toString() : "DirectoiryLocation=NULL";
+		return root != null ? root.toString() : "MediaLibrary:: DirectoiryLocation=NULL";
 	}
 
 }

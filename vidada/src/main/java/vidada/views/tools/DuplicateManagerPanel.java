@@ -15,7 +15,7 @@ import javax.swing.tree.DefaultTreeModel;
 import vidada.model.ServiceProvider;
 import vidada.model.media.IMediaService;
 import vidada.model.media.MediaItem;
-import vidada.model.media.source.MediaSource;
+import vidada.model.media.source.IMediaSource;
 import archimedesJ.expressions.Predicate;
 import archimedesJ.util.Lists;
 
@@ -71,8 +71,8 @@ public class DuplicateManagerPanel extends JPanel {
 
 		for (MediaItem mediaItem : multipleSources) {
 			node = new DefaultMutableTreeNode(mediaItem.getFilename());
-			for (MediaSource source : mediaItem.getSources()) {
-				node.add(new DefaultMutableTreeNode(source.getPath()));
+			for (IMediaSource source : mediaItem.getSources()) {
+				node.add(new DefaultMutableTreeNode(source.getResourceLocation()));
 			}
 			root.add(node);
 		}

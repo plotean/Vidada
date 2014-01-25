@@ -3,11 +3,11 @@ package vidada.viewmodel;
 import java.util.ArrayList;
 import java.util.List;
 
-import vidada.model.libraries.MediaLibrary;
 import vidada.model.media.IMediaService;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaType;
 import vidada.model.media.OrderProperty;
+import vidada.model.media.store.libraries.MediaLibrary;
 import vidada.model.tags.Tag;
 import vidada.model.tags.TagState;
 import vidada.viewmodel.tags.TagViewModel;

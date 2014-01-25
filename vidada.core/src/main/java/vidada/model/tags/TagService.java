@@ -9,7 +9,7 @@ import java.util.Set;
 
 import vidada.data.SessionManager;
 import vidada.model.media.MediaItem;
-import vidada.model.media.QueryBuilder;
+import vidada.model.media.QueryBuilderDB4O;
 import vidada.model.tags.autoTag.ITagGuessingStrategy;
 import vidada.model.tags.autoTag.KeywordBasedTagGuesser;
 import archimedesJ.events.EventArgs;
@@ -81,7 +81,7 @@ public class TagService implements ITagService {
 
 
 		{
-			List<MediaItem> medias = QueryBuilder.buildMediadataCriteria(tag).execute();
+			List<MediaItem> medias = QueryBuilderDB4O.buildMediadataCriteria(tag).execute();
 
 			if(!medias.isEmpty())
 			{

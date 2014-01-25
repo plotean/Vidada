@@ -7,7 +7,6 @@ import java.util.Set;
 
 import vidada.data.SessionManager;
 import vidada.model.ServiceProvider;
-import vidada.model.libraries.MediaLibrary;
 import vidada.model.tags.ITagService;
 import vidada.model.tags.Tag;
 
@@ -15,7 +14,13 @@ import com.db4o.ObjectContainer;
 import com.db4o.query.Constraint;
 import com.db4o.query.Query;
 
-public class QueryBuilder {
+/**
+ * Builds a db4o media query from the generic media query object
+ * 
+ * @author IsNull
+ *
+ */
+class QueryBuilderDB4O {
 
 	private final ITagService tagService = ServiceProvider.Resolve(ITagService.class);
 
@@ -54,14 +59,7 @@ public class QueryBuilder {
 	 * @param reverseOrder
 	 * @return
 	 */
-	public Query buildMediadataCriteria(
-			MediaType selectedtype, 
-			String query,
-			OrderProperty selectedOrder,
-			List<Tag> requiredTags,
-			List<Tag> blockedTags,
-			List<MediaLibrary> requiredMediaLibs,
-			boolean reverseOrder){
+	public Query buildMediadataCriteria(MediaQuery query){
 
 		//
 		// build the query
@@ -72,12 +70,26 @@ public class QueryBuilder {
 
 		// Limit results to requested media types:
 
-		if(selectedtype != MediaType.ANY){
-			q.descend("mediaType").constrain(selectedtype);
+		if(query.getSelectedtype() != MediaType.ANY){
+			q.descend("mediaType").constrain(query.getSelectedtype());
 		}
 
 
 		// Limit results to requested media libraries
+
+		/* TODO: 
+		 List<MediaLibrary> requiredMediaLibs = mediaLibraryService.getAllLibraries();
+		if(onlyAvaiable)
+		{
+			for (MediaLibrary mediaLibrary : new ArrayList<MediaLibrary>(requiredMediaLibs)) {
+				if(!mediaLibrary.isAvailable())
+				{
+					requiredMediaLibs.remove(mediaLibrary);
+				}
+			}
+		}
+
+
 
 		Constraint mediaLibConstraint = null;
 		for (MediaLibrary mediaLib : requiredMediaLibs) {
@@ -86,39 +98,39 @@ public class QueryBuilder {
 				mediaLibConstraint = c;
 			else
 				mediaLibConstraint.or(c);
-		}
+		}*/
 
 
 		// Query for search field
-		if(query != null && !query.isEmpty()){
+		if(query.getKeywords() != null && !query.getKeywords().isEmpty()){
 			// We match the query against the media name, tags etc.
 
 			// Predicate for matching the input with the filename
 
-			Constraint constrFileName = q.descend("filename").constrain(query.toLowerCase()).like();	
+			Constraint constrFileName = q.descend("filename").constrain(query.getKeywords().toLowerCase()).like();	
 
 			//each tag which contains the input gets added to the the list tagsSearchBox.
 			//the predicates are determined by checking if current mediaData item has the matched tag assigned
-			for(Tag matchedTag : getMatchingTags(query)){
+			for(Tag matchedTag : getMatchingTags(query.getKeywords())){
 				constrFileName.or(q.descend("tags").constrain(matchedTag));
 			}
 
 		}
 
 
-		for (Tag tag : requiredTags) {
+		for (Tag tag : query.getRequiredTags()) {
 			q.descend("tags").constrain(tag);
 		}
 
-		for (Tag tag : blockedTags) {
+		for (Tag tag : query.getBlockedTags()) {
 			q.descend("tags").constrain(tag).not();
 		}
 
 
 		// Ordering
-
+		OrderProperty selectedOrder = query.getSelectedOrder();
 		selectedOrder = selectedOrder == null ? OrderProperty.FILENAME : selectedOrder;
-		if(reverseOrder){
+		if(query.isReverseOrder()){
 			if(OrderProperty.FILENAME != selectedOrder)
 			{
 				q.descend(selectedOrder.getProperty()).orderAscending();

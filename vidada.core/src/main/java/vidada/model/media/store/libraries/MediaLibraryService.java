@@ -1,11 +1,12 @@
-package vidada.model.libraries;
+package vidada.model.media.store.libraries;
 
 import java.net.URI;
 import java.util.List;
 
 import vidada.data.SessionManager;
 import vidada.model.media.MediaItem;
-import vidada.model.media.source.MediaSource;
+import vidada.model.media.source.IMediaSource;
+import vidada.model.media.source.MediaSourceLocal;
 import archimedesJ.events.EventArgsG;
 import archimedesJ.events.EventHandlerEx;
 import archimedesJ.events.IEvent;
@@ -75,13 +76,14 @@ public class MediaLibraryService implements IMediaLibraryService {
 			ObjectContainer db =  SessionManager.getObjectContainer();
 
 
-
+			// find all local medias which have a source 
 			List<MediaItem> toDelete = db.query(new Predicate<MediaItem>() {
 				@Override
 				public boolean match(MediaItem media) {
-					for(MediaSource s : media.getSources())
+					for(IMediaSource s : media.getSources())
 					{
-						if(s.getParentLibrary() == lib);
+						if(((MediaSourceLocal)s).getParentLibrary() == lib)
+							return true;
 					}
 					return false;
 				}
@@ -90,9 +92,9 @@ public class MediaLibraryService implements IMediaLibraryService {
 			// first remove all Medias in this library
 
 			for (MediaItem mediaItem : toDelete) {
-				for(MediaSource s : Lists.newList(mediaItem.getSources()))
+				for(IMediaSource s : Lists.newList(mediaItem.getSources()))
 				{
-					if (s.getParentLibrary() == lib){
+					if (((MediaSourceLocal)s).getParentLibrary() == lib){
 						mediaItem.removeSource(s);
 						db.store(mediaItem);
 						db.delete(s);

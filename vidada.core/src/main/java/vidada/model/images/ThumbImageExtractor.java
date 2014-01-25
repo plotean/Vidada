@@ -7,7 +7,7 @@ import vidada.model.ServiceProvider;
 import vidada.model.media.MediaItem;
 import vidada.model.media.images.ImageMediaItem;
 import vidada.model.media.movies.MovieMediaItem;
-import vidada.model.media.source.MediaSource;
+import vidada.model.media.source.IMediaSource;
 import vidada.model.video.Video;
 import archimedesJ.exceptions.NotSupportedException;
 import archimedesJ.geometry.Size;
@@ -58,7 +58,7 @@ public class ThumbImageExtractor implements IThumbImageCreator {
 		IMemoryImage bufferedImage = null;
 
 
-		MediaSource source = media.getSource();
+		IMediaSource source = media.getSource();
 
 		ResourceLocation filePath = source.getResourceLocation();
 		if (filePath != null && filePath.exists()) {

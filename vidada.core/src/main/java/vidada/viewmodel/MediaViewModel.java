@@ -8,13 +8,17 @@ import vidada.model.ServiceProvider;
 import vidada.model.browser.BrowserMediaItem;
 import vidada.model.browser.IBrowserItem;
 import vidada.model.images.IImageService;
+import vidada.model.media.IMediaService;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaType;
+import vidada.model.media.source.IMediaSource;
+import vidada.model.system.ISystemService;
 import vidada.viewmodel.browser.BrowserItemVM;
 import archimedesJ.exceptions.NotSupportedException;
 import archimedesJ.geometry.Size;
 import archimedesJ.images.ImageContainer;
 import archimedesJ.images.LoadPriority;
+import archimedesJ.io.locations.ResourceLocation;
 
 /**
  * A simple view-model for a media item.
@@ -28,6 +32,9 @@ public class MediaViewModel extends BrowserItemVM {
 	private MediaItem mediaData;
 
 	private final IImageService imageService = ServiceProvider.Resolve(IImageService.class);
+	private final ISystemService systemService = ServiceProvider.Resolve(ISystemService.class);
+	private final IMediaService mediaService = ServiceProvider.Resolve(IMediaService.class);
+
 
 	public MediaViewModel(BrowserMediaItem mediaItem){
 		setModel(mediaItem);
@@ -50,8 +57,10 @@ public class MediaViewModel extends BrowserItemVM {
 
 
 	public void setRating(int selection) {
-		if(mediaData != null)
+		if(mediaData != null){
 			mediaData.setRating(selection);
+			mediaService.update(mediaData);
+		}
 	}
 
 
@@ -71,8 +80,10 @@ public class MediaViewModel extends BrowserItemVM {
 
 
 	public void setFileName(String text) {
-		if(mediaData != null)
+		if(mediaData != null){
 			mediaData.setFilename(text);
+			mediaService.update(mediaData);
+		}
 	}
 
 
@@ -122,8 +133,16 @@ public class MediaViewModel extends BrowserItemVM {
 
 	@Override
 	public boolean open(){
-		if(mediaData != null)
-			return mediaData.open();
+		if(mediaData != null){
+			IMediaSource source = mediaData.getSource();
+			if(source != null){
+				ResourceLocation resource = source.getResourceLocation();
+				if(systemService.open(resource)){
+					mediaData.setOpened(mediaData.getOpened() + 1);
+					mediaService.update(mediaData);
+				}
+			}
+		}
 		return false;
 	}
 

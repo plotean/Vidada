@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import vidada.model.media.MediaItem;
-import vidada.model.media.source.MediaSource;
+import vidada.model.media.source.IMediaSource;
 import vidada.model.tags.Tag;
 
 /**
@@ -60,7 +60,7 @@ public class TagGuessingFromFileStrategy implements ITagGuessingStrategy  {
 
 		Set<Tag> matchingTags = new HashSet<Tag>();
 
-		MediaSource source = media.getSource();
+		IMediaSource source = media.getSource();
 
 		String absolutePathString = source.getResourceLocation().toString().toLowerCase();
 

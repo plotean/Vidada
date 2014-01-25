@@ -14,7 +14,7 @@ import javax.swing.JTextArea;
 import javax.swing.border.EmptyBorder;
 
 import vidada.model.media.MediaItem;
-import vidada.model.media.source.MediaSource;
+import vidada.model.media.source.IMediaSource;
 import archimedesJ.util.FileSupport;
 
 import com.jgoodies.forms.factories.FormFactory;
@@ -111,7 +111,7 @@ public class MediaDetailDialog extends JDialog {
 
 		sb.append("----------" + FileSupport.NEWLINE);
 
-		for (MediaSource source : media.getSources()) {
+		for (IMediaSource source : media.getSources()) {
 			sb.append("source: " + source.toString() + " - avaiable: " + source.isAvailable() + FileSupport.NEWLINE);
 		}
 

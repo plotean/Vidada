@@ -156,7 +156,4 @@ public class DatabaseSettings extends BaseEntity{
 		this.playSoundDirectPlay = playSoundDirectPlay;
 		PlaySoundDirectPlayChanged.fireEvent(this, EventArgs.Empty);
 	}
-
-
-
 }
