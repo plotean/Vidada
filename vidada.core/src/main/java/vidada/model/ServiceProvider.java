@@ -14,6 +14,8 @@ import vidada.model.security.ICredentialManager;
 import vidada.model.security.IPrivacyService;
 import vidada.model.security.PrivacyService;
 import vidada.model.settings.GlobalSettings;
+import vidada.model.tags.ITagService;
+import vidada.model.tags.TagService;
 import archimedesJ.events.EventArgs;
 import archimedesJ.events.EventListenerEx;
 import archimedesJ.io.locations.DirectoryLocation;
@@ -98,7 +100,7 @@ public class ServiceProvider implements ILocator {
 		serviceLocator.registerSingleton(IPrivacyService.class, PrivacyService.class);
 		serviceLocator.registerSingleton(ISelectionService.class, SelectionService.class);
 		serviceLocator.registerSingleton(IMediaService.class, MediaService.class);
-		//serviceLocator.registerSingleton(ITagService.class, TagService.class);
+		serviceLocator.registerSingleton(ITagService.class, TagService.class);
 		serviceLocator.registerSingleton(IThumbnailService.class, ThumbnailService.class);
 		serviceLocator.registerSingleton(ICredentialManager.class, CredentialManager.class);
 		serviceLocator.registerSingleton(IMediaStoreService.class, MediaStoreService.class);

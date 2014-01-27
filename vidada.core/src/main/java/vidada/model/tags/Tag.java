@@ -1,5 +1,10 @@
 package vidada.model.tags;
 
+/**
+ * Represents a simple tag
+ * @author IsNull
+ *
+ */
 public class Tag  implements Comparable<Tag> {
 	private String name;
 

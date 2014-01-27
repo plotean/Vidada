@@ -26,6 +26,6 @@ public class ImageLoaderTask implements Callable<IMemoryImage>
 
 	@Override
 	public IMemoryImage call() throws Exception {
-		return mediaStore.GetThumbImage(media, size);
+		return mediaStore.getThumbImage(media, size);
 	}
 }

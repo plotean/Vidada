@@ -2,8 +2,8 @@ package vidada.model.tags.autoTag;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import vidada.model.media.MediaItem;
@@ -23,13 +23,13 @@ public class KeywordBasedTagGuesser  implements ITagGuessingStrategy {
 	private static String splitRegEx = "\\W|_";	
 	private static String splitPathRegex = "/|\\\\";
 
-	private List<Tag> tags;
+	private Collection<Tag> tags;
 
 	/**
 	 * Creates a new 
 	 * @param tagService
 	 */
-	public KeywordBasedTagGuesser(List<Tag> tags){
+	public KeywordBasedTagGuesser(Collection<Tag> tags){
 		this.tags = tags;
 		System.out.println("KeywordBasedTagGuesser using tag-set:");
 		Debug.printAll(tags);

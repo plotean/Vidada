@@ -14,9 +14,6 @@ import javax.swing.JProgressBar;
 import javax.swing.SwingWorker;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-import vidada.model.ServiceProvider;
-import vidada.model.media.IMediaService;
-import vidada.model.tags.ITagService;
 import archimedesJ.threading.IProgressListener;
 import archimedesJ.threading.ProgressEventArgs;
 
@@ -28,8 +25,8 @@ import com.jgoodies.forms.layout.RowSpec;
 @SuppressWarnings("serial")
 public class AutoTagPanel extends JPanel{
 
-	private final IMediaService mediaDataService = ServiceProvider.Resolve(IMediaService.class);
-	private final ITagService tagService = ServiceProvider.Resolve(ITagService.class);
+	// private final IMediaService mediaDataService = ServiceProvider.Resolve(IMediaService.class);
+	// private final ITagService tagService = ServiceProvider.Resolve(ITagService.class);
 
 	private Action autoApplyTagsAction;
 

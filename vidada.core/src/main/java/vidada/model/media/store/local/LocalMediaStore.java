@@ -20,6 +20,9 @@ import vidada.model.media.store.IMediaStore;
 import vidada.model.media.store.libraries.IMediaLibraryService;
 import vidada.model.media.store.libraries.MediaLibrary;
 import vidada.model.media.store.libraries.MediaLibraryService;
+import vidada.model.tags.ILocalTagService;
+import vidada.model.tags.LocalTagService;
+import vidada.model.tags.Tag;
 import archimedesJ.exceptions.NotSupportedException;
 import archimedesJ.geometry.Size;
 import archimedesJ.images.IMemoryImage;
@@ -43,6 +46,7 @@ public class LocalMediaStore implements IMediaStore {
 
 	transient private final MediaRepository mediaRepository = new MediaRepository();
 	transient private final IMediaLibraryService libraryService = new MediaLibraryService();
+	transient private final ILocalTagService localTagService = new LocalTagService();
 
 
 	public void store(MediaItem media) {
@@ -80,21 +84,26 @@ public class LocalMediaStore implements IMediaStore {
 
 
 	@Override
-	public IMemoryImage GetThumbImage(MediaItem media, Size size) {
+	public IMemoryImage getThumbImage(MediaItem media, Size size) {
 		IMemoryImage thumb = null;
 
 		IImageCache imagecache = localImageCacheManager.getImageCache(media);
-		try {
-			thumb = localThumbFetcher.fetchThumb(media, size, imagecache);
-		} catch (Exception e) {
-			e.printStackTrace();
+
+		if(imagecache != null){
+			try {
+				thumb = localThumbFetcher.fetchThumb(media, size, imagecache);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}else{
+			System.err.println("LocalMediaStore: can not get image cache for " + media);
 		}
 
 		return thumb;
 	}
 
 	@Override
-	public IMemoryImage RenewThumbImage(MovieMediaItem media, Size size, float pos) {
+	public IMemoryImage renewThumbImage(MovieMediaItem media, Size size, float pos) {
 
 		IMemoryImage thumb = null;
 
@@ -112,6 +121,12 @@ public class LocalMediaStore implements IMediaStore {
 
 		return thumb;
 	}
+
+	@Override
+	public Collection<Tag> getAllUsedTags() {
+		return getTagManager().getAllTags();
+	}
+
 
 	@Override
 	public void synchronize() {
@@ -135,6 +150,10 @@ public class LocalMediaStore implements IMediaStore {
 
 	public IMediaLibraryService getLibraryManager(){
 		return libraryService;
+	}
+
+	public ILocalTagService getTagManager(){
+		return localTagService ;
 	}
 
 
@@ -267,6 +286,8 @@ public class LocalMediaStore implements IMediaStore {
 
 		return mediaData;
 	}
+
+
 
 
 

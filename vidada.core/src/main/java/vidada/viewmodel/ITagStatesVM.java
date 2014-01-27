@@ -1,6 +1,6 @@
 package vidada.viewmodel;
 
-import java.util.List;
+import java.util.Collection;
 
 import vidada.model.tags.Tag;
 
@@ -20,7 +20,7 @@ public interface ITagStatesVM extends ITagStatesVMProvider {
 	 * Adds all tags to the model
 	 * @param newtags
 	 */
-	public abstract void addAll(List<Tag> newtags);
+	public abstract void addAll(Collection<Tag> newtags);
 
 	/**
 	 * Add the given tag to this model

@@ -5,6 +5,7 @@ import java.util.Collection;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaQuery;
 import vidada.model.media.movies.MovieMediaItem;
+import vidada.model.tags.Tag;
 import archimedesJ.geometry.Size;
 import archimedesJ.images.IMemoryImage;
 
@@ -49,7 +50,7 @@ public interface IMediaStore {
 	 * @param size
 	 * @return
 	 */
-	public IMemoryImage GetThumbImage(MediaItem media, Size size);
+	public IMemoryImage getThumbImage(MediaItem media, Size size);
 
 	/**
 	 * Renews the thumbnail of the given media from position pos and returns the new thumbnail.
@@ -59,8 +60,14 @@ public interface IMediaStore {
 	 * @param pos
 	 * @return
 	 */
-	public IMemoryImage RenewThumbImage(MovieMediaItem media, Size size, float pos);
+	public IMemoryImage renewThumbImage(MovieMediaItem media, Size size, float pos);
 
+
+	/**
+	 * Gets all tags used in this store
+	 * @return
+	 */
+	public Collection<Tag> getAllUsedTags();
 
 
 	/**

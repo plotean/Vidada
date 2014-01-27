@@ -11,14 +11,13 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import vidada.data.db4o.SessionManagerDB4O;
-import vidada.model.ServiceProvider;
 import vidada.model.media.MediaHashUtil;
 import vidada.model.media.MediaItem;
 import vidada.model.media.source.IMediaSource;
 import vidada.model.media.source.MediaSourceLocal;
 import vidada.model.media.store.libraries.IMediaLibraryService;
 import vidada.model.media.store.libraries.MediaLibrary;
-import vidada.model.tags.ITagService;
+import vidada.model.tags.ILocalTagService;
 import vidada.model.tags.autoTag.AutoTagSupport;
 import vidada.model.tags.autoTag.ITagGuessingStrategy;
 import archimedesJ.io.locations.ResourceLocation;
@@ -37,15 +36,16 @@ import com.db4o.query.Query;
 public class MediaImportService implements IMediaImportStrategy {
 
 	private final LocalMediaStore localStore;
-	private final IMediaLibraryService libraryService;
-	private final ITagService tagService = ServiceProvider.Resolve(ITagService.class);
+	private final IMediaLibraryService libraryManager;
+	private final ILocalTagService localTagManager;
 
 	private MediaHashUtil mediaHashUtil;
 	private ITagGuessingStrategy tagguesser;
 
 	public MediaImportService(LocalMediaStore mediaService){
 		this.localStore = mediaService;
-		libraryService = localStore.getLibraryManager();
+		libraryManager = localStore.getLibraryManager();
+		localTagManager = localStore.getTagManager();
 	}
 
 	@Override
@@ -53,15 +53,15 @@ public class MediaImportService implements IMediaImportStrategy {
 
 		mediaHashUtil =  MediaHashUtil.getDefaultMediaHashUtil();
 
-		if(!tagService.getAllTags().isEmpty()){
-			tagguesser = tagService.createTagGuesser();
+		if(!localTagManager.getAllTags().isEmpty()){
+			tagguesser = localTagManager.createTagGuesser();
 		}else {
 			System.err.println("There are no tags, AutoTag not possible");
 		}
 
 		progressListener.currentProgress(new ProgressEventArgs(true, "Searching for all media files in your libraries."));
 
-		for (MediaLibrary lib : libraryService.getAllLibraries()) {
+		for (MediaLibrary lib : libraryManager.getAllLibraries()) {
 			if(lib.isAvailable())
 			{
 				scanAndUpdateLibrary(progressListener, lib);

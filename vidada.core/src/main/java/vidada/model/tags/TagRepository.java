@@ -22,13 +22,13 @@ public class TagRepository  {
 
 	private MediaRepository mediaRepository = new MediaRepository();
 
-	public void addTag(Tag newTag){
+	public void store(Tag newTag){
 		ObjectContainer db = SessionManagerDB4O.getObjectContainer();
 		db.store( newTag );
 		db.commit();
 	}
 
-	public void addTags(Set<Tag> newTags){
+	public void store(Set<Tag> newTags){
 
 		ObjectContainer db = SessionManagerDB4O.getObjectContainer();
 		for (Tag tag : newTags) {
@@ -37,7 +37,7 @@ public class TagRepository  {
 		db.commit();
 	}
 
-	public void removeTag(Tag tag){
+	public void delete(Tag tag){
 
 		ObjectContainer db = SessionManagerDB4O.getObjectContainer();
 		{
