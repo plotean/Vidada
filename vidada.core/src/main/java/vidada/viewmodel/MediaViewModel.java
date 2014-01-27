@@ -7,7 +7,7 @@ import org.joda.time.format.DateTimeFormat;
 import vidada.model.ServiceProvider;
 import vidada.model.browser.BrowserMediaItem;
 import vidada.model.browser.IBrowserItem;
-import vidada.model.images.IImageService;
+import vidada.model.images.IThumbnailService;
 import vidada.model.media.IMediaService;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaType;
@@ -31,7 +31,7 @@ public class MediaViewModel extends BrowserItemVM {
 	private WeakReference<ImageContainer> imageContainerRef;
 	private MediaItem mediaData;
 
-	private final IImageService imageService = ServiceProvider.Resolve(IImageService.class);
+	private final IThumbnailService imageService = ServiceProvider.Resolve(IThumbnailService.class);
 	private final ISystemService systemService = ServiceProvider.Resolve(ISystemService.class);
 	private final IMediaService mediaService = ServiceProvider.Resolve(IMediaService.class);
 
@@ -122,7 +122,11 @@ public class MediaViewModel extends BrowserItemVM {
 	public ImageContainer getThumbnail(int widthPxl, int heightPxl){
 		ImageContainer imageContainer = null;
 		if(mediaData != null){
-			imageContainer = mediaData.getThumbnail(imageService, new Size(widthPxl, heightPxl));
+
+			imageContainer = imageService.retrieveThumbnail(
+					mediaData,
+					new Size(widthPxl, heightPxl));
+
 			imageContainerRef = new WeakReference<ImageContainer>(imageContainer);
 		}else{
 			imageContainerRef = null;
@@ -170,6 +174,5 @@ public class MediaViewModel extends BrowserItemVM {
 			}
 		}
 	}
-
 
 }

@@ -2,7 +2,7 @@ package vidada.model.user;
 
 import java.util.List;
 
-import vidada.data.SessionManager;
+import vidada.data.db4o.SessionManagerDB4O;
 import vidada.model.entities.BaseEntity;
 import archimedesJ.util.EnvironmentIdentifier;
 import archimedesJ.util.OSValidator;
@@ -29,7 +29,7 @@ public class User extends BaseEntity {
 			//
 			final String username = System.getProperty("user.name") + "@" + getMachineId();
 
-			ObjectContainer db = SessionManager.getObjectContainer();
+			ObjectContainer db = SessionManagerDB4O.getObjectContainer();
 
 			List<User> users = db.query(new Predicate<User>()  {
 				@Override

@@ -3,7 +3,7 @@ package vidada.model.media.store.libraries;
 import java.net.URI;
 import java.util.List;
 
-import vidada.data.SessionManager;
+import vidada.data.db4o.SessionManagerDB4O;
 import vidada.model.media.MediaItem;
 import vidada.model.media.source.IMediaSource;
 import vidada.model.media.source.MediaSourceLocal;
@@ -40,7 +40,7 @@ public class MediaLibraryService implements IMediaLibraryService {
 	 */
 	@Override
 	public List<MediaLibrary> getAllLibraries(){
-		ObjectContainer db =  SessionManager.getObjectContainer();
+		ObjectContainer db =  SessionManagerDB4O.getObjectContainer();
 		{
 			Query query = db.query();
 			query.constrain(MediaLibrary.class);
@@ -61,7 +61,7 @@ public class MediaLibraryService implements IMediaLibraryService {
 	 */
 	@Override
 	public void addLibrary(MediaLibrary lib){
-		ObjectContainer db =  SessionManager.getObjectContainer();
+		ObjectContainer db =  SessionManagerDB4O.getObjectContainer();
 		db.store( lib );
 		libraryAddedEvent.fireEvent(this, EventArgsG.build(lib));
 	}
@@ -73,7 +73,7 @@ public class MediaLibraryService implements IMediaLibraryService {
 		try{
 			System.out.println("removing MediaLibrary " + lib + " from Database...");
 
-			ObjectContainer db =  SessionManager.getObjectContainer();
+			ObjectContainer db =  SessionManagerDB4O.getObjectContainer();
 
 
 			// find all local medias which have a source 
@@ -116,7 +116,7 @@ public class MediaLibraryService implements IMediaLibraryService {
 
 	@Override
 	public void update(MediaLibrary lib) {
-		ObjectContainer db =  SessionManager.getObjectContainer();
+		ObjectContainer db =  SessionManagerDB4O.getObjectContainer();
 		db.store( lib );
 	}
 
@@ -136,7 +136,7 @@ public class MediaLibraryService implements IMediaLibraryService {
 
 	@Override
 	public MediaLibrary getById(long id) {
-		return Db4oUtil.getById(SessionManager.getObjectContainer(), id);
+		return Db4oUtil.getById(SessionManagerDB4O.getObjectContainer(), id);
 	}
 
 

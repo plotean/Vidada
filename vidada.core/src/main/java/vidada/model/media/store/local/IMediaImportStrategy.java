@@ -3,7 +3,7 @@ package vidada.model.media.store.local;
 import vidada.model.media.store.libraries.MediaLibrary;
 import archimedesJ.threading.IProgressListener;
 
-public interface IMediaImportService {
+public interface IMediaImportStrategy {
 
 	/**
 	 * Scans all existing media libraries and updates the media files

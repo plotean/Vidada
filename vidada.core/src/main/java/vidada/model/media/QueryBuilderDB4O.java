@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import vidada.data.SessionManager;
+import vidada.data.db4o.SessionManagerDB4O;
 import vidada.model.ServiceProvider;
 import vidada.model.tags.ITagService;
 import vidada.model.tags.Tag;
@@ -65,7 +65,7 @@ class QueryBuilderDB4O {
 		// build the query
 		//
 
-		Query q = SessionManager.getObjectContainer().query();
+		Query q = SessionManagerDB4O.getObjectContainer().query();
 		q.constrain(MediaItem.class);
 
 		// Limit results to requested media types:
@@ -152,8 +152,8 @@ class QueryBuilderDB4O {
 	 * @param tag
 	 * @return
 	 */
-	public static Query buildMediadataCriteria(Tag tag){
-		ObjectContainer db = SessionManager.getObjectContainer();
+	public Query buildMediadataCriteria(Tag tag){
+		ObjectContainer db = SessionManagerDB4O.getObjectContainer();
 
 		Query query = db.query();
 		query.constrain(MediaItem.class);

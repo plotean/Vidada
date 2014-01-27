@@ -1,4 +1,4 @@
-package vidada.data;
+package vidada.data.db4o;
 
 /**
  * THis exception is thrown when the Entity Manager (EM) Factory

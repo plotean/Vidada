@@ -34,6 +34,7 @@ import javax.swing.event.ListSelectionListener;
 
 import vidada.commands.AddNewMediaLibraryAction;
 import vidada.model.ServiceProvider;
+import vidada.model.media.IMediaService;
 import vidada.model.media.store.libraries.IMediaLibraryService;
 import vidada.model.media.store.libraries.MediaLibrary;
 import vidada.views.ImageResources;
@@ -52,7 +53,7 @@ public class ManageLibraryFoldersDialog extends JDialog {
 	private JList listAllLibraries;
 	private FileChooserPanel txtCurrentPath;
 
-	private IMediaLibraryService libService = ServiceProvider.Resolve(IMediaLibraryService.class);
+	private IMediaLibraryService libService = ServiceProvider.Resolve(IMediaService.class).getLocalMediaStore().getLibraryManager();
 
 	private DefaultListModel allLibrariesModel = new DefaultListModel();
 

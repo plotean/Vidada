@@ -3,7 +3,8 @@ package vidada.model.media;
 import java.util.Collection;
 import java.util.List;
 
-import vidada.data.SessionManager;
+import vidada.data.db4o.SessionManagerDB4O;
+import vidada.model.tags.Tag;
 import archimedesJ.util.Debug;
 import archimedesJ.util.Lists;
 import archimedesJ.util.Objects;
@@ -38,7 +39,7 @@ public class MediaRepository {
 
 	public void store(Iterable<MediaItem> mediadatas){
 
-		ObjectContainer db =  SessionManager.getObjectContainer();
+		ObjectContainer db =  SessionManagerDB4O.getObjectContainer();
 		try{
 
 			for (MediaItem md : mediadatas) {
@@ -58,8 +59,7 @@ public class MediaRepository {
 
 
 	public void delete(Iterable<MediaItem> mediadatas){
-
-		ObjectContainer db =  SessionManager.getObjectContainer();
+		ObjectContainer db =  SessionManagerDB4O.getObjectContainer();
 		{
 			for (MediaItem md : mediadatas) {
 				db.delete(md);
@@ -70,7 +70,7 @@ public class MediaRepository {
 
 
 	public List<MediaItem> getAllMediaData() {
-		ObjectContainer db =  SessionManager.getObjectContainer();
+		ObjectContainer db =  SessionManagerDB4O.getObjectContainer();
 		Query query = db.query();
 		query.constrain(MediaItem.class);
 
@@ -83,7 +83,7 @@ public class MediaRepository {
 	}
 
 	public void update(Iterable<MediaItem> mediadatas) {
-		ObjectContainer db =  SessionManager.getObjectContainer();
+		ObjectContainer db =  SessionManagerDB4O.getObjectContainer();
 		for (MediaItem mediaData : mediadatas) {
 			db.store(mediaData);
 		}
@@ -92,12 +92,17 @@ public class MediaRepository {
 
 
 	public void removeAll() {
-		ObjectContainer db =  SessionManager.getObjectContainer();
+		ObjectContainer db =  SessionManagerDB4O.getObjectContainer();
 
 		for (MediaItem md : getAllMediaData()) {
 			db.delete(md);
 		}
 		db.commit();
+	}
+
+	public Collection<MediaItem> findMediaItems(Tag tag){
+		Query qry = queryBuilderDB4O.buildMediadataCriteria(tag);
+		return qry.execute();
 	}
 
 	/**
@@ -109,7 +114,7 @@ public class MediaRepository {
 
 		MediaItem mediaData = null;
 
-		ObjectContainer db =  SessionManager.getObjectContainer();
+		ObjectContainer db =  SessionManagerDB4O.getObjectContainer();
 
 
 		List<MediaItem> medias = db.query(new Predicate<MediaItem>() {

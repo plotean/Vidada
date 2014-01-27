@@ -3,7 +3,7 @@ package vidada;
 import java.io.File;
 import java.util.List;
 
-import vidada.data.SessionManager;
+import vidada.data.db4o.SessionManagerDB4O;
 import vidada.model.media.store.libraries.LibraryEntry;
 import vidada.model.media.store.libraries.MediaLibrary;
 import vidada.model.user.User;
@@ -17,7 +17,7 @@ public class TestDB {
 
 		File dbPath = new File("/Users/IsNull/Documents/test.db");
 
-		ObjectContainer db = SessionManager.createObjectContainer(dbPath);
+		ObjectContainer db = SessionManagerDB4O.createObjectContainer(dbPath);
 		{
 			User testUser = new User("Blub");
 			MediaLibrary library = new MediaLibrary();
@@ -32,7 +32,7 @@ public class TestDB {
 		}db.close();
 
 
-		db = SessionManager.createObjectContainer(dbPath);
+		db = SessionManagerDB4O.createObjectContainer(dbPath);
 		{
 
 

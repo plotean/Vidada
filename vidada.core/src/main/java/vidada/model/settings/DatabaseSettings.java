@@ -1,18 +1,13 @@
 package vidada.model.settings;
 
 
-import java.util.List;
-
-import vidada.data.SessionManager;
+import vidada.data.ISingleEntityRepository;
+import vidada.data.db4o.SingleEntityRepositoryDb4o;
 import vidada.model.entities.BaseEntity;
 import archimedesJ.crypto.KeyPad;
 import archimedesJ.events.EventArgs;
 import archimedesJ.events.EventHandlerEx;
 import archimedesJ.events.IEvent;
-import archimedesJ.exceptions.NotSupportedException;
-
-import com.db4o.ObjectContainer;
-import com.db4o.query.Query;
 
 /**
  * Holds database specific settings. 
@@ -23,8 +18,16 @@ import com.db4o.query.Query;
  */
 public class DatabaseSettings extends BaseEntity{
 
-
-	private static DatabaseSettings settings;
+	transient private final static ISingleEntityRepository<DatabaseSettings> repository =
+			new SingleEntityRepositoryDb4o<DatabaseSettings>(DatabaseSettings.class){
+		@Override
+		protected DatabaseSettings createDefault() {
+			DatabaseSettings setting = new DatabaseSettings();
+			setting.setIgnoreImages(false);
+			setting.setNewDatabase(true);
+			return setting;
+		}
+	};
 
 	private transient EventHandlerEx<EventArgs> PlaySoundDirectPlayChanged = new EventHandlerEx<EventArgs>();
 
@@ -35,51 +38,15 @@ public class DatabaseSettings extends BaseEntity{
 	 * @return
 	 */
 	public synchronized static DatabaseSettings getSettings(){
-		if(settings == null){
-			settings = fetchSettings();
-		}
-		return settings; 
+		return repository.get(); 
 	}
 
-	private synchronized static DatabaseSettings fetchSettings(){
-
-		DatabaseSettings setting = null;
-
-		ObjectContainer db = SessionManager.getObjectContainer();
-
-		Query query = db.query();
-		query.constrain(DatabaseSettings.class);
-		List<DatabaseSettings> settings = query.execute();
-
-
-		if(settings.isEmpty())
-		{
-			System.out.println("defalt settings created.");
-			setting = getDefaultSettings();
-			db.store(setting);
-		}else{
-			setting = settings.get(0);
-		}
-
-		if(setting == null)
-			throw new NotSupportedException("DatabaseSettings could not be loaded");
-
-		return setting; 
-	}
-
-	private static DatabaseSettings getDefaultSettings(){
-		DatabaseSettings setting = new DatabaseSettings();
-		setting.setIgnoreImages(false);
-		setting.setNewDatabase(true);
-		return setting;
-	}
 
 	/**
 	 * Persist the current changes
 	 */
 	public void persist(){
-		ObjectContainer db =	SessionManager.getObjectContainer();
-		db.store(this);
+		repository.update(this);
 	}
 
 

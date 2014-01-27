@@ -3,9 +3,9 @@ package vidada.model.media.store.local;
 import java.net.URI;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
-import vidada.data.SessionManager;
+import vidada.data.db4o.SessionManagerDB4O;
+import vidada.model.images.cache.IImageCache;
 import vidada.model.media.MediaFileInfo;
 import vidada.model.media.MediaHashUtil;
 import vidada.model.media.MediaItem;
@@ -21,6 +21,8 @@ import vidada.model.media.store.libraries.IMediaLibraryService;
 import vidada.model.media.store.libraries.MediaLibrary;
 import vidada.model.media.store.libraries.MediaLibraryService;
 import archimedesJ.exceptions.NotSupportedException;
+import archimedesJ.geometry.Size;
+import archimedesJ.images.IMemoryImage;
 import archimedesJ.io.locations.ResourceLocation;
 
 import com.db4o.ObjectContainer;
@@ -34,7 +36,10 @@ import com.db4o.query.Predicate;
  */
 public class LocalMediaStore implements IMediaStore {
 
-	private final String name = "local-store"; 
+	public static final String Name = "local.store"; 
+
+	transient private final LocalThumbFetcher localThumbFetcher = new LocalThumbFetcher();
+	transient private final LocalImageCacheManager localImageCacheManager = new LocalImageCacheManager();
 
 	transient private final MediaRepository mediaRepository = new MediaRepository();
 	transient private final IMediaLibraryService libraryService = new MediaLibraryService();
@@ -54,6 +59,11 @@ public class LocalMediaStore implements IMediaStore {
 	//
 
 	@Override
+	public String getNameId() {
+		return Name;
+	}
+
+	@Override
 	public void update(MediaItem media) {
 		mediaRepository.update(media);
 	}
@@ -64,24 +74,43 @@ public class LocalMediaStore implements IMediaStore {
 	}
 
 	@Override
-	public void delete(MediaItem media) {
-		mediaRepository.delete(media);
+	public Collection<MediaItem> query(MediaQuery qry) {
+		return mediaRepository.query(qry);
+	}
+
+
+	@Override
+	public IMemoryImage GetThumbImage(MediaItem media, Size size) {
+		IMemoryImage thumb = null;
+
+		IImageCache imagecache = localImageCacheManager.getImageCache(media);
+		try {
+			thumb = localThumbFetcher.fetchThumb(media, size, imagecache);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return thumb;
 	}
 
 	@Override
-	public void delete(Collection<MediaItem> media) {
-		mediaRepository.delete(media);
-	}
+	public IMemoryImage RenewThumbImage(MovieMediaItem media, Size size, float pos) {
 
-	@Override
-	public Set<MediaItem> query(MediaQuery qry) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+		IMemoryImage thumb = null;
 
-	@Override
-	public String getNameId() {
-		return name;
+		IImageCache imagecache = localImageCacheManager.getImageCache(media);
+
+		try {
+			media.setPreferredThumbPosition(MovieMediaItem.INVALID_POSITION);
+			media.setCurrentThumbPosition(MovieMediaItem.INVALID_POSITION);
+
+			imagecache.removeImage(media.getFilehash());
+			thumb = localThumbFetcher.fetchThumb(media, size, imagecache);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return thumb;
 	}
 
 	@Override
@@ -96,7 +125,15 @@ public class LocalMediaStore implements IMediaStore {
 	//
 
 
-	public IMediaLibraryService getMediaLibraryManager(){
+	public void delete(MediaItem media) {
+		mediaRepository.delete(media);
+	}
+
+	public void delete(Collection<MediaItem> media) {
+		mediaRepository.delete(media);
+	}
+
+	public IMediaLibraryService getLibraryManager(){
 		return libraryService;
 	}
 
@@ -151,7 +188,6 @@ public class LocalMediaStore implements IMediaStore {
 	}
 
 
-
 	/**
 	 * 
 	 * @param resource
@@ -200,7 +236,7 @@ public class LocalMediaStore implements IMediaStore {
 	private MediaItem findMediaInLibrary(ResourceLocation file, MediaLibrary library){
 		MediaItem mediaData = null;
 
-		ObjectContainer db =  SessionManager.getObjectContainer();
+		ObjectContainer db =  SessionManagerDB4O.getObjectContainer();
 
 		if(library != null)
 		{
@@ -231,6 +267,10 @@ public class LocalMediaStore implements IMediaStore {
 
 		return mediaData;
 	}
+
+
+
+
 
 
 

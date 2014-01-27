@@ -6,7 +6,10 @@ import archimedesJ.geometry.Size;
 import archimedesJ.images.IMemoryImage;
 
 /**
- * Represents an image cache
+ * Represents an image cache.
+ * 
+ * Each image is identified by its unique id AND the size.
+ * 
  * @author IsNull
  *
  */

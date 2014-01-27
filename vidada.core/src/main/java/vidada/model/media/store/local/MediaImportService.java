@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import vidada.data.SessionManager;
+import vidada.data.db4o.SessionManagerDB4O;
 import vidada.model.ServiceProvider;
 import vidada.model.media.MediaHashUtil;
 import vidada.model.media.MediaItem;
@@ -34,7 +34,7 @@ import com.db4o.query.Query;
  * @author IsNull
  *
  */
-public class MediaImportService implements IMediaImportService {
+public class MediaImportService implements IMediaImportStrategy {
 
 	private final LocalMediaStore localStore;
 	private final IMediaLibraryService libraryService;
@@ -45,7 +45,7 @@ public class MediaImportService implements IMediaImportService {
 
 	public MediaImportService(LocalMediaStore mediaService){
 		this.localStore = mediaService;
-		libraryService = localStore.getMediaLibraryManager();
+		libraryService = localStore.getLibraryManager();
 	}
 
 	@Override
@@ -144,7 +144,7 @@ public class MediaImportService implements IMediaImportService {
 
 		Map<String, MediaItem> existingMediaData = new HashMap<String, MediaItem>();
 
-		ObjectContainer db =  SessionManager.getObjectContainer();
+		ObjectContainer db =  SessionManagerDB4O.getObjectContainer();
 		{
 			Query query = db.query();
 			query.constrain(MediaItem.class);

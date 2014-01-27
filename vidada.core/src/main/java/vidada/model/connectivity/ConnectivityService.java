@@ -1,25 +1,5 @@
 package vidada.model.connectivity;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import vidada.model.ServiceProvider;
-import vidada.model.media.IMediaService;
-import vidada.model.media.MediaItem;
-import vidada.model.media.movies.MovieMediaItem;
-import vidada.model.tags.Tag;
-import vidada.model.tags.TagLookUpCache;
-import archimedesJ.util.FileSupport;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 
 /**
  * Holds some basic media data exchange functionality
@@ -27,14 +7,13 @@ import com.google.gson.reflect.TypeToken;
  * 
  * @author IsNull
  *
- */
+
 public class ConnectivityService implements IConnectivityService {
 
 	private IMediaService mediaService = ServiceProvider.Resolve(IMediaService.class);
 
-	/**
-	 * Create missing Tags on media info import?
-	 */
+
+	// Create missing Tags on media info import? 
 	private boolean createMissingTags = true;
 
 
@@ -114,7 +93,7 @@ public class ConnectivityService implements IConnectivityService {
 		List<Tag> potentialTags = new ArrayList<Tag>();
 
 		for (String tagInfo : newInfo.Tags) {
-			Tag tag = taglookup.findTagByName(tagInfo, /*search in keywords*/ true);
+			Tag tag = taglookup.findTagByName(tagInfo,  true);  // search in keywords
 
 			if(tag == null && createMissingTags)
 			{
@@ -164,6 +143,5 @@ public class ConnectivityService implements IConnectivityService {
 		return dtos;
 	}
 
-
-
 }
+ */

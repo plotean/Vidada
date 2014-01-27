@@ -18,7 +18,6 @@ import org.controlsfx.dialog.Dialogs;
 
 import vidada.commands.UpdateMediaLibraryAction;
 import vidada.views.dialoges.ManageLibraryFoldersDialog;
-import vidada.views.dialoges.ManageTagsDialog;
 import vidada.views.dialoges.SettingsDialog;
 import vidada.viewsFX.ImageResources.IconType;
 import vidada.viewsFX.dialoges.SynchronizeDialog;
@@ -102,9 +101,7 @@ public class VidadaToolBar extends ToolBar{
 						EventQueue.invokeLater(new Runnable() {
 							@Override
 							public void run() {
-								ManageTagsDialog manageTagsDialog = new ManageTagsDialog();
-								manageTagsDialog.setLocationRelativeTo(null);
-								manageTagsDialog.setVisible(true);
+								System.err.println("Not implemented!");
 							}
 						});
 					}

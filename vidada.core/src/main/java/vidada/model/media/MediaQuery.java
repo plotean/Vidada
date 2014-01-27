@@ -2,6 +2,7 @@ package vidada.model.media;
 
 import java.util.List;
 
+import vidada.model.queries.AbstractQuery;
 import vidada.model.tags.Tag;
 
 /**
@@ -11,7 +12,13 @@ import vidada.model.tags.Tag;
  * @author IsNull
  *
  */
-public class MediaQuery {
+public class MediaQuery extends AbstractQuery<MediaItem>{
+
+	/**
+	 * Represents a query which will match all entities
+	 */
+	public static final MediaQuery ALL = new MediaQuery(AbstractQuery.QueryType.All);
+
 
 	private MediaType selectedtype;
 	private String keywords;
@@ -22,9 +29,7 @@ public class MediaQuery {
 	private boolean reverseOrder;
 
 
-	public MediaQuery() {
 
-	}
 
 	/**
 	 * Creates a media query with the following 
@@ -40,7 +45,7 @@ public class MediaQuery {
 			OrderProperty selectedOrder, List<Tag> requiredTags,
 			List<Tag> blockedTags, boolean onlyAvailable,
 			boolean reverseOrder) {
-		super();
+		this(AbstractQuery.QueryType.Query);
 		this.selectedtype = selectedtype;
 		this.keywords = keywords;
 		this.selectedOrder = selectedOrder;
@@ -48,6 +53,10 @@ public class MediaQuery {
 		this.blockedTags = blockedTags;
 		this.setOnlyAvailable(onlyAvailable);
 		this.reverseOrder = reverseOrder;
+	}
+
+	protected MediaQuery(AbstractQuery.QueryType type) {
+		super(type, MediaItem.class);
 	}
 
 

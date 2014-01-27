@@ -9,7 +9,6 @@ import java.util.Set;
 import vidada.model.media.MediaItem;
 import vidada.model.media.source.IMediaSource;
 import vidada.model.tags.Tag;
-import vidada.model.tags.TagKeyoword;
 import archimedesJ.exceptions.NotSupportedException;
 import archimedesJ.util.Debug;
 import archimedesJ.util.Lists;
@@ -37,15 +36,16 @@ public class KeywordBasedTagGuesser  implements ITagGuessingStrategy {
 
 		if(tags.isEmpty())
 			throw new NotSupportedException("tags: KeywordBasedTagGuesser needs at least one tag in the search set.");
-
 	}
 
 	@Override
 	public Set<Tag> guessTags(MediaItem media) {
 		Set<Tag> matchingTags = new HashSet<Tag>();
 
+		final String[] possibleTags = getPossibleTagStrings(media);
+
 		for (Tag tag : tags) {
-			if(doesMediaMatchTag(media, tag)){
+			if(isTagMatch(possibleTags, tag)){
 				//System.out.println("media " + media + " --> matches Tag: " + tag);
 				matchingTags.add(tag);
 			}
@@ -54,10 +54,18 @@ public class KeywordBasedTagGuesser  implements ITagGuessingStrategy {
 		return matchingTags;
 	}
 
-	private boolean doesMediaMatchTag(MediaItem media, Tag tag){
+	private boolean isTagMatch(String[] possibleTags, Tag tag){
+		for (int i = 0; i < possibleTags.length; i++) {
+			if(tag.getName().equals(possibleTags[i]))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
 
+	private String[] getPossibleTagStrings(MediaItem media){
 		IMediaSource source = media.getSource();
-
 
 		// TODO Optimize / cache tokens
 
@@ -69,8 +77,6 @@ public class KeywordBasedTagGuesser  implements ITagGuessingStrategy {
 		}
 		String absolutePathString = path.toLowerCase();
 
-		//System.out.println("path: " + absolutePathString);
-
 		//split the path in single tokens
 		String[] tokens = absolutePathString.split(splitRegEx);
 		//split the path in node tokens
@@ -78,21 +84,7 @@ public class KeywordBasedTagGuesser  implements ITagGuessingStrategy {
 		//combine the tokens to provide one single source file
 		String [] combinedTokens = Lists.concat(tokens, pathTokens);
 
-		//Debug.printAll("combinedTokens:", combinedTokens);
-
-		for (TagKeyoword keyword : tag.getKeyWords()) {
-			for (int i = 0; i < combinedTokens.length; i++) {
-				if(keyword.isMatch(combinedTokens[i]))
-				{
-					return true;
-				}
-			}
-		}
-
-
-		return false;
+		return combinedTokens;
 	}
-
-
 
 }

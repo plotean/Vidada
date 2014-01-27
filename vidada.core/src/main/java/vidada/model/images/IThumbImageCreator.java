@@ -6,9 +6,16 @@ import archimedesJ.images.IMemoryImage;
 
 public interface IThumbImageCreator {
 
+	/**
+	 * Is it possible to extract a thumb for the given media?
+	 * @param media
+	 * @return
+	 */
 	public abstract boolean canExtractThumb(MediaItem media);
 
 	/**
+	 * Extract a thumb from the given media in the specified size
+	 *
 	 * 
 	 * @param media
 	 * @param size

@@ -14,7 +14,7 @@ import archimedesJ.services.IService;
  * @author IsNull
  *
  */
-public interface ITagService extends IService{
+public interface ITagService extends IService {
 
 	/**
 	 * Raised when one or more Tags have been changed
@@ -87,14 +87,6 @@ public interface ITagService extends IService{
 	 */
 	public abstract ITagGuessingStrategy createTagGuesser();
 
-
-	/**
-	 * Returns the keyword for the given keywordname string
-	 * 
-	 * @param keywordName
-	 * @return
-	 */
-	public abstract TagKeyoword getTagKeyoword(String keywordName);
 
 	/**
 	 * Persistence - Update the tag

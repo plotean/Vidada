@@ -8,17 +8,15 @@ import java.util.Set;
 import org.joda.time.DateTime;
 
 import vidada.model.entities.BaseEntity;
-import vidada.model.images.IImageService;
-import vidada.model.images.ImageContainerBase.ImageChangedCallback;
 import vidada.model.media.source.IMediaSource;
 import vidada.model.media.source.MediaSourceLocal;
 import vidada.model.media.store.libraries.MediaLibrary;
+import vidada.model.media.store.local.LocalMediaStore;
 import vidada.model.tags.Tag;
 import archimedesJ.events.EventArgsG;
 import archimedesJ.events.EventHandlerEx;
 import archimedesJ.events.IEvent;
 import archimedesJ.geometry.Size;
-import archimedesJ.images.ImageContainer;
 import archimedesJ.util.Lists;
 
 import com.db4o.config.annotations.Indexed;
@@ -49,7 +47,7 @@ public abstract class MediaItem extends BaseEntity {
 	@Indexed
 	private MediaType mediaType;
 
-
+	transient private String originId = LocalMediaStore.Name;
 	transient private IMediaSource source;
 	transient private final EventHandlerEx<EventArgsG<Tag>> tagAddedEvent = new EventHandlerEx<EventArgsG<Tag>>();
 	transient private final EventHandlerEx<EventArgsG<Tag>> tagRemovedEvent = new EventHandlerEx<EventArgsG<Tag>>();
@@ -365,7 +363,7 @@ public abstract class MediaItem extends BaseEntity {
 		firePropertyChange("opened");
 	}
 
-
+	/*
 	public synchronized ImageContainer getThumbnail(IImageService imageService, Size size) {
 		ImageContainer container = imageService.retrieveImageContainer(
 				this,
@@ -380,7 +378,7 @@ public abstract class MediaItem extends BaseEntity {
 		public void imageChanged(ImageContainer container) {
 			firePropertyChange("thumbnail");
 		}
-	};
+	};*/
 
 
 
@@ -484,10 +482,37 @@ public abstract class MediaItem extends BaseEntity {
 	}
 
 
+	/**
+	 * Gets the origin id of this media. (Usually a media store)
+	 * Note that this value is transient!
+	 * 
+	 * @return
+	 */
+	public String getOriginId() {
+		return originId;
+	}
+
+	/**
+	 * Sets the origin id of this media
+	 * Note that this value is transient!
+	 * 
+	 * @param originId
+	 */
+	public void setOriginId(String originId) {
+		this.originId = originId;
+	}
+
+
 	@Override
 	public String toString() {
 		return this.getFilename() + "hash: " + this.getFilehash() + " src: " + getSource();
 	}
+
+
+
+
+
+
 
 
 	// HACK: Used by the android grid-cell view to handle selection
@@ -499,5 +524,6 @@ public abstract class MediaItem extends BaseEntity {
 	public boolean isSelected() {
 		return selected;
 	}
+
 
 }

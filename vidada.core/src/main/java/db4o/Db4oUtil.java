@@ -1,6 +1,6 @@
 package db4o;
 
-import vidada.data.SessionManager;
+import vidada.data.db4o.SessionManagerDB4O;
 
 import com.db4o.ObjectContainer;
 import com.db4o.foundation.ArgumentNullException;
@@ -21,7 +21,7 @@ public class Db4oUtil {
 			throw new ArgumentNullException("db");
 		if(id > 0){
 			entity = db.ext().getByID(id);
-			db.activate(entity, SessionManager.ACTIVATION_DEEPTH);
+			db.activate(entity, SessionManagerDB4O.ACTIVATION_DEEPTH);
 		}else{
 			entity = null;
 		}

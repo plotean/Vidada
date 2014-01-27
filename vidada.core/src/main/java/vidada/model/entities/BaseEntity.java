@@ -1,7 +1,7 @@
 package vidada.model.entities;
 
 
-import vidada.data.SessionManager;
+import vidada.data.db4o.SessionManagerDB4O;
 import archimedesJ.IPrototypable;
 import archimedesJ.data.ObservableBean;
 
@@ -20,7 +20,7 @@ public abstract class BaseEntity extends ObservableBean implements IPrototypable
 	}
 
 	public long getId(){
-		ObjectContainer db =  SessionManager.getObjectContainer();
+		ObjectContainer db =  SessionManagerDB4O.getObjectContainer();
 		return db.ext().getID(this); // db.ext().getObjectInfo(this).getUUID();
 	}
 }

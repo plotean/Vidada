@@ -4,14 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import vidada.model.media.IMediaService;
-import vidada.model.media.MediaItem;
 import vidada.model.media.MediaType;
 import vidada.model.media.OrderProperty;
 import vidada.model.media.store.libraries.MediaLibrary;
 import vidada.model.tags.Tag;
 import vidada.model.tags.TagState;
 import vidada.viewmodel.tags.TagViewModel;
-import archimedesJ.data.events.CollectionEventArg;
 import archimedesJ.events.EventArgs;
 import archimedesJ.events.EventArgsG;
 import archimedesJ.events.EventHandlerEx;
@@ -21,7 +19,6 @@ import archimedesJ.events.IEvent;
 public class FilterModel {
 
 	private final ITagStatesVMProvider tagStatesModel;
-	private final IMediaService mediaService;
 
 	// filter state
 
@@ -44,7 +41,6 @@ public class FilterModel {
 
 	public FilterModel(ITagStatesVMProvider tagStatesModel, IMediaService mediaService){
 		this.tagStatesModel = tagStatesModel;
-		this.mediaService = mediaService;
 
 		tagStatesModel.getTagStateChangedEvent().add(new EventListenerEx<EventArgsG<TagViewModel>>() {
 			@Override
@@ -53,12 +49,13 @@ public class FilterModel {
 			}
 		});
 
+		/*
 		mediaService.getMediasChangedEvent().add(new EventListenerEx<CollectionEventArg<MediaItem>>() {
 			@Override
 			public void eventOccured(Object sender, CollectionEventArg<MediaItem> eventArgs) {		
 				onFilterChanged();
 			}
-		});
+		});*/
 
 	}
 

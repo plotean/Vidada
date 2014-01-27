@@ -3,8 +3,6 @@ package vidada.views.tags;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -15,12 +13,10 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingWorker;
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import vidada.model.ServiceProvider;
 import vidada.model.media.IMediaService;
-import vidada.model.media.MediaItem;
 import vidada.model.tags.ITagService;
-import vidada.model.tags.autoTag.AutoTagSupport;
-import vidada.model.tags.autoTag.ITagGuessingStrategy;
 import archimedesJ.threading.IProgressListener;
 import archimedesJ.threading.ProgressEventArgs;
 
@@ -157,6 +153,8 @@ public class AutoTagPanel extends JPanel{
 	 */
 	private void updateAllMediadataTags(IProgressListener progressListener){
 
+		throw new NotImplementedException();
+		/*
 		List<MediaItem> allMediaDatas = mediaDataService.getAllMediaData();
 		int allMediaDataSize = allMediaDatas.size();
 
@@ -179,6 +177,7 @@ public class AutoTagPanel extends JPanel{
 		mediaDataService.update(updatedMedias);
 
 		progressListener.currentProgress(new ProgressEventArgs(100, ""));
+		 */
 	}
 
 }

@@ -15,12 +15,13 @@ import org.controlsfx.control.action.AbstractAction;
 import org.controlsfx.dialog.Dialog;
 import org.controlsfx.dialog.Dialogs;
 
-import vidada.data.DatabaseConnectionException;
 import vidada.data.DefaultDataCreator;
-import vidada.data.SessionManager;
+import vidada.data.db4o.DatabaseConnectionException;
+import vidada.data.db4o.SessionManagerDB4O;
 import vidada.images.RawImageFactoryFx;
 import vidada.model.ServiceProvider;
 import vidada.model.ServiceProvider.IServiceRegisterer;
+import vidada.model.media.IMediaService;
 import vidada.model.media.store.libraries.IMediaLibraryService;
 import vidada.model.security.ICredentialManager;
 import vidada.model.security.ICredentialManager.CredentialsChecker;
@@ -138,7 +139,7 @@ public class Application extends  javafx.application.Application {
 			settings.persist();
 		}
 
-		IMediaLibraryService libService = ServiceProvider.Resolve(IMediaLibraryService.class);
+		IMediaLibraryService libService = ServiceProvider.Resolve(IMediaService.class).getLocalMediaStore().getLibraryManager();
 
 		//
 		// Wizards
@@ -226,7 +227,7 @@ public class Application extends  javafx.application.Application {
 
 		try{
 			System.out.println("setting up EntityManager...");
-			em = SessionManager.getObjectContainer();
+			em = SessionManagerDB4O.getObjectContainer();
 		}catch(DatabaseConnectionException e){
 			e.printStackTrace();
 			em = null;

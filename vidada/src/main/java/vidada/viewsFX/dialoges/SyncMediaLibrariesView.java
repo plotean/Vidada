@@ -10,7 +10,8 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import vidada.model.ServiceProvider;
 import vidada.model.media.IMediaService;
-import vidada.model.media.store.local.IMediaImportService;
+import vidada.model.media.store.local.IMediaImportStrategy;
+import vidada.model.media.store.local.MediaImportService;
 import archimedesJ.events.EventArgs;
 import archimedesJ.events.EventHandlerEx;
 import archimedesJ.threading.IProgressListener;
@@ -77,7 +78,7 @@ public class SyncMediaLibrariesView extends GridPane {
 
 				try{
 					IMediaService mediaService = ServiceProvider.Resolve(IMediaService.class);
-					IMediaImportService mediaImporter = mediaService.getMediaImporter();
+					IMediaImportStrategy mediaImporter = new MediaImportService(mediaService.getLocalMediaStore());
 					mediaImporter.scanAndUpdateDatabases(listener);
 				}catch(Exception e){
 					e.printStackTrace();

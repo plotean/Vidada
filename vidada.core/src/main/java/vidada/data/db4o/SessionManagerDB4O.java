@@ -1,4 +1,4 @@
-package vidada.data;
+package vidada.data.db4o;
 import java.io.File;
 import java.net.URI;
 
@@ -27,7 +27,7 @@ import db4o.translators.TURI;
  * @author IsNull
  *
  */
-public class SessionManager {
+public class SessionManagerDB4O {
 
 
 	private static ObjectContainer objectContainer;

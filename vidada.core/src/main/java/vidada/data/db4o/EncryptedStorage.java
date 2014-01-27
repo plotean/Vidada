@@ -1,4 +1,4 @@
-package vidada.data;
+package vidada.data.db4o;
 
 import java.io.IOException;
 

@@ -6,11 +6,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import vidada.data.SessionManager;
+import vidada.data.db4o.SessionManagerDB4O;
 import vidada.model.ServiceProvider;
 import vidada.model.entities.BaseEntity;
-import vidada.model.images.IImageService;
+import vidada.model.images.IThumbnailService;
 import vidada.model.images.cache.IImageCache;
+import vidada.model.images.cache.crypto.ImageCacheFactory;
 import vidada.model.user.User;
 import archimedesJ.io.locations.DirectoryLocation;
 
@@ -99,14 +100,15 @@ public class MediaLibrary extends BaseEntity {
 
 		if(imageCache == null){
 
-			IImageService imageService = ServiceProvider.Resolve(IImageService.class);
+			IThumbnailService imageService = ServiceProvider.Resolve(IThumbnailService.class);
 
 			DirectoryLocation libraryRoot = getLibraryRoot();
 			if(libraryRoot != null && libraryRoot.exists()){
 				try {
 					DirectoryLocation libCache = DirectoryLocation.Factory.create(libraryRoot, VidataThumbsFolder);
 					System.out.println("opening new library cache...");
-					imageCache = imageService.openCache(libCache);
+					ImageCacheFactory factory = new ImageCacheFactory();
+					imageCache = factory.openCache(libCache);
 				} catch (URISyntaxException e1) {
 					e1.printStackTrace();
 				}
@@ -151,7 +153,7 @@ public class MediaLibrary extends BaseEntity {
 	private void printAllEntrys(){
 
 		System.out.println("All entries:");
-		ObjectContainer db = SessionManager.getObjectContainer();
+		ObjectContainer db = SessionManagerDB4O.getObjectContainer();
 
 		Query query = db.query();
 		query.constrain(LibraryEntry.class);
@@ -185,7 +187,7 @@ public class MediaLibrary extends BaseEntity {
 	 * @param libraryRoot
 	 */
 	public void setLibraryRoot(DirectoryLocation libraryRoot) {
-		ObjectContainer db = SessionManager.getObjectContainer();
+		ObjectContainer db = SessionManagerDB4O.getObjectContainer();
 		LibraryEntry entry = findOrCreateEntry();
 
 		entry.setLibraryRoot(libraryRoot);
@@ -204,7 +206,7 @@ public class MediaLibrary extends BaseEntity {
 
 		if(entry == null)
 		{
-			ObjectContainer db = SessionManager.getObjectContainer();
+			ObjectContainer db = SessionManagerDB4O.getObjectContainer();
 			{
 				User user = User.current();
 				entry = new LibraryEntry(this, user, null);

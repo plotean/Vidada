@@ -17,11 +17,11 @@ import javax.swing.SwingUtilities;
 
 import vidada.model.ServiceProvider;
 import vidada.model.connectivity.IConnectivityService;
-import vidada.model.media.IMediaService;
 import vidada.model.settings.DatabaseSettings;
 import vidada.model.settings.GlobalSettings;
 import vidada.views.tools.DuplicateManagerDialoge;
 import vlcj.VlcjUtil;
+import archimedesJ.exceptions.NotImplementedException;
 import archimedesJ.util.FileSupport;
 import archimedesJ.util.OSValidator;
 
@@ -148,7 +148,8 @@ public class GeneralSettingsPanel extends JPanel {
 		btnClearMediaDb.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				ServiceProvider.Resolve(IMediaService.class).removeAll();
+				//ServiceProvider.Resolve(IMediaService.class).getLocalMediaStore();
+				throw new NotImplementedException();
 			}
 		});
 		add(btnClearMediaDb, "4, 24, 3, 1, fill, default");

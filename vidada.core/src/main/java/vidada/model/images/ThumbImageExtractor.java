@@ -29,8 +29,10 @@ public class ThumbImageExtractor implements IThumbImageCreator {
 			return true;
 		}else if(media instanceof MovieMediaItem){
 			return ((MovieMediaItem) media).canCreateThumbnail() && Video.isGenericEncoderPresent();
-		}else
-			throw new NotSupportedException("Unknown media type: " + media.getClass().getName());
+		}else{
+			System.err.println("ThumbImageExtractor::canExtractThumb: Unknown media type: " + media.getClass().getName());
+			return false;
+		}
 	}
 
 
@@ -42,9 +44,9 @@ public class ThumbImageExtractor implements IThumbImageCreator {
 		IMemoryImage image = null;
 
 		if(media instanceof ImageMediaItem){
-
+			image = extractImageThumb((ImageMediaItem)media, size);
 		}else if(media instanceof MovieMediaItem){
-
+			image = extractMovieThumb((MovieMediaItem)media, size);
 		}else
 			throw new NotSupportedException("Unknown media type: " + media.getClass().getName());
 
@@ -96,11 +98,8 @@ public class ThumbImageExtractor implements IThumbImageCreator {
 	public IMemoryImage extractMovieThumb(MovieMediaItem media, Size size){
 		IMemoryImage frame = null;
 
-		// first, remove old cached images
-		//imageService.removeImage(this);
-
 		float pos;
-
+		// TODO Maybe move to media?
 		if (media.getPreferredThumbPosition() != MovieMediaItem.INVALID_POSITION) {
 			pos = media.getPreferredThumbPosition();
 		} else if (media.getCurrentThumbPosition() != MovieMediaItem.INVALID_POSITION) {
