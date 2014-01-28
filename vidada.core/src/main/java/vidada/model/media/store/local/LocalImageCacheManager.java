@@ -46,9 +46,8 @@ public class LocalImageCacheManager {
 			imageCache = combinedCachesMap.get(library);
 			if(imageCache == null){
 				IImageCache libraryCache = library.getLibraryCache();
-				IImageCache combinedCache = cacheFactory.leveledCache(localImageCache, libraryCache);
-
-				combinedCachesMap.put(library, combinedCache);
+				imageCache = cacheFactory.leveledCache(localImageCache, libraryCache);
+				combinedCachesMap.put(library, imageCache);
 			}
 		} else {
 			imageCache = localImageCache;

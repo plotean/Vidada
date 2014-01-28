@@ -8,7 +8,7 @@ import vidada.model.media.MediaQuery;
 import archimedesJ.threading.CancellationTokenSource.CancellationToken;
 import archimedesJ.threading.CancellationTokenSource.OperationCanceledException;
 
-public class AsyncFetchMediaItems extends  AsyncFetchData<MediaItem> {
+public class AsyncFetchMediaItems extends AsyncFetchData<MediaItem> {
 
 	private final IMediaService mediaService;
 	private final MediaQuery query;
@@ -24,9 +24,9 @@ public class AsyncFetchMediaItems extends  AsyncFetchData<MediaItem> {
 			throws OperationCanceledException {
 
 		Collection<MediaItem> fetchedData = null;
-		System.out.println("fetching media datas...");
+		System.out.println("AsyncFetchMediaItems: fetching media datas...");
 		fetchedData = mediaService.query(query);
-		System.out.println("fetched " + fetchedData.size() + "items" );
+		System.out.println("AsyncFetchMediaItems:: fetched: " + fetchedData.size() + " items!" );
 
 		return fetchedData;
 	}

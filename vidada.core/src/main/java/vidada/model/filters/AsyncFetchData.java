@@ -63,7 +63,7 @@ public abstract class AsyncFetchData<T> extends CancelableTask<Collection<T>>{
 		if(!token.isCancellationRequested())
 		{
 			try {
-				fetchData(token);
+				fetchedData = fetchData(token);
 
 				if(postFilter != null){
 					System.out.println("applying post filter to media datas...");

@@ -31,7 +31,7 @@ public class MediaViewModel extends BrowserItemVM {
 	private WeakReference<ImageContainer> imageContainerRef;
 	private MediaItem mediaData;
 
-	private final IThumbnailService imageService = ServiceProvider.Resolve(IThumbnailService.class);
+	private final IThumbnailService thumbService = ServiceProvider.Resolve(IThumbnailService.class);
 	private final ISystemService systemService = ServiceProvider.Resolve(ISystemService.class);
 	private final IMediaService mediaService = ServiceProvider.Resolve(IMediaService.class);
 
@@ -123,7 +123,7 @@ public class MediaViewModel extends BrowserItemVM {
 		ImageContainer imageContainer = null;
 		if(mediaData != null){
 
-			imageContainer = imageService.retrieveThumbnail(
+			imageContainer = thumbService.retrieveThumbnail(
 					mediaData,
 					new Size(widthPxl, heightPxl));
 

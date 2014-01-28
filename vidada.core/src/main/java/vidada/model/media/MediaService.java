@@ -39,6 +39,7 @@ public class MediaService implements IMediaService {
 
 		HashSet<MediaItem> resultSet = new HashSet<MediaItem>(2000);
 
+		System.out.println("MediaService:: query " + mediaStoreService.getStores().size() + " stores!");
 		for (IMediaStore store : mediaStoreService.getStores()) {
 			resultSet.addAll(store.query(qry));
 		}

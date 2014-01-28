@@ -107,7 +107,7 @@ public class MediaFilterDatabaseBinding {
 		public void eventOccured(Object sender,final CancelTokenEventArgs<Collection<MediaItem>> eventArgs) {
 
 			Collection<MediaItem> medias = eventArgs.getValue();
-			System.out.println("Data async fetched! " + medias.size());
+			System.out.println("MediaFilterDatabaseBinding: Data async fetched: " + medias.size());
 
 			List<IBrowserItem> browserItems = new ArrayList<IBrowserItem>(medias.size());
 			for (MediaItem mediaItem : medias) {

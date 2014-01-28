@@ -75,8 +75,4 @@ public class ThumbnailService implements IThumbnailService {
 	}
 	 */
 
-
-
-
-
 }

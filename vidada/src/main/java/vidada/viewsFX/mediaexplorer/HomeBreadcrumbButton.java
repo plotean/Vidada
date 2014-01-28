@@ -14,11 +14,9 @@ public class HomeBreadcrumbButton extends BreadCrumbButton {
 	private final Popup popover = new Popup();
 
 	public HomeBreadcrumbButton(String text, Node gfx) {
-		super(text, gfx, true);
-
+		super(text, gfx);
 
 		popover.getContent().add(new Label("Hello World"));
-		//popover.setContentNode(new Label("Hello World"));
 		this.setOnMouseClicked(listener);
 	}
 
