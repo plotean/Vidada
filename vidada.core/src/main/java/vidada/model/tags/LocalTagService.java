@@ -7,8 +7,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import vidada.model.media.store.libraries.MediaLibrary;
 import vidada.model.tags.autoTag.ITagGuessingStrategy;
 import vidada.model.tags.autoTag.KeywordBasedTagGuesser;
+import vidada.model.tags.relations.TagRelationDefinition;
 
 
 public class LocalTagService implements ILocalTagService {
@@ -78,13 +80,21 @@ public class LocalTagService implements ILocalTagService {
 	}
 
 	@Override
-	public Collection<Tag> getAllTags() {
+	public Collection<Tag> getUsedTags() {
 		return tagNameCache.values();
 	}
 
 	@Override
+	public Collection<Tag> getUsedTags(Collection<MediaLibrary> libraries) {
+		// TODO Cache this somehow or things get slow.
+		// Realistically the result of this call will get invalidated
+		// every time a tag is added or removed from a media item.
+		return repository.getAllUsedTags(libraries);
+	}
+
+	@Override
 	public ITagGuessingStrategy createTagGuesser() {
-		return new KeywordBasedTagGuesser(this.getAllTags());
+		return new KeywordBasedTagGuesser(this.getUsedTags());
 	}
 
 }

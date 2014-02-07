@@ -164,31 +164,6 @@ public abstract class MediaItem extends BaseEntity {
 	}
 
 	/**
-	 * Is this media a member of the given library?
-	 * 
-	 * @param library
-	 * @return
-
-	public boolean isMemberofLibrary(MediaLibrary library) {
-		if(library == null) throw new IllegalArgumentException("library must not be NULL!");
-
-		for (IMediaSource s : this.getSources()) {
-			if(s != null){
-				MediaLibrary parentLib = s.getParentLibrary();
-				if(parentLib != null){
-					return parentLib.equals(library);
-				}else{
-					System.err.println("MediaItem::isMemberofLibrary: parent library of " + s + " was NULL!");
-				}
-			}else{
-				System.err.println("MediaItem::isMemberofLibrary: media source of " + this + " was NULL!");
-			}
-		}
-		return false;
-	}
-	 */
-
-	/**
 	 * Gets the best source for this media item. 
 	 * It will return one that is currently available - if possible.
 	 * @return
@@ -237,7 +212,7 @@ public abstract class MediaItem extends BaseEntity {
 	 * 
 	 * @param tag
 	 */
-	public void addSource(MediaSourceLocal source) {
+	public void addSource(IMediaSource source) {
 		if (!getSources().contains(source)) {
 			this.sources.add(source);
 			firePropertyChange("sources");
@@ -362,25 +337,6 @@ public abstract class MediaItem extends BaseEntity {
 		this.opened = opened;
 		firePropertyChange("opened");
 	}
-
-	/*
-	public synchronized ImageContainer getThumbnail(IImageService imageService, Size size) {
-		ImageContainer container = imageService.retrieveImageContainer(
-				this,
-				size,
-				imageChangedCallBack);
-
-		return container;
-	} 
-
-	transient private final ImageChangedCallback imageChangedCallBack = new ImageChangedCallback(){
-		@Override
-		public void imageChanged(ImageContainer container) {
-			firePropertyChange("thumbnail");
-		}
-	};*/
-
-
 
 
 	public String getFilename() {
@@ -507,11 +463,6 @@ public abstract class MediaItem extends BaseEntity {
 	public String toString() {
 		return this.getFilename() + "hash: " + this.getFilehash() + " src: " + getSource();
 	}
-
-
-
-
-
 
 
 

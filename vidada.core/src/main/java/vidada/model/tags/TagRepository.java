@@ -2,19 +2,21 @@ package vidada.model.tags;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import vidada.data.db4o.SessionManagerDB4O;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaRepository;
+import vidada.model.media.store.libraries.MediaLibrary;
 import archimedesJ.util.Lists;
 
 import com.db4o.ObjectContainer;
 import com.db4o.query.Query;
 
 /**
- * Service which manages all Tags
+ * Service which manages persistence of tags
  * @author IsNull
  *
  */
@@ -41,7 +43,7 @@ public class TagRepository  {
 
 		ObjectContainer db = SessionManagerDB4O.getObjectContainer();
 		{
-			Collection<MediaItem> medias = mediaRepository.findMediaItems(tag);
+			Collection<MediaItem> medias = mediaRepository.query(tag);
 
 			if(!medias.isEmpty())
 			{
@@ -58,8 +60,31 @@ public class TagRepository  {
 		}
 	}
 
+	/**
+	 * Fetches all Tags which are used in the provided media libraries
+	 * @return
+	 */
+	public Collection<Tag> getAllUsedTags(Collection<MediaLibrary> libraries){
 
-	public synchronized List<Tag> getAllTags(){
+		Set<Tag> tags = new HashSet<Tag>();
+
+		Collection<MediaItem> medias = mediaRepository.query(libraries);
+
+		// Might be very slow !!
+		for (MediaItem media : medias) {
+			tags.addAll(media.getTags());
+		}
+
+		return tags;
+	}
+
+
+
+	/**
+	 * Fetches all tags
+	 * @return
+	 */
+	public List<Tag> getAllTags(){
 
 		List<Tag> tags = null;
 		ObjectContainer db = SessionManagerDB4O.getObjectContainer();
@@ -74,7 +99,7 @@ public class TagRepository  {
 	}
 
 
-	public synchronized void update(Tag tag) {
+	public void update(Tag tag) {
 		ObjectContainer db =  SessionManagerDB4O.getObjectContainer();
 		db.store(tag);
 		db.commit();

@@ -1,6 +1,7 @@
 package vidada.model.media.store.libraries;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 
 import vidada.data.db4o.SessionManagerDB4O;
@@ -24,7 +25,7 @@ import db4o.Db4oUtil;
  * @author IsNull
  *
  */
-public class MediaLibraryService implements IMediaLibraryManager {
+public class MediaLibraryManager implements IMediaLibraryManager {
 
 	private final EventHandlerEx<EventArgsG<MediaLibrary>> libraryAddedEvent = new EventHandlerEx<EventArgsG<MediaLibrary>>();
 	private final EventHandlerEx<EventArgsG<MediaLibrary>> libraryRemovedEvent = new EventHandlerEx<EventArgsG<MediaLibrary>>();
@@ -137,6 +138,17 @@ public class MediaLibraryService implements IMediaLibraryManager {
 	@Override
 	public MediaLibrary getById(long id) {
 		return Db4oUtil.getById(SessionManagerDB4O.getObjectContainer(), id);
+	}
+
+	@Override
+	public List<MediaLibrary> getAvailableLibraries() {
+		List<MediaLibrary> available = new ArrayList<MediaLibrary>();
+		for (MediaLibrary library : getAllLibraries()) {
+			if(library.isAvailable()){
+				available.add(library);
+			}
+		} 
+		return available;
 	}
 
 

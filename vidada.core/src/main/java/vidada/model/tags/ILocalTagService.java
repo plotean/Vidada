@@ -3,6 +3,7 @@ package vidada.model.tags;
 import java.util.Collection;
 import java.util.Set;
 
+import vidada.model.media.store.libraries.MediaLibrary;
 import vidada.model.tags.autoTag.ITagGuessingStrategy;
 
 /**
@@ -50,10 +51,18 @@ public interface ILocalTagService  {
 	public abstract void removeTag(Tag tag);
 
 	/**
-	 * Returns all tags
+	 * Returns all tags which are used by medias
 	 * @return
 	 */
-	public abstract Collection<Tag> getAllTags();
+	public abstract Collection<Tag> getUsedTags();
+
+
+	/**
+	 * Returns all tags which are used in the given libraries
+	 * @return
+	 */
+	public abstract Collection<Tag> getUsedTags(Collection<MediaLibrary> libraries);
+
 
 	/**
 	 * Creates a Tag guessing strategy for the current Tags

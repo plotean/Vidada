@@ -38,7 +38,7 @@ public interface ITagService extends IService
 	 * Returns all tags
 	 * @return
 	 */
-	public abstract Collection<Tag> getAllTags();
+	public abstract Collection<Tag> getUsedTags();
 
 
 	/**

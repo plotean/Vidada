@@ -1,4 +1,4 @@
-package vidada.model.tags;
+package vidada.model.tags.relations;
 
 /**
  * Represents a relation operator between two tags

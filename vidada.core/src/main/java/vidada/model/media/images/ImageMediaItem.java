@@ -47,18 +47,6 @@ public class ImageMediaItem extends MediaItem {
 		setMediaType(MediaType.IMAGE);
 	}
 
-	/*
-	@Override
-	public void createThumbnailCached(Size size) {
-
-		IMemoryImage frame = readImage(size);
-		if(frame != null)
-			imageService.storeImage(this, frame);
-		else {
-			System.err.println("Reading image failed: " + this);
-		}
-	}*/
-
 	@Override
 	@Transient
 	public void resolveResolution(){

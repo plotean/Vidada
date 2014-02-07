@@ -1,4 +1,6 @@
-package vidada.model.tags;
+package vidada.model.tags.relations;
+
+import vidada.model.tags.Tag;
 
 /**
  * Represents a relation between two tags.

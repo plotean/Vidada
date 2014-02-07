@@ -19,7 +19,7 @@ import vidada.model.media.source.MediaSourceLocal;
 import vidada.model.media.store.IMediaStore;
 import vidada.model.media.store.libraries.IMediaLibraryManager;
 import vidada.model.media.store.libraries.MediaLibrary;
-import vidada.model.media.store.libraries.MediaLibraryService;
+import vidada.model.media.store.libraries.MediaLibraryManager;
 import vidada.model.tags.ILocalTagService;
 import vidada.model.tags.LocalTagService;
 import vidada.model.tags.Tag;
@@ -45,7 +45,7 @@ public class LocalMediaStore implements IMediaStore {
 	transient private final LocalImageCacheManager localImageCacheManager = new LocalImageCacheManager();
 
 	transient private final MediaRepository mediaRepository = new MediaRepository();
-	transient private final IMediaLibraryManager libraryService = new MediaLibraryService();
+	transient private final IMediaLibraryManager libraryService = new MediaLibraryManager();
 	transient private final ILocalTagService localTagService = new LocalTagService();
 
 
@@ -124,7 +124,7 @@ public class LocalMediaStore implements IMediaStore {
 
 	@Override
 	public Collection<Tag> getAllUsedTags() {
-		return getTagManager().getAllTags();
+		return getTagManager().getUsedTags(getLibraryManager().getAvailableLibraries());
 	}
 
 
@@ -157,7 +157,14 @@ public class LocalMediaStore implements IMediaStore {
 	}
 
 
-
+	/**
+	 * Simple media factory to create a media item from an existing file.
+	 * The media type is determined dynamically. 
+	 * @param mediaLocation
+	 * @param parentlibrary
+	 * @param mediahash
+	 * @return
+	 */
 	public MediaItem buildMedia(final ResourceLocation mediaLocation, final MediaLibrary parentlibrary, String mediahash) {
 
 		MediaItem newMedia = null;
@@ -189,9 +196,14 @@ public class LocalMediaStore implements IMediaStore {
 		return newMedia;
 	}
 
-
+	/**
+	 * Finds an existing media item or creates a new one for the given file
+	 * @param file
+	 * @param persist
+	 * @return
+	 */
 	public MediaItem findOrCreateMedia(ResourceLocation file, boolean persist) {
-		return findAndCreateMediaHelper(file, true, persist);
+		return findAndCreateMedia(file, true, persist);
 	}
 
 
@@ -199,9 +211,14 @@ public class LocalMediaStore implements IMediaStore {
 	 * Search for the given media data by the given absolute path
 	 */
 	public MediaItem findMediaData(ResourceLocation file) {
-		return findAndCreateMediaHelper(file, false, false);
+		return findAndCreateMedia(file, false, false);
 	}
 
+	/**
+	 * Gets the hash for the given file
+	 * @param file
+	 * @return
+	 */
 	private String retriveMediaHash(ResourceLocation file){
 		return MediaHashUtil.getDefaultMediaHashUtil().retriveFileHash(file);
 	}
@@ -214,7 +231,7 @@ public class LocalMediaStore implements IMediaStore {
 	 * @param persist
 	 * @return
 	 */
-	private MediaItem findAndCreateMediaHelper(ResourceLocation resource, boolean canCreate, boolean persist){
+	private MediaItem findAndCreateMedia(ResourceLocation resource, boolean canCreate, boolean persist){
 		MediaItem mediaData;
 
 		// we assume the given file is an absolute file path

@@ -1,9 +1,11 @@
-package vidada.model.tags;
+package vidada.model.tags.relations;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import vidada.model.tags.Tag;
 
 
 public class TagRelationDefinition {

@@ -1,7 +1,9 @@
-package vidada.model.tags;
+package vidada.model.tags.relations;
 
 import java.util.HashSet;
 import java.util.Set;
+
+import vidada.model.tags.Tag;
 
 public class TagNode {
 	private final Tag tag;

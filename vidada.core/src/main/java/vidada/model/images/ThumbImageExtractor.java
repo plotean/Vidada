@@ -62,24 +62,26 @@ public class ThumbImageExtractor implements IThumbImageCreator {
 
 		IMediaSource source = media.getSource();
 
-		ResourceLocation filePath = source.getResourceLocation();
-		if (filePath != null && filePath.exists()) {
-			System.out.println("reading image...");
-			InputStream is = null;
-			try {
-				is = filePath.openInputStream();
-				bufferedImage = imageFactory.createImage(is);
-				//if(!hasResolution())
-				//	setResolution(new Size(bufferedImage.getWidth(), bufferedImage.getHeight()));
-				//bufferedImage = bufferedImage.rescale(size.width, size.height);
-			} catch (Exception e) {
-				System.err.println("Can not read image" + filePath.toString());
-			}finally{
-				if(is != null){
-					try {
-						is.close();
-					} catch (IOException e) {
-						e.printStackTrace();
+		if(source != null){
+			ResourceLocation filePath = source.getResourceLocation();
+			if (filePath != null && filePath.exists()) {
+				System.out.println("reading image...");
+				InputStream is = null;
+				try {
+					is = filePath.openInputStream();
+					bufferedImage = imageFactory.createImage(is);
+					//if(!hasResolution())
+					//	setResolution(new Size(bufferedImage.getWidth(), bufferedImage.getHeight()));
+					//bufferedImage = bufferedImage.rescale(size.width, size.height);
+				} catch (Exception e) {
+					System.err.println("Can not read image" + filePath.toString());
+				}finally{
+					if(is != null){
+						try {
+							is.close();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
 					}
 				}
 			}

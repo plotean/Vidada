@@ -1,15 +1,18 @@
 package vidada.model.media;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import vidada.data.db4o.SessionManagerDB4O;
+import vidada.model.media.store.libraries.MediaLibrary;
 import vidada.model.tags.Tag;
 import archimedesJ.util.Debug;
 import archimedesJ.util.Lists;
 import archimedesJ.util.Objects;
 
 import com.db4o.ObjectContainer;
+import com.db4o.query.Constraint;
 import com.db4o.query.Predicate;
 import com.db4o.query.Query;
 
@@ -28,10 +31,53 @@ public class MediaRepository {
 
 	}
 
+	/**
+	 * Query for all medias which match the given media-query
+	 * @param qry
+	 * @return
+	 */
 	public Collection<MediaItem> query(MediaQuery qry){
 		Query db4oQry = queryBuilderDB4O.buildMediadataCriteria(qry);
 		return db4oQry.execute();
 	}
+
+	/**
+	 * Returns all media items which are in the given libraries
+	 * @param libraries
+	 * @return
+	 */
+	public Collection<MediaItem> query(Collection<MediaLibrary> libraries){
+
+		List<MediaItem> medias = null;
+		ObjectContainer db = SessionManagerDB4O.getObjectContainer();
+		Query query = db.query();
+
+		if(!libraries.isEmpty()){
+			query.constrain(MediaItem.class);
+			Constraint mediaLibConstraint = null;
+			for (MediaLibrary mediaLib : libraries) {
+				Constraint c = query.descend("sources").descend("parentLibrary").constrain(mediaLib);
+				if(mediaLibConstraint == null)
+					mediaLibConstraint = c;
+				else
+					mediaLibConstraint.or(c);
+			}
+			medias = query.execute();
+		}else {
+			medias = new ArrayList<MediaItem>();
+		}
+
+		return medias;
+	}
+
+	/**
+	 * Query for all medias which have the given Tag
+	 */
+	public Collection<MediaItem> query(Tag tag){
+		Query qry = queryBuilderDB4O.buildMediadataCriteria(tag);
+		return qry.execute();
+	}
+
 
 	public void store(MediaItem mediadata) {
 		store(Lists.asList(mediadata));
@@ -100,10 +146,7 @@ public class MediaRepository {
 		db.commit();
 	}
 
-	public Collection<MediaItem> findMediaItems(Tag tag){
-		Query qry = queryBuilderDB4O.buildMediadataCriteria(tag);
-		return qry.execute();
-	}
+
 
 	/**
 	 * 

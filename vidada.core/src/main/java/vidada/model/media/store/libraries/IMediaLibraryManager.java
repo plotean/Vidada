@@ -34,6 +34,12 @@ public interface IMediaLibraryManager {
 	public abstract List<MediaLibrary> getAllLibraries();
 
 	/**
+	 * returns all libraries which are currently available
+	 * @return
+	 */
+	public abstract List<MediaLibrary> getAvailableLibraries();
+
+	/**
 	 * Adds the given library and persists it
 	 * @param lib
 	 */

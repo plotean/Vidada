@@ -43,7 +43,7 @@ public class TagService implements ITagService {
 
 
 	@Override
-	public synchronized Collection<Tag> getAllTags(){
+	public synchronized Collection<Tag> getUsedTags(){
 
 		Set<Tag> allTags = new HashSet<Tag>();
 		Collection<IMediaStore> stores = mediaStoreService.getStores();

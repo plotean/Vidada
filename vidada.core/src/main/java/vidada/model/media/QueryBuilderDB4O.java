@@ -40,7 +40,7 @@ class QueryBuilderDB4O {
 				}
 			}
 		}else{
-			remainders = new HashSet<Tag>(localTagService.getAllTags());
+			remainders = new HashSet<Tag>(localTagService.getUsedTags());
 		}
 
 		return remainders;
@@ -64,6 +64,7 @@ class QueryBuilderDB4O {
 
 		Query q = SessionManagerDB4O.getObjectContainer().query();
 		q.constrain(MediaItem.class);
+
 
 		// Limit results to requested media types:
 
@@ -169,7 +170,7 @@ class QueryBuilderDB4O {
 	private List<Tag> getMatchingTags(String query, ILocalTagService localTagService){
 		List<Tag> matchingTags = new ArrayList<Tag>();
 		// TODO Optimize
-		Collection<Tag> allTags = localTagService.getAllTags();
+		Collection<Tag> allTags = localTagService.getUsedTags();
 
 		for(Tag tag : allTags){
 			String tagName = tag.getName().toLowerCase();
