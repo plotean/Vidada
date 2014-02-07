@@ -19,14 +19,13 @@ public class MediaQuery extends AbstractQuery<MediaItem>{
 	 */
 	public static final MediaQuery ALL = new MediaQuery(AbstractQuery.QueryType.All);
 
-
-	private MediaType selectedtype;
-	private String keywords;
-	private OrderProperty selectedOrder;
-	private List<Tag> requiredTags;
-	private List<Tag> blockedTags;
-	private boolean onlyAvailable;
-	private boolean reverseOrder;
+	private MediaType selectedtype = MediaType.ANY;
+	private String keywords = null;
+	private OrderProperty selectedOrder = OrderProperty.FILENAME;
+	private List<Tag> requiredTags = null;
+	private List<Tag> blockedTags = null;
+	private boolean onlyAvailable = false;
+	private boolean reverseOrder = false;
 
 
 

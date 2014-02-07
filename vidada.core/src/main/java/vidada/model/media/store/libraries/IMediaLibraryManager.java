@@ -6,7 +6,7 @@ import archimedesJ.events.EventArgsG;
 import archimedesJ.events.IEvent;
 import archimedesJ.io.locations.ResourceLocation;
 
-public interface IMediaLibraryService {
+public interface IMediaLibraryManager {
 
 	/**
 	 * Raised when a new Library has been added to this service

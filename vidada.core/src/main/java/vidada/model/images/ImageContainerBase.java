@@ -151,7 +151,8 @@ public class ImageContainerBase implements ImageContainer, Runnable {
 				if(loader != null)
 					loader.get();
 			} catch (InterruptedException e) {
-				e.printStackTrace();
+				//e.printStackTrace();
+				System.out.println("ImageContainerBase:: Image loading canceled: " + e.getMessage());
 			} catch (ExecutionException e) {
 				e.printStackTrace();
 			}

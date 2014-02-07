@@ -2,21 +2,13 @@ package vidada.model.media.store.libraries;
 
 import java.beans.Transient;
 import java.net.URISyntaxException;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
-import vidada.data.db4o.SessionManagerDB4O;
 import vidada.model.ServiceProvider;
 import vidada.model.entities.BaseEntity;
 import vidada.model.images.IThumbnailService;
 import vidada.model.images.cache.IImageCache;
 import vidada.model.images.cache.crypto.ImageCacheFactory;
-import vidada.model.user.User;
 import archimedesJ.io.locations.DirectoryLocation;
-
-import com.db4o.ObjectContainer;
-import com.db4o.query.Query;
 
 /**
  * Represents an local MediaLibrary
@@ -28,11 +20,10 @@ public class MediaLibrary extends BaseEntity {
 
 	public static final String VidataThumbsFolder = "vidada.thumbs";
 
-	private Set<LibraryEntry> libraryEntries = new HashSet<LibraryEntry>();
+	private DirectoryLocation libraryRoot;
 	private boolean ignoreMovies;
 	private boolean ignoreImages;
 
-	transient private LibraryEntry currentEntry = null;
 	transient private IImageCache imageCache = null;
 	transient private MediaDirectory mediaDirectory = null;
 
@@ -79,17 +70,7 @@ public class MediaLibrary extends BaseEntity {
 
 	@Transient
 	private DirectoryLocation getLibraryRoot() {
-		DirectoryLocation root = null;
-		LibraryEntry entry = getCurrentEntry();
-
-		if(entry != null){
-			root = getCurrentEntry().getLibraryRoot();
-			if(root == null)
-				System.err.println("library root is NULL!");
-		}else {
-			System.err.println("MediaLibrary: A LibraryEntry for the current user could not be found.");
-		}
-		return root;
+		return libraryRoot;
 	}
 
 	/**
@@ -127,99 +108,13 @@ public class MediaLibrary extends BaseEntity {
 		return root != null && root.exists();
 	}
 
-
-
-
-	@Transient
-	private LibraryEntry getCurrentEntry(){
-		if(currentEntry == null){
-			User current = User.current();
-
-			printAllEntrys();
-
-			System.out.println("MediaLibrary: searching LibraryEntry for user: " + current);
-			for (LibraryEntry entry : getLibraryEntries()) {
-				System.out.println(entry);
-				if(current.equals(entry.getUser())){
-					currentEntry =  entry;
-					System.out.println("^-- Matching Entry! --");
-					break;
-				}
-			}
-		}
-		return currentEntry;
-	}
-
-	private void printAllEntrys(){
-
-		System.out.println("All entries:");
-		ObjectContainer db = SessionManagerDB4O.getObjectContainer();
-
-		Query query = db.query();
-		query.constrain(LibraryEntry.class);
-		List<LibraryEntry> entries = query.execute();
-
-		for (LibraryEntry entry : entries) {
-			System.out.println(entry.toString());
-		}
-	}
-
-
-
-	public void addEntry(LibraryEntry e){
-		libraryEntries.add(e);
-	}
-
-	public void removeEntry(LibraryEntry e){
-		libraryEntries.remove(e);
-	}
-
-	public Set<LibraryEntry> getLibraryEntries() {
-		return libraryEntries;
-	}
-
-	protected void setLibraryEntries(Set<LibraryEntry> libraryEntries) {
-		this.libraryEntries = libraryEntries;
-	}
-
 	/**
 	 * Set the root path of this media library
 	 * @param libraryRoot
 	 */
 	public void setLibraryRoot(DirectoryLocation libraryRoot) {
-		ObjectContainer db = SessionManagerDB4O.getObjectContainer();
-		LibraryEntry entry = findOrCreateEntry();
-
-		entry.setLibraryRoot(libraryRoot);
-		db.store(entry);
-		db.commit();
+		this.libraryRoot = libraryRoot;
 	}
-
-
-	/**
-	 * Finds the current libraryEntry or creates a new one
-	 * @return
-	 */
-	private LibraryEntry findOrCreateEntry(){
-
-		LibraryEntry entry = this.getCurrentEntry();
-
-		if(entry == null)
-		{
-			ObjectContainer db = SessionManagerDB4O.getObjectContainer();
-			{
-				User user = User.current();
-				entry = new LibraryEntry(this, user, null);
-				db.store(entry);
-				this.addEntry(entry);
-				db.store(this);
-			}
-			db.commit();
-		}
-
-		return entry;
-	}
-
 
 	@Override
 	public String toString(){

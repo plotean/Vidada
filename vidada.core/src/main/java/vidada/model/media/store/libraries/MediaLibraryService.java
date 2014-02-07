@@ -24,7 +24,7 @@ import db4o.Db4oUtil;
  * @author IsNull
  *
  */
-public class MediaLibraryService implements IMediaLibraryService {
+public class MediaLibraryService implements IMediaLibraryManager {
 
 	private final EventHandlerEx<EventArgsG<MediaLibrary>> libraryAddedEvent = new EventHandlerEx<EventArgsG<MediaLibrary>>();
 	private final EventHandlerEx<EventArgsG<MediaLibrary>> libraryRemovedEvent = new EventHandlerEx<EventArgsG<MediaLibrary>>();

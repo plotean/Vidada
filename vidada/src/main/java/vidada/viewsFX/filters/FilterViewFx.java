@@ -3,6 +3,7 @@ package vidada.viewsFX.filters;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
@@ -87,9 +88,11 @@ public class FilterViewFx extends BorderPane {
 			}
 		});
 
+		ObservableList<MediaType> mediaTypes = FXCollections.observableArrayList();
+		mediaTypes.addAll(MediaType.ANY, MediaType.MOVIE, MediaType.IMAGE);
 
 		cboMediaType.setPromptText("Define mediatype...");
-		cboMediaType.setItems(FXCollections.observableList(Lists.asNoNullList(MediaType.values())));
+		cboMediaType.setItems(mediaTypes);
 		cboMediaType.valueProperty().addListener(new ChangeListener<MediaType>() {
 			@Override 
 			public void changed(ObservableValue ov, MediaType t, MediaType t1) {                

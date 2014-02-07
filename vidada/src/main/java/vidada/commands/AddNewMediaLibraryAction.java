@@ -62,10 +62,11 @@ public class AddNewMediaLibraryAction extends AbstractAction{
 			DatabaseSettings settings = DatabaseSettings.getSettings();
 			library.setIgnoreImages(settings.isIgnoreImages());
 			library.setIgnoreMovies(settings.isIgnoreMovies());
-			mediaService.getLocalMediaStore().getLibraryManager().addLibrary(library);
 
 			DirectoryLocation location = DirectoryLocation.Factory.create(dialog.getFile().toURI());
 			library.setLibraryRoot(location);
+
+			mediaService.getLocalMediaStore().getLibraryManager().addLibrary(library);
 			System.out.println("AddNewMediaLibraryAction: Added media libarary @" + library.getMediaDirectory());
 
 		}else {

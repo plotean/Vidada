@@ -70,7 +70,7 @@ public class BreadCrumbNavigationDecorator {
 		if(current != null) homeNode.getChildren().add(current);
 		if(targetNode == null) targetNode = homeNode;
 
-		breadCrumbBar.setPathTarget(targetNode);
+		breadCrumbBar.setSelectedCrumb(targetNode);
 	}
 
 }

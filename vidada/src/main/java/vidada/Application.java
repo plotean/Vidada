@@ -22,7 +22,7 @@ import vidada.images.RawImageFactoryFx;
 import vidada.model.ServiceProvider;
 import vidada.model.ServiceProvider.IServiceRegisterer;
 import vidada.model.media.IMediaService;
-import vidada.model.media.store.libraries.IMediaLibraryService;
+import vidada.model.media.store.libraries.IMediaLibraryManager;
 import vidada.model.security.ICredentialManager;
 import vidada.model.security.ICredentialManager.CredentialsChecker;
 import vidada.model.security.IPrivacyService;
@@ -139,7 +139,7 @@ public class Application extends  javafx.application.Application {
 			settings.persist();
 		}
 
-		IMediaLibraryService libService = ServiceProvider.Resolve(IMediaService.class).getLocalMediaStore().getLibraryManager();
+		IMediaLibraryManager libService = ServiceProvider.Resolve(IMediaService.class).getLocalMediaStore().getLibraryManager();
 
 		//
 		// Wizards

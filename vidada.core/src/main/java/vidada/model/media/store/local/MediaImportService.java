@@ -15,7 +15,7 @@ import vidada.model.media.MediaHashUtil;
 import vidada.model.media.MediaItem;
 import vidada.model.media.source.IMediaSource;
 import vidada.model.media.source.MediaSourceLocal;
-import vidada.model.media.store.libraries.IMediaLibraryService;
+import vidada.model.media.store.libraries.IMediaLibraryManager;
 import vidada.model.media.store.libraries.MediaLibrary;
 import vidada.model.tags.ILocalTagService;
 import vidada.model.tags.autoTag.AutoTagSupport;
@@ -36,7 +36,7 @@ import com.db4o.query.Query;
 public class MediaImportService implements IMediaImportStrategy {
 
 	private final LocalMediaStore localStore;
-	private final IMediaLibraryService libraryManager;
+	private final IMediaLibraryManager libraryManager;
 	private final ILocalTagService localTagManager;
 
 	private MediaHashUtil mediaHashUtil;

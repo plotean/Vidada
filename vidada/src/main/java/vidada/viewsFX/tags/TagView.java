@@ -90,8 +90,8 @@ public class TagView extends HBox implements IDataContext<TagViewModel> {
 			tagname.setText("<no datacontext>");
 			setStateStyle(TagState.Allowed);
 		}
-
 	}
+
 	private void setStateStyle(TagState state){
 		String currentStyle = TAGVIEW_ID + "-"+ state.toString().toLowerCase();
 		//System.out.println("set tag style: " + currentStyle);

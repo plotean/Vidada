@@ -86,7 +86,7 @@ public class PrimaryMediaExplorerFX extends BorderPane {
 
 			@Override
 			public void handle(BreadCrumbActionEvent<LocationBreadCrumb> crumbArgs) {
-				LocationBreadCrumb crumb = crumbArgs.getCrumbModel().getValue();
+				LocationBreadCrumb crumb = crumbArgs.getSelectedCrumb().getValue();
 
 				if(crumb instanceof HomeLocationBreadCrumb){
 					System.out.println("home pressed...");

@@ -17,7 +17,7 @@ import vidada.model.media.movies.MovieMediaItem;
 import vidada.model.media.source.IMediaSource;
 import vidada.model.media.source.MediaSourceLocal;
 import vidada.model.media.store.IMediaStore;
-import vidada.model.media.store.libraries.IMediaLibraryService;
+import vidada.model.media.store.libraries.IMediaLibraryManager;
 import vidada.model.media.store.libraries.MediaLibrary;
 import vidada.model.media.store.libraries.MediaLibraryService;
 import vidada.model.tags.ILocalTagService;
@@ -45,7 +45,7 @@ public class LocalMediaStore implements IMediaStore {
 	transient private final LocalImageCacheManager localImageCacheManager = new LocalImageCacheManager();
 
 	transient private final MediaRepository mediaRepository = new MediaRepository();
-	transient private final IMediaLibraryService libraryService = new MediaLibraryService();
+	transient private final IMediaLibraryManager libraryService = new MediaLibraryService();
 	transient private final ILocalTagService localTagService = new LocalTagService();
 
 
@@ -148,7 +148,7 @@ public class LocalMediaStore implements IMediaStore {
 		mediaRepository.delete(media);
 	}
 
-	public IMediaLibraryService getLibraryManager(){
+	public IMediaLibraryManager getLibraryManager(){
 		return libraryService;
 	}
 
@@ -286,13 +286,4 @@ public class LocalMediaStore implements IMediaStore {
 
 		return mediaData;
 	}
-
-
-
-
-
-
-
-
-
 }
