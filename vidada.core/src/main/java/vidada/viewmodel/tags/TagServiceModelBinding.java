@@ -54,7 +54,7 @@ public class TagServiceModelBinding {
 
 	private void refreshModel(){
 		tagsStateModel.clear();
-		tagsStateModel.addAll(tagservice.getAllTags());
+		tagsStateModel.addAll(tagservice.getUsedTags());
 	}
 
 }

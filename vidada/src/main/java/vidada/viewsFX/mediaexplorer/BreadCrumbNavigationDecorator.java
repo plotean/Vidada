@@ -1,10 +1,8 @@
 package vidada.viewsFX.mediaexplorer;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import javafx.scene.control.TreeItem;
 
-import org.controlsfx.control.breadcrumbs.BreadCrumbBar;
+import org.controlsfx.control.BreadCrumbBar;
 
 import archimedesJ.io.locations.DirectoryLocation;
 
@@ -38,16 +36,22 @@ public class BreadCrumbNavigationDecorator {
 	}
 
 	private void updateModel(){
-		breadCrumbBar.getCrumbs().clear();
-
-		List<LocationBreadCrumb> crumbs = new ArrayList<LocationBreadCrumb>();
+		TreeItem<LocationBreadCrumb> targetNode = null;
+		TreeItem<LocationBreadCrumb> current = null;
 
 		if(root != null && directory != null){
 			DirectoryLocation dir = directory;
 
 			boolean foundHome = false;
 			while(dir != null){
-				crumbs.add(new LocationBreadCrumb(dir));
+
+				TreeItem<LocationBreadCrumb> p = new TreeItem<>(new LocationBreadCrumb(dir));
+				if(current != null) 
+					p.getChildren().add(current);
+				else
+					targetNode = p;
+				current = p;
+
 				if(dir.equals(root)){
 					foundHome = true;
 					break;
@@ -62,10 +66,11 @@ public class BreadCrumbNavigationDecorator {
 				System.err.println("Target: " + directory);
 			}
 		}
-		crumbs.add(home); // add home crumb
+		TreeItem<LocationBreadCrumb> homeNode = new TreeItem<LocationBreadCrumb>(home);
+		if(current != null) homeNode.getChildren().add(current);
+		if(targetNode == null) targetNode = homeNode;
 
-		Collections.reverse(crumbs);
-		breadCrumbBar.getCrumbs().addAll(crumbs);
+		breadCrumbBar.setSelectedCrumb(targetNode);
 	}
 
 }

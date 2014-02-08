@@ -16,22 +16,8 @@ import archimedesJ.images.LoadPriority;
 
 public class ImageContainerBase implements ImageContainer, Runnable {
 
-	/**
-	 * Delegate for a image change event
-	 * @author IsNull
-	 *
-	 */
-	public static interface ImageChangedCallback {
-		/**
-		 * Occurs when the image has changed
-		 * @param container
-		 */
-		void imageChanged(ImageContainer container);
-	}
-
 	// final
 	transient private final ExecutorService imageLoaderPool;
-	transient private final ImageChangedCallback  changedCallback;
 	transient private final Lock imageLoaderLock = new ReentrantLock();
 	transient private final Object requestImageLock = new Object();
 
@@ -55,10 +41,9 @@ public class ImageContainerBase implements ImageContainer, Runnable {
 	 * @param imageLoader The Image loader task (which will be called async) 
 	 * @param changedCallback Callback event when the image has changed
 	 */
-	public ImageContainerBase(ExecutorService imageLoaderPool, Callable<IMemoryImage> imageLoader, ImageChangedCallback  changedCallback){
+	public ImageContainerBase(ExecutorService imageLoaderPool, Callable<IMemoryImage> imageLoader){
 		this.imageLoaderPool = imageLoaderPool;
 		this.imageLoader = imageLoader;
-		this.changedCallback = changedCallback;
 	}
 
 
@@ -153,8 +138,6 @@ public class ImageContainerBase implements ImageContainer, Runnable {
 	 */
 	protected void onImageChanged(){
 		ImageChangedEvent.fireEvent(this, EventArgs.Empty);
-		if(changedCallback != null)
-			changedCallback.imageChanged(this);
 	}
 
 
@@ -168,7 +151,8 @@ public class ImageContainerBase implements ImageContainer, Runnable {
 				if(loader != null)
 					loader.get();
 			} catch (InterruptedException e) {
-				e.printStackTrace();
+				//e.printStackTrace();
+				System.out.println("ImageContainerBase:: Image loading canceled: " + e.getMessage());
 			} catch (ExecutionException e) {
 				e.printStackTrace();
 			}

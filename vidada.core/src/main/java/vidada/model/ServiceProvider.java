@@ -1,15 +1,13 @@
 package vidada.model;
 
 
-import vidada.model.connectivity.ConnectivityService;
-import vidada.model.connectivity.IConnectivityService;
-import vidada.model.images.IImageService;
-import vidada.model.images.ImageServiceBase;
+import vidada.model.images.IThumbnailService;
+import vidada.model.images.ThumbnailService;
 import vidada.model.images.cache.crypto.CryptedCacheUtil;
-import vidada.model.libraries.IMediaLibraryService;
-import vidada.model.libraries.MediaLibraryService;
 import vidada.model.media.IMediaService;
 import vidada.model.media.MediaService;
+import vidada.model.media.store.IMediaStoreService;
+import vidada.model.media.store.MediaStoreService;
 import vidada.model.security.AuthenticationRequieredException;
 import vidada.model.security.CredentialManager;
 import vidada.model.security.ICredentialManager;
@@ -98,14 +96,15 @@ public class ServiceProvider implements ILocator {
 
 		System.out.println("config services...");
 
-		serviceLocator.registerSingleton(IConnectivityService.class, ConnectivityService.class);
+		//serviceLocator.registerSingleton(IConnectivityService.class, ConnectivityService.class);
 		serviceLocator.registerSingleton(IPrivacyService.class, PrivacyService.class);
 		serviceLocator.registerSingleton(ISelectionService.class, SelectionService.class);
-		serviceLocator.registerSingleton(IMediaLibraryService.class, MediaLibraryService.class);
 		serviceLocator.registerSingleton(IMediaService.class, MediaService.class);
 		serviceLocator.registerSingleton(ITagService.class, TagService.class);
-		serviceLocator.registerSingleton(IImageService.class, ImageServiceBase.class);
+		serviceLocator.registerSingleton(IThumbnailService.class, ThumbnailService.class);
 		serviceLocator.registerSingleton(ICredentialManager.class, CredentialManager.class);
+		serviceLocator.registerSingleton(IMediaStoreService.class, MediaStoreService.class);
+
 
 		//serviceLocator.registerSingleton(IImageCacheService.class, VidadaImageCache.class);
 

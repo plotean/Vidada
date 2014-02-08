@@ -2,14 +2,13 @@ package vidada.model.tags.autoTag;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import vidada.model.media.MediaItem;
-import vidada.model.media.source.MediaSource;
+import vidada.model.media.source.IMediaSource;
 import vidada.model.tags.Tag;
-import vidada.model.tags.TagKeyoword;
 import archimedesJ.exceptions.NotSupportedException;
 import archimedesJ.util.Debug;
 import archimedesJ.util.Lists;
@@ -24,28 +23,29 @@ public class KeywordBasedTagGuesser  implements ITagGuessingStrategy {
 	private static String splitRegEx = "\\W|_";	
 	private static String splitPathRegex = "/|\\\\";
 
-	private List<Tag> tags;
+	private Collection<Tag> tags;
 
 	/**
 	 * Creates a new 
 	 * @param tagService
 	 */
-	public KeywordBasedTagGuesser(List<Tag> tags){
+	public KeywordBasedTagGuesser(Collection<Tag> tags){
 		this.tags = tags;
 		System.out.println("KeywordBasedTagGuesser using tag-set:");
 		Debug.printAll(tags);
 
 		if(tags.isEmpty())
 			throw new NotSupportedException("tags: KeywordBasedTagGuesser needs at least one tag in the search set.");
-
 	}
 
 	@Override
 	public Set<Tag> guessTags(MediaItem media) {
 		Set<Tag> matchingTags = new HashSet<Tag>();
 
+		final String[] possibleTags = getPossibleTagStrings(media);
+
 		for (Tag tag : tags) {
-			if(doesMediaMatchTag(media, tag)){
+			if(isTagMatch(possibleTags, tag)){
 				//System.out.println("media " + media + " --> matches Tag: " + tag);
 				matchingTags.add(tag);
 			}
@@ -54,10 +54,18 @@ public class KeywordBasedTagGuesser  implements ITagGuessingStrategy {
 		return matchingTags;
 	}
 
-	private boolean doesMediaMatchTag(MediaItem media, Tag tag){
+	private boolean isTagMatch(String[] possibleTags, Tag tag){
+		for (int i = 0; i < possibleTags.length; i++) {
+			if(tag.getName().equals(possibleTags[i]))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
 
-		MediaSource source = media.getSource();
-
+	private String[] getPossibleTagStrings(MediaItem media){
+		IMediaSource source = media.getSource();
 
 		// TODO Optimize / cache tokens
 
@@ -69,8 +77,6 @@ public class KeywordBasedTagGuesser  implements ITagGuessingStrategy {
 		}
 		String absolutePathString = path.toLowerCase();
 
-		//System.out.println("path: " + absolutePathString);
-
 		//split the path in single tokens
 		String[] tokens = absolutePathString.split(splitRegEx);
 		//split the path in node tokens
@@ -78,21 +84,7 @@ public class KeywordBasedTagGuesser  implements ITagGuessingStrategy {
 		//combine the tokens to provide one single source file
 		String [] combinedTokens = Lists.concat(tokens, pathTokens);
 
-		//Debug.printAll("combinedTokens:", combinedTokens);
-
-		for (TagKeyoword keyword : tag.getKeyWords()) {
-			for (int i = 0; i < combinedTokens.length; i++) {
-				if(keyword.isMatch(combinedTokens[i]))
-				{
-					return true;
-				}
-			}
-		}
-
-
-		return false;
+		return combinedTokens;
 	}
-
-
 
 }

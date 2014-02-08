@@ -3,7 +3,6 @@ package vidada.views.tags;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
-import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -14,17 +13,10 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingWorker;
 
-import vidada.data.SessionManager;
-import vidada.model.ServiceProvider;
-import vidada.model.media.IMediaService;
-import vidada.model.media.MediaItem;
-import vidada.model.tags.ITagService;
-import vidada.model.tags.autoTag.AutoTagSupport;
-import vidada.model.tags.autoTag.ITagGuessingStrategy;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import archimedesJ.threading.IProgressListener;
 import archimedesJ.threading.ProgressEventArgs;
 
-import com.db4o.ObjectContainer;
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
@@ -33,8 +25,8 @@ import com.jgoodies.forms.layout.RowSpec;
 @SuppressWarnings("serial")
 public class AutoTagPanel extends JPanel{
 
-	private final IMediaService mediaDataService = ServiceProvider.Resolve(IMediaService.class);
-	private final ITagService tagService = ServiceProvider.Resolve(ITagService.class);
+	// private final IMediaService mediaDataService = ServiceProvider.Resolve(IMediaService.class);
+	// private final ITagService tagService = ServiceProvider.Resolve(ITagService.class);
 
 	private Action autoApplyTagsAction;
 
@@ -158,6 +150,8 @@ public class AutoTagPanel extends JPanel{
 	 */
 	private void updateAllMediadataTags(IProgressListener progressListener){
 
+		throw new NotImplementedException();
+		/*
 		List<MediaItem> allMediaDatas = mediaDataService.getAllMediaData();
 		int allMediaDataSize = allMediaDatas.size();
 
@@ -165,22 +159,22 @@ public class AutoTagPanel extends JPanel{
 
 		System.out.println("automatically guessing tags for (" + allMediaDataSize + ") medias - " + tagGuesser);
 
-		ObjectContainer session =  SessionManager.getObjectContainer();
-
+		List<MediaItem> updatedMedias = new ArrayList<MediaItem>(allMediaDataSize);
 		MediaItem mediaData;
 		for (int i = 0; i < allMediaDataSize; i++) {
 			mediaData = allMediaDatas.get(i);
 
 			if( AutoTagSupport.updateTags(tagGuesser, mediaData) ){
-				session.store(mediaData);
+				updatedMedias.add(mediaData);
 				System.out.println("added tags to media " + mediaData);
 			}
 			int progress = (int)(100d / allMediaDataSize * (double)i);
 			progressListener.currentProgress(new ProgressEventArgs(progress, ""));
 		}
-
+		mediaDataService.update(updatedMedias);
 
 		progressListener.currentProgress(new ProgressEventArgs(100, ""));
+		 */
 	}
 
 }

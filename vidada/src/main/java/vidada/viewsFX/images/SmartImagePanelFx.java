@@ -10,7 +10,6 @@ import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import vidada.model.images.ImageContainerBase;
-import vidada.model.images.ImageContainerBase.ImageChangedCallback;
 import vidada.viewsFX.mediabrowsers.ImagePane;
 import vidada.viewsFX.util.AsyncImageProperty;
 import archimedesJ.events.EventArgs;
@@ -79,17 +78,11 @@ public class SmartImagePanelFx extends BorderPane {
 
 	private ImageContainer getContainer(final ISmartImage image){
 		ImageContainerBase container = new ImageContainerBase(pool, new Callable<IMemoryImage>() {
-
 			@Override
 			public IMemoryImage call() throws Exception {
 				return image.getImage();
 			}
-		}, new ImageChangedCallback(){
-
-			@Override
-			public void imageChanged(ImageContainer container) {
-				System.out.println("SmartImagePanelFx:ImageContainerBase imageChanged");
-			}});
+		});
 
 		return container;
 	}

@@ -3,10 +3,10 @@ package vidada.model.media.movies;
 import java.beans.Transient;
 import java.net.URI;
 
-import vidada.model.libraries.MediaLibrary;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaType;
-import vidada.model.media.source.MediaSource;
+import vidada.model.media.source.IMediaSource;
+import vidada.model.media.store.libraries.MediaLibrary;
 import vidada.model.video.Video;
 import vidada.model.video.VideoInfo;
 import archimedesJ.io.locations.ResourceLocation;
@@ -161,7 +161,7 @@ public class MovieMediaItem extends MediaItem implements Cloneable {
 	 */
 	@Transient
 	public Video getVideo() {
-		MediaSource source = getSource();
+		IMediaSource source = getSource();
 		if(source != null && source.isAvailable())
 		{
 			ResourceLocation path = source.getResourceLocation();

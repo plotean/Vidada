@@ -2,7 +2,7 @@ package vidada.model.security;
 
 import java.util.List;
 
-import vidada.data.SessionManager;
+import vidada.data.db4o.SessionManagerDB4O;
 import vidada.model.ServiceProvider;
 import archimedesJ.exceptions.NotSupportedException;
 import archimedesJ.security.CredentialType;
@@ -29,7 +29,7 @@ public class CredentialManager implements ICredentialManager {
 	public void storeCredentials(String domain, Credentials credentials)
 			throws AuthenticationRequieredException {
 
-		ObjectContainer db =  SessionManager.getObjectContainer();
+		ObjectContainer db =  SessionManagerDB4O.getObjectContainer();
 
 		StoredCredentials existingCredentials = findCredentials(domain);
 		if(existingCredentials != null){
@@ -49,7 +49,7 @@ public class CredentialManager implements ICredentialManager {
 	public boolean removeCredentials(String domain) {
 		StoredCredentials credentials = findCredentials(domain);
 		if(credentials != null){
-			ObjectContainer db =  SessionManager.getObjectContainer();
+			ObjectContainer db =  SessionManagerDB4O.getObjectContainer();
 			db.delete(credentials);
 			db.commit();
 			return true;
@@ -60,7 +60,7 @@ public class CredentialManager implements ICredentialManager {
 
 	@SuppressWarnings("serial")
 	private StoredCredentials findCredentials(final String domain){
-		ObjectContainer db =  SessionManager.getObjectContainer();
+		ObjectContainer db =  SessionManagerDB4O.getObjectContainer();
 
 		return Lists.getFirst((db.query(new Predicate<StoredCredentials>() {
 			@Override
@@ -74,7 +74,7 @@ public class CredentialManager implements ICredentialManager {
 	public List<StoredCredentials> getAllStoredCredentials()
 			throws AuthenticationRequieredException {
 
-		ObjectContainer db =  SessionManager.getObjectContainer();
+		ObjectContainer db =  SessionManagerDB4O.getObjectContainer();
 		Query query = db.query();
 		query.constrain(StoredCredentials.class);
 		List<StoredCredentials> libs = query.execute();
@@ -83,7 +83,7 @@ public class CredentialManager implements ICredentialManager {
 
 	@Override
 	public void clearCredentialStore() throws AuthenticationRequieredException {
-		ObjectContainer db =  SessionManager.getObjectContainer();
+		ObjectContainer db =  SessionManagerDB4O.getObjectContainer();
 		for (StoredCredentials credentials : getAllStoredCredentials()) {
 			db.delete(credentials);
 		}

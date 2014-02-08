@@ -1,6 +1,6 @@
 package vidada.model.filters;
 
-import java.util.List;
+import java.util.Collection;
 
 import archimedesJ.events.EventArgsG;
 import archimedesJ.events.EventHandlerEx;
@@ -11,15 +11,13 @@ import archimedesJ.threading.CancellationTokenSource.CancellationToken;
 import archimedesJ.threading.CancellationTokenSource.OperationCanceledException;
 import archimedesJ.util.Lists;
 
-import com.db4o.query.Query;
-
 /**
  * Represents a cancelable task which executes a query
  * @author IsNull
  *
  * @param <T>
  */
-public class AsyncFetchData<T> extends CancelableTask<List<T>>{
+public abstract class AsyncFetchData<T> extends CancelableTask<Collection<T>>{
 
 
 	public static class CancelTokenEventArgs<T>  extends EventArgsG<T>
@@ -36,20 +34,19 @@ public class AsyncFetchData<T> extends CancelableTask<List<T>>{
 		}
 	}
 
-	private EventHandlerEx<CancelTokenEventArgs<List<T>>> fetchingCompleteEvent = new  EventHandlerEx<CancelTokenEventArgs<List<T>>>();
+	private EventHandlerEx<CancelTokenEventArgs<Collection<T>>> fetchingCompleteEvent = new  EventHandlerEx<CancelTokenEventArgs<Collection<T>>>();
 
 	/**
 	 * Raised when the fetching of the data has been completed
 	 * @return
 	 */
-	public IEvent<CancelTokenEventArgs<List<T>>> getFetchingCompleteEvent(){return fetchingCompleteEvent; }
+	public IEvent<CancelTokenEventArgs<Collection<T>>> getFetchingCompleteEvent(){return fetchingCompleteEvent; }
 
-	private final Query query;
+
 	private Predicate<T> postFilter;
 
-	public AsyncFetchData(Query query, CancellationToken token){
+	public AsyncFetchData(CancellationToken token){
 		super(token);
-		this.query = query;
 	}
 
 	public void setPostFilter(Predicate<T> filter){
@@ -57,35 +54,30 @@ public class AsyncFetchData<T> extends CancelableTask<List<T>>{
 	}
 
 	@Override
-	public List<T> runCancelable(CancellationToken token) throws OperationCanceledException {
+	public Collection<T> runCancelable(CancellationToken token) throws OperationCanceledException {
 
-		List<T> fetchedData = null;
+		Collection<T> fetchedData = null;
 
 		token.ThrowIfCancellationRequested();
 
 		if(!token.isCancellationRequested())
 		{
 			try {
-				System.out.println("fetching media datas...");
-				fetchedData = query.execute();
-				fetchedData = Lists.toList(fetchedData);
-				System.out.println("fetched " + fetchedData.size() + "items" );
+				fetchedData = fetchData(token);
+
 				if(postFilter != null){
 					System.out.println("applying post filter to media datas...");
 					fetchedData = Lists.filter(fetchedData, postFilter);
 					System.out.println("filter done: item count is " + fetchedData.size());
 				}
+
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
-
-
-		token.ThrowIfCancellationRequested();
-
-		fetchingCompleteEvent.fireEvent(this, new CancelTokenEventArgs<List<T>>(fetchedData, token));
-
+		fetchingCompleteEvent.fireEvent(this, new CancelTokenEventArgs<Collection<T>>(fetchedData, token));
 		return fetchedData;
 	}
 
+	protected abstract Collection<T> fetchData(CancellationToken token) throws OperationCanceledException; 
 }

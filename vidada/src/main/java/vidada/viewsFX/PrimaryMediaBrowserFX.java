@@ -33,8 +33,9 @@ import archimedesJ.services.ISelectionManager;
  */
 public class PrimaryMediaBrowserFX extends BorderPane {
 
-	private final ITagService tagService;
 	private final FilterModel filterModel;
+
+	private final ITagService tagService;
 	private final MediaBrowserModel browserModel;
 
 

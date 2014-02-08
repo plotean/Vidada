@@ -1,15 +1,8 @@
 package vidada.model.media;
 
-import java.util.List;
+import java.util.Set;
 
-import org.apache.commons.io.filefilter.IOFileFilter;
-
-import vidada.model.libraries.MediaLibrary;
-import archimedesJ.data.events.CollectionEventArg;
-import archimedesJ.data.hashing.IFileHashAlgorythm;
-import archimedesJ.events.EventArgsG;
-import archimedesJ.events.IEvent;
-import archimedesJ.io.locations.ResourceLocation;
+import vidada.model.media.store.local.LocalMediaStore;
 import archimedesJ.services.IService;
 
 public interface IMediaService extends IService{
@@ -20,102 +13,32 @@ public interface IMediaService extends IService{
 	/**
 	 * Raised when medias have changed in any way
 	 * @return
-	 */
-	public IEvent<CollectionEventArg<MediaItem>> getMediasChangedEvent();
 
+	public IEvent<CollectionEventArg<MediaItem>> getMediasChangedEvent();
+	 */
 	/**
 	 * Raised when the given Media Data has been changed
 	 * @return
-	 */
+
 	public abstract IEvent<EventArgsG<MediaItem>> getMediaDataChangedEvent();
-
-
-
-	/**
-	 * Add the given mediadata to this service and persist it.
-	 * @param mediadata
 	 */
-	public abstract void addMediaData(MediaItem mediadata);
+
+	// TODO: Add paging support in query
+	// int page, int pagesize
+	public Set<MediaItem> query(MediaQuery qry);
 
 	/**
-	 * Removes the given mediadata from this service
-	 * @param mediadata
+	 * Update the media
+	 * @param media
 	 */
-	public abstract void removeMediaData(MediaItem mediadata);
-
-
-
-	/**
-	 * Add the given mediadatas to this service and persist it.
-	 * @param mediadata
-	 */
-	public abstract void addMediaData(Iterable<MediaItem> mediadata);
-
-	/**
-	 * Removes the given mediadata from this service
-	 * @param mediadata
-	 */
-	public abstract void removeMediaData(Iterable<MediaItem> mediadata);
-
-	/**
-	 * Persists the given mediadata
-	 * @param mediadata
-	 */
-	public abstract void update(MediaItem mediadata);
+	public void update(MediaItem media);
 
 
 	/**
-	 * Persists the given media datas
-	 * @param mediadata
-	 */
-	public abstract void update(Iterable<MediaItem> mediadata);
-
-
-	/**
-	 * Returns all mediadata in the scope of this MediaService
+	 * Gets the unique local media store
 	 * @return
 	 */
-	public abstract List<MediaItem> getAllMediaData();
+	public abstract LocalMediaStore getLocalMediaStore();
 
-	/**
-	 * Searches for a MediaData which matches the given file
-	 * @param file
-	 * @return
-	 */
-	public abstract MediaItem findMediaData(ResourceLocation file);
-
-
-	/**
-	 * Build a new Media from the given mediaLocation. The created media will not be added to this media service. 
-	 * 
-	 * Warning: This method will NOT check if already a media exists for this media-file!
-	 * 
-	 * @param mediaLocation
-	 * @param parentlibrary
-	 * @param mediahash The hash of the media. If null, will be calulcated by this method.
-	 * @return
-	 */
-	public abstract MediaItem buildMedia(ResourceLocation mediaLocation, MediaLibrary parentlibrary, String mediahash);
-
-
-	/**
-	 * Searches for a media in the media database which matches the given file.
-	 * If no match was found, a new media item will be created and returned.
-	 * 
-	 * If persist is true, a new created media will be added to this media service.
-	 * 
-	 * @param file
-	 * @return
-	 */
-	public abstract MediaItem findOrCreateMedia(ResourceLocation file, boolean persist);
-
-
-	public abstract IOFileFilter getAllMediaFileFilter();
-
-	public abstract IFileHashAlgorythm getFileHashAlgorythm();
-
-	public abstract IMediaImportService getMediaImporter();
-
-	public abstract void removeAll();
 
 }

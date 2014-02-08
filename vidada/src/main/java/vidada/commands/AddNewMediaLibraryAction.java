@@ -9,8 +9,8 @@ import javax.swing.Action;
 import javax.swing.JDialog;
 
 import vidada.model.ServiceProvider;
-import vidada.model.libraries.IMediaLibraryService;
-import vidada.model.libraries.MediaLibrary;
+import vidada.model.media.IMediaService;
+import vidada.model.media.store.libraries.MediaLibrary;
 import vidada.model.settings.DatabaseSettings;
 import vidada.views.ImageResources;
 import archimedesJ.expressions.Predicate;
@@ -27,7 +27,7 @@ import archimedesJ.swing.components.ChooseFileDialog;
 @SuppressWarnings("serial")
 public class AddNewMediaLibraryAction extends AbstractAction{
 
-	private final IMediaLibraryService libService = ServiceProvider.Resolve(IMediaLibraryService.class);
+	private final IMediaService mediaService = ServiceProvider.Resolve(IMediaService.class);
 
 	private final Window owner;
 
@@ -62,10 +62,11 @@ public class AddNewMediaLibraryAction extends AbstractAction{
 			DatabaseSettings settings = DatabaseSettings.getSettings();
 			library.setIgnoreImages(settings.isIgnoreImages());
 			library.setIgnoreMovies(settings.isIgnoreMovies());
-			libService.addLibrary(library);
 
 			DirectoryLocation location = DirectoryLocation.Factory.create(dialog.getFile().toURI());
 			library.setLibraryRoot(location);
+
+			mediaService.getLocalMediaStore().getLibraryManager().addLibrary(library);
 			System.out.println("AddNewMediaLibraryAction: Added media libarary @" + library.getMediaDirectory());
 
 		}else {

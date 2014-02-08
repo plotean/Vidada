@@ -42,8 +42,6 @@ public class TagView extends HBox implements IDataContext<TagViewModel> {
 		tagCircle.setRadius(4);
 
 		tagCircle.setId("tag-dot");
-		//tagCircle.setFill(Color.LIGHTGREY);
-		//tagCircle.setStroke(Color.web("#707070"));
 
 		tagname = new Label("Cool");
 		tagname.setAlignment(Pos.CENTER);
@@ -90,8 +88,8 @@ public class TagView extends HBox implements IDataContext<TagViewModel> {
 			tagname.setText("<no datacontext>");
 			setStateStyle(TagState.Allowed);
 		}
-
 	}
+
 	private void setStateStyle(TagState state){
 		String currentStyle = TAGVIEW_ID + "-"+ state.toString().toLowerCase();
 		//System.out.println("set tag style: " + currentStyle);
@@ -106,8 +104,5 @@ public class TagView extends HBox implements IDataContext<TagViewModel> {
 			updateTagView();
 		}
 	};
-
-
-
 
 }

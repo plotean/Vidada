@@ -7,7 +7,7 @@ import vidada.model.ServiceProvider;
 import vidada.model.media.MediaItem;
 import vidada.model.media.images.ImageMediaItem;
 import vidada.model.media.movies.MovieMediaItem;
-import vidada.model.media.source.MediaSource;
+import vidada.model.media.source.IMediaSource;
 import vidada.model.video.Video;
 import archimedesJ.exceptions.NotSupportedException;
 import archimedesJ.geometry.Size;
@@ -29,8 +29,10 @@ public class ThumbImageExtractor implements IThumbImageCreator {
 			return true;
 		}else if(media instanceof MovieMediaItem){
 			return ((MovieMediaItem) media).canCreateThumbnail() && Video.isGenericEncoderPresent();
-		}else
-			throw new NotSupportedException("Unknown media type: " + media.getClass().getName());
+		}else{
+			System.err.println("ThumbImageExtractor::canExtractThumb: Unknown media type: " + media.getClass().getName());
+			return false;
+		}
 	}
 
 
@@ -42,9 +44,9 @@ public class ThumbImageExtractor implements IThumbImageCreator {
 		IMemoryImage image = null;
 
 		if(media instanceof ImageMediaItem){
-
+			image = extractImageThumb((ImageMediaItem)media, size);
 		}else if(media instanceof MovieMediaItem){
-
+			image = extractMovieThumb((MovieMediaItem)media, size);
 		}else
 			throw new NotSupportedException("Unknown media type: " + media.getClass().getName());
 
@@ -58,26 +60,28 @@ public class ThumbImageExtractor implements IThumbImageCreator {
 		IMemoryImage bufferedImage = null;
 
 
-		MediaSource source = media.getSource();
+		IMediaSource source = media.getSource();
 
-		ResourceLocation filePath = source.getResourceLocation();
-		if (filePath != null && filePath.exists()) {
-			System.out.println("reading image...");
-			InputStream is = null;
-			try {
-				is = filePath.openInputStream();
-				bufferedImage = imageFactory.createImage(is);
-				//if(!hasResolution())
-				//	setResolution(new Size(bufferedImage.getWidth(), bufferedImage.getHeight()));
-				//bufferedImage = bufferedImage.rescale(size.width, size.height);
-			} catch (Exception e) {
-				System.err.println("Can not read image" + filePath.toString());
-			}finally{
-				if(is != null){
-					try {
-						is.close();
-					} catch (IOException e) {
-						e.printStackTrace();
+		if(source != null){
+			ResourceLocation filePath = source.getResourceLocation();
+			if (filePath != null && filePath.exists()) {
+				System.out.println("reading image...");
+				InputStream is = null;
+				try {
+					is = filePath.openInputStream();
+					bufferedImage = imageFactory.createImage(is);
+					//if(!hasResolution())
+					//	setResolution(new Size(bufferedImage.getWidth(), bufferedImage.getHeight()));
+					//bufferedImage = bufferedImage.rescale(size.width, size.height);
+				} catch (Exception e) {
+					System.err.println("Can not read image" + filePath.toString());
+				}finally{
+					if(is != null){
+						try {
+							is.close();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
 					}
 				}
 			}
@@ -96,11 +100,8 @@ public class ThumbImageExtractor implements IThumbImageCreator {
 	public IMemoryImage extractMovieThumb(MovieMediaItem media, Size size){
 		IMemoryImage frame = null;
 
-		// first, remove old cached images
-		//imageService.removeImage(this);
-
 		float pos;
-
+		// TODO Maybe move to media?
 		if (media.getPreferredThumbPosition() != MovieMediaItem.INVALID_POSITION) {
 			pos = media.getPreferredThumbPosition();
 		} else if (media.getCurrentThumbPosition() != MovieMediaItem.INVALID_POSITION) {

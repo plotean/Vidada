@@ -5,10 +5,10 @@ import java.io.InputStream;
 
 import org.securityvision.metadata.MetaDataNotSupportedException;
 
-import vidada.model.ServiceProvider;
 import vidada.model.metadata.MediaMetaAttribute;
 import vidada.model.metadata.MetaDataSupport;
 import vidada.model.settings.GlobalSettings;
+import archimedesJ.data.hashing.FileHashAlgorythms;
 import archimedesJ.data.hashing.IFileHashAlgorythm;
 import archimedesJ.io.locations.ResourceLocation;
 
@@ -39,11 +39,11 @@ public class MediaHashUtil {
 	}
 
 	private MediaHashUtil(){
-		this(ServiceProvider.Resolve(IMediaService.class));
+		this(FileHashAlgorythms.instance().getButtikscheHashAlgorythm());
 	}
 
-	public MediaHashUtil(IMediaService mediaService){
-		fileHashAlgorythm = mediaService.getFileHashAlgorythm();
+	public MediaHashUtil(IFileHashAlgorythm fileHashAlgorythm){
+		this.fileHashAlgorythm = fileHashAlgorythm;
 
 		if(GlobalSettings.getInstance().isUsingMetaData())
 		{

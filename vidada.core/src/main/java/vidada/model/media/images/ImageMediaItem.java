@@ -5,10 +5,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 
-import vidada.model.libraries.MediaLibrary;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaType;
-import vidada.model.media.source.MediaSource;
+import vidada.model.media.source.IMediaSource;
+import vidada.model.media.store.libraries.MediaLibrary;
 import archimedesJ.data.hashing.FileHashAlgorythms;
 import archimedesJ.data.hashing.IFileHashAlgorythm;
 import archimedesJ.geometry.Size;
@@ -47,24 +47,12 @@ public class ImageMediaItem extends MediaItem {
 		setMediaType(MediaType.IMAGE);
 	}
 
-	/*
-	@Override
-	public void createThumbnailCached(Size size) {
-
-		IMemoryImage frame = readImage(size);
-		if(frame != null)
-			imageService.storeImage(this, frame);
-		else {
-			System.err.println("Reading image failed: " + this);
-		}
-	}*/
-
 	@Override
 	@Transient
 	public void resolveResolution(){
 		try {
 
-			MediaSource source = getSource();
+			IMediaSource source = getSource();
 
 			ResourceLocation imagePath = source.getResourceLocation();
 			if(imagePath != null && imagePath.exists()){

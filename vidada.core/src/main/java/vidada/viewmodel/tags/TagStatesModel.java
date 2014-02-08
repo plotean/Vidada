@@ -1,6 +1,7 @@
 package vidada.viewmodel.tags;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import vidada.model.tags.Tag;
@@ -69,7 +70,7 @@ public class TagStatesModel implements ITagStatesVM {
 	 * @see vidada.model.browser.ITagStatesViewModel#addAll(java.util.List)
 	 */
 	@Override
-	public void addAll(List<Tag> newtags){
+	public void addAll(Collection<Tag> newtags){
 		for (Tag tag : newtags) {
 			addInternal(tag);
 		}
