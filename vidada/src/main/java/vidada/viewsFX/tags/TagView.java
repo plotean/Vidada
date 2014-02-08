@@ -42,8 +42,6 @@ public class TagView extends HBox implements IDataContext<TagViewModel> {
 		tagCircle.setRadius(4);
 
 		tagCircle.setId("tag-dot");
-		//tagCircle.setFill(Color.LIGHTGREY);
-		//tagCircle.setStroke(Color.web("#707070"));
 
 		tagname = new Label("Cool");
 		tagname.setAlignment(Pos.CENTER);
@@ -106,8 +104,5 @@ public class TagView extends HBox implements IDataContext<TagViewModel> {
 			updateTagView();
 		}
 	};
-
-
-
 
 }

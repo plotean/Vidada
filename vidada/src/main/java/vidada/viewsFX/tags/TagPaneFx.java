@@ -1,7 +1,10 @@
 package vidada.viewsFX.tags;
 
+import java.util.Iterator;
+
 import javafx.application.Platform;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import vidada.model.tags.Tag;
@@ -17,6 +20,7 @@ import archimedesJ.expressions.Predicate;
 public class TagPaneFx extends BorderPane {
 
 	private final FlowPane tagsView = new FlowPane();
+	private final Insets tagMargrin = new Insets(5,5,0,0);
 	private ITagStatesVMProvider tagsModel = null;
 	private Predicate<TagViewModel> tagFilter = null;
 
@@ -115,7 +119,7 @@ public class TagPaneFx extends BorderPane {
 
 
 
-	Insets tagMargrin = new Insets(5,5,0,0);
+
 	private synchronized void addTags(Iterable<TagViewModel> tags){
 		for (TagViewModel tag : tags) {
 			addTag(tag);
@@ -158,10 +162,18 @@ public class TagPaneFx extends BorderPane {
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
-				tagsView.getChildren().remove(tag);
+				Iterator<Node> childIterator = tagsView.getChildren().iterator();
+				while (childIterator.hasNext()) {
+					Node child = childIterator.next();
+					if(child instanceof TagView){
+						if(tag.equals(((TagView)child).getDataContext())){
+							childIterator.remove();
+							break;
+						}
+					}
+				}
 			}
 		});
-
 	}
 
 	private synchronized void clearTags(){
@@ -171,7 +183,6 @@ public class TagPaneFx extends BorderPane {
 				tagsView.getChildren().clear();
 			}
 		});
-
 	}
 
 

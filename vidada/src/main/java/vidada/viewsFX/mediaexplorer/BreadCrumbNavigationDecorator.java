@@ -2,7 +2,7 @@ package vidada.viewsFX.mediaexplorer;
 
 import javafx.scene.control.TreeItem;
 
-import org.controlsfx.control.breadcrumbs.BreadCrumbBar;
+import org.controlsfx.control.BreadCrumbBar;
 
 import archimedesJ.io.locations.DirectoryLocation;
 
