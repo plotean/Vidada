@@ -7,14 +7,20 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
 import javafx.scene.control.Control;
 import javafx.scene.control.Skin;
 import javafx.util.Callback;
 
 import org.controlsfx.control.AutoCompletionBinding.ISuggestionRequest;
 
-public class TagItControl<T> extends Control{
+/**
+ * A TagItPanel displays a collection of Tags.
+ * 
+ * It has special features such as the ability to allow the user to add / create new Tags.
+ *
+ * @param <T>
+ */
+public class TagItPanel<T> extends Control{
 
 	/***************************************************************************
 	 *                                                                         *
@@ -23,6 +29,8 @@ public class TagItControl<T> extends Control{
 	 **************************************************************************/
 
 	private final ObservableList<T> tags = FXCollections.observableArrayList();
+
+
 
 	private final ObjectProperty<Callback<T, Node>> tagNodeFactory = new SimpleObjectProperty<>(this, "tagNodeFactory");
 
@@ -37,8 +45,7 @@ public class TagItControl<T> extends Control{
 	private final Callback<T, Node> defaultTagNodeFactory = new Callback<T, Node>(){
 		@Override
 		public Node call(T tagModel) {
-			// TODO
-			return new Button(tagModel != null ? tagModel.toString() : "<null>"); //new TagView(tagModel != null ? tagModel.toString() : "<null>");
+			return new TagControl(tagModel != null ? tagModel.toString() : "<null>");
 		}
 	};
 
@@ -49,8 +56,12 @@ public class TagItControl<T> extends Control{
 	 *                                                                         *
 	 **************************************************************************/
 
-	public TagItControl(){
-
+	/**
+	 * Creates an new TagItPanel
+	 */
+	public TagItPanel(){
+		getStyleClass().add(DEFAULT_STYLE_CLASS);
+		setTagNodeFactory(defaultTagNodeFactory);
 	}
 
 
@@ -156,10 +167,15 @@ public class TagItControl<T> extends Control{
 	 *                                                                         *
 	 **************************************************************************/
 
-	public static final String DEFAULT_STYLE_CLASS = "tagit-control";
+	public static final String DEFAULT_STYLE_CLASS = "tagit-panel";
 
 	@Override
 	protected Skin<?> createDefaultSkin() {
-		return new TagItControlSkin<T>(this);
+		return new TagItPanelSkin<T>(this);
+	}
+
+	/** {@inheritDoc} */
+	@Override protected String getUserAgentStylesheet() {
+		return TagControl.class.getResource("tagitpanel.css").toExternalForm();
 	}
 }

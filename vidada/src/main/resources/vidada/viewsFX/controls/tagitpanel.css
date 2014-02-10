@@ -1,0 +1,29 @@
+
+.tagit-panel {
+    -fx-background-color: white;
+    -fx-border-color: #d3d3d3;
+    -fx-background-radius: 3;
+    -fx-border-radius: 3;
+    -fx-padding: 5;
+}
+
+.tagit-text-field {
+    -fx-background-color: white;
+    -fx-border-color: white;
+    -fx-border-size: 0;
+    -fx-padding: 0;
+
+    -fx-text-fill: black;
+    -fx-font: 12px "Verdana";
+}
+
+.tagit-text-field:focused {
+    -fx-background-color: white;
+    -fx-background-insets: 0;
+    -fx-background-radius: 0;
+}
+
+
+/*
+-fx-padding: 0;
+*/

@@ -8,7 +8,9 @@ import java.util.List;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
+import javafx.geometry.VPos;
 import javafx.scene.Node;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
@@ -21,22 +23,43 @@ import com.sun.javafx.scene.control.behavior.BehaviorBase;
 import com.sun.javafx.scene.control.behavior.KeyBinding;
 import com.sun.javafx.scene.control.skin.BehaviorSkinBase;
 
-public class TagItControlSkin<T> extends BehaviorSkinBase<TagItControl<T>, BehaviorBase<TagItControl<T>>> {
+/**
+ * Skin for tag-it control
+ * @author IsNull
+ *
+ * @param <T>
+ */
+public class TagItPanelSkin<T> extends BehaviorSkinBase<TagItPanel<T>, BehaviorBase<TagItPanel<T>>> {
 
-	private final FlowPane tagsView = new FlowPane();
+	private static final String STYLE_CLASS_TAGIT_TEXTFIELD = "tagit-text-field";
+
+	private final FlowPane layout = new FlowPane();
 	private final Insets tagMargrin = new Insets(5,5,0,0);
 
 	private AutoCompletionBinding<T> autoCompletionBinding;
 	private TextField tagEdit = null;
 
+	/***************************************************************************
+	 *                                                                         *
+	 * Constructor                                                             *
+	 *                                                                         *
+	 **************************************************************************/
 
-	public TagItControlSkin(TagItControl<T> control) {
+	/**
+	 * Creates a new TagItControlSkin
+	 * @param control
+	 */
+	public TagItPanelSkin(TagItPanel<T> control) {
 		super(control, new BehaviorBase<>(control, Collections.<KeyBinding> emptyList()));
 
-		getChildren().add(tagsView);
+		getChildren().add(layout);
 		control.getTags().addListener(tagsChangedListener);
 		registerChangeListener(control.suggestionProviderProperty(), "SUGGESTION_PROVIDER");
 
+		layout.setColumnHalignment(HPos.LEFT);
+		layout.setRowValignment(VPos.CENTER);
+		layout.setVgap(5);
+		layout.setHgap(5);
 
 		layoutTags();
 	}
@@ -89,15 +112,15 @@ public class TagItControlSkin<T> extends BehaviorSkinBase<TagItControl<T>, Behav
 
 		for (T tagModel : tags) {
 			Node tview = getTagView(tagModel);
-			FlowPane.setMargin(tview, tagMargrin);
+			//FlowPane.setMargin(tview, tagMargrin);
 			tagNodes.add(tview);
 		}
 
-		tagsView.getChildren().addAll(tagNodes);
+		layout.getChildren().addAll(tagNodes);
 
 		// Last control is the editable TextField
 		// which enables the user to add tags easily
-		tagsView.getChildren().add(getDynamicTagEdit());
+		layout.getChildren().add(getDynamicTagEdit());
 	}
 
 	private Node getTagView(final T tagModel){
@@ -107,6 +130,7 @@ public class TagItControlSkin<T> extends BehaviorSkinBase<TagItControl<T>, Behav
 	private TextField getDynamicTagEdit(){
 		if(tagEdit == null){
 			tagEdit = new TextField();
+			tagEdit.getStyleClass().add(STYLE_CLASS_TAGIT_TEXTFIELD);
 			tagEdit.setMinWidth(150);
 
 			autoCompletionBinding = TextFields.bindAutoCompletion(tagEdit, getSkinnable().getSuggestionProvider());
@@ -117,7 +141,9 @@ public class TagItControlSkin<T> extends BehaviorSkinBase<TagItControl<T>, Behav
 					switch (ke.getCode()) {
 					case SPACE:
 					case ENTER:
+					case TAB:
 						onAddNewTag(tagEdit.getText());
+						tagEdit.setText("");
 						break;
 					default:
 						break;
@@ -144,6 +170,6 @@ public class TagItControlSkin<T> extends BehaviorSkinBase<TagItControl<T>, Behav
 	}
 
 	private void clearTags(){
-		tagsView.getChildren().clear();
+		layout.getChildren().clear();
 	}
 }

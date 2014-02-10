@@ -1,0 +1,35 @@
+
+.tag-control {
+    -fx-background-color: #CCCCCC;
+    -fx-border-color: #707070;
+    -fx-background-radius: 15 2 2 15;
+    -fx-border-radius: 15 2 2 15;
+    -fx-padding: 1 5 1 2;
+}
+
+.tag-control .label { 
+	-fx-text-fill: black;
+    -fx-font: 12px "Verdana";
+}
+
+#tag-dot {
+    -fx-fill: LIGHTGREY;
+    -fx-stroke: #707070;
+}
+
+
+.tag-control:hover #tag-dot {
+    -fx-fill: white;
+}
+
+/* ----- required state -------- */
+
+.required {
+    -fx-background-color: #339966;
+}
+
+/* ----- blocked state -------- */
+
+.blocked {
+    -fx-background-color: #993333;
+}
