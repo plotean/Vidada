@@ -50,7 +50,7 @@ public class TagRepository  {
 				// There are medias currently using the tag which will be deleted
 				// Remove this tag from those medias first.
 				for (MediaItem mediaItem : medias) {
-					mediaItem.removeTag(tag);
+					mediaItem.getTags().remove(tag);
 					db.store(mediaItem);
 				}
 			}

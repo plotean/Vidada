@@ -3,7 +3,7 @@ package vidada.model.entities;
 
 import vidada.data.db4o.SessionManagerDB4O;
 import archimedesJ.IPrototypable;
-import archimedesJ.data.ObservableBean;
+import archimedesJ.data.observable.ObservableBean;
 
 import com.db4o.ObjectContainer;
 

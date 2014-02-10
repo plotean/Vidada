@@ -70,7 +70,6 @@ public class MediaDetailViewFx extends BorderPane {
 			public void changed(ObservableValue<? extends Number> arg0,
 					Number arg1, Number arg2) {
 				mediaVM.setRating((int)rating.getRating());
-				mediaVM.persist();
 			}
 		});
 	}
@@ -83,7 +82,7 @@ public class MediaDetailViewFx extends BorderPane {
 		System.out.println("MediaDetailViewFx:DataContext := " + mediaVM);
 
 		if(mediaVM != null){
-			mediaDetailTagPane.setDataContext(mediaVM.getTagsVM());
+			mediaDetailTagPane.setDataContext(mediaVM);
 		}else{
 			System.err.println("MediaDetail: Setting Tags Model Context to NULL");
 			mediaDetailTagPane.setDataContext(null);

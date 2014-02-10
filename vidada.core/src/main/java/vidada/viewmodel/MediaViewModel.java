@@ -59,7 +59,7 @@ public class MediaViewModel extends BrowserItemVM {
 	public void setRating(int selection) {
 		if(mediaData != null){
 			mediaData.setRating(selection);
-			mediaService.update(mediaData);
+			persist();
 		}
 	}
 
@@ -82,7 +82,7 @@ public class MediaViewModel extends BrowserItemVM {
 	public void setFileName(String text) {
 		if(mediaData != null){
 			mediaData.setFilename(text);
-			mediaService.update(mediaData);
+			persist();
 		}
 	}
 
@@ -143,7 +143,7 @@ public class MediaViewModel extends BrowserItemVM {
 				ResourceLocation resource = source.getResourceLocation();
 				if(systemService.open(resource)){
 					mediaData.setOpened(mediaData.getOpened() + 1);
-					mediaService.update(mediaData);
+					persist();
 				}
 			}
 		}
@@ -173,6 +173,11 @@ public class MediaViewModel extends BrowserItemVM {
 				container.setLoadPriority(LoadPriority.Skip);
 			}
 		}
+	}
+
+	protected void persist(){
+		if(mediaData != null)
+			mediaService.update(mediaData);
 	}
 
 }

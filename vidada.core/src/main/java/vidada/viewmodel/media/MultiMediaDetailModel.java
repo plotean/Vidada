@@ -6,9 +6,7 @@ import vidada.model.ServiceProvider;
 import vidada.model.media.IMediaService;
 import vidada.model.media.MediaItem;
 import vidada.model.tags.Tag;
-import vidada.model.tags.TagState;
-import vidada.viewmodel.ITagStatesVMProvider;
-import archimedesJ.exceptions.NotImplementedException;
+import archimedesJ.data.observable.IObservableList;
 import archimedesJ.util.Lists;
 
 /**
@@ -22,11 +20,6 @@ public class MultiMediaDetailModel implements IMediaViewModel{
 	private final List<MediaItem> modelMedias;
 
 
-
-	/**
-	 * 
-	 * @param selectedMedias
-	 */
 	public MultiMediaDetailModel(List<MediaItem> selectedMedias) {
 		modelMedias = Lists.newList(selectedMedias);
 
@@ -37,10 +30,12 @@ public class MultiMediaDetailModel implements IMediaViewModel{
 		}
 	}
 
-	@Override
+	/*
+	 * @Override
 	public ITagStatesVMProvider getTagsVM() {
 		throw new NotImplementedException("getTagsVM");
 	}
+	 */
 
 
 	/**
@@ -49,7 +44,7 @@ public class MultiMediaDetailModel implements IMediaViewModel{
 	 * The state is checked if all media data have the given Tag
 	 * The state is unchecked if all media data don't have the Tag
 	 * The state is Indeterminate if the media data are not consistent
-	 */
+
 	public TagState getTagState(Tag tag) {
 
 		TagState currentState = TagState.Indeterminate;
@@ -91,7 +86,7 @@ public class MultiMediaDetailModel implements IMediaViewModel{
 				}
 			}
 		}
-	}
+	}*/
 
 	@Override
 	public void setRating(int selection) {
@@ -133,8 +128,7 @@ public class MultiMediaDetailModel implements IMediaViewModel{
 	}
 
 
-	@Override
-	public void persist() {
+	protected void persist() {
 		for (MediaItem media : modelMedias) {
 			mediaService.update(media);
 		}
@@ -152,10 +146,23 @@ public class MultiMediaDetailModel implements IMediaViewModel{
 		return "-";
 	}
 
+	@Override
+	public IObservableList<Tag> getTags() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
+	@Override
+	public Tag createTag(String name) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-
-
+	@Override
+	public List<Tag> getAvailableTags() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 
 }

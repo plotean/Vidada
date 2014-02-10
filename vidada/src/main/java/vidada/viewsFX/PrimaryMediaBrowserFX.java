@@ -46,7 +46,7 @@ public class PrimaryMediaBrowserFX extends BorderPane {
 		}
 	});
 
-	private MediaDetailViewModel singleMediaDetailVM = new MediaDetailViewModel(mediaDetailTagstates);
+	private MediaDetailViewModel singleMediaDetailVM = new MediaDetailViewModel();
 
 
 	public PrimaryMediaBrowserFX(MediaBrowserModel browserModel, ITagService tagService, IMediaService mediaService){

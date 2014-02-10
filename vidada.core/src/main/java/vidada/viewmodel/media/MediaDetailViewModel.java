@@ -1,17 +1,15 @@
 package vidada.viewmodel.media;
 
-import vidada.model.ServiceProvider;
+import java.util.List;
+
 import vidada.model.browser.BrowserMediaItem;
 import vidada.model.browser.IBrowserItem;
-import vidada.model.media.IMediaService;
 import vidada.model.media.MediaItem;
 import vidada.model.tags.Tag;
-import vidada.model.tags.TagState;
-import vidada.viewmodel.ITagStatesVM;
-import vidada.viewmodel.ITagStatesVMProvider;
 import vidada.viewmodel.MediaViewModel;
-import vidada.viewmodel.tags.TagViewModel;
-import archimedesJ.events.EventArgsG;
+import archimedesJ.data.events.CollectionEventArg;
+import archimedesJ.data.observable.IObservableList;
+import archimedesJ.data.observable.ObservableArrayList;
 import archimedesJ.events.EventListenerEx;
 import archimedesJ.exceptions.NotSupportedException;
 
@@ -22,22 +20,16 @@ import archimedesJ.exceptions.NotSupportedException;
  */
 public class MediaDetailViewModel extends MediaViewModel implements IMediaViewModel {
 
-	transient private final IMediaService mediaService = ServiceProvider.Resolve(IMediaService.class);
+	//transient private final IMediaService mediaService = ServiceProvider.Resolve(IMediaService.class);
 
-	private volatile boolean ignoreUpdates = false;
-	private final ITagStatesVM tagsVM;
+	transient private final IObservableList<Tag> observableTags = new ObservableArrayList<Tag>();
 
 	/**
 	 * Creates a new media detail model form the given MediaData
 	 * @param mediaData
 	 */
-	public MediaDetailViewModel(final ITagStatesVM tagsVM){
+	public MediaDetailViewModel(){
 		super(null);
-
-		assert tagsVM != null :  "tagsVM can not be null";
-
-		this.tagsVM = tagsVM;
-		tagsVM.getTagStateChangedEvent().add(tagStatelistener);
 	}
 
 	private MediaItem previousModel = null;
@@ -49,109 +41,75 @@ public class MediaDetailViewModel extends MediaViewModel implements IMediaViewMo
 			MediaItem model = (item != null) ? item.getData() : null;
 
 			if(previousModel != null){
-				model.getTagAddedEvent().remove(tagAddedListener);
-				model.getTagRemovedEvent().remove(tagRemovedListener);
+				model.getTags().removeBinding(observableTags);
+				model.getTags().getChangeEvent().remove(tagsChangedListener);
 			}
+
+			updateObservableTags();
 
 			if(model != null){
-				model.getTagAddedEvent().add(tagAddedListener);
-				model.getTagRemovedEvent().add(tagRemovedListener);
+				model.getTags().bindTwoWay(observableTags);
+				model.getTags().getChangeEvent().add(tagsChangedListener);
 			}
-
-			updateTagStates();
 
 			previousModel = model;
 		}else
 			throw new NotSupportedException("Parameter model must be of type BrowserMediaItem");
 	}
 
-	private synchronized void updateTagStates(){
-
-		ignoreUpdates = true;
-
-		BrowserMediaItem item = getModel();
-		if(item != null && item.getData() != null){
-			MediaItem media = item.getData();
-			System.out.println("update tag view: " + media.getTags());
-			System.out.println("all tags: " + tagsVM.getTagViewModels());
-
-			tagsVM.setAllTagsState(TagState.Allowed);
-
-			for (Tag t : media.getTags()) {
-				tagsVM.setTagState(t, TagState.Required);
-			}
+	transient private final EventListenerEx<CollectionEventArg<Tag>> tagsChangedListener = new EventListenerEx<CollectionEventArg<Tag>>() {
+		@Override
+		public void eventOccured(Object sender, CollectionEventArg<Tag> eventArgs) {
+			persist();
 		}
+	};
 
-		ignoreUpdates = false;
+
+
+	private void updateObservableTags(){
+		observableTags.clear();
+		if(getModel() != null && getModel().getData() != null)
+			observableTags.addAll(getModel().getData().getTags());
 	}
 
 
-	private final EventListenerEx<EventArgsG<Tag>> tagAddedListener = new EventListenerEx<EventArgsG<Tag>>() {
-		@Override
-		public void eventOccured(Object sender, EventArgsG<Tag> eventArgs) {
-			tagsVM.setTagState(eventArgs.getValue(), TagState.Required);
-		}
-	};
+	/***************************************************************************
+	 *                                                                         *
+	 * Tag Management                                                          *
+	 *                                                                         *
+	 **************************************************************************/
 
 
-	private final EventListenerEx<EventArgsG<Tag>> tagRemovedListener = new EventListenerEx<EventArgsG<Tag>>() {
-		@Override
-		public void eventOccured(Object sender, EventArgsG<Tag> eventArgs) {
-			tagsVM.setTagState(eventArgs.getValue(), TagState.Allowed);
-		}
-	};
-
-
-	private final EventListenerEx<EventArgsG<TagViewModel>> tagStatelistener = new EventListenerEx<EventArgsG<TagViewModel>>() {
-		@Override
-		public void eventOccured(Object sender, EventArgsG<TagViewModel> eventArgs) {
-
-
-			BrowserMediaItem item = getModel();
-			if(item == null) return;
-			MediaItem media = item.getData();
-
-			if(media == null || ignoreUpdates) return;
-
-			TagViewModel tagVm = eventArgs.getValue();
-			switch (tagVm.getState()) {
-			case Allowed:
-				media.removeTag(tagVm.getModel());
-				mediaService.update(media);
-				System.out.println("removing required tag " + tagVm.getModel() + " from " + media.getFilename());
-				break;
-
-			case Required:
-				media.addTag(tagVm.getModel());
-				mediaService.update(media);
-				System.out.println("adding required tag " + tagVm.getModel() + " from " + media.getFilename());
-				break;
-
-			default:
-				System.err.println("MediaViewModel: Unhandled tag state: " + tagVm.getState());
-				break;
-			}
-		}
-	};
-
-
-	/* (non-Javadoc)
-	 * @see vidada.views.media.IMediaDetailModel#persist()
-	 */
 	@Override
-	public void persist(){
-		mediaService.update(getModel().getData());
+	public IObservableList<Tag> getTags() {
+		return observableTags;
 	}
 
 
 	@Override
-	public ITagStatesVMProvider getTagsVM() {
-		return tagsVM;
+	public Tag createTag(String name) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
+
+	@Override
+	public List<Tag> getAvailableTags() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+
+	/***************************************************************************
+	 *                                                                         *
+	 * Persistence                                                             *
+	 *                                                                         *
+	 **************************************************************************/
 
 	@Override
 	public String toString(){
 		return "MediaDetailViewModel:" + getModel();
 	}
+
 }

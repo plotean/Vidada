@@ -10,10 +10,14 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+
+import org.controlsfx.control.TextFields;
+
 import vidada.model.media.MediaType;
 import vidada.model.media.OrderProperty;
+import vidada.model.tags.Tag;
 import vidada.viewmodel.FilterModel;
-import vidada.viewsFX.tags.TagPaneFx;
+import vidada.viewsFX.controls.TagItPanel;
 import archimedesJ.util.Lists;
 
 import com.aquafx_project.AquaFx;
@@ -23,8 +27,8 @@ public class FilterViewFx extends BorderPane {
 
 	private final FilterModel filtermodel;
 
-	private final TagPaneFx tagPane;
-	private final TextField searchText = new TextField();
+	private final TagItPanel<Tag> tagPane;
+	private final TextField searchText = TextFields.createSearchField();
 	private final CheckBox chkreverse = new CheckBox("Reverse");
 	private final ComboBox<MediaType> cboMediaType= new ComboBox<>();
 	private final ComboBox<OrderProperty> cboOrder= new ComboBox<>();
@@ -33,7 +37,8 @@ public class FilterViewFx extends BorderPane {
 	public FilterViewFx(final FilterModel filtermodel){
 
 		this.filtermodel = filtermodel;	
-		tagPane = new TagPaneFx(this.filtermodel.getTagStatesModel());
+		tagPane = new TagItPanel<>();
+		//this.filtermodel.getTagStatesModel()
 
 		HBox box = new HBox();
 

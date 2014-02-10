@@ -1,5 +1,6 @@
 package vidada.model.tags.autoTag;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -23,7 +24,7 @@ public class AutoTagSupport {
 
 		if(!tags.isEmpty())
 		{
-			media.addTags(tags);
+			media.getTags().addAll(tags);
 			tagsUpdated = true;
 		}
 
@@ -36,7 +37,7 @@ public class AutoTagSupport {
 	 * @param tagsToIgnore Ignore list
 	 * @return
 	 */
-	public static Set<Tag> filterTags(Set<Tag> tags, Set<Tag> tagsToIgnore){
+	public static Set<Tag> filterTags(Set<Tag> tags, Collection<Tag> tagsToIgnore){
 
 		Set<Tag> myTags = new HashSet<Tag>(tags.size());
 

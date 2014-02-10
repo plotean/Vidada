@@ -13,9 +13,8 @@ import vidada.model.media.source.MediaSourceLocal;
 import vidada.model.media.store.libraries.MediaLibrary;
 import vidada.model.media.store.local.LocalMediaStore;
 import vidada.model.tags.Tag;
-import archimedesJ.events.EventArgsG;
-import archimedesJ.events.EventHandlerEx;
-import archimedesJ.events.IEvent;
+import archimedesJ.data.observable.IObservableCollection;
+import archimedesJ.data.observable.ObservableCollection;
 import archimedesJ.geometry.Size;
 import archimedesJ.util.Lists;
 
@@ -30,7 +29,7 @@ import com.db4o.config.annotations.Indexed;
 public abstract class MediaItem extends BaseEntity {
 
 	private Set<IMediaSource> sources = new HashSet<IMediaSource>();
-	private Set<Tag> tags = new HashSet<Tag>();
+	private IObservableCollection<Tag> tags = new ObservableCollection<Tag>(new HashSet<Tag>());
 
 	@Indexed
 	private String filename = null;
@@ -49,27 +48,7 @@ public abstract class MediaItem extends BaseEntity {
 
 	transient private String originId = LocalMediaStore.Name;
 	transient private IMediaSource source;
-	transient private final EventHandlerEx<EventArgsG<Tag>> tagAddedEvent = new EventHandlerEx<EventArgsG<Tag>>();
-	transient private final EventHandlerEx<EventArgsG<Tag>> tagRemovedEvent = new EventHandlerEx<EventArgsG<Tag>>();
 
-
-	/**
-	 * Raised when a Tag has been added to this media
-	 * @return
-	 */
-	@Transient
-	public IEvent<EventArgsG<Tag>> getTagAddedEvent() {
-		return tagAddedEvent;
-	}
-
-	/**
-	 *  Raised when a Tag has been removed form this media
-	 * @return
-	 */
-	@Transient
-	public IEvent<EventArgsG<Tag>> getTagRemovedEvent() {
-		return tagRemovedEvent;
-	}
 
 	protected MediaItem() { }
 
@@ -238,18 +217,17 @@ public abstract class MediaItem extends BaseEntity {
 	 * 
 	 * @return
 	 */
-	public Set<Tag> getTags() {
-		return new HashSet<Tag>(this.tags);
+	public IObservableCollection<Tag> getTags() {
+		return tags;
 	}
 
 	/**
-	 * internal access to set the tags
+	 * ORM: internal access to set the tags
 	 * 
 	 * @param tags
 	 */
-	protected void setTags(Set<Tag> tags) {
+	protected void setTags(IObservableCollection<Tag> tags) {
 		this.tags = tags;
-		firePropertyChange("tags");
 	}
 
 	@Transient
@@ -270,44 +248,6 @@ public abstract class MediaItem extends BaseEntity {
 	@Transient
 	public boolean hasTag(Tag tag) {
 		return getTags().contains(tag);
-	}
-
-	/**
-	 * Add the given tag to this media item
-	 * 
-	 * @param tag
-	 */
-	public void addTag(Tag tag) {
-		if (!getTags().contains(tag)) {
-			this.tags.add(tag);
-			tagAddedEvent.fireEvent(this, EventArgsG.build(tag));
-			firePropertyChange("tags");
-		}
-	}
-
-	/**
-	 * Remove the given tag from this media item
-	 * 
-	 * @param tag
-	 */
-	public void removeTag(Tag tag) {
-		if (getTags().contains(tag)) {
-			System.out.println("MediaData: -Removing Tag: '" + tag + "' from " + getFilename());
-			this.tags.remove(tag);
-			tagRemovedEvent.fireEvent(this, EventArgsG.build(tag));
-			firePropertyChange("tags");
-		}
-	}
-
-	/**
-	 * Add all given tags from this media item
-	 * 
-	 * @param newtags
-	 */
-	public void addTags(Set<Tag> newtags) {
-		for (Tag tag : newtags) {
-			addTag(tag);
-		}
 	}
 
 	public MediaType getMediaType() {
@@ -436,7 +376,6 @@ public abstract class MediaItem extends BaseEntity {
 		this.rating = rating;
 		firePropertyChange("rating");
 	}
-
 
 	/**
 	 * Gets the origin id of this media. (Usually a media store)
