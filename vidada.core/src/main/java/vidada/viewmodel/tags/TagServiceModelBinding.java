@@ -1,11 +1,7 @@
 package vidada.viewmodel.tags;
 
 import vidada.model.tags.ITagService;
-import vidada.model.tags.Tag;
 import vidada.viewmodel.ITagStatesVM;
-import archimedesJ.events.EventArgs;
-import archimedesJ.events.EventArgsG;
-import archimedesJ.events.EventListenerEx;
 
 public class TagServiceModelBinding {
 
@@ -22,7 +18,7 @@ public class TagServiceModelBinding {
 		this.tagservice = tagservice;
 		this.tagsStateModel = tageStateModel;
 
-
+		/*
 		tagservice.getTagAddedEvent().add(new EventListenerEx<EventArgsG<Tag>>() {
 			@Override
 			public void eventOccured(Object sender, EventArgsG<Tag> eventArgs) {
@@ -42,7 +38,7 @@ public class TagServiceModelBinding {
 			public void eventOccured(Object sender, EventArgs eventArgs) {
 				refreshModel();
 			}
-		});
+		});*/
 
 		refreshModel();
 	}

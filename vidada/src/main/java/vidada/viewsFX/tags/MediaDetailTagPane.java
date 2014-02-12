@@ -6,6 +6,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.util.Callback;
 import vidada.model.tags.Tag;
 import vidada.viewmodel.media.IMediaViewModel;
+import vidada.viewsFX.bindings.ObservableListBindingFX;
+import vidada.viewsFX.controls.TagControl;
 import vidada.viewsFX.controls.TagItPanel;
 
 
@@ -17,17 +19,19 @@ public class MediaDetailTagPane extends BorderPane {
 	private final TagItPanel<Tag> avaiableTagsPanel;
 	private SuggestionProvider<Tag> tagSuggestionProvider;
 
+	private ObservableListBindingFX<Tag> binding;
+
 
 	public MediaDetailTagPane() {
 		currentTagsPanel = new TagItPanel<>();
-		avaiableTagsPanel = new TagItPanel();
+		avaiableTagsPanel = new TagItPanel<>();
 
 
 		currentTagsPanel.setTagNodeFactory(new Callback<Tag, Node>() {
 			@Override
 			public Node call(Tag tagVM) {
-				//TODO
-				return null; //new TagView(tagVM);
+				TagControl tagControl = new TagControl(tagVM.getName());
+				return tagControl;
 			}
 		});
 
@@ -37,33 +41,36 @@ public class MediaDetailTagPane extends BorderPane {
 				if(mediaViewModel != null){
 					return mediaViewModel.createTag(tagName);
 				}else {
+					System.err.println("Can not create tag since mediaViewModel = NULL!");
 					return null;
 				}
 			}
 		});
 
+
+
 		tagSuggestionProvider = SuggestionProvider.create((Tag)null);
 		currentTagsPanel.setSuggestionProvider(tagSuggestionProvider);
 
-		/*
-		avaiableTagsPanel.setFilter(new Predicate<Tag>() {
-			@Override
-			public boolean where(TagViewModel value) {
-				return value.getState().equals(TagState.Allowed);
-			}
-		});*/
 
 		//this.setCenter(avaiableTagsPanel);
 		this.setCenter(currentTagsPanel);
 	}
 
-	public void setDataContext(IMediaViewModel mediaViewModel){
-		// TODO
-		this.mediaViewModel = mediaViewModel;
-		currentTagsPanel.getTags().clear();
-		currentTagsPanel.getTags().addAll(mediaViewModel.getTags());
 
-		//currentTagsPanel.setDataContext(tagsViewModel);
-		//avaiableTagsPanel.setDataContext(tagsViewModel);
+	public void setDataContext(IMediaViewModel mediaViewModel){
+
+		this.mediaViewModel = mediaViewModel;
+
+		if(binding != null) binding.unbind();
+
+		currentTagsPanel.getTags().clear();
+
+		if(mediaViewModel != null){
+			//System.out.println("we have " + mediaViewModel.getTags() + " tags here!" );
+			currentTagsPanel.getTags().addAll(mediaViewModel.getTags());
+			binding = ObservableListBindingFX.bind(currentTagsPanel.getTags(), mediaViewModel.getTags());
+		}
 	}
+
 }

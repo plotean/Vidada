@@ -1,89 +1,52 @@
 package vidada.model.tags;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import vidada.model.media.store.libraries.MediaLibrary;
 import vidada.model.tags.autoTag.ITagGuessingStrategy;
 import vidada.model.tags.autoTag.KeywordBasedTagGuesser;
 import vidada.model.tags.relations.TagRelationDefinition;
 
-
+/**
+ * Implements a {@link ILocalTagService} 
+ * @author IsNull
+ *
+ */
 public class LocalTagService implements ILocalTagService {
 
-	transient private final Map<String, Tag> tagNameCache = new HashMap<String, Tag>(5000);
+	transient private final ITagService tagService;
+
 	transient private final TagRelationDefinition relationDefinition = new TagRelationDefinition();
 	transient private final TagRepository repository = new TagRepository();
 
-	public LocalTagService(){
+	/**
+	 * Creates a new LocalTagService
+	 * @param tagService
+	 */
+	public LocalTagService(ITagService tagService){
+		this.tagService = tagService;
 		loadTagCacheFromDB();
 	}
 
 	private void loadTagCacheFromDB(){
 		List<Tag> allTags = repository.getAllTags();
-		for (Tag tag : allTags) {
-			tagNameCache.put(tag.getName(), tag);
-		}
+		tagService.cacheTags(allTags);
 	}
 
+	/**{@inheritDoc}*/
 	@Override
 	public Collection<Tag> getAllRelatedTags(Tag tag){
 		return relationDefinition.getAllRelatedTags(tag);
 	}
 
-	@Override
-	public Tag getTag(String tagName){
-		tagName = tagName.toLowerCase();
-		Tag tag = tagNameCache.get(tagName);
-		if(tag == null){
-			if(isValidTag(tagName)){
-				tag = new Tag(tagName);
-				tagNameCache.put(tagName, tag);
-				repository.store(tag);
-			}
-		}
-		return tag;
-	}
-
-	private boolean isValidTag(String tagName){
-		if(tagName == null || tagName.isEmpty())
-			return false;
-		return true;
-	}
-
-	@Override
-	public Set<Tag> createTags(String tagString) {
-		Set<Tag> parsedTags = new HashSet<Tag>();
-		String[] tags = tagString.split("[,|\\|]");
-
-		String tagName;
-		for (String t : tags) {
-			tagName = t.trim();
-			if(!tagName.isEmpty())
-			{
-				Tag newTag = getTag(tagName);
-				if(newTag != null)
-					parsedTags.add( newTag );
-			}
-		}
-
-		return parsedTags;
-	}
-
+	/**{@inheritDoc}*/
 	@Override
 	public void removeTag(Tag tag) {
 		repository.delete(tag);
 	}
 
-	@Override
-	public Collection<Tag> getUsedTags() {
-		return tagNameCache.values();
-	}
-
+	/**{@inheritDoc}*/
 	@Override
 	public Collection<Tag> getUsedTags(Collection<MediaLibrary> libraries) {
 		// TODO Cache this somehow or things get slow.
@@ -92,9 +55,17 @@ public class LocalTagService implements ILocalTagService {
 		return repository.getAllUsedTags(libraries);
 	}
 
+	/**{@inheritDoc}*/
 	@Override
 	public ITagGuessingStrategy createTagGuesser() {
 		return new KeywordBasedTagGuesser(this.getUsedTags());
+	}
+
+	/**{@inheritDoc}*/
+	@Override
+	public Collection<Tag> getUsedTags() {
+		// TODO Cache somehow
+		return repository.getAllTags();
 	}
 
 }

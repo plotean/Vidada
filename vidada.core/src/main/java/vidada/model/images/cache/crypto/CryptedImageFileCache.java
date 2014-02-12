@@ -106,27 +106,6 @@ public class CryptedImageFileCache extends ImageFileCache {
 		return keypad;
 	}
 
-	/**
-	 * Gets the key for the encrypt and decrypt cache items
-	 * @return
-
-	private byte[] getEncryptionKeyPad(){
-		synchronized (keypadLock) {
-			if(keypad == null)
-			{
-				System.out.println("CryptedImageFileCache: getEncryptionKeyPad...");
-				keypad = cachekeyProvider.getEncryptionKeyPad(this);
-				if(keypad == null){
-					System.err.println("CryptedImageFileCache: cachekeyProvider returned a NULL EncryptionKeyPad!");
-				}else {
-					System.out.println("CryptedImageFileCache: Got EncryptionKeyPad.");
-				}
-
-			}
-			return keypad;
-		}
-	}*/
-
 	@Override
 	public String getImageExtension(){
 		return ".dat";

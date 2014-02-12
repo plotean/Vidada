@@ -36,8 +36,8 @@ public class MediaViewModel extends BrowserItemVM {
 	private final IMediaService mediaService = ServiceProvider.Resolve(IMediaService.class);
 
 
-	public MediaViewModel(BrowserMediaItem mediaItem){
-		setModel(mediaItem);
+	public MediaViewModel(){
+		// Do not call any virtual methods here such as setModel!
 	}
 
 

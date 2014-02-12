@@ -1,10 +1,8 @@
 package vidada.model.tags;
 
 import java.util.Collection;
+import java.util.Set;
 
-import archimedesJ.events.EventArgs;
-import archimedesJ.events.EventArgsG;
-import archimedesJ.events.IEvent;
 import archimedesJ.services.IService;
 
 /**
@@ -14,43 +12,46 @@ import archimedesJ.services.IService;
  */
 public interface ITagService extends IService
 {
-	/**
-	 * Raised when one or more Tags have been changed
-	 * @return
-	 */
-	public abstract IEvent<EventArgs> getTagsChangedEvent();
 
 	/**
-	 * Raised when a Tag has been added
-	 * @return
-	 */
-	public abstract IEvent<EventArgsG<Tag>> getTagAddedEvent();
-
-	/**
-	 * Raised when a Tag has been removed
-	 * @return
-	 */
-	public abstract IEvent<EventArgsG<Tag>> getTagRemovedEvent();
-
-
-
-	/**
-	 * Returns all tags
+	 * Returns all currently used tags
 	 * @return
 	 */
 	public abstract Collection<Tag> getUsedTags();
 
 
 	/**
-	 * Persistence - Update the tag
-	 * @param tag
+	 * Checks if the given tag is valid
+	 * @param tagName
+	 * @return
 	 */
-	//public abstract void update(Tag tag);
+	public abstract boolean isValidTag(String tagName);
 
 	/**
-	 * Notify the service that the tags have changed outside the environment
-	 * This will cause a TagsChanged Event to be fired
+	 * Get the corresponding tag object for the given name
+	 * @param tag
+	 * @return
 	 */
-	public abstract void notifyTagsChanged();
+	public abstract Tag getTag(String tag);
 
+
+	/**
+	 * Create one or more new tags of a delimited list:
+	 * 
+	 * action,fun,horror
+	 * 
+	 * Valid Delemiters are: 
+	 * Comma 	,
+	 * Pipe 	|
+	 *  
+	 * @param tagString
+	 * @return
+	 */
+	public abstract Set<Tag> createTags(String tagString);
+
+	/**
+	 * Makes the given tags known, i.e. puts them in the cache
+	 * @param tags
+	 */
+	public abstract void cacheTags(Collection<Tag> tags);
 }

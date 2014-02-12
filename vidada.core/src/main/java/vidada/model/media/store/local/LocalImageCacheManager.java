@@ -62,19 +62,23 @@ public class LocalImageCacheManager {
 	 * Should this fail, it will return a dummy cache
 	 * @return
 	 */
-	private IImageCache openLocalCache() {
-		DirectoryLocation localCacheLocation = null;
+	private synchronized IImageCache openLocalCache() {
+		IImageCache cache = null;
 		try {
-			localCacheLocation = DirectoryLocation.Factory.create(
-					GlobalSettings.getInstance().getAbsoluteCachePath().toString());
+			DirectoryLocation localCacheLocation = 
+					DirectoryLocation.Factory.create(
+							GlobalSettings.getInstance().getAbsoluteCachePath().toString());
+
+			cache = cacheFactory.openEncryptedCache(localCacheLocation, credentialManager);
+
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
 		}
-		IImageCache cache = cacheFactory.openEncryptedCache(localCacheLocation, credentialManager);
+
 		if(cache != null){
 			return cache;
 		}else{
-			System.err.println("Injecting a MemoryCache to replace LocalFile Cache");
+			System.err.println("LocalImageCacheManager: Injecting a MemoryCache to replace LocalFile Cache");
 			return new MemoryImageCache(new ImageCacheProxyBase(null));
 		}
 	}

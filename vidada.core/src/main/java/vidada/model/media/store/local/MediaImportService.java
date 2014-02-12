@@ -53,11 +53,7 @@ public class MediaImportService implements IMediaImportStrategy {
 
 		mediaHashUtil =  MediaHashUtil.getDefaultMediaHashUtil();
 
-		if(!localTagManager.getUsedTags().isEmpty()){
-			tagguesser = localTagManager.createTagGuesser();
-		}else {
-			System.err.println("There are no tags, AutoTag not possible");
-		}
+		tagguesser = localTagManager.createTagGuesser();
 
 		progressListener.currentProgress(new ProgressEventArgs(true, "Searching for all media files in your libraries."));
 

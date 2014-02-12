@@ -4,12 +4,32 @@
     -fx-border-color: #707070;
     -fx-background-radius: 15 2 2 15;
     -fx-border-radius: 15 2 2 15;
-    -fx-padding: 1 5 1 2;
+    -fx-padding: 1 2 1 2;
 }
 
 .tag-control .label { 
 	-fx-text-fill: black;
     -fx-font: 12px "Verdana";
+}
+
+.remove-button {
+    -fx-background-color: #FF6666;
+    -fx-border-color: #CC3333;
+    -fx-padding: 0 8 0 8;
+    -fx-shape: "M25.979,12.896 19.312,12.896 19.312,6.229 12.647,6.229 12.647,12.896 5.979,12.896 5.979,19.562 12.647,19.562 12.647,26.229 19.312,26.229 19.312,19.562 25.979,19.562z";
+    -fx-rotate: 45;
+
+    -fx-scale-x:0.75;
+    -fx-scale-y:0.75;
+    -fx-scale-z:1;
+}
+
+.remove-button:hover {
+    -fx-background-color: #FFBBBB;
+}
+
+.remove-button:focused {
+    
 }
 
 #tag-dot {

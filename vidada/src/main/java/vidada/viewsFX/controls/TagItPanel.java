@@ -31,7 +31,6 @@ public class TagItPanel<T> extends Control{
 	private final ObservableList<T> tags = FXCollections.observableArrayList();
 
 
-
 	private final ObjectProperty<Callback<T, Node>> tagNodeFactory = new SimpleObjectProperty<>(this, "tagNodeFactory");
 
 	private final ObjectProperty<Callback<String, T>> tagModelFactory =  new SimpleObjectProperty<>(this, "tagModelFactory");

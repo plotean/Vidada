@@ -21,6 +21,7 @@ import vidada.model.media.store.libraries.IMediaLibraryManager;
 import vidada.model.media.store.libraries.MediaLibrary;
 import vidada.model.media.store.libraries.MediaLibraryManager;
 import vidada.model.tags.ILocalTagService;
+import vidada.model.tags.ITagService;
 import vidada.model.tags.LocalTagService;
 import vidada.model.tags.Tag;
 import archimedesJ.exceptions.NotSupportedException;
@@ -46,8 +47,11 @@ public class LocalMediaStore implements IMediaStore {
 
 	transient private final MediaRepository mediaRepository = new MediaRepository();
 	transient private final IMediaLibraryManager libraryService = new MediaLibraryManager();
-	transient private final ILocalTagService localTagService = new LocalTagService();
+	transient private final ILocalTagService localTagService;
 
+	public LocalMediaStore(ITagService tagService){
+		localTagService = new LocalTagService(tagService);
+	}
 
 	public void store(MediaItem media) {
 		mediaRepository.store(media);

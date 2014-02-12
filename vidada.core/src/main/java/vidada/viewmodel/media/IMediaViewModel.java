@@ -1,9 +1,9 @@
 package vidada.viewmodel.media;
 
-import java.util.List;
+import java.util.Collection;
 
 import vidada.model.tags.Tag;
-import archimedesJ.data.observable.IObservableList;
+import archimedesJ.data.observable.IObservableCollection;
 
 
 /**
@@ -48,7 +48,7 @@ public interface IMediaViewModel {
 	 * Gets the observable tags list. Changes to this list are reflected back to the model
 	 * @return
 	 */
-	public abstract IObservableList<Tag> getTags();
+	public abstract IObservableCollection<Tag> getTags();
 
 	/**
 	 * Creates the given tag
@@ -61,7 +61,7 @@ public interface IMediaViewModel {
 	 * Gets all tags which are available for this media
 	 * @return
 	 */
-	public abstract List<Tag> getAvailableTags();
+	public abstract Collection<Tag> getAvailableTags();
 
 
 	/***************************************************************************

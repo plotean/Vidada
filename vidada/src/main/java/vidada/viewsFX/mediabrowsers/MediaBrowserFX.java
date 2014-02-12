@@ -174,7 +174,8 @@ public class MediaBrowserFX extends BorderPane {
 				BrowserFolderItem folder = (BrowserFolderItem)model;
 				vm = new BrowserFolderItemVM(folder);
 			}else if(model instanceof BrowserMediaItem){
-				vm = new MediaViewModel((BrowserMediaItem)model);
+				vm = new MediaViewModel();
+				vm.setModel(model);
 			}else{
 				vm = new BrowserItemVM(model);
 			}

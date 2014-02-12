@@ -1,13 +1,15 @@
 package vidada.viewmodel.media;
 
-import java.util.List;
+import java.util.Collection;
 
 import vidada.model.browser.BrowserMediaItem;
 import vidada.model.browser.IBrowserItem;
 import vidada.model.media.MediaItem;
+import vidada.model.tags.ITagService;
 import vidada.model.tags.Tag;
 import vidada.viewmodel.MediaViewModel;
 import archimedesJ.data.events.CollectionEventArg;
+import archimedesJ.data.observable.IObservableCollection;
 import archimedesJ.data.observable.IObservableList;
 import archimedesJ.data.observable.ObservableArrayList;
 import archimedesJ.events.EventListenerEx;
@@ -22,14 +24,16 @@ public class MediaDetailViewModel extends MediaViewModel implements IMediaViewMo
 
 	//transient private final IMediaService mediaService = ServiceProvider.Resolve(IMediaService.class);
 
-	transient private final IObservableList<Tag> observableTags = new ObservableArrayList<Tag>();
+	private final IObservableList<Tag> observableTags = new ObservableArrayList<Tag>();
+	private final ITagService tagService;
 
 	/**
 	 * Creates a new media detail model form the given MediaData
 	 * @param mediaData
 	 */
-	public MediaDetailViewModel(){
-		super(null);
+	public MediaDetailViewModel(ITagService tagService){
+		// Do not call any virtual methods here such as setModel!
+		this.tagService = tagService;
 	}
 
 	private MediaItem previousModel = null;
@@ -47,7 +51,7 @@ public class MediaDetailViewModel extends MediaViewModel implements IMediaViewMo
 
 			updateObservableTags();
 
-			if(model != null){
+			if(model != null && observableTags != null){
 				model.getTags().bindTwoWay(observableTags);
 				model.getTags().getChangeEvent().add(tagsChangedListener);
 			}
@@ -67,9 +71,11 @@ public class MediaDetailViewModel extends MediaViewModel implements IMediaViewMo
 
 
 	private void updateObservableTags(){
-		observableTags.clear();
-		if(getModel() != null && getModel().getData() != null)
-			observableTags.addAll(getModel().getData().getTags());
+		if(observableTags != null){
+			observableTags.clear();
+			if(getModel() != null && getModel().getData() != null)
+				observableTags.addAll(getModel().getData().getTags());
+		}
 	}
 
 
@@ -81,22 +87,21 @@ public class MediaDetailViewModel extends MediaViewModel implements IMediaViewMo
 
 
 	@Override
-	public IObservableList<Tag> getTags() {
-		return observableTags;
+	public IObservableCollection<Tag> getTags() {
+		//TODO!!
+		return getModel().getData().getTags(); //observableTags;
 	}
 
 
 	@Override
 	public Tag createTag(String name) {
-		// TODO Auto-generated method stub
-		return null;
+		return tagService.getTag(name);
 	}
 
 
 	@Override
-	public List<Tag> getAvailableTags() {
-		// TODO Auto-generated method stub
-		return null;
+	public Collection<Tag> getAvailableTags() {
+		return tagService.getUsedTags();
 	}
 
 

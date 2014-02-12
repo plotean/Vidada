@@ -16,7 +16,7 @@ import com.db4o.ObjectContainer;
 import com.db4o.query.Query;
 
 /**
- * Service which manages persistence of tags
+ * Manages persistence of tags
  * @author IsNull
  *
  */

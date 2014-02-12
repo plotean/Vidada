@@ -1,28 +1,28 @@
 package vidada.data;
 
 import vidada.model.ServiceProvider;
-import vidada.model.media.store.IMediaStoreService;
-import vidada.model.media.store.local.LocalMediaStore;
-import vidada.model.tags.ILocalTagService;
+import vidada.model.tags.ITagService;
+
 
 
 public class DefaultDataCreator {
 
 	public static void createDefaultData(){
-
-		/**/
+		/* */
 		System.out.println("Creating default data...");
 
-		IMediaStoreService storeService = ServiceProvider.Resolve(IMediaStoreService.class);
-		LocalMediaStore localMediaStore = storeService.getLocalMediaStore();
-
-		ILocalTagService tagService = localMediaStore.getTagManager(); 
+		ITagService tagService = ServiceProvider.Resolve(ITagService.class);
 
 		tagService.getTag("Action");
 		tagService.getTag("Comedy");
 		tagService.getTag("Horror");
+		tagService.getTag("Thriller");
+
 		tagService.getTag("1020p");
 		tagService.getTag("720p");
+		tagService.getTag("480p");
+		tagService.getTag("360p");
+
 	}
 
 }

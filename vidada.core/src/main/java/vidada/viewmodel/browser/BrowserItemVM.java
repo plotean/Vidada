@@ -14,7 +14,10 @@ public class BrowserItemVM implements IViewModel<IBrowserItem>{
 
 	public BrowserItemVM() {}
 
-	public BrowserItemVM(IBrowserItem item) { setModel(item); }
+	public BrowserItemVM(IBrowserItem item) { 
+		// Do not call any virtual methods here such as setModel!
+		this.item = item; 
+	}
 
 	public boolean isSelected() {
 		return isSelected;

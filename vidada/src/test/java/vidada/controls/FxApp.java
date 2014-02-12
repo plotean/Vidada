@@ -1,7 +1,6 @@
 package vidada.controls;
 
-import java.util.Collection;
-
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -9,10 +8,8 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import javafx.util.Callback;
-
-import org.controlsfx.control.AutoCompletionBinding.ISuggestionRequest;
-
 import vidada.viewsFX.controls.TagControl;
+import vidada.viewsFX.controls.TagControl.RemovedActionEvent;
 import vidada.viewsFX.controls.TagItPanel;
 
 public class FxApp extends  javafx.application.Application {
@@ -40,7 +37,7 @@ public class FxApp extends  javafx.application.Application {
 	}
 
 	private Node createTestTagIt(){
-		TagItPanel<String> tagit = new TagItPanel<>();
+		final TagItPanel<String> tagit = new TagItPanel<>();
 		tagit.getTags().add("action");
 		tagit.getTags().add("comedy");
 		tagit.getTags().add("horror");
@@ -59,12 +56,28 @@ public class FxApp extends  javafx.application.Application {
 			}
 		});
 
+		tagit.setTagNodeFactory(new Callback<String, Node>() {
+			@Override
+			public Node call(final String name) {
+				TagControl tag = new TagControl(name);
+				tag.setRemovable(true);
+				tag.setOnRemoveAction(new EventHandler<TagControl.RemovedActionEvent>() {
+					@Override
+					public void handle(RemovedActionEvent arg0) {
+						tagit.getTags().remove(name);
+					}
+				});
+				return tag;
+			}
+		});
+
+		/*
 		tagit.setSuggestionProvider(new Callback<ISuggestionRequest, Collection<String>>() {
 			@Override
 			public Collection<String> call(ISuggestionRequest request) {
 				return null;
 			}
-		});
+		});*/
 
 		BorderPane.setMargin(tagit, new Insets(15));
 		return tagit;

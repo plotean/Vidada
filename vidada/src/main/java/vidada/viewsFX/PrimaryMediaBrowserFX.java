@@ -37,6 +37,7 @@ public class PrimaryMediaBrowserFX extends BorderPane {
 
 	private final ITagService tagService;
 	private final MediaBrowserModel browserModel;
+	//private final MediaDetailViewModel singleMediaDetailVM;
 
 
 	private final ITagStatesVM mediaDetailTagstates = new TagStatesModel(new IVMFactory<Tag, TagViewModel>() {
@@ -46,13 +47,15 @@ public class PrimaryMediaBrowserFX extends BorderPane {
 		}
 	});
 
-	private MediaDetailViewModel singleMediaDetailVM = new MediaDetailViewModel();
+
 
 
 	public PrimaryMediaBrowserFX(MediaBrowserModel browserModel, ITagService tagService, IMediaService mediaService){
 		this.tagService = tagService;
 		this.browserModel = browserModel;
 		this.filterModel  = new FilterModel(browserModel.getTagStatesModel(), mediaService);;
+
+		//singleMediaDetailVM = new MediaDetailViewModel(tagService);
 
 		// bind the different models together
 
@@ -79,7 +82,6 @@ public class PrimaryMediaBrowserFX extends BorderPane {
 		this.setBottom(detailPane);
 
 
-
 		mediaBrowserFX.getSelectionManager().getSelectionChanged().add(new EventListenerEx<EventArgs>() {
 			@Override
 			public void eventOccured(Object sender, EventArgs eventArgs) {
@@ -93,8 +95,9 @@ public class PrimaryMediaBrowserFX extends BorderPane {
 
 	private  IMediaViewModel getMediaDetailVM(ISelectionManager<IBrowserItem> mediaSelection){
 		if(mediaSelection.getSelection().size() <= 1){
-			singleMediaDetailVM.setModel(mediaSelection.getFirstSelected());
-			return singleMediaDetailVM;
+			MediaDetailViewModel vm = new MediaDetailViewModel(tagService);
+			vm.setModel(mediaSelection.getFirstSelected());
+			return vm;
 		}else{
 			// currently only single selection supported
 			throw new NotImplementedException("MainViewFx: Multiple Selection not supported!");

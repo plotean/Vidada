@@ -1,7 +1,6 @@
 package vidada.model.tags;
 
 import java.util.Collection;
-import java.util.Set;
 
 import vidada.model.media.store.libraries.MediaLibrary;
 import vidada.model.tags.autoTag.ITagGuessingStrategy;
@@ -13,13 +12,6 @@ import vidada.model.tags.autoTag.ITagGuessingStrategy;
  */
 public interface ILocalTagService  {
 
-	/**
-	 * Get the tag for the given tag-string
-	 * @param tagName
-	 * @return
-	 */
-	public Tag getTag(String tagName);
-
 
 	/**
 	 * Gets all related tags for the provided one
@@ -27,21 +19,6 @@ public interface ILocalTagService  {
 	 * @return
 	 */
 	public Collection<Tag> getAllRelatedTags(Tag tag);
-
-
-	/**
-	 * Create one or more new tags of a delimited list:
-	 * 
-	 * action,fun,horror
-	 * 
-	 * Valid Delemiters are: 
-	 * Comma 	,
-	 * Pipe 	|
-	 *  
-	 * @param tagString
-	 * @return
-	 */
-	public abstract Set<Tag> createTags(String tagString);
 
 
 	/**

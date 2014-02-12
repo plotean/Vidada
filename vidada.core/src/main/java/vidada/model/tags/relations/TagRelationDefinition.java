@@ -7,7 +7,12 @@ import java.util.Set;
 
 import vidada.model.tags.Tag;
 
-
+/**
+ * Represents all tag-relations in memory
+ * 
+ * @author IsNull
+ *
+ */
 public class TagRelationDefinition {
 
 	private Set<TagRelation> relations = new HashSet<TagRelation>();

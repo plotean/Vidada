@@ -18,6 +18,7 @@ import archimedesJ.images.IMemoryImage;
  * of memory consumption. Yet, the values are not dependent on
  * any system and VM configuration such as the available memory.
  * 
+ *
  * 
  * @author IsNull
  *
@@ -28,20 +29,10 @@ public class MemoryImageCache implements IImageCache {
 	private final Map<Size, Map<String, SoftReference<IMemoryImage>>> imageCache;
 
 	/**
-	 * Average native image size in MB
-	 * (We assume that there are some 720p/1080p movies...)
-	 */
-	private final static float AVERAGE_NATIVE_IMAGE_SIZE = 1.3f;
-
-	/**
 	 * Average scaled image size in MB
 	 */
 	private final static float AVERAGE_SCALED_IMAGE_SIZE = 0.7f;
 
-	/**
-	 * Maximum amount in MB the native image cache is allowed to take
-	 */
-	private static final float MAX_MEMORY_NATIVE_CACHE = 250f; // 250 MB
 
 	/**
 	 * Maximum amount in MB the scaled image cache is allowed to take
@@ -161,7 +152,7 @@ public class MemoryImageCache implements IImageCache {
 				Map<String, SoftReference<IMemoryImage>> realImageCache = new LRUCache<String, SoftReference<IMemoryImage>>(maxScaledSize);
 				imageCache.put(imageSize, realImageCache);
 
-				System.out.println("Created: Scaled image cache. MAX Capacity: " + maxScaledSize);
+				System.out.println("Created: Scaled image cache. maxScaledSize: " + maxScaledSize);
 			}
 			imageCache.get(imageSize).put(id, new SoftReference<IMemoryImage>(image));
 		}

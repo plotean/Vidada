@@ -9,8 +9,6 @@ import java.util.Set;
 import vidada.model.media.MediaItem;
 import vidada.model.media.source.IMediaSource;
 import vidada.model.tags.Tag;
-import archimedesJ.exceptions.NotSupportedException;
-import archimedesJ.util.Debug;
 import archimedesJ.util.Lists;
 
 /**
@@ -31,11 +29,6 @@ public class KeywordBasedTagGuesser  implements ITagGuessingStrategy {
 	 */
 	public KeywordBasedTagGuesser(Collection<Tag> tags){
 		this.tags = tags;
-		System.out.println("KeywordBasedTagGuesser using tag-set:");
-		Debug.printAll(tags);
-
-		if(tags.isEmpty())
-			throw new NotSupportedException("tags: KeywordBasedTagGuesser needs at least one tag in the search set.");
 	}
 
 	@Override

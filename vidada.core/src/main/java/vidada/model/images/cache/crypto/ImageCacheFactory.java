@@ -47,7 +47,7 @@ public class ImageCacheFactory {
 		try {
 			cache = new CryptedImageFileCache(cacheLocation, cacheKeyProvider);
 		} catch (AuthenticationException e) {
-			System.err.println("openCache failed!");
+			System.err.println("ImageCacheFactory: AuthenticationException - openCache failed!");
 			e.printStackTrace();
 		}
 		return cache;

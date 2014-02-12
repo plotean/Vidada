@@ -9,7 +9,6 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.geometry.HPos;
-import javafx.geometry.Insets;
 import javafx.geometry.VPos;
 import javafx.scene.Node;
 import javafx.scene.control.TextField;
@@ -18,6 +17,8 @@ import javafx.scene.layout.FlowPane;
 
 import org.controlsfx.control.AutoCompletionBinding;
 import org.controlsfx.control.TextFields;
+
+import archimedesJ.exceptions.NotSupportedException;
 
 import com.sun.javafx.scene.control.behavior.BehaviorBase;
 import com.sun.javafx.scene.control.behavior.KeyBinding;
@@ -34,7 +35,6 @@ public class TagItPanelSkin<T> extends BehaviorSkinBase<TagItPanel<T>, BehaviorB
 	private static final String STYLE_CLASS_TAGIT_TEXTFIELD = "tagit-text-field";
 
 	private final FlowPane layout = new FlowPane();
-	private final Insets tagMargrin = new Insets(5,5,0,0);
 
 	private AutoCompletionBinding<T> autoCompletionBinding;
 	private TextField tagEdit = null;
@@ -131,6 +131,7 @@ public class TagItPanelSkin<T> extends BehaviorSkinBase<TagItPanel<T>, BehaviorB
 		if(tagEdit == null){
 			tagEdit = new TextField();
 			tagEdit.getStyleClass().add(STYLE_CLASS_TAGIT_TEXTFIELD);
+			tagEdit.setPromptText("Add Tag...");
 			tagEdit.setMinWidth(150);
 
 			autoCompletionBinding = TextFields.bindAutoCompletion(tagEdit, getSkinnable().getSuggestionProvider());
@@ -165,8 +166,17 @@ public class TagItPanelSkin<T> extends BehaviorSkinBase<TagItPanel<T>, BehaviorB
 		if(getSkinnable().getTagModelFactory() != null){
 			newTag = getSkinnable().getTagModelFactory().call(text);
 			if(newTag != null)
-				getSkinnable().getTags().add(newTag);
+				appendTag(newTag);
+			else {
+				System.err.println("onAddNewTag: Tag-Model was null for tag name: '" + text + "'");
+			}
+		}else {
+			throw new NotSupportedException("A tag-model-factory has to be set in order to create tags.");
 		}
+	}
+
+	private void appendTag(T tagModel){
+		getSkinnable().getTags().add(tagModel);
 	}
 
 	private void clearTags(){
