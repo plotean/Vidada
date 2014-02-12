@@ -64,6 +64,7 @@ public class MediaDetailViewModel extends MediaViewModel implements IMediaViewMo
 	transient private final EventListenerEx<CollectionEventArg<Tag>> tagsChangedListener = new EventListenerEx<CollectionEventArg<Tag>>() {
 		@Override
 		public void eventOccured(Object sender, CollectionEventArg<Tag> eventArgs) {
+			System.out.println("MediaDetailViewModel: Tags changed in model, persisting model now!");
 			persist();
 		}
 	};

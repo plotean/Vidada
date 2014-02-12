@@ -55,6 +55,7 @@ public class TagItPanelSkin<T> extends BehaviorSkinBase<TagItPanel<T>, BehaviorB
 		getChildren().add(layout);
 		control.getTags().addListener(tagsChangedListener);
 		registerChangeListener(control.suggestionProviderProperty(), "SUGGESTION_PROVIDER");
+		registerChangeListener(control.editableProperty(), "EDITABLE");
 
 		layout.setColumnHalignment(HPos.LEFT);
 		layout.setRowValignment(VPos.CENTER);
@@ -76,6 +77,8 @@ public class TagItPanelSkin<T> extends BehaviorSkinBase<TagItPanel<T>, BehaviorB
 
 		if ("SUGGESTION_PROVIDER".equals(p)) {
 			updateSuggestionProvider();
+		}else if ("EDITABLE".equals(p)) {
+			updateEditable();
 		}
 	}
 
@@ -102,11 +105,18 @@ public class TagItPanelSkin<T> extends BehaviorSkinBase<TagItPanel<T>, BehaviorB
 	 *                                                                         *
 	 **************************************************************************/
 
+	private void updateEditable() {
+		layoutTags();
+	}
+
 	private void layoutTags(){
+
+		TagItPanel<T> control = getSkinnable();
 
 		clearTags();
 
-		ObservableList<T> tags = getSkinnable().getTags();
+
+		ObservableList<T> tags = control.getTags();
 
 		List<Node> tagNodes = new ArrayList<>(tags.size());
 
@@ -118,9 +128,11 @@ public class TagItPanelSkin<T> extends BehaviorSkinBase<TagItPanel<T>, BehaviorB
 
 		layout.getChildren().addAll(tagNodes);
 
-		// Last control is the editable TextField
-		// which enables the user to add tags easily
-		layout.getChildren().add(getDynamicTagEdit());
+		if(control.isEditable()){
+			// Last control is the editable TextField
+			// which enables the user to add tags easily
+			layout.getChildren().add(getDynamicTagEdit());
+		}
 	}
 
 	private Node getTagView(final T tagModel){

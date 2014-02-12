@@ -1,5 +1,6 @@
 package vidada.controls;
 
+import impl.org.controlsfx.autocompletion.SuggestionProvider;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
@@ -70,6 +71,10 @@ public class FxApp extends  javafx.application.Application {
 				return tag;
 			}
 		});
+
+		SuggestionProvider<String> tagSuggestionProvider = SuggestionProvider.create("Hell","Hello","Hello World", "App", "Apple", "Test");
+		//tagSuggestionProvider.addPossibleSuggestions(mediaViewModel.getAvailableTags());
+		tagit.setSuggestionProvider(tagSuggestionProvider);
 
 		/*
 		tagit.setSuggestionProvider(new Callback<ISuggestionRequest, Collection<String>>() {

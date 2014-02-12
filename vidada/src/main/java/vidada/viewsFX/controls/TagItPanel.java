@@ -6,12 +6,15 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.Control;
 import javafx.scene.control.Skin;
 import javafx.util.Callback;
 
 import org.controlsfx.control.AutoCompletionBinding.ISuggestionRequest;
+
+import vidada.viewsFX.controls.TagControl.RemovedActionEvent;
 
 /**
  * A TagItPanel displays a collection of Tags.
@@ -37,14 +40,25 @@ public class TagItPanel<T> extends Control{
 
 	private final ObjectProperty<Callback<ISuggestionRequest, Collection<T>>> suggestionProvider = new SimpleObjectProperty<>(this, "suggestionProvider");
 
+	private final ObjectProperty<Boolean> editable =  new SimpleObjectProperty<>(this, "editable");
+
 
 	/**
 	 * Default tag node factory. This factory is used when no custom factory is specified by the user.
 	 */
 	private final Callback<T, Node> defaultTagNodeFactory = new Callback<T, Node>(){
 		@Override
-		public Node call(T tagModel) {
-			return new TagControl(tagModel != null ? tagModel.toString() : "<null>");
+		public Node call(final T tagModel) {
+			TagControl tagView = new TagControl(tagModel != null ? tagModel.toString() : "<null>");
+			tagView.setRemovable(isEditable());
+
+			tagView.setOnRemoveAction(new EventHandler<TagControl.RemovedActionEvent>() {
+				@Override
+				public void handle(RemovedActionEvent removeArgs) {
+					getTags().remove(tagModel);
+				}
+			});
+			return tagView;
 		}
 	};
 
@@ -61,6 +75,7 @@ public class TagItPanel<T> extends Control{
 	public TagItPanel(){
 		getStyleClass().add(DEFAULT_STYLE_CLASS);
 		setTagNodeFactory(defaultTagNodeFactory);
+		editable.set(true);
 	}
 
 
@@ -84,6 +99,29 @@ public class TagItPanel<T> extends Control{
 	 * @return
 	 */
 	public ObservableList<T> getTags(){ return tags; }
+
+
+	// --- editable
+
+	public ObjectProperty<Boolean> editableProperty(){
+		return editable;
+	}
+
+	/**
+	 * Returns if this tag-panel allows adding / removing of tags
+	 * @return
+	 */
+	public boolean isEditable(){
+		return editable.get();
+	}
+
+	/**
+	 * Enable / Disable adding and removing of tags to this panel
+	 * @param enable
+	 */
+	public void setEditable(boolean enable){
+		editable.set(enable);
+	}
 
 
 	//

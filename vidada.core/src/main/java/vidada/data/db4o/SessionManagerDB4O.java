@@ -89,15 +89,21 @@ public class SessionManagerDB4O {
 			System.out.println("storage type: " + config.file().storage());
 
 			config.common().callConstructors(true);
-			config.common().updateDepth(2);
 
 
+			//
 			config.common().objectClass(org.joda.time.DateTime.class).translate(new TJodaDateTime ());
 			config.common().objectClass(BaseDateTime.class).translate(new TNull()); 
 			config.common().objectClass(AbstractDateTime.class).translate(new TNull()); 
 			config.common().objectClass(AbstractInstant.class).translate(new TNull()); 
 			config.common().objectClass(File.class).translate(new TFile());
 			config.common().objectClass(URI.class).translate(new TURI());
+
+			//
+			// Update Deepth
+			//
+			config.common().updateDepth(2); 
+			config.common().objectClass(MediaItem.class).updateDepth(3);
 
 			// generate world wide unique uuids for each stored object
 			// config.file().generateUUIDs(ConfigScope.GLOBALLY);
@@ -106,6 +112,7 @@ public class SessionManagerDB4O {
 			config.common().objectClass(MediaItem.class).objectField("sources").cascadeOnDelete(true);
 			config.common().objectClass(MediaSourceLocal.class).objectField("relativeFilePath").cascadeOnDelete(true);
 			config.common().objectClass(MediaLibrary.class).objectField("libraryEntries").cascadeOnDelete(true);
+
 
 
 			// ensure that the path (folders) exist

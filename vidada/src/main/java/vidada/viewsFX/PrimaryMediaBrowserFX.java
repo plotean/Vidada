@@ -53,7 +53,7 @@ public class PrimaryMediaBrowserFX extends BorderPane {
 	public PrimaryMediaBrowserFX(MediaBrowserModel browserModel, ITagService tagService, IMediaService mediaService){
 		this.tagService = tagService;
 		this.browserModel = browserModel;
-		this.filterModel  = new FilterModel(browserModel.getTagStatesModel(), mediaService);;
+		this.filterModel  = new FilterModel(mediaService);;
 
 		//singleMediaDetailVM = new MediaDetailViewModel(tagService);
 

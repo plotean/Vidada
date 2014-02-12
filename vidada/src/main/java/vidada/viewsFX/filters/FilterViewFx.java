@@ -3,6 +3,7 @@ package vidada.viewsFX.filters;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.control.CheckBox;
@@ -10,11 +11,14 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.util.Callback;
 
 import org.controlsfx.control.TextFields;
 
+import vidada.model.ServiceProvider;
 import vidada.model.media.MediaType;
 import vidada.model.media.OrderProperty;
+import vidada.model.tags.ITagService;
 import vidada.model.tags.Tag;
 import vidada.viewmodel.FilterModel;
 import vidada.viewsFX.controls.TagItPanel;
@@ -33,12 +37,21 @@ public class FilterViewFx extends BorderPane {
 	private final ComboBox<MediaType> cboMediaType= new ComboBox<>();
 	private final ComboBox<OrderProperty> cboOrder= new ComboBox<>();
 
+	private final ITagService tagService = ServiceProvider.Resolve(ITagService.class);
+
 
 	public FilterViewFx(final FilterModel filtermodel){
 
 		this.filtermodel = filtermodel;	
 		tagPane = new TagItPanel<>();
-		//this.filtermodel.getTagStatesModel()
+
+		tagPane.setTagModelFactory(new Callback<String, Tag>() {
+			@Override
+			public Tag call(String text) {
+				return tagService.getTag(text);
+			}
+		});
+
 
 		HBox box = new HBox();
 
@@ -59,13 +72,25 @@ public class FilterViewFx extends BorderPane {
 		HBox.setMargin(chkreverse, margrin);
 		HBox.setMargin(cboMediaType, margrin);
 
-
 		setTop(box);
 		setCenter(tagPane);
 
+		cboOrder.setPromptText("Define order...");
+		cboOrder.setItems(FXCollections.observableList(Lists.asNoNullList(OrderProperty.values())));
 
-		// register event handlers
+		ObservableList<MediaType> mediaTypes = FXCollections.observableArrayList();
+		mediaTypes.addAll(MediaType.ANY, MediaType.MOVIE, MediaType.IMAGE);
 
+		cboMediaType.setPromptText("Define mediatype...");
+		cboMediaType.setItems(mediaTypes);
+
+		AquaFx.createTextFieldStyler().setType(TextFieldType.SEARCH).style(searchText); //.createButtonStyler().setSizeVariant(ControlSizeVariant.REGULAR).style(buttonInstance);
+
+		// register change events
+		registerEventHandler();
+	}
+
+	private void registerEventHandler(){
 		chkreverse.selectedProperty().addListener(new ChangeListener<Boolean>() {
 
 			@Override
@@ -75,9 +100,6 @@ public class FilterViewFx extends BorderPane {
 			}
 		});
 
-
-		cboOrder.setPromptText("Define order...");
-		cboOrder.setItems(FXCollections.observableList(Lists.asNoNullList(OrderProperty.values())));
 		cboOrder.valueProperty().addListener(new ChangeListener<OrderProperty>() {
 			@Override 
 			public void changed(ObservableValue ov, OrderProperty t, OrderProperty t1) {                
@@ -93,11 +115,6 @@ public class FilterViewFx extends BorderPane {
 			}
 		});
 
-		ObservableList<MediaType> mediaTypes = FXCollections.observableArrayList();
-		mediaTypes.addAll(MediaType.ANY, MediaType.MOVIE, MediaType.IMAGE);
-
-		cboMediaType.setPromptText("Define mediatype...");
-		cboMediaType.setItems(mediaTypes);
 		cboMediaType.valueProperty().addListener(new ChangeListener<MediaType>() {
 			@Override 
 			public void changed(ObservableValue ov, MediaType t, MediaType t1) {                
@@ -105,10 +122,19 @@ public class FilterViewFx extends BorderPane {
 			}    
 		});
 
-		AquaFx.createTextFieldStyler().setType(TextFieldType.SEARCH).style(searchText); //.createButtonStyler().setSizeVariant(ControlSizeVariant.REGULAR).style(buttonInstance);
+		tagPane.getTags().addListener(new ListChangeListener<Tag>(){
+			@Override
+			public void onChanged(
+					javafx.collections.ListChangeListener.Change<? extends Tag> changeEvent) {
+				if(changeEvent.next()){
+					if(changeEvent.wasAdded()){
+						filtermodel.getRequiredTags().addAll(changeEvent.getAddedSubList());
+					}
+					if(changeEvent.wasRemoved()){
+						filtermodel.getRequiredTags().removeAll(changeEvent.getRemoved());
+					}
+				}
+			}
+		});
 	}
-
-
-
-
 }

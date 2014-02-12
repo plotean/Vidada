@@ -8,21 +8,22 @@ import vidada.model.media.MediaType;
 import vidada.model.media.OrderProperty;
 import vidada.model.media.store.libraries.MediaLibrary;
 import vidada.model.tags.Tag;
-import vidada.model.tags.TagState;
-import vidada.viewmodel.tags.TagViewModel;
+import archimedesJ.data.events.CollectionEventArg;
+import archimedesJ.data.observable.IObservableList;
+import archimedesJ.data.observable.ObservableArrayList;
 import archimedesJ.events.EventArgs;
-import archimedesJ.events.EventArgsG;
 import archimedesJ.events.EventHandlerEx;
 import archimedesJ.events.EventListenerEx;
 import archimedesJ.events.IEvent;
 
 public class FilterModel {
 
-	private final ITagStatesVMProvider tagStatesModel;
-
 	// filter state
 
-	private List<Tag> requiredTags = new ArrayList<Tag>();
+	private final IObservableList<Tag> requiredTags = new ObservableArrayList<Tag>();
+	private final IObservableList<Tag> blockedTags = new ObservableArrayList<Tag>();
+
+
 	private MediaType mediatype = MediaType.ANY;
 	private OrderProperty order = OrderProperty.FILENAME;
 	private List<MediaLibrary> requiredMediaLibs = new ArrayList<MediaLibrary>();
@@ -37,14 +38,18 @@ public class FilterModel {
 	public IEvent<EventArgs> getFilterChangedEvent() { return filterChangedEvent; }
 
 
+	public FilterModel(IMediaService mediaService){
 
-
-	public FilterModel(ITagStatesVMProvider tagStatesModel, IMediaService mediaService){
-		this.tagStatesModel = tagStatesModel;
-
-		tagStatesModel.getTagStateChangedEvent().add(new EventListenerEx<EventArgsG<TagViewModel>>() {
+		requiredTags.getChangeEvent().add(new EventListenerEx<CollectionEventArg<Tag>>() {
 			@Override
-			public void eventOccured(Object sender, EventArgsG<TagViewModel> eventArgs) {
+			public void eventOccured(Object sender, CollectionEventArg<Tag> eventArgs) {
+				onFilterChanged();
+			}
+		});
+
+		blockedTags.getChangeEvent().add(new EventListenerEx<CollectionEventArg<Tag>>() {
+			@Override
+			public void eventOccured(Object sender, CollectionEventArg<Tag> eventArgs) {
 				onFilterChanged();
 			}
 		});
@@ -56,19 +61,16 @@ public class FilterModel {
 				onFilterChanged();
 			}
 		});*/
-
 	}
 
 
-	public List<Tag> getRequiredTags() {
-		return tagStatesModel.getTagsWithState(TagState.Required);
+	public IObservableList<Tag> getRequiredTags() {
+		return requiredTags;
 	}
 
-	public List<Tag> getBlockedTags() {
-		return tagStatesModel.getTagsWithState(TagState.Blocked);
+	public IObservableList<Tag> getBlockedTags() {
+		return blockedTags;
 	}
-
-
 
 	public MediaType getMediaType() {
 		return mediatype;
@@ -128,18 +130,10 @@ public class FilterModel {
 		return queryString;
 	}
 
-
 	public void setQueryString(String queryString) {
 		this.queryString = queryString;
 		onFilterChanged();
 	}
-
-
-
-	public ITagStatesVMProvider getTagStatesModel(){
-		return tagStatesModel;
-	}
-
 
 	private void onFilterChanged(){
 		filterChangedEvent.fireEvent(this, EventArgs.Empty);

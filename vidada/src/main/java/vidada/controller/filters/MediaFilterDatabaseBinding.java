@@ -17,7 +17,6 @@ import vidada.model.media.MediaQuery;
 import vidada.model.media.MediaType;
 import vidada.model.media.OrderProperty;
 import vidada.model.media.source.IMediaSource;
-import vidada.model.tags.TagState;
 import vidada.viewmodel.FilterModel;
 import archimedesJ.events.EventArgs;
 import archimedesJ.events.EventListenerEx;
@@ -130,8 +129,8 @@ public class MediaFilterDatabaseBinding {
 				(MediaType)filterModel.getMediaType(),
 				filterModel.getQueryString(),
 				(OrderProperty)filterModel.getOrder(),
-				mediaBrowserModel.getTagStatesModel().getTagsWithState(TagState.Required),
-				mediaBrowserModel.getTagStatesModel().getTagsWithState(TagState.Blocked),
+				filterModel.getRequiredTags(),
+				filterModel.getBlockedTags(),
 				filterModel.isOnlyAvaiable(), 
 				filterModel.isReverse());
 
