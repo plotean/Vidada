@@ -238,9 +238,8 @@ public class LocalMediaStore implements IMediaStore {
 	private MediaItem findAndCreateMedia(ResourceLocation resource, boolean canCreate, boolean persist){
 		MediaItem mediaData;
 
-		// we assume the given file is an absolute file path
-		// so we search for a matching media library to
-		// substitute the library path
+		// We assume the given file is an absolute file path so we search for
+		// a matching media library to substitute the library path
 
 		final MediaLibrary library = libraryService.findLibrary(resource);
 

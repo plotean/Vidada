@@ -22,7 +22,7 @@ public interface ILocalTagService  {
 
 
 	/**
-	 * Removes the given tag
+	 * Removes the given tag from all medias
 	 * @param tag
 	 */
 	public abstract void removeTag(Tag tag);

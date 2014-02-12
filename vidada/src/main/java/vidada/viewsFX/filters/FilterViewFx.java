@@ -52,6 +52,8 @@ public class FilterViewFx extends BorderPane {
 			}
 		});
 
+		tagPane.setSuggestionProvider(null);
+
 
 		HBox box = new HBox();
 

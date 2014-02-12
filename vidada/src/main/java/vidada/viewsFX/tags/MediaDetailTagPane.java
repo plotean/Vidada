@@ -1,6 +1,9 @@
 package vidada.viewsFX.tags;
 
 import impl.org.controlsfx.autocompletion.SuggestionProvider;
+
+import java.util.Collection;
+
 import javafx.scene.layout.BorderPane;
 import javafx.util.Callback;
 import vidada.model.tags.Tag;
@@ -54,8 +57,9 @@ public class MediaDetailTagPane extends BorderPane {
 			currentTagsPanel.getTags().addAll(mediaViewModel.getTags());
 			binding = ObservableListBindingFX.bind(currentTagsPanel.getTags(), mediaViewModel.getTags());
 
-			tagSuggestionProvider = SuggestionProvider.create((Tag)null);
-			tagSuggestionProvider.addPossibleSuggestions(mediaViewModel.getAvailableTags());
+			Collection<Tag> availableTags = mediaViewModel.getAvailableTags();
+			System.out.println(availableTags);
+			tagSuggestionProvider = SuggestionProvider.create(availableTags);
 			currentTagsPanel.setSuggestionProvider(tagSuggestionProvider);
 		}
 	}

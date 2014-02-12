@@ -1,10 +1,12 @@
 package vidada.controls;
 
 import impl.org.controlsfx.autocompletion.SuggestionProvider;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
@@ -38,6 +40,9 @@ public class FxApp extends  javafx.application.Application {
 	}
 
 	private Node createTestTagIt(){
+
+		BorderPane root = new BorderPane();
+
 		final TagItPanel<String> tagit = new TagItPanel<>();
 		tagit.getTags().add("action");
 		tagit.getTags().add("comedy");
@@ -72,20 +77,21 @@ public class FxApp extends  javafx.application.Application {
 			}
 		});
 
-		SuggestionProvider<String> tagSuggestionProvider = SuggestionProvider.create("Hell","Hello","Hello World", "App", "Apple", "Test");
-		//tagSuggestionProvider.addPossibleSuggestions(mediaViewModel.getAvailableTags());
-		tagit.setSuggestionProvider(tagSuggestionProvider);
 
-		/*
-		tagit.setSuggestionProvider(new Callback<ISuggestionRequest, Collection<String>>() {
+		Button btnAutoComplete = new Button("Enable auto complete");
+		btnAutoComplete.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
-			public Collection<String> call(ISuggestionRequest request) {
-				return null;
+			public void handle(ActionEvent ae) {
+				SuggestionProvider<String> tagSuggestionProvider = SuggestionProvider.create("Hell","Hello","Hello World", "App", "Apple", "Test");
+				tagit.setSuggestionProvider(tagSuggestionProvider);
 			}
-		});*/
+		});
 
-		BorderPane.setMargin(tagit, new Insets(15));
-		return tagit;
+		root.setBottom(btnAutoComplete);
+		root.setCenter(tagit);
+
+		BorderPane.setMargin(root, new Insets(15));
+		return root;
 	}
 
 	/**

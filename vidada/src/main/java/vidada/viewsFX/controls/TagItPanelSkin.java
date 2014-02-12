@@ -16,6 +16,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.FlowPane;
 
 import org.controlsfx.control.AutoCompletionBinding;
+import org.controlsfx.control.AutoCompletionBinding.IAutoCompletionListener;
 import org.controlsfx.control.TextFields;
 
 import archimedesJ.exceptions.NotSupportedException;
@@ -147,6 +148,17 @@ public class TagItPanelSkin<T> extends BehaviorSkinBase<TagItPanel<T>, BehaviorB
 			tagEdit.setMinWidth(150);
 
 			autoCompletionBinding = TextFields.bindAutoCompletion(tagEdit, getSkinnable().getSuggestionProvider());
+
+			// When the user has picked a suggestion from the auto-completion Popup
+			// we want to add this suggestion immediately 
+			autoCompletionBinding.addListener(new IAutoCompletionListener() {
+				@Override
+				public void onAutoCompleted() {
+					onAddNewTag(tagEdit.getText());
+					tagEdit.setText("");
+				}
+			});
+
 
 			tagEdit.setOnKeyPressed(new EventHandler<KeyEvent>() {
 				@Override

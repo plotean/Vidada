@@ -105,14 +105,6 @@ public class MediaDetailViewModel extends MediaViewModel implements IMediaViewMo
 		return tagService.getUsedTags();
 	}
 
-
-
-	/***************************************************************************
-	 *                                                                         *
-	 * Persistence                                                             *
-	 *                                                                         *
-	 **************************************************************************/
-
 	@Override
 	public String toString(){
 		return "MediaDetailViewModel:" + getModel();

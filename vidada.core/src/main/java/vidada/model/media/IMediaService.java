@@ -28,7 +28,7 @@ public interface IMediaService extends IService{
 	public Set<MediaItem> query(MediaQuery qry);
 
 	/**
-	 * Update the media
+	 * Update the changed media in its origin media-store
 	 * @param media
 	 */
 	public void update(MediaItem media);
@@ -39,6 +39,4 @@ public interface IMediaService extends IService{
 	 * @return
 	 */
 	public abstract LocalMediaStore getLocalMediaStore();
-
-
 }

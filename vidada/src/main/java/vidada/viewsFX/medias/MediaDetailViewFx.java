@@ -37,7 +37,7 @@ public class MediaDetailViewFx extends BorderPane {
 		GridPane.setConstraints(name, 1, 1);
 		gridpane.getChildren().add(name);
 
-		txtname = new TextField("blubl");
+		txtname = new TextField();
 		GridPane.setConstraints(txtname, 2, 1);
 		GridPane.setHgrow(txtname, Priority.SOMETIMES);
 		GridPane.setMargin(txtname, new Insets(0,0,0,10));
@@ -72,6 +72,8 @@ public class MediaDetailViewFx extends BorderPane {
 				mediaVM.setRating((int)rating.getRating());
 			}
 		});
+
+		setDataContext(null);
 	}
 
 
@@ -82,22 +84,23 @@ public class MediaDetailViewFx extends BorderPane {
 		System.out.println("MediaDetailViewFx:DataContext := " + mediaVM);
 
 		if(mediaVM != null){
+			mediaDetailTagPane.setDisable(false);
 			mediaDetailTagPane.setDataContext(mediaVM);
 		}else{
-			System.err.println("MediaDetail: Setting Tags Model Context to NULL");
 			mediaDetailTagPane.setDataContext(null);
+			mediaDetailTagPane.setDisable(true);
 		}
 		updateModelToView();
 	}
 
 	private void updateModelToView(){
 		if(mediaVM != null){
+			this.setDisable(false);
 			txtname.setText(mediaVM.getFilename());
 			lblResolution.setText(mediaVM.getResolution());
 			rating.setRating(mediaVM.getRating());
 		}else{
-			txtname.setText(null);
-			txtname.setPromptText("Enter Name...");
+			this.setDisable(true);
 		}
 	}
 
