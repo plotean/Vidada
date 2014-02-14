@@ -41,6 +41,12 @@
 		</dependency>
 		
 		<dependency>
+		    <groupId>org.securityvision</groupId>
+  			<artifactId>vidada.core</artifactId>
+  			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		
+		<dependency>
 			<groupId>com.sun.jersey</groupId>
 			<artifactId>jersey-core</artifactId>
 			<version>1.18</version>
