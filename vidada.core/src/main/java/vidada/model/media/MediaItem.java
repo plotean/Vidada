@@ -5,6 +5,8 @@ import java.net.URI;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 import org.joda.time.DateTime;
 
 import vidada.model.entities.BaseEntity;
@@ -26,7 +28,15 @@ import com.db4o.config.annotations.Indexed;
  * @author IsNull
  * 
  */
+@XmlRootElement
 public abstract class MediaItem extends BaseEntity {
+
+	/***************************************************************************
+	 *                                                                         *
+	 * Private persistent fields                                               *
+	 *                                                                         *
+	 **************************************************************************/
+
 
 	private Set<IMediaSource> sources = new HashSet<IMediaSource>();
 	private IObservableCollection<Tag> tags = new ObservableCollection<Tag>(new HashSet<Tag>());
@@ -44,12 +54,26 @@ public abstract class MediaItem extends BaseEntity {
 	@Indexed
 	private int rating = 0;
 	@Indexed
-	private MediaType mediaType;
+	private MediaType type;
+
+	/***************************************************************************
+	 *                                                                         *
+	 * Private transient fields                                                *
+	 *                                                                         *
+	 **************************************************************************/
 
 	transient private String originId = LocalMediaStore.Name;
 	transient private IMediaSource source;
 
+	/***************************************************************************
+	 *                                                                         *
+	 * Constructors                                                            *
+	 *                                                                         *
+	 **************************************************************************/
 
+	/**
+	 * ORM Constructor
+	 */
 	protected MediaItem() { }
 
 	/**
@@ -72,8 +96,14 @@ public abstract class MediaItem extends BaseEntity {
 	 */
 	protected MediaItem(MediaSourceLocal mediaSource) {
 		addSource(mediaSource);
-		setFilename(prettifyName(mediaSource.getName()));
+		setFilename(NameUtil.prettifyName(mediaSource.getName()));
 	}
+
+	/***************************************************************************
+	 *                                                                         *
+	 * Public API                                                              *
+	 *                                                                         *
+	 **************************************************************************/
 
 	/**
 	 * Prototype this instance
@@ -86,10 +116,11 @@ public abstract class MediaItem extends BaseEntity {
 
 		setFilename(prototype.getFilename());
 		setFilehash(prototype.getFilehash());
-		setMediaType(prototype.getMediaType());
+		setType(prototype.getType());
 
-		setSources(prototype.getSources());
-		setTags(prototype.getTags());
+		setSources(new HashSet<IMediaSource>(getSources()));
+
+		getTags().clear(); getTags().addAll(prototype.getTags());
 		setRating(prototype.getRating());
 		setOpened(getOpened());
 		setAddedDate(prototype.getAddedDate());
@@ -97,21 +128,12 @@ public abstract class MediaItem extends BaseEntity {
 		super.prototype(prototype);
 	}
 
-	/**
-	 * Makes the given string better readable by removing special chars
-	 * 
-	 * @param rawName
-	 * @return
-	 */
-	private static String prettifyName(String rawName) {
 
-		rawName = rawName.replaceAll("\\[.*?\\]", "");
-		rawName = rawName.replaceAll("\\(.*?\\)", "");
-
-		rawName = rawName.replaceAll("[\\.|_|-]", " ");
-
-		return rawName.trim();
-	}
+	/***************************************************************************
+	 *                                                                         *
+	 * Properties                                                              *
+	 *                                                                         *
+	 **************************************************************************/
 
 	/**
 	 * Gets the datetime when this media was added to the library
@@ -210,8 +232,6 @@ public abstract class MediaItem extends BaseEntity {
 		}
 	}
 
-
-
 	/**
 	 * Gets all tags currently assigned to this media item
 	 * 
@@ -219,24 +239,6 @@ public abstract class MediaItem extends BaseEntity {
 	 */
 	public IObservableCollection<Tag> getTags() {
 		return tags;
-	}
-
-	/**
-	 * ORM: internal access to set the tags
-	 * 
-	 * @param tags
-	 */
-	protected void setTags(IObservableCollection<Tag> tags) {
-		this.tags = tags;
-	}
-
-	@Transient
-	public String getTagsString() {
-		String string = "";
-		for (Tag tag : getTags()) {
-			string += "{" + tag.getName() + "} ";
-		}
-		return string;
 	}
 
 	/**
@@ -250,12 +252,12 @@ public abstract class MediaItem extends BaseEntity {
 		return getTags().contains(tag);
 	}
 
-	public MediaType getMediaType() {
-		return mediaType;
+	public MediaType getType() {
+		return type;
 	}
 
-	public void setMediaType(MediaType mediaType) {
-		this.mediaType = mediaType;
+	public void setType(MediaType mediaType) {
+		this.type = mediaType;
 		firePropertyChange("mediaType");
 	}
 
@@ -354,11 +356,6 @@ public abstract class MediaItem extends BaseEntity {
 	@Transient
 	public boolean hasResolution(){ return resolution != null;}
 
-	/**
-	 * Try to set the resolution
-	 */
-	@Transient
-	public abstract void resolveResolution();
 
 	/**
 	 * Get the rating of this media
@@ -403,6 +400,12 @@ public abstract class MediaItem extends BaseEntity {
 		return this.getFilename() + "hash: " + this.getFilehash() + " src: " + getSource();
 	}
 
+
+	/***************************************************************************
+	 *                                                                         *
+	 * HACK / TO BE REMOVED                                                    *
+	 *                                                                         *
+	 **************************************************************************/
 
 
 	// HACK: Used by the android grid-cell view to handle selection

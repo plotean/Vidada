@@ -152,7 +152,7 @@ public class MediaViewModel extends BrowserItemVM {
 
 	public MediaType getMediaType(){
 		if(mediaData != null)
-			return mediaData.getMediaType();
+			return mediaData.getType();
 		return MediaType.NONE;
 	}
 

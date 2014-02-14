@@ -18,7 +18,6 @@ public class Video {
 
 
 	private ResourceLocation videoResource;
-
 	private VideoInfo videoInfo = null;
 
 
@@ -27,7 +26,7 @@ public class Video {
 	}
 
 
-	public void setPathToVideoFile(ResourceLocation pathToVideFile){
+	protected void setPathToVideoFile(ResourceLocation pathToVideFile){
 		this.videoResource = pathToVideFile;
 		this.videoInfo = null;
 	}
@@ -56,25 +55,6 @@ public class Video {
 		return videoAccessService.isAvaiable();
 	}
 
-	/**
-	 * Gets the frame at the given second in its native resolution
-	 * 
-	 * @param second
-	 * @return
-
-	public IMemoryImage getNativeFrame(int second){
-		IResourceAccessContext ctx = videoResource.openResourceContext();
-		try{
-			return videoAccessService.extractNativeFrame(ctx.getUri(), second); 
-		}finally{
-			try {
-				ctx.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-	 */
 
 	/**
 	 * Gets the frame at the given position in its native resolution

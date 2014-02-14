@@ -1,15 +1,11 @@
 package vidada.model.media.movies;
 
-import java.beans.Transient;
 import java.net.URI;
 
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaType;
-import vidada.model.media.source.IMediaSource;
 import vidada.model.media.store.libraries.MediaLibrary;
 import vidada.model.video.Video;
-import vidada.model.video.VideoInfo;
-import archimedesJ.io.locations.ResourceLocation;
 
 /**
  * Represents a playable MoviePart. A full Movie can be composed of multiple
@@ -31,9 +27,9 @@ public class MovieMediaItem extends MediaItem implements Cloneable {
 	private volatile int thumbCreationFails = 0;
 
 	/**
-	 * hibernate constructor
+	 * ORM constructor
 	 */
-	public MovieMediaItem() {
+	protected MovieMediaItem() {
 
 	}
 
@@ -47,7 +43,7 @@ public class MovieMediaItem extends MediaItem implements Cloneable {
 	public MovieMediaItem(MediaLibrary parentLibrary, URI relativePath, String hash) {
 		super(parentLibrary, relativePath);
 		setFilehash(hash);
-		setMediaType(MediaType.MOVIE);
+		setType(MediaType.MOVIE);
 	}
 
 	/**
@@ -128,53 +124,6 @@ public class MovieMediaItem extends MediaItem implements Cloneable {
 	}
 
 	/**
-	 * Create a new random thumb
-	 * 
-	 * This will clear the current preferred thumb and replace it with the new
-	 * one
-
-	public void createNewRandomThumb() {
-		setCurrentThumbPosition(INVALID_POSITION);
-		setPreferredThumbPosition(INVALID_POSITION);
-		extractPreferedFrameCached(GlobalSettings.getMaxThumbResolution());
-		setCurrentThumbAsPreferred();
-
-		this.persist();
-	} */
-
-	/**
-	 * Create a new cached thumb at the given position
-	 * 
-	 * @param position
-
-	public void createNewCachedThumb(float position) {
-		setPreferredThumbPosition(position);
-		extractPreferedFrameCached(GlobalSettings.getMaxThumbResolution());
-
-		this.persist();
-	} */
-
-	/**
-	 * Get the native video
-	 * 
-	 * @return
-	 */
-	@Transient
-	public Video getVideo() {
-		IMediaSource source = getSource();
-		if(source != null && source.isAvailable())
-		{
-			ResourceLocation path = source.getResourceLocation();
-
-			if (video == null && path != null) {
-				video = new Video(path);
-			} else
-				video.setPathToVideoFile(path);
-		}
-		return video;
-	}
-
-	/**
 	 * Is it possible to create a thumb of this movie part?
 	 * 
 	 * Generally, the file must be available and a video encoder for this format
@@ -182,7 +131,7 @@ public class MovieMediaItem extends MediaItem implements Cloneable {
 	 * 
 	 */
 	public boolean canCreateThumbnail() {
-		// Ensure we do not try forever when we deal with defect viedeos
+		// Ensure we do not try forever when we deal with defect videos
 		return thumbCreationFails <= MAX_THUMB_RETRY_COUT  && isAvailable();
 	}
 
@@ -197,19 +146,4 @@ public class MovieMediaItem extends MediaItem implements Cloneable {
 		}
 		return pos;
 	}
-
-	@Override
-	public void resolveResolution(){
-		if(!hasResolution()){
-			Video myVideo = getVideo();
-			if(myVideo != null){
-				VideoInfo info = myVideo.getVideoInfo();
-				if(info != null)
-					setResolution(info.NativeResolution);
-			}
-		}
-	}
-
-
-
 }

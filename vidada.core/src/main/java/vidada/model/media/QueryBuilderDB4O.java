@@ -48,12 +48,9 @@ class QueryBuilderDB4O {
 
 
 	/**
-	 * 
-	 * @param selectedtype
+	 * Builds a db4o-query from the abstract query object
 	 * @param query
-	 * @param selectedOrder
-	 * @param requiredTags
-	 * @param reverseOrder
+	 * @param dontOrder Skip ordering - it may be handled later in memory
 	 * @return
 	 */
 	public Query buildMediadataCriteria(MediaQuery query){
@@ -126,21 +123,26 @@ class QueryBuilderDB4O {
 		}
 
 
-		// Ordering
-		OrderProperty selectedOrder = query.getSelectedOrder();
-		selectedOrder = selectedOrder == null ? OrderProperty.FILENAME : selectedOrder;
-		if(query.isReverseOrder()){
-			if(OrderProperty.FILENAME != selectedOrder)
-			{
-				q.descend(selectedOrder.getProperty()).orderAscending();
+		//
+		//--- Ordering
+		//
+
+		if(!OrderProperty.NONE.equals(query.getOrder())){
+			OrderProperty selectedOrder = query.getOrder();
+			selectedOrder = selectedOrder == null ? OrderProperty.FILENAME : selectedOrder;
+			if(query.isReverseOrder()){
+				if(OrderProperty.FILENAME != selectedOrder)
+				{
+					q.descend(selectedOrder.getProperty()).orderAscending();
+				}
+				q.descend(OrderProperty.FILENAME.getProperty()).orderDescending();
+			}else {
+				if(OrderProperty.FILENAME != selectedOrder)
+				{
+					q.descend(selectedOrder.getProperty()).orderDescending();
+				}
+				q.descend(OrderProperty.FILENAME.getProperty()).orderAscending();
 			}
-			q.descend(OrderProperty.FILENAME.getProperty()).orderDescending();
-		}else {
-			if(OrderProperty.FILENAME != selectedOrder)
-			{
-				q.descend(selectedOrder.getProperty()).orderDescending();
-			}
-			q.descend(OrderProperty.FILENAME.getProperty()).orderAscending();
 		}
 
 		return q;

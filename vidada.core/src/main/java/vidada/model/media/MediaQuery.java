@@ -21,7 +21,7 @@ public class MediaQuery extends AbstractQuery<MediaItem>{
 
 	private MediaType selectedtype = MediaType.ANY;
 	private String keywords = null;
-	private OrderProperty selectedOrder = OrderProperty.FILENAME;
+	private OrderProperty order = OrderProperty.FILENAME;
 	private List<Tag> requiredTags = null;
 	private List<Tag> blockedTags = null;
 	private boolean onlyAvailable = false;
@@ -34,20 +34,20 @@ public class MediaQuery extends AbstractQuery<MediaItem>{
 	 * Creates a media query with the following 
 	 * @param selectedtype
 	 * @param keywords
-	 * @param selectedOrder
+	 * @param order
 	 * @param requiredTags
 	 * @param blockedTags
 	 * @param requiredMediaLibs
 	 * @param reverseOrder
 	 */
 	public MediaQuery(MediaType selectedtype, String keywords,
-			OrderProperty selectedOrder, List<Tag> requiredTags,
+			OrderProperty order, List<Tag> requiredTags,
 			List<Tag> blockedTags, boolean onlyAvailable,
 			boolean reverseOrder) {
 		this(AbstractQuery.QueryType.Query);
 		this.selectedtype = selectedtype;
 		this.keywords = keywords;
-		this.selectedOrder = selectedOrder;
+		this.order = order;
 		this.requiredTags = requiredTags;
 		this.blockedTags = blockedTags;
 		this.setOnlyAvailable(onlyAvailable);
@@ -67,8 +67,8 @@ public class MediaQuery extends AbstractQuery<MediaItem>{
 		return keywords;
 	}
 
-	public OrderProperty getSelectedOrder() {
-		return selectedOrder;
+	public OrderProperty getOrder() {
+		return order;
 	}
 
 	public List<Tag> getRequiredTags() {
@@ -91,8 +91,8 @@ public class MediaQuery extends AbstractQuery<MediaItem>{
 		this.keywords = keywords;
 	}
 
-	public void setSelectedOrder(OrderProperty selectedOrder) {
-		this.selectedOrder = selectedOrder;
+	public void setOrder(OrderProperty order) {
+		this.order = order;
 	}
 
 	public void setRequiredTags(List<Tag> requiredTags) {

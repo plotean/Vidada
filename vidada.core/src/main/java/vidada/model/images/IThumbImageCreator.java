@@ -23,4 +23,11 @@ public interface IThumbImageCreator {
 	 */
 	public abstract IMemoryImage extractThumb(MediaItem media, Size size);
 
+
+	/**
+	 * Updates the resolution property by reading out the medias resolution
+	 * @param media
+	 * @return
+	 */
+	public abstract boolean updateResolution(MediaItem media);
 }

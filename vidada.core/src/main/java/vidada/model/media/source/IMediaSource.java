@@ -1,5 +1,7 @@
 package vidada.model.media.source;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 import archimedesJ.io.locations.ResourceLocation;
 
 /**
@@ -9,6 +11,7 @@ import archimedesJ.io.locations.ResourceLocation;
  * @author IsNull
  *
  */
+@XmlRootElement
 public interface IMediaSource {
 
 	/**

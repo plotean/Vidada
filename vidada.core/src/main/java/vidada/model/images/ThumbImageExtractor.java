@@ -5,29 +5,36 @@ import java.io.InputStream;
 
 import vidada.model.ServiceProvider;
 import vidada.model.media.MediaItem;
-import vidada.model.media.images.ImageMediaItem;
+import vidada.model.media.MediaType;
 import vidada.model.media.movies.MovieMediaItem;
 import vidada.model.media.source.IMediaSource;
 import vidada.model.video.Video;
+import vidada.model.video.VideoInfo;
 import archimedesJ.exceptions.NotSupportedException;
 import archimedesJ.geometry.Size;
 import archimedesJ.images.IMemoryImage;
 import archimedesJ.images.IRawImageFactory;
 import archimedesJ.io.locations.ResourceLocation;
+import archimedesJ.swing.images.ImageInfo;
+import archimedesJ.swing.images.SimpleImageInfo;
 
 public class ThumbImageExtractor implements IThumbImageCreator {
 
 	transient private final IRawImageFactory imageFactory = ServiceProvider.Resolve(IRawImageFactory.class);
 
+	/***************************************************************************
+	 *                                                                         *
+	 * Public API                                                              *
+	 *                                                                         *
+	 **************************************************************************/
 
-	/* (non-Javadoc)
-	 * @see vidada.model.images.IThumbImageCreator#canExtractThumb(vidada.model.media.MediaItem)
-	 */
+
+	/**{@inheritDoc}*/
 	@Override
 	public boolean canExtractThumb(MediaItem media){
-		if(media instanceof ImageMediaItem){
+		if(media.getType() == MediaType.IMAGE)
 			return true;
-		}else if(media instanceof MovieMediaItem){
+		if(media.getType() == MediaType.MOVIE){
 			return ((MovieMediaItem) media).canCreateThumbnail() && Video.isGenericEncoderPresent();
 		}else{
 			System.err.println("ThumbImageExtractor::canExtractThumb: Unknown media type: " + media.getClass().getName());
@@ -36,16 +43,14 @@ public class ThumbImageExtractor implements IThumbImageCreator {
 	}
 
 
-	/* (non-Javadoc)
-	 * @see vidada.model.images.IThumbImageCreator#extractThumb(vidada.model.media.MediaItem, archimedesJ.geometry.Size)
-	 */
+	/**{@inheritDoc}*/
 	@Override
 	public IMemoryImage extractThumb(MediaItem media, Size size){
 		IMemoryImage image = null;
 
-		if(media instanceof ImageMediaItem){
-			image = extractImageThumb((ImageMediaItem)media, size);
-		}else if(media instanceof MovieMediaItem){
+		if(media.getType() == MediaType.IMAGE){
+			image = extractImageThumb(media, size);
+		}else if(media.getType() == MediaType.MOVIE){
 			image = extractMovieThumb((MovieMediaItem)media, size);
 		}else
 			throw new NotSupportedException("Unknown media type: " + media.getClass().getName());
@@ -53,12 +58,32 @@ public class ThumbImageExtractor implements IThumbImageCreator {
 		return image;
 	}
 
+
+	/**{@inheritDoc}*/
+	@Override
+	public boolean updateResolution(MediaItem media) {
+		if(media.getType().equals(MediaType.IMAGE)){
+			return resolveImageResolution(media);
+		}else if(media.getType().equals(MediaType.MOVIE)){
+			return resolveMovieResolution(media);
+		}else{
+			throw new NotSupportedException("Not supported media type: " + media.getType());
+		}
+	}
+
+
+	/***************************************************************************
+	 *                                                                         *
+	 * Private methods                                                         *
+	 *                                                                         *
+	 **************************************************************************/
+
+
 	/**
 	 * Read the image file into a IMemoryImage in its native resolution
 	 */
-	public IMemoryImage readImage(ImageMediaItem media) {
+	private IMemoryImage readImage(MediaItem media) {
 		IMemoryImage bufferedImage = null;
-
 
 		IMediaSource source = media.getSource();
 
@@ -70,9 +95,6 @@ public class ThumbImageExtractor implements IThumbImageCreator {
 				try {
 					is = filePath.openInputStream();
 					bufferedImage = imageFactory.createImage(is);
-					//if(!hasResolution())
-					//	setResolution(new Size(bufferedImage.getWidth(), bufferedImage.getHeight()));
-					//bufferedImage = bufferedImage.rescale(size.width, size.height);
 				} catch (Exception e) {
 					System.err.println("Can not read image" + filePath.toString());
 				}finally{
@@ -90,28 +112,15 @@ public class ThumbImageExtractor implements IThumbImageCreator {
 		return bufferedImage;
 	}
 
-	public IMemoryImage extractImageThumb(ImageMediaItem media, Size size){
+	private IMemoryImage extractImageThumb(MediaItem media, Size size){
 		IMemoryImage nativeImage = readImage(media);
 		// TODO how to update media resolution here?
 		nativeImage = nativeImage.rescale(size.width, size.height);
 		return nativeImage;
 	}
 
-	public IMemoryImage extractMovieThumb(MovieMediaItem media, Size size){
-		IMemoryImage frame = null;
-
-		float pos;
-		// TODO Maybe move to media?
-		if (media.getPreferredThumbPosition() != MovieMediaItem.INVALID_POSITION) {
-			pos = media.getPreferredThumbPosition();
-		} else if (media.getCurrentThumbPosition() != MovieMediaItem.INVALID_POSITION) {
-			pos = media.getCurrentThumbPosition();
-		} else {
-			pos = (float)Math.random();
-		}
-
-		frame = extractMovieThumb(media, size, pos);
-		return frame;
+	private IMemoryImage extractMovieThumb(MovieMediaItem media, Size size){
+		return extractMovieThumb(media, size, media.getThumbPos());
 	}
 
 	/**
@@ -122,13 +131,13 @@ public class ThumbImageExtractor implements IThumbImageCreator {
 	 *            0.0 - 1.0
 	 * @return
 	 */
-	public IMemoryImage extractMovieThumb(MovieMediaItem media, Size size, float position) {
+	private IMemoryImage extractMovieThumb(MovieMediaItem media, Size size, float position) {
 
-		Video video = media.getVideo();
+		Video video = getVideo(media);
 
 		IMemoryImage frame = video.getFrame(position, size);
 		if (frame != null) {
-			media.resolveResolution();
+			updateResolution(media);
 			media.setCurrentThumbPosition(position);
 			media.onThumbCreationSuccess();
 		}else {
@@ -137,6 +146,69 @@ public class ThumbImageExtractor implements IThumbImageCreator {
 		}
 
 		return frame;
+	}
+
+
+
+
+	private boolean resolveMovieResolution(MediaItem movieMedia){
+
+		boolean success = false;
+
+		IMediaSource source = movieMedia.getSource();
+		if(source != null){
+			Video myVideo = new Video(source.getResourceLocation());
+			VideoInfo info = myVideo.getVideoInfo();
+			if(info != null){
+				movieMedia.setResolution(info.NativeResolution);
+				success = true;
+			}
+		}
+		return success;
+	}
+
+	private boolean resolveImageResolution(MediaItem imageMedia){
+		boolean success = false;
+
+		try {
+			IMediaSource source = imageMedia.getSource();
+
+			ResourceLocation imagePath = source.getResourceLocation();
+			if(imagePath != null && imagePath.exists()){
+
+				InputStream is = null;
+				try{
+					is = imagePath.openInputStream();
+					ImageInfo info = SimpleImageInfo.parseInfo(is);
+					if(info != null && info.isValid()){
+						imageMedia.setResolution(new Size(info.getWidth(), info.getHeight()));
+						success = true;
+					}else
+						System.err.println("resolveResolution(): ImageInfo is NOT VALID! " + info);
+				}catch(Exception e){
+					e.printStackTrace();
+				}finally{
+					if(is != null){
+						is.close();
+					}
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return success;
+	}
+
+	private Video getVideo(MediaItem media){
+		Video video = null;
+		IMediaSource source = media.getSource();
+		if(source != null && source.isAvailable())
+		{
+			ResourceLocation path = source.getResourceLocation();
+			video = new Video(path);
+		}
+		return video;
 	}
 
 }

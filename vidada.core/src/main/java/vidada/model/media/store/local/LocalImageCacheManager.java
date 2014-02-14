@@ -17,6 +17,11 @@ import vidada.model.security.ICredentialManager;
 import vidada.model.settings.GlobalSettings;
 import archimedesJ.io.locations.DirectoryLocation;
 
+/**
+ * Manages the local image caches
+ * @author IsNull
+ *
+ */
 public class LocalImageCacheManager {
 
 	transient private final ICredentialManager credentialManager =  ServiceProvider.Resolve(ICredentialManager.class);

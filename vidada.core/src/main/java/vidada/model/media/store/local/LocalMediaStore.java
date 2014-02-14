@@ -42,7 +42,7 @@ public class LocalMediaStore implements IMediaStore {
 
 	public static final String Name = "local.store"; 
 
-	transient private final LocalThumbFetcher localThumbFetcher = new LocalThumbFetcher();
+	transient private final MediaThumbFetcher localThumbFetcher = new MediaThumbFetcher();
 	transient private final LocalImageCacheManager localImageCacheManager = new LocalImageCacheManager();
 
 	transient private final MediaRepository mediaRepository = new MediaRepository();
@@ -82,7 +82,7 @@ public class LocalMediaStore implements IMediaStore {
 	}
 
 	@Override
-	public Collection<MediaItem> query(MediaQuery qry) {
+	public List<MediaItem> query(MediaQuery qry) {
 		return mediaRepository.query(qry);
 	}
 

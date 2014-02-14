@@ -11,6 +11,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import vidada.data.db4o.SessionManagerDB4O;
+import vidada.model.images.IThumbImageCreator;
+import vidada.model.images.ThumbImageExtractor;
 import vidada.model.media.MediaHashUtil;
 import vidada.model.media.MediaItem;
 import vidada.model.media.source.IMediaSource;
@@ -41,6 +43,8 @@ public class MediaImportService implements IMediaImportStrategy {
 
 	private MediaHashUtil mediaHashUtil;
 	private ITagGuessingStrategy tagguesser;
+
+	IThumbImageCreator thumbImageCreator =  new ThumbImageExtractor(); 
 
 	public MediaImportService(LocalMediaStore mediaService){
 		this.localStore = mediaService;
@@ -190,7 +194,7 @@ public class MediaImportService implements IMediaImportStrategy {
 
 					// update resolution
 					if(!mediaData.hasResolution()){
-						mediaData.resolveResolution();
+						thumbImageCreator.updateResolution(mediaData);
 						updateMedias.add(mediaData);
 					}
 				}
@@ -373,7 +377,7 @@ public class MediaImportService implements IMediaImportStrategy {
 	 * @param progressListener
 	 * @param newfilesWithHash New file tuples, with precalculated file content hashes
 	 */
-	protected void importNewFiles(IProgressListener progressListener, MediaLibrary parentlibrary, Map<String, ResourceLocation> newfilesWithHash){
+	private void importNewFiles(IProgressListener progressListener, MediaLibrary parentlibrary, Map<String, ResourceLocation> newfilesWithHash){
 		progressListener.currentProgress(new ProgressEventArgs(true, "Importing " + newfilesWithHash.size() + " new files..."));
 
 		List<MediaItem> newmedias = new ArrayList<MediaItem>(newfilesWithHash.size());

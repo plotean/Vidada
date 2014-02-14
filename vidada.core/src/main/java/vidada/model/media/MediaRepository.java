@@ -34,9 +34,10 @@ public class MediaRepository {
 	/**
 	 * Query for all medias which match the given media-query
 	 * @param qry
+	 * @param dontOrder Skip ordering
 	 * @return
 	 */
-	public Collection<MediaItem> query(MediaQuery qry){
+	public List<MediaItem> query(MediaQuery qry){
 		Query db4oQry = queryBuilderDB4O.buildMediadataCriteria(qry);
 		return db4oQry.execute();
 	}
@@ -46,7 +47,7 @@ public class MediaRepository {
 	 * @param libraries
 	 * @return
 	 */
-	public Collection<MediaItem> query(Collection<MediaLibrary> libraries){
+	public List<MediaItem> query(Collection<MediaLibrary> libraries){
 
 		List<MediaItem> medias = null;
 		ObjectContainer db = SessionManagerDB4O.getObjectContainer();

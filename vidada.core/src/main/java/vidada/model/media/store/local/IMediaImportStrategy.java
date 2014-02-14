@@ -3,6 +3,7 @@ package vidada.model.media.store.local;
 import vidada.model.media.store.libraries.MediaLibrary;
 import archimedesJ.threading.IProgressListener;
 
+
 public interface IMediaImportStrategy {
 
 	/**

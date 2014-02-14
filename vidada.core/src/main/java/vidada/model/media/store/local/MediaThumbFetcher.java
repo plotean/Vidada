@@ -9,7 +9,13 @@ import vidada.model.settings.GlobalSettings;
 import archimedesJ.geometry.Size;
 import archimedesJ.images.IMemoryImage;
 
-public class LocalThumbFetcher {
+/**
+ * This class is responsible for fetching thumb-nail images of a media.
+ * 
+ * @author IsNull
+ *
+ */
+public class MediaThumbFetcher {
 
 	transient private static final Size maxThumbSize = GlobalSettings.getInstance().getMaxThumbResolution();
 	transient private final IThumbImageCreator thumbImageCreator = new ThumbImageExtractor();

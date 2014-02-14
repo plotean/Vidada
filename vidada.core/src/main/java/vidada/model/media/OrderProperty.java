@@ -1,16 +1,35 @@
 package vidada.model.media;
 
 /**
- * Specifies all sort possibilites
+ * Specifies all sort possibilities
  * @author IsNull
  *
  */
 public enum OrderProperty
 {
+	/**
+	 * Do not order at all
+	 */
+	NONE("Not ordered",""),
 
+	/**
+	 * Order by file-name
+	 */
 	FILENAME("File Name", "filename"),
+
+	/**
+	 * Order by opened-count
+	 */
 	OPENED("Play count", "opened"),
+
+	/**
+	 * Order by added-date
+	 */
 	ADDEDDATE("Add Date", "addedDate"),
+
+	/**
+	 * Order by rating
+	 */
 	RATING("Rating", "rating");
 
 	private final String description;

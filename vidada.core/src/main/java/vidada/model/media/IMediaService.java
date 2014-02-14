@@ -1,6 +1,6 @@
 package vidada.model.media;
 
-import java.util.Set;
+import java.util.List;
 
 import vidada.model.media.store.local.LocalMediaStore;
 import archimedesJ.services.IService;
@@ -25,7 +25,7 @@ public interface IMediaService extends IService{
 
 	// TODO: Add paging support in query
 	// int page, int pagesize
-	public Set<MediaItem> query(MediaQuery qry);
+	public List<MediaItem> query(MediaQuery qry);
 
 	/**
 	 * Update the changed media in its origin media-store
