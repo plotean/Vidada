@@ -1,73 +1,15 @@
 package vidada.model.user;
 
-import java.util.List;
-
-import vidada.data.db4o.SessionManagerDB4O;
 import vidada.model.entities.BaseEntity;
-import archimedesJ.util.EnvironmentIdentifier;
-import archimedesJ.util.OSValidator;
-
-import com.db4o.ObjectContainer;
-import com.db4o.query.Predicate;
 
 /**
- * Represents a Vidada user client
+ * Represents a User
  * @author IsNull
  *
  */
 public class User extends BaseEntity {
 
-	private transient static User currentUser = null;
 	private String name;
-
-	public synchronized static User current(){
-
-		if(currentUser == null)
-		{
-			//
-			// we need a user + machine specific id
-			//
-			final String username = System.getProperty("user.name") + "@" + getMachineId();
-
-			ObjectContainer db = SessionManagerDB4O.getObjectContainer();
-
-			List<User> users = db.query(new Predicate<User>()  {
-				@Override
-				public boolean match(User user)  {
-					return user.getName().equals(username);
-				}
-			});
-
-			if(users.isEmpty())
-			{
-				currentUser = new User(username);
-				db.store(currentUser);
-				System.out.println("created new user: " + currentUser);
-			}else{
-				currentUser = users.get(0);
-				System.out.println("found existing user: " + currentUser);
-			}
-
-		}
-
-		return currentUser;
-	}
-
-	private static String getMachineId(){
-		if(OSValidator.isAndroid()){
-			//
-			// Since the machine id is used only to support 
-			// sharing of the same database from different computers,
-			// the ID is not really used by a mobile version.
-			// (Mobile versions do only allow one internal DB.)
-			//
-			return "android";
-		}
-		return EnvironmentIdentifier.getInstance().environmentIdentifier();
-	}
-
-
-
 
 	public User() {	}
 
@@ -88,5 +30,4 @@ public class User extends BaseEntity {
 	public String toString(){
 		return getName();
 	}
-
 }
