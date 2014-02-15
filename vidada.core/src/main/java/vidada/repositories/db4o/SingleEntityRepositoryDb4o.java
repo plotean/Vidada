@@ -1,8 +1,9 @@
-package vidada.data.db4o;
+package vidada.repositories.db4o;
 
 import java.util.List;
 
-import vidada.data.ISingleEntityRepository;
+import vidada.data.db4o.SessionManagerDB4O;
+import vidada.repositories.ISingleEntityRepository;
 
 import com.db4o.ObjectContainer;
 import com.db4o.query.Query;

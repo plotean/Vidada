@@ -8,6 +8,7 @@ import vidada.model.entities.BaseEntity;
 import vidada.model.images.IThumbnailService;
 import vidada.model.images.cache.IImageCache;
 import vidada.model.images.cache.crypto.ImageCacheFactory;
+import vidada.model.media.MediaDirectory;
 import archimedesJ.io.locations.DirectoryLocation;
 
 /**

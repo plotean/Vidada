@@ -1,4 +1,4 @@
-package vidada.model.media.store.libraries;
+package vidada.model.media;
 
 import java.beans.Transient;
 import java.net.URI;
@@ -6,8 +6,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
-import vidada.model.media.MediaFileInfo;
-import vidada.model.media.MediaType;
+import vidada.model.media.store.libraries.MediaLibrary;
 import archimedesJ.io.locations.DirectoryLocation;
 import archimedesJ.io.locations.IDirectoryFilter;
 import archimedesJ.io.locations.ILocationFilter;

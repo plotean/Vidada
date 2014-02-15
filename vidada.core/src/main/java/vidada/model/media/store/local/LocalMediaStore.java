@@ -10,7 +10,6 @@ import vidada.model.media.MediaFileInfo;
 import vidada.model.media.MediaHashUtil;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaQuery;
-import vidada.model.media.MediaRepository;
 import vidada.model.media.MediaType;
 import vidada.model.media.images.ImageMediaItem;
 import vidada.model.media.movies.MovieMediaItem;
@@ -24,6 +23,8 @@ import vidada.model.tags.ILocalTagService;
 import vidada.model.tags.ITagService;
 import vidada.model.tags.LocalTagService;
 import vidada.model.tags.Tag;
+import vidada.repositories.IMediaRepository;
+import vidada.repositories.db4o.MediaRepositoryDb4o;
 import archimedesJ.exceptions.NotSupportedException;
 import archimedesJ.geometry.Size;
 import archimedesJ.images.IMemoryImage;
@@ -45,7 +46,7 @@ public class LocalMediaStore implements IMediaStore {
 	transient private final MediaThumbFetcher localThumbFetcher = new MediaThumbFetcher();
 	transient private final LocalImageCacheManager localImageCacheManager = new LocalImageCacheManager();
 
-	transient private final MediaRepository mediaRepository = new MediaRepository();
+	transient private final IMediaRepository mediaRepository = new MediaRepositoryDb4o();
 	transient private final IMediaLibraryManager libraryService = new MediaLibraryManager();
 	transient private final ILocalTagService localTagService;
 

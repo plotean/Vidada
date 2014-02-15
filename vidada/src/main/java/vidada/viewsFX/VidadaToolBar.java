@@ -18,8 +18,8 @@ import org.controlsfx.dialog.Dialogs;
 
 import vidada.commands.UpdateMediaLibraryAction;
 import vidada.views.dialoges.ManageLibraryFoldersDialog;
-import vidada.views.dialoges.SettingsDialog;
 import vidada.viewsFX.ImageResources.IconType;
+import vidada.viewsFX.dialoges.SettingsDialog;
 import vidada.viewsFX.dialoges.SynchronizeDialog;
 
 public class VidadaToolBar extends ToolBar{
@@ -29,8 +29,6 @@ public class VidadaToolBar extends ToolBar{
 	public VidadaToolBar(){
 
 		this.setStyle(Style_ToolBar_Background);
-
-
 
 		getItems().add(
 				createToolBarButton(IconType.FOLDER_ICON_32, new Runnable() {
@@ -114,15 +112,8 @@ public class VidadaToolBar extends ToolBar{
 
 					@Override
 					public void run() {
-
-						EventQueue.invokeLater(new Runnable() {
-							@Override
-							public void run() {
-								SettingsDialog settingsDialog = new SettingsDialog(null);
-								settingsDialog.setLocationRelativeTo(null);
-								settingsDialog.setVisible(true);
-							}
-						});
+						SettingsDialog dlg = new SettingsDialog(null);
+						dlg.show();
 					}
 				}));
 

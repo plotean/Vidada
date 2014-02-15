@@ -16,7 +16,7 @@ import vidada.views.settings.GeneralSettingsPanel;
 import vidada.views.settings.PrivacyPanel;
 
 @SuppressWarnings("serial")
-public class SettingsDialog extends JDialog {
+class SettingsDialog extends JDialog {
 
 	/**
 	 * Create the dialog.s

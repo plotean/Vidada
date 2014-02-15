@@ -1,4 +1,4 @@
-package vidada.model.media;
+package vidada.repositories.db4o;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -7,6 +7,10 @@ import java.util.List;
 import java.util.Set;
 
 import vidada.data.db4o.SessionManagerDB4O;
+import vidada.model.media.MediaItem;
+import vidada.model.media.MediaQuery;
+import vidada.model.media.MediaType;
+import vidada.model.media.OrderProperty;
 import vidada.model.tags.ILocalTagService;
 import vidada.model.tags.Tag;
 

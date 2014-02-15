@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import vidada.model.media.IMediaService;
+import vidada.model.media.MediaDirectory;
 import vidada.model.media.MediaItem;
-import vidada.model.media.store.libraries.MediaDirectory;
 import archimedesJ.io.locations.DirectoryLocation;
 import archimedesJ.io.locations.ResourceLocation;
 import archimedesJ.io.locations.UniformLocation;

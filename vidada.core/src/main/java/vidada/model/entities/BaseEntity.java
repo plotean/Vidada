@@ -21,6 +21,6 @@ public abstract class BaseEntity extends ObservableBean implements IPrototypable
 
 	public long getId(){
 		ObjectContainer db =  SessionManagerDB4O.getObjectContainer();
-		return db.ext().getID(this); // db.ext().getObjectInfo(this).getUUID();
+		return db.ext().getID(this);
 	}
 }

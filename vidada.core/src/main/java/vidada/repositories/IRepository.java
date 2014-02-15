@@ -1,4 +1,4 @@
-package vidada.data;
+package vidada.repositories;
 
 public interface IRepository<T> {
 

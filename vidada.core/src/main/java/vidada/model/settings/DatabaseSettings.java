@@ -1,9 +1,9 @@
 package vidada.model.settings;
 
 
-import vidada.data.ISingleEntityRepository;
-import vidada.data.db4o.SingleEntityRepositoryDb4o;
 import vidada.model.entities.BaseEntity;
+import vidada.repositories.ISingleEntityRepository;
+import vidada.repositories.db4o.SingleEntityRepositoryDb4o;
 import archimedesJ.crypto.KeyPad;
 import archimedesJ.events.EventArgs;
 import archimedesJ.events.EventHandlerEx;

@@ -7,6 +7,8 @@ import vidada.model.media.store.libraries.MediaLibrary;
 import vidada.model.tags.autoTag.ITagGuessingStrategy;
 import vidada.model.tags.autoTag.KeywordBasedTagGuesser;
 import vidada.model.tags.relations.TagRelationDefinition;
+import vidada.repositories.ITagRepository;
+import vidada.repositories.db4o.TagRepositoryDb4o;
 
 /**
  * Implements a {@link ILocalTagService} 
@@ -18,7 +20,7 @@ public class LocalTagService implements ILocalTagService {
 	transient private final ITagService tagService;
 
 	transient private final TagRelationDefinition relationDefinition = new TagRelationDefinition();
-	transient private final TagRepository repository = new TagRepository();
+	transient private final ITagRepository repository = new TagRepositoryDb4o();
 
 	/**
 	 * Creates a new LocalTagService

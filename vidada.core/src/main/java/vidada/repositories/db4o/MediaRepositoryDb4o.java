@@ -1,12 +1,15 @@
-package vidada.model.media;
+package vidada.repositories.db4o;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import vidada.data.db4o.SessionManagerDB4O;
+import vidada.model.media.MediaItem;
+import vidada.model.media.MediaQuery;
 import vidada.model.media.store.libraries.MediaLibrary;
 import vidada.model.tags.Tag;
+import vidada.repositories.IMediaRepository;
 import archimedesJ.util.Debug;
 import archimedesJ.util.Lists;
 import archimedesJ.util.Objects;
@@ -23,30 +26,27 @@ import com.db4o.query.Query;
  *
  */
 @SuppressWarnings("serial")
-public class MediaRepository {
+public class MediaRepositoryDb4o implements IMediaRepository {
 
 	QueryBuilderDB4O queryBuilderDB4O = new QueryBuilderDB4O();
 
-	public MediaRepository(){
+	public MediaRepositoryDb4o(){
 
 	}
 
-	/**
-	 * Query for all medias which match the given media-query
-	 * @param qry
-	 * @param dontOrder Skip ordering
-	 * @return
+	/* (non-Javadoc)
+	 * @see vidada.model.media.IMediaRepository#query(vidada.model.media.MediaQuery)
 	 */
+	@Override
 	public List<MediaItem> query(MediaQuery qry){
 		Query db4oQry = queryBuilderDB4O.buildMediadataCriteria(qry);
 		return db4oQry.execute();
 	}
 
-	/**
-	 * Returns all media items which are in the given libraries
-	 * @param libraries
-	 * @return
+	/* (non-Javadoc)
+	 * @see vidada.model.media.IMediaRepository#query(java.util.Collection)
 	 */
+	@Override
 	public List<MediaItem> query(Collection<MediaLibrary> libraries){
 
 		List<MediaItem> medias = null;
@@ -71,19 +71,28 @@ public class MediaRepository {
 		return medias;
 	}
 
-	/**
-	 * Query for all medias which have the given Tag
+	/* (non-Javadoc)
+	 * @see vidada.model.media.IMediaRepository#query(vidada.model.tags.Tag)
 	 */
+	@Override
 	public Collection<MediaItem> query(Tag tag){
 		Query qry = queryBuilderDB4O.buildMediadataCriteria(tag);
 		return qry.execute();
 	}
 
 
+	/* (non-Javadoc)
+	 * @see vidada.model.media.IMediaRepository#store(vidada.model.media.MediaItem)
+	 */
+	@Override
 	public void store(MediaItem mediadata) {
 		store(Lists.asList(mediadata));
 	}
 
+	/* (non-Javadoc)
+	 * @see vidada.model.media.IMediaRepository#store(java.lang.Iterable)
+	 */
+	@Override
 	public void store(Iterable<MediaItem> mediadatas){
 
 		ObjectContainer db =  SessionManagerDB4O.getObjectContainer();
@@ -100,11 +109,19 @@ public class MediaRepository {
 	}
 
 
+	/* (non-Javadoc)
+	 * @see vidada.model.media.IMediaRepository#delete(vidada.model.media.MediaItem)
+	 */
+	@Override
 	public void delete(MediaItem mediadata) {
 		delete(Lists.asList(mediadata));
 	}
 
 
+	/* (non-Javadoc)
+	 * @see vidada.model.media.IMediaRepository#delete(java.lang.Iterable)
+	 */
+	@Override
 	public void delete(Iterable<MediaItem> mediadatas){
 		ObjectContainer db =  SessionManagerDB4O.getObjectContainer();
 		{
@@ -116,6 +133,10 @@ public class MediaRepository {
 	}
 
 
+	/* (non-Javadoc)
+	 * @see vidada.model.media.IMediaRepository#getAllMediaData()
+	 */
+	@Override
 	public List<MediaItem> getAllMediaData() {
 		ObjectContainer db =  SessionManagerDB4O.getObjectContainer();
 		Query query = db.query();
@@ -125,10 +146,18 @@ public class MediaRepository {
 		return Lists.newList(medias); 
 	}
 
+	/* (non-Javadoc)
+	 * @see vidada.model.media.IMediaRepository#update(vidada.model.media.MediaItem)
+	 */
+	@Override
 	public void update(MediaItem mediadata) {
 		update(Lists.asList(mediadata));
 	}
 
+	/* (non-Javadoc)
+	 * @see vidada.model.media.IMediaRepository#update(java.lang.Iterable)
+	 */
+	@Override
 	public void update(Iterable<MediaItem> mediadatas) {
 		ObjectContainer db =  SessionManagerDB4O.getObjectContainer();
 		for (MediaItem mediaData : mediadatas) {
@@ -138,6 +167,10 @@ public class MediaRepository {
 	}
 
 
+	/* (non-Javadoc)
+	 * @see vidada.model.media.IMediaRepository#removeAll()
+	 */
+	@Override
 	public void removeAll() {
 		ObjectContainer db =  SessionManagerDB4O.getObjectContainer();
 
@@ -149,11 +182,10 @@ public class MediaRepository {
 
 
 
-	/**
-	 * 
-	 * @param hash
-	 * @return
+	/* (non-Javadoc)
+	 * @see vidada.model.media.IMediaRepository#findMediaDataByHash(java.lang.String)
 	 */
+	@Override
 	public MediaItem findMediaDataByHash(final String hash){
 
 		MediaItem mediaData = null;

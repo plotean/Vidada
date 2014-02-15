@@ -1,4 +1,4 @@
-package vidada.model.tags;
+package vidada.repositories.db4o;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -8,8 +8,10 @@ import java.util.Set;
 
 import vidada.data.db4o.SessionManagerDB4O;
 import vidada.model.media.MediaItem;
-import vidada.model.media.MediaRepository;
 import vidada.model.media.store.libraries.MediaLibrary;
+import vidada.model.tags.Tag;
+import vidada.repositories.IMediaRepository;
+import vidada.repositories.ITagRepository;
 import archimedesJ.util.Lists;
 
 import com.db4o.ObjectContainer;
@@ -20,16 +22,24 @@ import com.db4o.query.Query;
  * @author IsNull
  *
  */
-public class TagRepository  {
+public class TagRepositoryDb4o implements ITagRepository  {
 
-	private MediaRepository mediaRepository = new MediaRepository();
+	private IMediaRepository mediaRepository = new MediaRepositoryDb4o();
 
+	/* (non-Javadoc)
+	 * @see vidada.repositories.db4o.ITagRepository#store(vidada.model.tags.Tag)
+	 */
+	@Override
 	public void store(Tag newTag){
 		ObjectContainer db = SessionManagerDB4O.getObjectContainer();
 		db.store( newTag );
 		db.commit();
 	}
 
+	/* (non-Javadoc)
+	 * @see vidada.repositories.db4o.ITagRepository#store(java.util.Set)
+	 */
+	@Override
 	public void store(Set<Tag> newTags){
 
 		ObjectContainer db = SessionManagerDB4O.getObjectContainer();
@@ -39,6 +49,10 @@ public class TagRepository  {
 		db.commit();
 	}
 
+	/* (non-Javadoc)
+	 * @see vidada.repositories.db4o.ITagRepository#delete(vidada.model.tags.Tag)
+	 */
+	@Override
 	public void delete(Tag tag){
 
 		ObjectContainer db = SessionManagerDB4O.getObjectContainer();
@@ -60,10 +74,10 @@ public class TagRepository  {
 		}
 	}
 
-	/**
-	 * Fetches all Tags which are used in the provided media libraries
-	 * @return
+	/* (non-Javadoc)
+	 * @see vidada.repositories.db4o.ITagRepository#getAllUsedTags(java.util.Collection)
 	 */
+	@Override
 	public Collection<Tag> getAllUsedTags(Collection<MediaLibrary> libraries){
 
 		Set<Tag> tags = new HashSet<Tag>();
@@ -80,10 +94,10 @@ public class TagRepository  {
 
 
 
-	/**
-	 * Fetches all tags
-	 * @return
+	/* (non-Javadoc)
+	 * @see vidada.repositories.db4o.ITagRepository#getAllTags()
 	 */
+	@Override
 	public List<Tag> getAllTags(){
 
 		List<Tag> tags = null;
@@ -99,6 +113,10 @@ public class TagRepository  {
 	}
 
 
+	/* (non-Javadoc)
+	 * @see vidada.repositories.db4o.ITagRepository#update(vidada.model.tags.Tag)
+	 */
+	@Override
 	public void update(Tag tag) {
 		ObjectContainer db =  SessionManagerDB4O.getObjectContainer();
 		db.store(tag);
