@@ -5,9 +5,9 @@ import java.net.URI;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
-import javax.persistence.MappedSuperclass;
 import javax.persistence.OneToMany;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -30,7 +30,7 @@ import archimedesJ.util.Lists;
  * 
  */
 @XmlRootElement
-@MappedSuperclass
+@Entity
 public abstract class MediaItem extends BaseEntity {
 
 	/***************************************************************************

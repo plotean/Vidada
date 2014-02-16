@@ -25,6 +25,7 @@ public class MediaLibrary extends IdEntity {
 
 	public static final String VidataThumbsFolder = "vidada.thumbs";
 
+
 	@Embedded
 	private DirectoryLocation libraryRoot;
 	private boolean ignoreMovies;

@@ -5,20 +5,41 @@ import java.util.List;
 
 import javax.persistence.TypedQuery;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaQuery;
 import vidada.model.media.store.libraries.MediaLibrary;
 import vidada.model.tags.Tag;
 import vidada.repositories.IMediaRepository;
+import archimedesJ.exceptions.NotImplementedException;
 import archimedesJ.io.locations.ResourceLocation;
 
 public class MediaRepository extends JPARepository implements IMediaRepository{
 
 	@Override
 	public List<MediaItem> query(MediaQuery qry) {
-		// TODO Auto-generated method stub
-		return null;
+
+		String sQry = "SELECT m from vidada.model.media.MediaItem m WHERE ";
+
+
+		if(qry.hasKeyword()){
+			sQry += "(m.filename LIKE :keywords) AND ";
+		}
+
+		if(qry.hasMediaType()){
+			sQry += "(m.type = :type) AND ";
+		}
+
+
+		sQry += "1=1";
+		TypedQuery<MediaItem> q = getEntityManager()
+				.createQuery(sQry, MediaItem.class);
+
+
+		if(qry.hasKeyword()) q.setParameter("keywords", "%" + qry.getKeywords() + "%");
+		if(qry.hasMediaType()) q.setParameter("type", qry.getSelectedtype());
+
+
+		return q.getResultList();
 	}
 
 	@Override
@@ -59,7 +80,7 @@ public class MediaRepository extends JPARepository implements IMediaRepository{
 
 	@Override
 	public List<MediaItem> getAllMedias() {
-		TypedQuery<MediaItem> query = getEntityManager().createQuery("SELECT l from MediaItem l", MediaItem.class);
+		TypedQuery<MediaItem> query = getEntityManager().createQuery("SELECT m from MediaItem m", MediaItem.class);
 		return query.getResultList();
 	}
 
@@ -84,8 +105,8 @@ public class MediaRepository extends JPARepository implements IMediaRepository{
 
 	@Override
 	public MediaItem queryByHash(String hash) {
-		// TODO
-		throw new NotImplementedException();
+		TypedQuery<MediaItem> query = getEntityManager().createQuery("SELECT m from MediaItem m WHERE m.fileHash = '" + hash + "'", MediaItem.class);
+		return firstOrDefault(query);
 	}
 
 	@Override

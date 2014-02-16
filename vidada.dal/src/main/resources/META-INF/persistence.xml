@@ -9,9 +9,12 @@
       <jta-data-source>java:/DefaultDS</jta-data-source>
        -->
        
+      <class>archimedesJ.io.locations.DirectoryLocation</class> 
+             
       <class>vidada.model.settings.DatabaseSettings</class>
       <class>vidada.model.tags.Tag</class>
       <class>vidada.model.media.store.libraries.MediaLibrary</class>
+      
       <class>vidada.model.media.MediaItem</class> 
       <class>vidada.model.media.MovieMediaItem</class>
       <class>vidada.model.media.ImageMediaItem</class> 
@@ -29,7 +32,7 @@
           
          <property name="hibernate.connection.username" value="sa"/>
          <property name="hibernate.connection.password" value=""/>
-         <property name="hibernate.connection.url" value="jdbc:h2:vidada_h2"/>
+         <property name="hibernate.connection.url" value="jdbc:h2:data/vidada_h2"/>
       </properties>
    </persistence-unit>
 </persistence>

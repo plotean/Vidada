@@ -19,7 +19,16 @@ public class MediaLibraryRepository extends JPARepository implements IMediaLibra
 
 	@Override
 	public void store(MediaLibrary library) {
+		getEntityManager().getTransaction().begin();
 		getEntityManager().persist(library);
+		getEntityManager().getTransaction().commit();
+	}
+
+	@Override
+	public void update(MediaLibrary library) {
+		getEntityManager().getTransaction().begin();
+		getEntityManager().persist(library);
+		getEntityManager().getTransaction().commit();
 	}
 
 	@Override
@@ -27,10 +36,6 @@ public class MediaLibraryRepository extends JPARepository implements IMediaLibra
 		getEntityManager().remove(library);
 	}
 
-	@Override
-	public void update(MediaLibrary library) {
-		getEntityManager().persist(library);
-	}
 
 	@Override
 	public MediaLibrary queryById(long id) {

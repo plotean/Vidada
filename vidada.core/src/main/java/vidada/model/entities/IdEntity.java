@@ -1,8 +1,8 @@
 package vidada.model.entities;
 
-import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
 
 /**
  * Represents an entity with an auto-generated integer id.
@@ -10,7 +10,7 @@ import javax.persistence.Id;
  * @author IsNull
  *
  */
-@Entity
+@MappedSuperclass
 public abstract class IdEntity extends BaseEntity {
 
 	@Id

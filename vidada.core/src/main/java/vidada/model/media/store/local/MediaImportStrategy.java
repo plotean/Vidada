@@ -31,7 +31,7 @@ import archimedesJ.util.Lists;
  * @author IsNull
  *
  */
-public class MediaImportService implements IMediaImportStrategy {
+public class MediaImportStrategy implements IMediaImportStrategy {
 
 	private final LocalMediaStore localStore;
 	private final IMediaLibraryManager libraryManager;
@@ -42,7 +42,7 @@ public class MediaImportService implements IMediaImportStrategy {
 
 	IThumbImageCreator thumbImageCreator =  new ThumbImageExtractor(); 
 
-	public MediaImportService(LocalMediaStore mediaService){
+	public MediaImportStrategy(LocalMediaStore mediaService){
 		this.localStore = mediaService;
 		libraryManager = localStore.getLibraryManager();
 		localTagManager = localStore.getTagManager();
@@ -55,16 +55,22 @@ public class MediaImportService implements IMediaImportStrategy {
 
 		tagguesser = localTagManager.createTagGuesser();
 
-		progressListener.currentProgress(new ProgressEventArgs(true, "Searching for all media files in your libraries."));
+		List<MediaLibrary> libraries = libraryManager.getAllLibraries();
 
-		for (MediaLibrary lib : libraryManager.getAllLibraries()) {
-			if(lib.isAvailable())
-			{
-				scanAndUpdateLibrary(progressListener, lib);
-			}
-		};
+		progressListener.currentProgress(new ProgressEventArgs(true, "Searching for all media files in your libraries (" + libraries.size()+")"));
 
-		progressListener.currentProgress(new ProgressEventArgs(100, "Done."));
+		if(!libraries.isEmpty()){
+			for (MediaLibrary lib : libraries) {
+				if(lib.isAvailable())
+				{
+					scanAndUpdateLibrary(progressListener, lib);
+				}
+			};
+
+			progressListener.currentProgress(new ProgressEventArgs(100, "Done."));
+		}else {
+			System.out.println("Import aborted, you dont have any MediaLibraries!");
+		}
 	}
 
 

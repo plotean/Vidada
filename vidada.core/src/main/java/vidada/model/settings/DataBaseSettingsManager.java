@@ -19,10 +19,9 @@ public class DataBaseSettingsManager {
 			if(settings == null){
 				settings = new DatabaseSettings();
 				persist(settings);
-				cacheDatabaseSettings = settings;
 			}
+			cacheDatabaseSettings = settings;
 		}
-
 		return cacheDatabaseSettings;
 	}
 
