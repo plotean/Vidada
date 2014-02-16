@@ -1,19 +1,17 @@
-package vidada.model.media.images;
+package vidada.model.media;
 
 import java.net.URI;
 
-import vidada.model.media.MediaItem;
-import vidada.model.media.MediaType;
+import javax.persistence.Entity;
+
 import vidada.model.media.store.libraries.MediaLibrary;
 
+@Entity
 public class ImageMediaItem extends MediaItem {
-
-
-
 	/**
-	 * Empty hibernate constructor
+	 * ORM Constructor
 	 */
-	public ImageMediaItem() {
+	ImageMediaItem() {
 	}
 
 	/**

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import vidada.model.media.MediaItem;
-import vidada.model.media.movies.MovieMediaItem;
+import vidada.model.media.MovieMediaItem;
 import vidada.model.tags.Tag;
 
 

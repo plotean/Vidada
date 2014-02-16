@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import vidada.model.media.ImageMediaItem;
 import vidada.model.media.MediaItem;
-import vidada.model.media.images.ImageMediaItem;
-import vidada.model.media.movies.MovieMediaItem;
+import vidada.model.media.MovieMediaItem;
 
 public class MediaDataCloner {
 

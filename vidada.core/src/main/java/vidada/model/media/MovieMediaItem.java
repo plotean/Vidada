@@ -1,9 +1,9 @@
-package vidada.model.media.movies;
+package vidada.model.media;
 
 import java.net.URI;
 
-import vidada.model.media.MediaItem;
-import vidada.model.media.MediaType;
+import javax.persistence.Entity;
+
 import vidada.model.media.store.libraries.MediaLibrary;
 import vidada.model.video.Video;
 
@@ -14,6 +14,7 @@ import vidada.model.video.Video;
  * @author IsNull
  * 
  */
+@Entity
 public class MovieMediaItem extends MediaItem implements Cloneable {
 
 	transient public final static int INVALID_POSITION = -1;
@@ -29,7 +30,7 @@ public class MovieMediaItem extends MediaItem implements Cloneable {
 	/**
 	 * ORM constructor
 	 */
-	protected MovieMediaItem() {
+	MovieMediaItem() {
 
 	}
 

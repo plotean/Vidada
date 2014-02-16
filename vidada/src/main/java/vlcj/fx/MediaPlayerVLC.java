@@ -21,6 +21,7 @@ import uk.co.caprica.vlcj.player.direct.BufferFormatCallback;
 import uk.co.caprica.vlcj.player.direct.DirectMediaPlayer;
 import uk.co.caprica.vlcj.player.direct.RenderCallback;
 import uk.co.caprica.vlcj.player.direct.format.RV32BufferFormat;
+import vidada.model.settings.DataBaseSettingsManager;
 import vidada.model.settings.DatabaseSettings;
 import vidada.viewsFX.player.IMediaController;
 import vidada.viewsFX.player.MediaPlayerFx;
@@ -37,7 +38,7 @@ import com.sun.jna.Memory;
 public class MediaPlayerVLC extends MediaPlayerFx 
 {
 	// TODO refactore this dependency away
-	private final DatabaseSettings applicationSettings = DatabaseSettings.getSettings();
+	private final DatabaseSettings applicationSettings = DataBaseSettingsManager.getSettings();
 
 	// player factory config
 	private static String[] args = {"--no-plugins-cache",  "--no-video-title-show", "--no-snapshot-preview", "--quiet", "--quiet-synchro", "--intf", "dummy"};

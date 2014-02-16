@@ -22,29 +22,29 @@ public class ThumbnailService implements IThumbnailService {
 	/**
 	 * Maps the media id to a size specific image container
 	 */
-	transient private final Map<Long, Map<Size, ImageContainer>> imageContainerCache;
+	transient private final Map<String, Map<Size, ImageContainer>> imageContainerCache;
 
 
 	public ThumbnailService(){
 		this.imageContainerCache = Collections.synchronizedMap(
-				new LRUCache<Long, Map<Size, ImageContainer>>((int)MemoryImageCache.MAX_MEMORY_SCALED_CACHE));
+				new LRUCache<String, Map<Size, ImageContainer>>((int)MemoryImageCache.MAX_MEMORY_SCALED_CACHE));
 	}
 
 	@Override
 	public ImageContainer retrieveThumbnail(MediaItem media, Size size) {
 		ImageContainer container = null;
 
-		Map<Size, ImageContainer> containerSize = imageContainerCache.get(media.getId());
+		Map<Size, ImageContainer> containerSize = imageContainerCache.get(media.getFilehash());
 
 		if(containerSize != null){
 			container = containerSize.get(size);
 		}else {
-			imageContainerCache.put(media.getId(), new HashMap<Size, ImageContainer>());
+			imageContainerCache.put(media.getFilehash(), new HashMap<Size, ImageContainer>());
 		}
 
 		if(container == null){
 			container = buildContainer(media, size);
-			imageContainerCache.get(media.getId()).put(size, container);
+			imageContainerCache.get(media.getFilehash()).put(size, container);
 		}
 		return container;
 	}

@@ -16,7 +16,7 @@ import vidada.model.media.MediaItem;
 import vidada.model.media.MediaQuery;
 import vidada.model.media.MediaType;
 import vidada.model.media.OrderProperty;
-import vidada.model.media.source.IMediaSource;
+import vidada.model.media.source.MediaSource;
 import vidada.viewmodel.FilterModel;
 import archimedesJ.events.EventArgs;
 import archimedesJ.events.EventListenerEx;
@@ -147,7 +147,7 @@ public class MediaFilterDatabaseBinding {
 				@Override
 				public boolean where(MediaItem value) {
 					// filter out medias which have a no available source
-					for (IMediaSource s : value.getSources()) {
+					for (MediaSource s : value.getSources()) {
 						if(s.isAvailable())
 							return true;
 					}

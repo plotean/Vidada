@@ -6,8 +6,8 @@ import java.io.InputStream;
 import vidada.model.ServiceProvider;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaType;
-import vidada.model.media.movies.MovieMediaItem;
-import vidada.model.media.source.IMediaSource;
+import vidada.model.media.MovieMediaItem;
+import vidada.model.media.source.MediaSource;
 import vidada.model.video.Video;
 import vidada.model.video.VideoInfo;
 import archimedesJ.exceptions.NotSupportedException;
@@ -85,7 +85,7 @@ public class ThumbImageExtractor implements IThumbImageCreator {
 	private IMemoryImage readImage(MediaItem media) {
 		IMemoryImage bufferedImage = null;
 
-		IMediaSource source = media.getSource();
+		MediaSource source = media.getSource();
 
 		if(source != null){
 			ResourceLocation filePath = source.getResourceLocation();
@@ -155,7 +155,7 @@ public class ThumbImageExtractor implements IThumbImageCreator {
 
 		boolean success = false;
 
-		IMediaSource source = movieMedia.getSource();
+		MediaSource source = movieMedia.getSource();
 		if(source != null){
 			Video myVideo = new Video(source.getResourceLocation());
 			VideoInfo info = myVideo.getVideoInfo();
@@ -171,7 +171,7 @@ public class ThumbImageExtractor implements IThumbImageCreator {
 		boolean success = false;
 
 		try {
-			IMediaSource source = imageMedia.getSource();
+			MediaSource source = imageMedia.getSource();
 
 			ResourceLocation imagePath = source.getResourceLocation();
 			if(imagePath != null && imagePath.exists()){
@@ -202,7 +202,7 @@ public class ThumbImageExtractor implements IThumbImageCreator {
 
 	private Video getVideo(MediaItem media){
 		Video video = null;
-		IMediaSource source = media.getSource();
+		MediaSource source = media.getSource();
 		if(source != null && source.isAvailable())
 		{
 			ResourceLocation path = source.getResourceLocation();

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import vidada.repositories.IMediaLibraryRepository;
-import vidada.repositories.db4o.MediaLibraryRepositoryDb4o;
+import vidada.repositories.RepositoryProvider;
 import archimedesJ.events.EventArgsG;
 import archimedesJ.events.EventHandlerEx;
 import archimedesJ.events.IEvent;
@@ -17,7 +17,7 @@ import archimedesJ.io.locations.ResourceLocation;
  */
 public class MediaLibraryManager implements IMediaLibraryManager {
 
-	private final IMediaLibraryRepository repository = new MediaLibraryRepositoryDb4o();
+	private final IMediaLibraryRepository repository = RepositoryProvider.Resolve(IMediaLibraryRepository.class);
 
 	private final EventHandlerEx<EventArgsG<MediaLibrary>> libraryAddedEvent = new EventHandlerEx<EventArgsG<MediaLibrary>>();
 	private final EventHandlerEx<EventArgsG<MediaLibrary>> libraryRemovedEvent = new EventHandlerEx<EventArgsG<MediaLibrary>>();

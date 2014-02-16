@@ -2,21 +2,18 @@ package vidada.model.security;
 
 import java.util.List;
 
-import vidada.data.db4o.SessionManagerDB4O;
 import vidada.model.ServiceProvider;
+import vidada.repositories.ICredentialRepository;
+import vidada.repositories.RepositoryProvider;
 import archimedesJ.exceptions.NotSupportedException;
 import archimedesJ.security.CredentialType;
 import archimedesJ.security.Credentials;
 import archimedesJ.util.Lists;
 
-import com.db4o.ObjectContainer;
-import com.db4o.query.Predicate;
-import com.db4o.query.Query;
-
 public class CredentialManager implements ICredentialManager {
 
 	private final IPrivacyService privacyService = ServiceProvider.Resolve(IPrivacyService.class);
-
+	private final ICredentialRepository repository = RepositoryProvider.Resolve(ICredentialRepository.class);
 
 	@Override
 	public Credentials creditalsFor(String domain)
@@ -29,29 +26,24 @@ public class CredentialManager implements ICredentialManager {
 	public void storeCredentials(String domain, Credentials credentials)
 			throws AuthenticationRequieredException {
 
-		ObjectContainer db =  SessionManagerDB4O.getObjectContainer();
-
 		StoredCredentials existingCredentials = findCredentials(domain);
 		if(existingCredentials != null){
 			existingCredentials.setCredentials(credentials, privacyService.getCryptoPad());
-			db.store(existingCredentials);
+			repository.update(existingCredentials);
 		}else {
 			StoredCredentials newCredentials = new StoredCredentials(
 					credentials,
 					domain,
 					privacyService.getCryptoPad());
-			db.store(newCredentials);
+			repository.store(newCredentials);
 		}
-		db.commit();
 	}
 
 	@Override
 	public boolean removeCredentials(String domain) {
 		StoredCredentials credentials = findCredentials(domain);
 		if(credentials != null){
-			ObjectContainer db =  SessionManagerDB4O.getObjectContainer();
-			db.delete(credentials);
-			db.commit();
+			repository.delete(credentials);
 			return true;
 		}
 		return false;
@@ -60,32 +52,22 @@ public class CredentialManager implements ICredentialManager {
 
 	@SuppressWarnings("serial")
 	private StoredCredentials findCredentials(final String domain){
-		ObjectContainer db =  SessionManagerDB4O.getObjectContainer();
-
-		return Lists.getFirst((db.query(new Predicate<StoredCredentials>() {
-			@Override
-			public boolean match(StoredCredentials entity) {
-				return entity.getDomain().equals(domain);
-			}
-		})));
+		List<StoredCredentials> credentials = repository.queryByDomain(domain);
+		return !credentials.isEmpty() ? credentials.get(0) : null;
 	}
 
 	@Override
 	public List<StoredCredentials> getAllStoredCredentials()
 			throws AuthenticationRequieredException {
 
-		ObjectContainer db =  SessionManagerDB4O.getObjectContainer();
-		Query query = db.query();
-		query.constrain(StoredCredentials.class);
-		List<StoredCredentials> libs = query.execute();
+		List<StoredCredentials> libs = repository.getAllCredentials();
 		return Lists.newList(libs);
 	}
 
 	@Override
 	public void clearCredentialStore() throws AuthenticationRequieredException {
-		ObjectContainer db =  SessionManagerDB4O.getObjectContainer();
 		for (StoredCredentials credentials : getAllStoredCredentials()) {
-			db.delete(credentials);
+			repository.delete(credentials);
 		}
 	}
 

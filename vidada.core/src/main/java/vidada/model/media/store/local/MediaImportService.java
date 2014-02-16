@@ -10,12 +10,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import vidada.data.db4o.SessionManagerDB4O;
 import vidada.model.images.IThumbImageCreator;
 import vidada.model.images.ThumbImageExtractor;
 import vidada.model.media.MediaHashUtil;
 import vidada.model.media.MediaItem;
-import vidada.model.media.source.IMediaSource;
+import vidada.model.media.source.MediaSource;
 import vidada.model.media.source.MediaSourceLocal;
 import vidada.model.media.store.libraries.IMediaLibraryManager;
 import vidada.model.media.store.libraries.MediaLibrary;
@@ -26,9 +25,6 @@ import archimedesJ.io.locations.ResourceLocation;
 import archimedesJ.threading.IProgressListener;
 import archimedesJ.threading.ProgressEventArgs;
 import archimedesJ.util.Lists;
-
-import com.db4o.ObjectContainer;
-import com.db4o.query.Query;
 
 /**
  * This class implements basic media import functionality
@@ -144,15 +140,11 @@ public class MediaImportService implements IMediaImportStrategy {
 
 		Map<String, MediaItem> existingMediaData = new HashMap<String, MediaItem>();
 
-		ObjectContainer db =  SessionManagerDB4O.getObjectContainer();
-		{
-			Query query = db.query();
-			query.constrain(MediaItem.class);
-			List<MediaItem> knownMedias = query.execute();
 
-			for (MediaItem mediaData : knownMedias) {
-				existingMediaData.put(mediaData.getFilehash(), mediaData);
-			}
+		List<MediaItem> knownMedias = localStore.getAllMedias();
+
+		for (MediaItem mediaData : knownMedias) {
+			existingMediaData.put(mediaData.getFilehash(), mediaData);
 		}
 
 		return existingMediaData;
@@ -259,8 +251,8 @@ public class MediaImportService implements IMediaImportStrategy {
 		System.out.println("handleNonExistingMedia: " + media );
 
 		// Remove non existing file sources
-		Set<IMediaSource> srcs = media.getSources();
-		for (IMediaSource msource : srcs) {
+		Set<MediaSource> srcs = media.getSources();
+		for (MediaSource msource : srcs) {
 			MediaSourceLocal source = (MediaSourceLocal)msource;
 			if(source.getParentLibrary().equals(library))
 			{
@@ -280,7 +272,7 @@ public class MediaImportService implements IMediaImportStrategy {
 	private boolean isMemberofLibrary(MediaItem media, MediaLibrary library) {
 		if(library == null) throw new IllegalArgumentException("library must not be NULL!");
 
-		for (IMediaSource s : media.getSources()) {
+		for (MediaSource s : media.getSources()) {
 			if(s != null && s instanceof MediaSourceLocal){
 				MediaLibrary parentLib = ((MediaSourceLocal)s).getParentLibrary();
 				if(parentLib != null){
@@ -332,7 +324,7 @@ public class MediaImportService implements IMediaImportStrategy {
 
 		boolean currentPathExisits = false;
 
-		for (IMediaSource msource : Lists.newList(existingMeida.getSources())) {
+		for (MediaSource msource : Lists.newList(existingMeida.getSources())) {
 
 			MediaSourceLocal source = (MediaSourceLocal)msource;
 

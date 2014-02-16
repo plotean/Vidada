@@ -1,20 +1,16 @@
 package vidada.model.media.store.local;
 
-import java.net.URI;
 import java.util.Collection;
 import java.util.List;
 
-import vidada.data.db4o.SessionManagerDB4O;
 import vidada.model.images.cache.IImageCache;
+import vidada.model.media.ImageMediaItem;
 import vidada.model.media.MediaFileInfo;
 import vidada.model.media.MediaHashUtil;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaQuery;
 import vidada.model.media.MediaType;
-import vidada.model.media.images.ImageMediaItem;
-import vidada.model.media.movies.MovieMediaItem;
-import vidada.model.media.source.IMediaSource;
-import vidada.model.media.source.MediaSourceLocal;
+import vidada.model.media.MovieMediaItem;
 import vidada.model.media.store.IMediaStore;
 import vidada.model.media.store.libraries.IMediaLibraryManager;
 import vidada.model.media.store.libraries.MediaLibrary;
@@ -24,14 +20,11 @@ import vidada.model.tags.ITagService;
 import vidada.model.tags.LocalTagService;
 import vidada.model.tags.Tag;
 import vidada.repositories.IMediaRepository;
-import vidada.repositories.db4o.MediaRepositoryDb4o;
+import vidada.repositories.RepositoryProvider;
 import archimedesJ.exceptions.NotSupportedException;
 import archimedesJ.geometry.Size;
 import archimedesJ.images.IMemoryImage;
 import archimedesJ.io.locations.ResourceLocation;
-
-import com.db4o.ObjectContainer;
-import com.db4o.query.Predicate;
 
 /**
  * Represents a local media store which manages all  medias available locally.
@@ -46,7 +39,7 @@ public class LocalMediaStore implements IMediaStore {
 	transient private final MediaThumbFetcher localThumbFetcher = new MediaThumbFetcher();
 	transient private final LocalImageCacheManager localImageCacheManager = new LocalImageCacheManager();
 
-	transient private final IMediaRepository mediaRepository = new MediaRepositoryDb4o();
+	transient private final IMediaRepository repository = RepositoryProvider.Resolve(IMediaRepository.class);
 	transient private final IMediaLibraryManager libraryService = new MediaLibraryManager();
 	transient private final ILocalTagService localTagService;
 
@@ -55,11 +48,11 @@ public class LocalMediaStore implements IMediaStore {
 	}
 
 	public void store(MediaItem media) {
-		mediaRepository.store(media);
+		repository.store(media);
 	}
 
 	public void store(Collection<MediaItem> media) {
-		mediaRepository.store(media);
+		repository.store(media);
 	}
 
 
@@ -74,17 +67,17 @@ public class LocalMediaStore implements IMediaStore {
 
 	@Override
 	public void update(MediaItem media) {
-		mediaRepository.update(media);
+		repository.update(media);
 	}
 
 	@Override
 	public void update(Collection<MediaItem> media) {
-		mediaRepository.update(media);
+		repository.update(media);
 	}
 
 	@Override
 	public List<MediaItem> query(MediaQuery qry) {
-		return mediaRepository.query(qry);
+		return repository.query(qry);
 	}
 
 
@@ -144,13 +137,16 @@ public class LocalMediaStore implements IMediaStore {
 	// ================   Special abilities of local media store   ==============
 	//
 
+	public List<MediaItem> getAllMedias(){
+		return repository.getAllMedias();
+	}
 
 	public void delete(MediaItem media) {
-		mediaRepository.delete(media);
+		repository.delete(media);
 	}
 
 	public void delete(Collection<MediaItem> media) {
-		mediaRepository.delete(media);
+		repository.delete(media);
 	}
 
 	public IMediaLibraryManager getLibraryManager(){
@@ -249,12 +245,12 @@ public class LocalMediaStore implements IMediaStore {
 
 			// first we search for the media
 
-			mediaData = findMediaInLibrary(resource, library);
+			mediaData = repository.queryByPath(resource, library);
 			if(mediaData == null)
 			{
 				hash = retriveMediaHash(resource);
 				if(hash != null)
-					mediaData = mediaRepository.findMediaDataByHash(hash);
+					mediaData = repository.queryByHash(hash);
 			}
 
 			if(canCreate && mediaData == null){
@@ -263,47 +259,11 @@ public class LocalMediaStore implements IMediaStore {
 
 				mediaData = buildMedia(resource, library, hash);
 				if(persist && mediaData != null){
-					mediaRepository.store(mediaData);
+					repository.store(mediaData);
 				}
 			}
 		}else
 			throw new NotSupportedException("resource is not part of any media library");
-
-		return mediaData;
-	}
-
-
-	private MediaItem findMediaInLibrary(ResourceLocation file, MediaLibrary library){
-		MediaItem mediaData = null;
-
-		ObjectContainer db =  SessionManagerDB4O.getObjectContainer();
-
-		if(library != null)
-		{
-			final URI relativePath = library.getMediaDirectory().getRelativePath(file);
-
-			List<MediaItem> medias = db.query(new Predicate<MediaItem>() {
-				@Override
-				public boolean match(MediaItem media) {
-					for (IMediaSource s : media.getSources()) {
-
-						if(((MediaSourceLocal)s).getRelativeFilePath().equals(relativePath.getPath())){
-							return true;
-						}
-					}
-					return false;
-				}
-			});
-
-			if(!medias.isEmpty())
-				mediaData = medias.get(0);
-			else{
-				//System.err.println("findMediaDataByFilePath: Could not find file in lib. " +  file);
-			}
-
-		}else{
-			System.err.println("file is outside any known library: " + file);
-		}
 
 		return mediaData;
 	}

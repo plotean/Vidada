@@ -11,7 +11,7 @@ import vidada.model.images.IThumbnailService;
 import vidada.model.media.IMediaService;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaType;
-import vidada.model.media.source.IMediaSource;
+import vidada.model.media.source.MediaSource;
 import vidada.model.system.ISystemService;
 import vidada.viewmodel.browser.BrowserItemVM;
 import archimedesJ.exceptions.NotSupportedException;
@@ -138,7 +138,7 @@ public class MediaViewModel extends BrowserItemVM {
 	@Override
 	public boolean open(){
 		if(mediaData != null){
-			IMediaSource source = mediaData.getSource();
+			MediaSource source = mediaData.getSource();
 			if(source != null){
 				ResourceLocation resource = source.getResourceLocation();
 				if(systemService.open(resource)){

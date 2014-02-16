@@ -1,9 +1,12 @@
 package vidada.model.settings;
 
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Transient;
+
 import vidada.model.entities.BaseEntity;
-import vidada.repositories.ISingleEntityRepository;
-import vidada.repositories.db4o.SingleEntityRepositoryDb4o;
 import archimedesJ.crypto.KeyPad;
 import archimedesJ.events.EventArgs;
 import archimedesJ.events.EventHandlerEx;
@@ -16,39 +19,15 @@ import archimedesJ.events.IEvent;
  * @author IsNull
  *
  */
+@Entity
 public class DatabaseSettings extends BaseEntity{
 
-	transient private final static ISingleEntityRepository<DatabaseSettings> repository =
-			new SingleEntityRepositoryDb4o<DatabaseSettings>(DatabaseSettings.class){
-		@Override
-		protected DatabaseSettings createDefault() {
-			DatabaseSettings setting = new DatabaseSettings();
-			setting.setIgnoreImages(false);
-			setting.setNewDatabase(true);
-			return setting;
-		}
-	};
-
 	private transient EventHandlerEx<EventArgs> PlaySoundDirectPlayChanged = new EventHandlerEx<EventArgs>();
+	@Transient public IEvent<EventArgs> getPlaySoundDirectPlayChanged() {return PlaySoundDirectPlayChanged;}
 
-	public IEvent<EventArgs> getPlaySoundDirectPlayChanged() {return PlaySoundDirectPlayChanged;}
-
-	/**
-	 * Gets the application settings
-	 * @return
-	 */
-	public synchronized static DatabaseSettings getSettings(){
-		return repository.get(); 
-	}
-
-
-	/**
-	 * Persist the current changes
-	 */
-	public void persist(){
-		repository.update(this);
-	}
-
+	@Id
+	@GeneratedValue
+	private int id;
 
 	private String name;
 	private byte[] passwordHash;
@@ -61,6 +40,13 @@ public class DatabaseSettings extends BaseEntity{
 	public DatabaseSettings(){
 	}
 
+	public int getId() {
+		return id;
+	}
+
+	void setId(int id) {
+		this.id = id;
+	}
 
 	/**
 	 * Gets the password (hash) of this database

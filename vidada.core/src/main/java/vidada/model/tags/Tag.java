@@ -1,11 +1,21 @@
 package vidada.model.tags;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
+
+
 /**
  * Represents a simple tag
  * @author IsNull
  *
  */
+@Entity
 public class Tag  implements Comparable<Tag> {
+
+	@Id
+	@Column(nullable=false)
 	private String name;
 
 	protected Tag() { }

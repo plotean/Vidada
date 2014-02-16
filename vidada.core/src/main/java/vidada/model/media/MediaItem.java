@@ -5,22 +5,23 @@ import java.net.URI;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.MappedSuperclass;
+import javax.persistence.OneToMany;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.joda.time.DateTime;
 
 import vidada.model.entities.BaseEntity;
-import vidada.model.media.source.IMediaSource;
+import vidada.model.media.source.MediaSource;
 import vidada.model.media.source.MediaSourceLocal;
 import vidada.model.media.store.libraries.MediaLibrary;
-import vidada.model.media.store.local.LocalMediaStore;
 import vidada.model.tags.Tag;
 import archimedesJ.data.observable.IObservableCollection;
 import archimedesJ.data.observable.ObservableCollection;
 import archimedesJ.geometry.Size;
 import archimedesJ.util.Lists;
-
-import com.db4o.config.annotations.Indexed;
 
 /**
  * Represents a single media item
@@ -29,6 +30,7 @@ import com.db4o.config.annotations.Indexed;
  * 
  */
 @XmlRootElement
+@MappedSuperclass
 public abstract class MediaItem extends BaseEntity {
 
 	/***************************************************************************
@@ -37,23 +39,19 @@ public abstract class MediaItem extends BaseEntity {
 	 *                                                                         *
 	 **************************************************************************/
 
+	@OneToMany
+	private Set<MediaSource> sources = new HashSet<MediaSource>();
 
-	private Set<IMediaSource> sources = new HashSet<IMediaSource>();
-	private IObservableCollection<Tag> tags = new ObservableCollection<Tag>(new HashSet<Tag>());
+	@ManyToMany
+	private Set<Tag> tags = new HashSet<Tag>();
 
-	@Indexed
-	private String filename = null;
-	@Indexed
+	@Id
 	private String filehash = null;
-	@Indexed
+	private String filename = null;
 	private DateTime addedDate = new DateTime();
-	@Indexed
 	private Size resolution = null;
-	@Indexed
 	private int opened = 0;
-	@Indexed
 	private int rating = 0;
-	@Indexed
 	private MediaType type;
 
 	/***************************************************************************
@@ -62,8 +60,9 @@ public abstract class MediaItem extends BaseEntity {
 	 *                                                                         *
 	 **************************************************************************/
 
-	transient private String originId = LocalMediaStore.Name;
-	transient private IMediaSource source;
+	transient private String originId = "local.store";
+	transient private MediaSource source;
+	transient private IObservableCollection<Tag> _tags;
 
 	/***************************************************************************
 	 *                                                                         *
@@ -118,14 +117,14 @@ public abstract class MediaItem extends BaseEntity {
 		setFilehash(prototype.getFilehash());
 		setType(prototype.getType());
 
-		setSources(new HashSet<IMediaSource>(getSources()));
+		setSources(new HashSet<MediaSource>(getSources()));
 
 		getTags().clear(); getTags().addAll(prototype.getTags());
 		setRating(prototype.getRating());
 		setOpened(getOpened());
 		setAddedDate(prototype.getAddedDate());
 
-		super.prototype(prototype);
+		//super.prototype(prototype);
 	}
 
 
@@ -160,7 +159,7 @@ public abstract class MediaItem extends BaseEntity {
 	 */
 	@Transient
 	public boolean isAvailable(){
-		IMediaSource source = getSource();
+		MediaSource source = getSource();
 		return source != null && source.isAvailable();
 	}
 
@@ -170,12 +169,12 @@ public abstract class MediaItem extends BaseEntity {
 	 * @return
 	 */
 	@Transient
-	public IMediaSource getSource(){
+	public MediaSource getSource(){
 		if(source == null || !source.isAvailable())
 		{
-			Set<IMediaSource> sources = getSources();
+			Set<MediaSource> sources = getSources();
 			if(sources != null)
-				for (IMediaSource s : sources) {
+				for (MediaSource s : sources) {
 					if(s.isAvailable())
 						source = s;
 				}
@@ -190,11 +189,11 @@ public abstract class MediaItem extends BaseEntity {
 	 * 
 	 * @return
 	 */
-	public Set<IMediaSource> getSources() {
+	public Set<MediaSource> getSources() {
 		if(this.sources != null)
-			return new HashSet<IMediaSource>(this.sources);
+			return new HashSet<MediaSource>(this.sources);
 		else {
-			return new HashSet<IMediaSource>();
+			return new HashSet<MediaSource>();
 		}
 	}
 
@@ -203,7 +202,7 @@ public abstract class MediaItem extends BaseEntity {
 	 * 
 	 * @param tags
 	 */
-	protected void setSources(Set<IMediaSource> sources) {
+	protected void setSources(Set<MediaSource> sources) {
 		this.sources = sources;
 		firePropertyChange("sources");
 	}
@@ -213,7 +212,7 @@ public abstract class MediaItem extends BaseEntity {
 	 * 
 	 * @param tag
 	 */
-	public void addSource(IMediaSource source) {
+	public void addSource(MediaSource source) {
 		if (!getSources().contains(source)) {
 			this.sources.add(source);
 			firePropertyChange("sources");
@@ -225,7 +224,7 @@ public abstract class MediaItem extends BaseEntity {
 	 * 
 	 * @param tag
 	 */
-	public void removeSource(IMediaSource source) {
+	public void removeSource(MediaSource source) {
 		if (getSources().contains(source)) {
 			this.sources.remove(source);
 			firePropertyChange("sources");
@@ -238,7 +237,10 @@ public abstract class MediaItem extends BaseEntity {
 	 * @return
 	 */
 	public IObservableCollection<Tag> getTags() {
-		return tags;
+		if(_tags == null){
+			_tags = new ObservableCollection<Tag>(tags);
+		}
+		return _tags;
 	}
 
 	/**
@@ -299,7 +301,7 @@ public abstract class MediaItem extends BaseEntity {
 	 */
 	public String getFilehash() {
 		if (!isHashCalculated()) {
-			IMediaSource source = getSource();
+			MediaSource source = getSource();
 			if(source != null && source.isAvailable()){
 				MediaHashUtil hashUtil = MediaHashUtil.getDefaultMediaHashUtil();
 				String hash =  hashUtil.retriveFileHash(source.getResourceLocation());

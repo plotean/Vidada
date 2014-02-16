@@ -3,8 +3,11 @@ package vidada.model.media.store.libraries;
 import java.beans.Transient;
 import java.net.URISyntaxException;
 
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+
 import vidada.model.ServiceProvider;
-import vidada.model.entities.BaseEntity;
+import vidada.model.entities.IdEntity;
 import vidada.model.images.IThumbnailService;
 import vidada.model.images.cache.IImageCache;
 import vidada.model.images.cache.crypto.ImageCacheFactory;
@@ -17,10 +20,12 @@ import archimedesJ.io.locations.DirectoryLocation;
  * @author IsNull
  *
  */
-public class MediaLibrary extends BaseEntity {
+@Entity
+public class MediaLibrary extends IdEntity {
 
 	public static final String VidataThumbsFolder = "vidada.thumbs";
 
+	@Embedded
 	private DirectoryLocation libraryRoot;
 	private boolean ignoreMovies;
 	private boolean ignoreImages;

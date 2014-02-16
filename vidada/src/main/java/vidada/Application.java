@@ -15,9 +15,9 @@ import org.controlsfx.control.action.AbstractAction;
 import org.controlsfx.dialog.Dialog;
 import org.controlsfx.dialog.Dialogs;
 
+import vidada.dal.DAL;
+import vidada.data.DatabaseConnectionException;
 import vidada.data.DefaultDataCreator;
-import vidada.data.db4o.DatabaseConnectionException;
-import vidada.data.db4o.SessionManagerDB4O;
 import vidada.images.RawImageFactoryFx;
 import vidada.model.ServiceProvider;
 import vidada.model.ServiceProvider.IServiceRegisterer;
@@ -26,6 +26,7 @@ import vidada.model.media.store.libraries.IMediaLibraryManager;
 import vidada.model.security.ICredentialManager;
 import vidada.model.security.ICredentialManager.CredentialsChecker;
 import vidada.model.security.IPrivacyService;
+import vidada.model.settings.DataBaseSettingsManager;
 import vidada.model.settings.DatabaseSettings;
 import vidada.model.settings.GlobalSettings;
 import vidada.model.settings.VidadaDatabase;
@@ -39,8 +40,6 @@ import archimedesJ.security.CredentialType;
 import archimedesJ.security.Credentials;
 import archimedesJ.services.ServiceLocator;
 import archimedesJ.util.OSValidator;
-
-import com.db4o.ObjectContainer;
 
 
 public class Application extends  javafx.application.Application {
@@ -129,14 +128,14 @@ public class Application extends  javafx.application.Application {
 	 */
 	private void afterStartup() {
 
-		DatabaseSettings settings = DatabaseSettings.getSettings();
+		DatabaseSettings settings = DataBaseSettingsManager.getSettings();
 
 		if(settings.isNewDatabase()){
 
 			DefaultDataCreator.createDefaultData();
 
 			settings.setNewDatabase(false);
-			settings.persist();
+			DataBaseSettingsManager.persist(settings);
 		}
 
 		IMediaLibraryManager libService = ServiceProvider.Resolve(IMediaService.class).getLocalMediaStore().getLibraryManager();
@@ -205,13 +204,11 @@ public class Application extends  javafx.application.Application {
 				locator.registerSingleton(IImageViewerService.class, ImageViewerServiceFx.class);
 
 
-				ICredentialManager credentialManager = locator.resolve(ICredentialManager.class);
+				//ICredentialManager credentialManager = locator.resolve(ICredentialManager.class);
 				//credentialManager.register(authProvider);
 			}
 		});
 
-
-		ObjectContainer em = null;
 
 		System.out.println("loaded settings v" + GlobalSettings.getInstance().getSettingsVersion());
 
@@ -224,25 +221,10 @@ public class Application extends  javafx.application.Application {
 			return false;
 		}
 
-
 		try{
 			System.out.println("setting up EntityManager...");
-			em = SessionManagerDB4O.getObjectContainer();
-		}catch(DatabaseConnectionException e){
-			e.printStackTrace();
-			em = null;
+			DAL.activate();
 
-			// notify user
-
-			e.printStackTrace();
-			Dialogs.create()
-			.title("Vidada Erorr")
-			.masthead("Vidada has trouble to access / connect to your database.")
-			.showException(e);
-		}
-
-		if(em != null)
-		{
 			System.out.println("EM created sucessfully.");
 
 			//
@@ -269,17 +251,21 @@ public class Application extends  javafx.application.Application {
 
 			if(privacyService.isAuthenticated() || !privacyService.isProtected())
 			{
-
-				//mainUIContext.hideSplash();
-
 				return true;
 			}else {
 				System.err.println("Authentication failed. Quitting application now.");
 			}
-		}else{
-			System.err.println("EntityManager could not be created.");
-		}
 
+		}catch(DatabaseConnectionException e){
+			e.printStackTrace();
+
+			// notify user
+			e.printStackTrace();
+			Dialogs.create()
+			.title("Vidada Erorr")
+			.masthead("Vidada has trouble to access / connect to your database.")
+			.showException(e);
+		}
 		return false;
 	}
 
