@@ -1,9 +1,10 @@
-package vidada.dal;
+package vidada.dal.repositorys;
 
 import java.util.List;
 
 import javax.persistence.TypedQuery;
 
+import vidada.dal.JPARepository;
 import vidada.model.security.StoredCredentials;
 import vidada.repositories.ICredentialRepository;
 

@@ -2,6 +2,11 @@ package vidada.dal;
 
 import javax.persistence.EntityManager;
 
+import vidada.dal.repositorys.CredentialRepository;
+import vidada.dal.repositorys.DatabaseSettingsRepository;
+import vidada.dal.repositorys.MediaLibraryRepository;
+import vidada.dal.repositorys.MediaRepository;
+import vidada.dal.repositorys.TagRepository;
 import vidada.data.DatabaseConnectionException;
 import vidada.repositories.ICredentialRepository;
 import vidada.repositories.IDatabaseSettingsRepository;
@@ -9,6 +14,7 @@ import vidada.repositories.IMediaLibraryRepository;
 import vidada.repositories.IMediaRepository;
 import vidada.repositories.ITagRepository;
 import vidada.repositories.RepositoryProvider;
+
 
 public class DAL {
 

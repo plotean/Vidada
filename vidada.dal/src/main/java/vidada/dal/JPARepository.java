@@ -5,7 +5,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
-abstract class JPARepository {
+public abstract class JPARepository {
 	protected EntityManager getEntityManager(){
 		return JPAConfiguration.instance().getDefaultEntityManager();
 	}

@@ -1,7 +1,8 @@
-package vidada.dal;
+package vidada.dal.repositorys;
 
 import javax.persistence.TypedQuery;
 
+import vidada.dal.JPARepository;
 import vidada.model.settings.DatabaseSettings;
 import vidada.repositories.IDatabaseSettingsRepository;
 

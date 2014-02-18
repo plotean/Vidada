@@ -1,10 +1,11 @@
-package vidada.dal;
+package vidada.dal.repositorys;
 
 import java.util.List;
 
 import javax.persistence.TypedQuery;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import vidada.dal.JPARepository;
 import vidada.model.media.store.libraries.MediaLibrary;
 import vidada.repositories.IMediaLibraryRepository;
 import archimedesJ.io.locations.ResourceLocation;

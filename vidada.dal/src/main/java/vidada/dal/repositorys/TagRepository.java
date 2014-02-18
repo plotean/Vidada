@@ -1,10 +1,11 @@
-package vidada.dal;
+package vidada.dal.repositorys;
 
 import java.util.Collection;
 import java.util.List;
 
 import javax.persistence.TypedQuery;
 
+import vidada.dal.JPARepository;
 import vidada.model.media.store.libraries.MediaLibrary;
 import vidada.model.tags.Tag;
 import vidada.repositories.ITagRepository;
