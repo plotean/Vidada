@@ -1,6 +1,6 @@
 package vidada.model.media.store.local;
 
-import vidada.model.media.store.libraries.MediaLibrary;
+import vidada.model.media.MediaLibrary;
 import archimedesJ.threading.IProgressListener;
 
 

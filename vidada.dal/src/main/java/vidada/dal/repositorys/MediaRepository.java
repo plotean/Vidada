@@ -7,10 +7,10 @@ import javax.persistence.TypedQuery;
 
 import vidada.dal.JPARepository;
 import vidada.model.media.MediaItem;
+import vidada.model.media.MediaLibrary;
 import vidada.model.media.MediaQuery;
-import vidada.model.media.store.libraries.MediaLibrary;
 import vidada.model.tags.Tag;
-import vidada.repositories.IMediaRepository;
+import vidada.server.repositories.IMediaRepository;
 import archimedesJ.exceptions.NotImplementedException;
 import archimedesJ.io.locations.ResourceLocation;
 

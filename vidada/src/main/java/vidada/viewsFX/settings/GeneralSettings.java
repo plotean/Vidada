@@ -6,8 +6,8 @@ import javafx.geometry.Insets;
 import javafx.scene.control.CheckBox;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
-import vidada.model.settings.DataBaseSettingsManager;
-import vidada.model.settings.DatabaseSettings;
+import vidada.server.settings.DataBaseSettingsManager;
+import vidada.server.settings.DatabaseSettings;
 
 public class GeneralSettings extends BorderPane {
 

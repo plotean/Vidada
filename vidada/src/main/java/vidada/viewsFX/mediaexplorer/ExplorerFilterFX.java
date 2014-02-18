@@ -12,9 +12,9 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import vidada.model.ServiceProvider;
 import vidada.model.media.IMediaService;
-import vidada.model.media.store.libraries.IMediaLibraryManager;
-import vidada.model.media.store.libraries.MediaLibrary;
+import vidada.model.media.MediaLibrary;
 import vidada.model.media.store.local.LocalMediaStore;
+import vidada.services.IMediaLibraryService;
 import vidada.viewmodel.explorer.MediaExplorerVM;
 import archimedesJ.events.EventArgsG;
 import archimedesJ.events.EventListenerEx;
@@ -27,7 +27,7 @@ public class ExplorerFilterFX extends BorderPane {
 	private final ObservableList<MediaLibrary> observableMedias;
 
 	private final LocalMediaStore localStore = ServiceProvider.Resolve(IMediaService.class).getLocalMediaStore();
-	private final IMediaLibraryManager mediaLibraryService = localStore.getLibraryManager();
+	private final IMediaLibraryService mediaLibraryService = localStore.getLibraryManager();
 
 
 	private MediaExplorerVM mediaExplorerVm;

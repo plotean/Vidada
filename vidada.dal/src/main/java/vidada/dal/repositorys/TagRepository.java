@@ -6,9 +6,9 @@ import java.util.List;
 import javax.persistence.TypedQuery;
 
 import vidada.dal.JPARepository;
-import vidada.model.media.store.libraries.MediaLibrary;
+import vidada.model.media.MediaLibrary;
 import vidada.model.tags.Tag;
-import vidada.repositories.ITagRepository;
+import vidada.server.repositories.ITagRepository;
 
 public class TagRepository extends JPARepository implements ITagRepository {
 

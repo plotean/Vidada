@@ -1,6 +1,6 @@
 package vidada.server.rest.resource;
 
-import java.util.List;
+import java.util.Collection;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -11,9 +11,9 @@ import javax.ws.rs.core.Request;
 import javax.ws.rs.core.UriInfo;
 
 import vidada.model.ServiceProvider;
-import vidada.model.media.IMediaService;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaQuery;
+import vidada.services.IMediaService;
 
 @Path("/medias")
 public class MediasResource {
@@ -33,7 +33,7 @@ public class MediasResource {
 	 */
 	@GET
 	@Produces({MediaType.APPLICATION_JSON})
-	public List<MediaItem> getMedias() {
+	public Collection<MediaItem> getMedias() {
 		return mediaService.query(MediaQuery.ALL); 
 	}
 

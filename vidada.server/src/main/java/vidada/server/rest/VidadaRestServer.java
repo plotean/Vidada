@@ -3,6 +3,7 @@ package vidada.server.rest;
 import java.io.Closeable;
 import java.io.IOException;
 
+import vidada.IVidadaServer;
 import vidada.server.rest.resource.HelloWorldResource;
 
 import com.sun.jersey.api.core.DefaultResourceConfig;
@@ -10,7 +11,13 @@ import com.sun.jersey.simple.container.SimpleServerFactory;
 
 public class VidadaRestServer{
 
-	private void start(){
+	private IVidadaServer server;
+
+	public VidadaRestServer(IVidadaServer server){
+		this.server = server;
+	}
+
+	public void start(){
 
 		DefaultResourceConfig resourceConfig = new DefaultResourceConfig(HelloWorldResource.class);
 		// The following line is to enable GZIP when client accepts it
@@ -36,7 +43,7 @@ public class VidadaRestServer{
 
 	public static void main(String[] args) {
 		System.out.println("Server: Starting...");
-		VidadaRestServer server = new VidadaRestServer();
-		server.start();
+		//VidadaRestServer server = new VidadaRestServer();
+		//server.start();
 	}
 }

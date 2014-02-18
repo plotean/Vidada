@@ -1,30 +1,10 @@
 package vidada.model.media.store.local;
 
-import java.util.Collection;
-import java.util.List;
-
 import vidada.model.images.cache.IImageCache;
-import vidada.model.media.ImageMediaItem;
-import vidada.model.media.MediaFileInfo;
-import vidada.model.media.MediaHashUtil;
 import vidada.model.media.MediaItem;
-import vidada.model.media.MediaQuery;
-import vidada.model.media.MediaType;
 import vidada.model.media.MovieMediaItem;
-import vidada.model.media.store.IMediaStore;
-import vidada.model.media.store.libraries.IMediaLibraryManager;
-import vidada.model.media.store.libraries.MediaLibrary;
-import vidada.model.media.store.libraries.MediaLibraryManager;
-import vidada.model.tags.ILocalTagService;
-import vidada.model.tags.ITagService;
-import vidada.model.tags.LocalTagService;
-import vidada.model.tags.Tag;
-import vidada.repositories.IMediaRepository;
-import vidada.repositories.RepositoryProvider;
-import archimedesJ.exceptions.NotSupportedException;
 import archimedesJ.geometry.Size;
 import archimedesJ.images.IMemoryImage;
-import archimedesJ.io.locations.ResourceLocation;
 
 /**
  * Represents a local media store which manages all  medias available locally.
@@ -32,56 +12,15 @@ import archimedesJ.io.locations.ResourceLocation;
  * @author IsNull
  *
  */
-public class LocalMediaStore implements IMediaStore {
+public class LocalMediaStore {
 
 	public static final String Name = "local.store"; 
 
 	transient private final MediaThumbFetcher localThumbFetcher = new MediaThumbFetcher();
 	transient private final LocalImageCacheManager localImageCacheManager = new LocalImageCacheManager();
 
-	transient private final IMediaRepository repository = RepositoryProvider.Resolve(IMediaRepository.class);
-	transient private final IMediaLibraryManager libraryService = new MediaLibraryManager();
-	transient private final ILocalTagService localTagService;
-
-	public LocalMediaStore(ITagService tagService){
-		localTagService = new LocalTagService(tagService);
-	}
-
-	public void store(MediaItem media) {
-		repository.store(media);
-	}
-
-	public void store(Collection<MediaItem> media) {
-		repository.store(media);
-	}
 
 
-	//
-	// IMediaStore implementation
-	//
-
-	@Override
-	public String getNameId() {
-		return Name;
-	}
-
-	@Override
-	public void update(MediaItem media) {
-		repository.update(media);
-	}
-
-	@Override
-	public void update(Collection<MediaItem> media) {
-		repository.update(media);
-	}
-
-	@Override
-	public List<MediaItem> query(MediaQuery qry) {
-		return repository.query(qry);
-	}
-
-
-	@Override
 	public IMemoryImage getThumbImage(MediaItem media, Size size) {
 		IMemoryImage thumb = null;
 
@@ -100,7 +39,6 @@ public class LocalMediaStore implements IMediaStore {
 		return thumb;
 	}
 
-	@Override
 	public IMemoryImage renewThumbImage(MovieMediaItem media, Size size, float pos) {
 
 		IMemoryImage thumb = null;
@@ -120,151 +58,6 @@ public class LocalMediaStore implements IMediaStore {
 		return thumb;
 	}
 
-	@Override
-	public Collection<Tag> getAllUsedTags() {
-		return getTagManager().getUsedTags(getLibraryManager().getAvailableLibraries());
-	}
 
 
-	@Override
-	public void synchronize() {
-		// TODO Auto-generated method stub
-
-	}
-
-
-	//
-	// ================   Special abilities of local media store   ==============
-	//
-
-	public List<MediaItem> getAllMedias(){
-		return repository.getAllMedias();
-	}
-
-	public void delete(MediaItem media) {
-		repository.delete(media);
-	}
-
-	public void delete(Collection<MediaItem> media) {
-		repository.delete(media);
-	}
-
-	public IMediaLibraryManager getLibraryManager(){
-		return libraryService;
-	}
-
-	public ILocalTagService getTagManager(){
-		return localTagService ;
-	}
-
-
-	/**
-	 * Simple media factory to create a media item from an existing file.
-	 * The media type is determined dynamically. 
-	 * @param mediaLocation
-	 * @param parentlibrary
-	 * @param mediahash
-	 * @return
-	 */
-	public MediaItem buildMedia(final ResourceLocation mediaLocation, final MediaLibrary parentlibrary, String mediahash) {
-
-		MediaItem newMedia = null;
-
-		if(mediahash == null){
-			// if no hash has been provided we have to calculate it now
-			mediahash =  MediaHashUtil.getDefaultMediaHashUtil().retriveFileHash(mediaLocation);
-		}
-
-		// find the correct Media type for the given media
-		if(MediaFileInfo.get(MediaType.MOVIE).isFileofThisType(mediaLocation))
-		{
-			newMedia = new MovieMediaItem(
-					parentlibrary,
-					parentlibrary.getMediaDirectory().getRelativePath(mediaLocation),
-					mediahash);
-
-		}else if(MediaFileInfo.get(MediaType.IMAGE).isFileofThisType(mediaLocation)){
-
-			newMedia = new ImageMediaItem(
-					parentlibrary,
-					parentlibrary.getMediaDirectory().getRelativePath(mediaLocation),
-					mediahash);
-
-		}else {
-			System.err.println("MediaService: Can not handle " + mediaLocation.toString());
-		}
-
-		return newMedia;
-	}
-
-	/**
-	 * Finds an existing media item or creates a new one for the given file
-	 * @param file
-	 * @param persist
-	 * @return
-	 */
-	public MediaItem findOrCreateMedia(ResourceLocation file, boolean persist) {
-		return findAndCreateMedia(file, true, persist);
-	}
-
-
-	/**
-	 * Search for the given media data by the given absolute path
-	 */
-	public MediaItem findMediaData(ResourceLocation file) {
-		return findAndCreateMedia(file, false, false);
-	}
-
-	/**
-	 * Gets the hash for the given file
-	 * @param file
-	 * @return
-	 */
-	private String retriveMediaHash(ResourceLocation file){
-		return MediaHashUtil.getDefaultMediaHashUtil().retriveFileHash(file);
-	}
-
-
-	/**
-	 * 
-	 * @param resource
-	 * @param canCreate
-	 * @param persist
-	 * @return
-	 */
-	private MediaItem findAndCreateMedia(ResourceLocation resource, boolean canCreate, boolean persist){
-		MediaItem mediaData;
-
-		// We assume the given file is an absolute file path so we search for
-		// a matching media library to substitute the library path
-
-		final MediaLibrary library = libraryService.findLibrary(resource);
-
-		if(library != null){
-			String hash = null;
-
-			// first we search for the media
-
-			mediaData = repository.queryByPath(resource, library);
-			if(mediaData == null)
-			{
-				hash = retriveMediaHash(resource);
-				if(hash != null)
-					mediaData = repository.queryByHash(hash);
-			}
-
-			if(canCreate && mediaData == null){
-
-				// we could not find a matching media so we create a new one
-
-				mediaData = buildMedia(resource, library, hash);
-				if(persist && mediaData != null){
-					repository.store(mediaData);
-				}
-			}
-		}else
-			throw new NotSupportedException("resource is not part of any media library");
-
-		return mediaData;
-	}
 }

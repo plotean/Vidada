@@ -1,7 +1,7 @@
 package vidada.model.security;
 
-import vidada.model.settings.DataBaseSettingsManager;
-import vidada.model.settings.DatabaseSettings;
+import vidada.server.settings.DataBaseSettingsManager;
+import vidada.server.settings.DatabaseSettings;
 import archimedesJ.crypto.IByteBufferEncryption;
 import archimedesJ.crypto.KeyPad;
 import archimedesJ.crypto.XORByteCrypter;

@@ -4,7 +4,6 @@ import java.net.URI;
 
 import javax.persistence.Entity;
 
-import vidada.model.media.store.libraries.MediaLibrary;
 import vidada.model.video.Video;
 
 /**

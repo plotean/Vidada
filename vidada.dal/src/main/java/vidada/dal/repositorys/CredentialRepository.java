@@ -6,7 +6,7 @@ import javax.persistence.TypedQuery;
 
 import vidada.dal.JPARepository;
 import vidada.model.security.StoredCredentials;
-import vidada.repositories.ICredentialRepository;
+import vidada.server.repositories.ICredentialRepository;
 
 public class CredentialRepository extends JPARepository implements ICredentialRepository {
 

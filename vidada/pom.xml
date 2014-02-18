@@ -157,10 +157,16 @@
 		
 		<dependency>
 		    <groupId>org.securityvision</groupId>
-  			<artifactId>vidada.dal</artifactId>
-  			<version>0.0.1-SNAPSHOT</version>
+			<artifactId>vidada.client</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		
+		<dependency>
+		    <groupId>org.securityvision</groupId>
+			<artifactId>vidada.dal</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+				
 		<!--  Apache commons io: File support -->
 		<dependency>
 			<groupId>commons-io</groupId>

@@ -16,7 +16,6 @@ import org.joda.time.DateTime;
 import vidada.model.entities.BaseEntity;
 import vidada.model.media.source.MediaSource;
 import vidada.model.media.source.MediaSourceLocal;
-import vidada.model.media.store.libraries.MediaLibrary;
 import vidada.model.tags.Tag;
 import archimedesJ.data.observable.IObservableCollection;
 import archimedesJ.data.observable.ObservableCollection;

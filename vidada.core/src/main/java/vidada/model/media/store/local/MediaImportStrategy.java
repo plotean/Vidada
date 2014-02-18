@@ -14,13 +14,16 @@ import vidada.model.images.IThumbImageCreator;
 import vidada.model.images.ThumbImageExtractor;
 import vidada.model.media.MediaHashUtil;
 import vidada.model.media.MediaItem;
+import vidada.model.media.MediaItemFactory;
+import vidada.model.media.MediaLibrary;
 import vidada.model.media.source.MediaSource;
 import vidada.model.media.source.MediaSourceLocal;
-import vidada.model.media.store.libraries.IMediaLibraryManager;
-import vidada.model.media.store.libraries.MediaLibrary;
-import vidada.model.tags.ILocalTagService;
 import vidada.model.tags.autoTag.AutoTagSupport;
 import vidada.model.tags.autoTag.ITagGuessingStrategy;
+import vidada.model.tags.autoTag.KeywordBasedTagGuesser;
+import vidada.services.IMediaLibraryService;
+import vidada.services.IMediaService;
+import vidada.services.ITagService;
 import archimedesJ.io.locations.ResourceLocation;
 import archimedesJ.threading.IProgressListener;
 import archimedesJ.threading.ProgressEventArgs;
@@ -33,19 +36,20 @@ import archimedesJ.util.Lists;
  */
 public class MediaImportStrategy implements IMediaImportStrategy {
 
-	private final LocalMediaStore localStore;
-	private final IMediaLibraryManager libraryManager;
-	private final ILocalTagService localTagManager;
+	private final IMediaService mediaService;
+	private final IMediaLibraryService libraryManager;
+	private final ITagService tagService;
 
 	private MediaHashUtil mediaHashUtil;
 	private ITagGuessingStrategy tagguesser;
 
-	IThumbImageCreator thumbImageCreator =  new ThumbImageExtractor(); 
+	private IThumbImageCreator thumbImageCreator =  new ThumbImageExtractor(); 
 
-	public MediaImportStrategy(LocalMediaStore mediaService){
-		this.localStore = mediaService;
-		libraryManager = localStore.getLibraryManager();
-		localTagManager = localStore.getTagManager();
+
+	public MediaImportStrategy(IMediaService mediaService, ITagService tagService, IMediaLibraryService libraryManager){
+		this.mediaService = mediaService;
+		this.tagService = tagService;
+		this.libraryManager = libraryManager;
 	}
 
 	@Override
@@ -53,7 +57,7 @@ public class MediaImportStrategy implements IMediaImportStrategy {
 
 		mediaHashUtil =  MediaHashUtil.getDefaultMediaHashUtil();
 
-		tagguesser = localTagManager.createTagGuesser();
+		tagguesser = new KeywordBasedTagGuesser(tagService.getUsedTags()); 
 
 		List<MediaLibrary> libraries = libraryManager.getAllLibraries();
 
@@ -147,7 +151,7 @@ public class MediaImportStrategy implements IMediaImportStrategy {
 		Map<String, MediaItem> existingMediaData = new HashMap<String, MediaItem>();
 
 
-		List<MediaItem> knownMedias = localStore.getAllMedias();
+		List<MediaItem> knownMedias = mediaService.getAllMedias();
 
 		for (MediaItem mediaData : knownMedias) {
 			existingMediaData.put(mediaData.getFilehash(), mediaData);
@@ -241,8 +245,8 @@ public class MediaImportStrategy implements IMediaImportStrategy {
 		}
 
 		// bulk update 
-		localStore.delete(removeMedias);
-		localStore.update(updateMedias);
+		mediaService.delete(removeMedias);
+		mediaService.update(updateMedias);
 
 		return newFiles;
 	}
@@ -388,7 +392,7 @@ public class MediaImportStrategy implements IMediaImportStrategy {
 			int progress = (int)(100d / fileMapSize * (double)i);
 			progressListener.currentProgress(new ProgressEventArgs(progress, "Importing new media:\t" + entry.getValue().getName()));
 
-			MediaItem newDataPart = localStore.buildMedia(entry.getValue(), parentlibrary, entry.getKey());
+			MediaItem newDataPart = MediaItemFactory.instance().buildMedia(entry.getValue(), parentlibrary, entry.getKey());
 
 			if(newDataPart != null)
 			{
@@ -401,7 +405,7 @@ public class MediaImportStrategy implements IMediaImportStrategy {
 
 		String msg = "Adding " + newmedias.size() + " new medias to the Library...";
 		progressListener.currentProgress(new ProgressEventArgs(true, msg));
-		localStore.store(newmedias);
+		mediaService.store(newmedias);
 	}
 
 

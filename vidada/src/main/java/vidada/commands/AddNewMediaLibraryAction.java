@@ -10,9 +10,9 @@ import javax.swing.JDialog;
 
 import vidada.model.ServiceProvider;
 import vidada.model.media.IMediaService;
-import vidada.model.media.store.libraries.MediaLibrary;
-import vidada.model.settings.DataBaseSettingsManager;
-import vidada.model.settings.DatabaseSettings;
+import vidada.model.media.MediaLibrary;
+import vidada.server.settings.DataBaseSettingsManager;
+import vidada.server.settings.DatabaseSettings;
 import vidada.views.ImageResources;
 import archimedesJ.expressions.Predicate;
 import archimedesJ.io.locations.DirectoryLocation;

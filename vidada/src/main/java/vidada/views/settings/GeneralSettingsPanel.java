@@ -17,9 +17,9 @@ import javax.swing.SwingUtilities;
 
 import vidada.model.ServiceProvider;
 import vidada.model.connectivity.IConnectivityService;
-import vidada.model.settings.DataBaseSettingsManager;
-import vidada.model.settings.DatabaseSettings;
 import vidada.model.settings.GlobalSettings;
+import vidada.server.settings.DataBaseSettingsManager;
+import vidada.server.settings.DatabaseSettings;
 import vidada.views.tools.DuplicateManagerDialoge;
 import vlcj.VlcjUtil;
 import archimedesJ.exceptions.NotImplementedException;

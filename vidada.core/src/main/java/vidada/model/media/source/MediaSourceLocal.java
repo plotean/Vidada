@@ -6,7 +6,7 @@ import java.net.URI;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 
-import vidada.model.media.store.libraries.MediaLibrary;
+import vidada.model.media.MediaLibrary;
 import archimedesJ.io.locations.ResourceLocation;
 
 /**

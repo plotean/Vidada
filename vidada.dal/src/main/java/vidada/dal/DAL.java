@@ -8,12 +8,12 @@ import vidada.dal.repositorys.MediaLibraryRepository;
 import vidada.dal.repositorys.MediaRepository;
 import vidada.dal.repositorys.TagRepository;
 import vidada.data.DatabaseConnectionException;
-import vidada.repositories.ICredentialRepository;
-import vidada.repositories.IDatabaseSettingsRepository;
-import vidada.repositories.IMediaLibraryRepository;
-import vidada.repositories.IMediaRepository;
-import vidada.repositories.ITagRepository;
-import vidada.repositories.RepositoryProvider;
+import vidada.server.repositories.ICredentialRepository;
+import vidada.server.repositories.IDatabaseSettingsRepository;
+import vidada.server.repositories.IMediaLibraryRepository;
+import vidada.server.repositories.IMediaRepository;
+import vidada.server.repositories.ITagRepository;
+import vidada.server.repositories.RepositoryProvider;
 
 
 public class DAL {

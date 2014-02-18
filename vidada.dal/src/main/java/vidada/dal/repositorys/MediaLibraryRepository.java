@@ -6,8 +6,8 @@ import javax.persistence.TypedQuery;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import vidada.dal.JPARepository;
-import vidada.model.media.store.libraries.MediaLibrary;
-import vidada.repositories.IMediaLibraryRepository;
+import vidada.model.media.MediaLibrary;
+import vidada.server.repositories.IMediaLibraryRepository;
 import archimedesJ.io.locations.ResourceLocation;
 
 public class MediaLibraryRepository extends JPARepository implements IMediaLibraryRepository {

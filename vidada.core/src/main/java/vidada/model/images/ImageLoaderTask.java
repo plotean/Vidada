@@ -3,7 +3,6 @@ package vidada.model.images;
 import java.util.concurrent.Callable;
 
 import vidada.model.media.MediaItem;
-import vidada.model.media.store.IMediaStore;
 import archimedesJ.geometry.Size;
 import archimedesJ.images.IMemoryImage;
 

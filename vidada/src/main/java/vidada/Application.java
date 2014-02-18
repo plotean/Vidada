@@ -17,27 +17,18 @@ import org.controlsfx.dialog.Dialogs;
 
 import vidada.dal.DAL;
 import vidada.data.DatabaseConnectionException;
-import vidada.data.DefaultDataCreator;
 import vidada.images.RawImageFactoryFx;
 import vidada.model.ServiceProvider;
 import vidada.model.ServiceProvider.IServiceRegisterer;
-import vidada.model.media.IMediaService;
-import vidada.model.media.store.libraries.IMediaLibraryManager;
-import vidada.model.security.ICredentialManager;
-import vidada.model.security.ICredentialManager.CredentialsChecker;
-import vidada.model.security.IPrivacyService;
-import vidada.model.settings.DataBaseSettingsManager;
-import vidada.model.settings.DatabaseSettings;
 import vidada.model.settings.GlobalSettings;
 import vidada.model.settings.VidadaDatabase;
 import vidada.model.system.ISystemService;
+import vidada.server.VidadaServer;
 import vidada.viewsFX.MainViewFx;
 import vidada.viewsFX.dialoges.ChooseMediaDatabaseView;
 import vidada.viewsFX.images.ImageViewerServiceFx;
 import archimedesJ.images.IRawImageFactory;
 import archimedesJ.images.viewer.IImageViewerService;
-import archimedesJ.security.CredentialType;
-import archimedesJ.security.Credentials;
 import archimedesJ.services.ServiceLocator;
 import archimedesJ.util.OSValidator;
 
@@ -67,6 +58,7 @@ public class Application extends  javafx.application.Application {
 	}
 
 	private Stage primaryStage;
+	private VidadaServer server;
 
 
 	@Override
@@ -128,6 +120,7 @@ public class Application extends  javafx.application.Application {
 	 */
 	private void afterStartup() {
 
+		/*
 		DatabaseSettings settings = DataBaseSettingsManager.getSettings();
 
 		if(settings.isNewDatabase()){
@@ -136,9 +129,9 @@ public class Application extends  javafx.application.Application {
 
 			settings.setNewDatabase(false);
 			DataBaseSettingsManager.persist(settings);
-		}
+		}*/
 
-		IMediaLibraryManager libService = ServiceProvider.Resolve(IMediaService.class).getLocalMediaStore().getLibraryManager();
+		//IMediaLibraryManager libService = ServiceProvider.Resolve(IMediaService.class).getLocalMediaStore().getLibraryManager();
 
 		//
 		// Wizards
@@ -221,40 +214,17 @@ public class Application extends  javafx.application.Application {
 			return false;
 		}
 
+
 		try{
+
 			System.out.println("setting up EntityManager...");
 			DAL.activate();
 
 			System.out.println("EM created sucessfully.");
 
-			//
-			// EM is created successfully which indicates that we have a working db connection
-			// hibernate has initialized
-			//
+			// TODO start local vidada server
+			server = new VidadaServer();
 
-			System.out.println("Checking user authentication...");
-
-			IPrivacyService privacyService = ServiceProvider.Resolve(IPrivacyService.class);
-			ICredentialManager credentialManager= ServiceProvider.Resolve(ICredentialManager.class);
-
-			if(privacyService == null) return false;
-
-			if(privacyService.isProtected()){
-				System.out.println("Requesting user authentication for privacyService!");
-				if(!requestAuthentication(privacyService, credentialManager)){
-					System.err.println("Autentification failed, aborting...");
-					return false;
-				}
-			}else {
-				System.out.println("No authentication necessary.");
-			}
-
-			if(privacyService.isAuthenticated() || !privacyService.isProtected())
-			{
-				return true;
-			}else {
-				System.err.println("Authentication failed. Quitting application now.");
-			}
 
 		}catch(DatabaseConnectionException e){
 			e.printStackTrace();
@@ -313,21 +283,7 @@ public class Application extends  javafx.application.Application {
 	};*/
 
 
-	private boolean requestAuthentication(final IPrivacyService privacyService, ICredentialManager credentialManager){
 
-		Credentials validCredentials = credentialManager.requestAuthentication(
-				"vidada.core",
-				"Please enter the Database password:",
-				CredentialType.PasswordOnly,
-				new CredentialsChecker(){
-					@Override
-					public boolean check(Credentials credentials) {
-						return privacyService.authenticate(credentials);
-					}},
-					false);
-
-		return validCredentials != null;
-	}
 
 
 

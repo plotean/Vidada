@@ -3,8 +3,8 @@ package vidada.model.security;
 import java.util.List;
 
 import vidada.model.ServiceProvider;
-import vidada.repositories.ICredentialRepository;
-import vidada.repositories.RepositoryProvider;
+import vidada.server.repositories.ICredentialRepository;
+import vidada.server.repositories.RepositoryProvider;
 import archimedesJ.exceptions.NotSupportedException;
 import archimedesJ.security.CredentialType;
 import archimedesJ.security.Credentials;

@@ -4,8 +4,6 @@ import java.net.URI;
 
 import javax.persistence.Entity;
 
-import vidada.model.media.store.libraries.MediaLibrary;
-
 @Entity
 public class ImageMediaItem extends MediaItem {
 	/**
