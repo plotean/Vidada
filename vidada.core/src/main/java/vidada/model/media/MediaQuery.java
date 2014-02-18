@@ -115,4 +115,16 @@ public class MediaQuery extends AbstractQuery<MediaItem>{
 		this.onlyAvailable = onlyAvailable;
 	}
 
+
+	// Helper methods to check which restrictions this query defines
+
+
+	public boolean hasKeyword() {
+		return getKeywords() != null && !getKeywords().isEmpty();
+	}
+
+	public boolean hasMediaType() {
+		return !MediaType.ANY.equals(getSelectedtype());
+	}
+
 }

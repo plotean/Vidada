@@ -10,7 +10,7 @@ import vidada.model.images.cache.ImageCacheProxyBase;
 import vidada.model.images.cache.MemoryImageCache;
 import vidada.model.images.cache.crypto.ImageCacheFactory;
 import vidada.model.media.MediaItem;
-import vidada.model.media.source.IMediaSource;
+import vidada.model.media.source.MediaSource;
 import vidada.model.media.source.MediaSourceLocal;
 import vidada.model.media.store.libraries.MediaLibrary;
 import vidada.model.security.ICredentialManager;
@@ -43,7 +43,7 @@ public class LocalImageCacheManager {
 	public IImageCache getImageCache(MediaItem media){
 		IImageCache imageCache;
 
-		IMediaSource source = media.getSource();
+		MediaSource source = media.getSource();
 		if(source != null)
 		{
 			MediaLibrary library = ((MediaSourceLocal)source).getParentLibrary();

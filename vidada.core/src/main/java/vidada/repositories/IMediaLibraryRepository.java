@@ -5,7 +5,8 @@ import java.util.List;
 import vidada.model.media.store.libraries.MediaLibrary;
 import archimedesJ.io.locations.ResourceLocation;
 
-public interface IMediaLibraryRepository {
+
+public interface IMediaLibraryRepository extends IRepository<MediaLibrary> {
 
 	public List<MediaLibrary> getAllLibraries();
 
@@ -14,7 +15,6 @@ public interface IMediaLibraryRepository {
 	public void delete(MediaLibrary library);
 
 	public void update(MediaLibrary library);
-
 
 	public MediaLibrary queryById(long id);
 

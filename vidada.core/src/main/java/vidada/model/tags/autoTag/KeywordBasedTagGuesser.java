@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import vidada.model.media.MediaItem;
-import vidada.model.media.source.IMediaSource;
+import vidada.model.media.source.MediaSource;
 import vidada.model.tags.Tag;
 import archimedesJ.util.Lists;
 
@@ -58,7 +58,7 @@ public class KeywordBasedTagGuesser  implements ITagGuessingStrategy {
 	}
 
 	private String[] getPossibleTagStrings(MediaItem media){
-		IMediaSource source = media.getSource();
+		MediaSource source = media.getSource();
 
 		// TODO Optimize / cache tokens
 

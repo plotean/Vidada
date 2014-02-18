@@ -4,7 +4,7 @@ import java.util.Collection;
 
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaQuery;
-import vidada.model.media.movies.MovieMediaItem;
+import vidada.model.media.MovieMediaItem;
 import vidada.model.tags.Tag;
 import archimedesJ.geometry.Size;
 import archimedesJ.images.IMemoryImage;

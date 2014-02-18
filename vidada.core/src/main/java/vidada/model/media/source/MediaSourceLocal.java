@@ -3,11 +3,11 @@ package vidada.model.media.source;
 import java.beans.Transient;
 import java.net.URI;
 
-import vidada.model.entities.BaseEntity;
+import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
+
 import vidada.model.media.store.libraries.MediaLibrary;
 import archimedesJ.io.locations.ResourceLocation;
-
-import com.db4o.foundation.ArgumentNullException;
 
 /**
  * Represents a media source. This can be a local file, a web resource, smb shared resource
@@ -16,22 +16,26 @@ import com.db4o.foundation.ArgumentNullException;
  * @author IsNull
  *
  */
-public class MediaSourceLocal extends BaseEntity implements IMediaSource {
-
-	private MediaLibrary parentLibrary = null;
-	private URI relativeFilePath = null;
+@Entity
+public class MediaSourceLocal extends MediaSource {
 
 	transient private boolean isFileAvaiableDirty = true;
 	transient private boolean isFileAvaiable;
 
-	public MediaSourceLocal(){}
+	@ManyToOne
+	private MediaLibrary parentLibrary = null;
+	private URI relativeFilePath = null;
+
+
+	/** ORM Constructor */
+	MediaSourceLocal(){ }
 
 	public MediaSourceLocal(MediaLibrary parentLibrary, URI relativeFilePath)
 	{
 		if(parentLibrary == null)
-			throw new ArgumentNullException("parentLibrary");
+			throw new IllegalArgumentException("parentLibrary");
 		if(relativeFilePath == null)
-			throw new ArgumentNullException("relativeFilePath");
+			throw new IllegalArgumentException("relativeFilePath");
 
 
 		setParentLibrary(parentLibrary);
@@ -62,20 +66,9 @@ public class MediaSourceLocal extends BaseEntity implements IMediaSource {
 		return isFileAvaiable;
 	}
 
-	/*
-	@Transient
-	public String getPath() {
-		return getResourceLocation().toString();
-	}*/
-
-
 	// ----------------
 
 
-
-	/* (non-Javadoc)
-	 * @see vidada.model.media.source.IMediaSource#getResourceLocation()
-	 */
 	@Override
 	@Transient
 	public ResourceLocation getResourceLocation() {

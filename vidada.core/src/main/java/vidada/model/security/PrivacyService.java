@@ -1,5 +1,6 @@
 package vidada.model.security;
 
+import vidada.model.settings.DataBaseSettingsManager;
 import vidada.model.settings.DatabaseSettings;
 import archimedesJ.crypto.IByteBufferEncryption;
 import archimedesJ.crypto.KeyPad;
@@ -37,12 +38,8 @@ public class PrivacyService implements IPrivacyService{
 	public IEvent<EventArgs> getProtectionRemoved() {return ProtectionRemovedEvent;}
 
 
-	private DatabaseSettings dbSettings;
-
 	private DatabaseSettings getDBSettings(){
-		if(dbSettings == null)
-			dbSettings = DatabaseSettings.getSettings();
-		return dbSettings;
+		return DataBaseSettingsManager.getSettings();
 	}
 
 
@@ -56,19 +53,16 @@ public class PrivacyService implements IPrivacyService{
 
 		if(!isProtected())
 		{
+			DatabaseSettings settings = getDBSettings();
 			byte[] hash = KeyPad.hashKey(credentials.getPassword());
-			getDBSettings().setPasswordHash(hash);
-
+			settings.setPasswordHash(hash);
 
 			if(authenticate(credentials)){
-				byte[] cryptoBlock = getDBSettings().getCryptoBlock();
-				getDBSettings().setCryptoBlock(keyPadCrypter.enCrypt(cryptoBlock, credentials.getUserSecret()));
-				getDBSettings().persist();
-
+				byte[] cryptoBlock = settings.getCryptoBlock();
+				settings.setCryptoBlock(keyPadCrypter.enCrypt(cryptoBlock, credentials.getUserSecret()));
+				DataBaseSettingsManager.persist(settings);
 				ProtectedEvent.fireEvent(this, EventArgsG.Empty);
 			}
-
-
 		}
 	}
 
@@ -92,8 +86,9 @@ public class PrivacyService implements IPrivacyService{
 
 				// finally remove the password hash to indicate that 
 				// this db is not protected
-				getDBSettings().setPasswordHash(null);
-				getDBSettings().persist();
+				DatabaseSettings settings = getDBSettings();
+				settings.setPasswordHash(null);
+				DataBaseSettingsManager.persist(settings);
 
 				ProtectionRemovedEvent.fireEvent(this, EventArgsG.Empty);
 			}

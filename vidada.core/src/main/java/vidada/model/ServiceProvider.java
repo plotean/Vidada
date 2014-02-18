@@ -43,7 +43,7 @@ public class ServiceProvider implements ILocator {
 	// singleton --->
 	private static ServiceProvider instance = null;
 
-	public static ServiceProvider getInstance(){
+	public synchronized static ServiceProvider getInstance(){
 		if(instance == null)
 		{
 			instance = new ServiceProvider();

@@ -31,11 +31,6 @@ public class JsonSettings {
 		settingsVersion = version;
 	}
 
-
-
-
-
-
 	protected void setPath(File path){
 		this.settingsPath = path;
 	}
@@ -52,8 +47,6 @@ public class JsonSettings {
 			e.printStackTrace();
 		}
 	}
-
-
 
 	public static Object loadSettings(File path, Type type){
 		Object settings = null;

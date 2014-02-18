@@ -5,8 +5,6 @@ import java.util.Set;
 import archimedesJ.geometry.Size;
 import archimedesJ.images.IMemoryImage;
 
-import com.db4o.foundation.ArgumentNullException;
-
 /**
  * Combines two caches 
  * @author IsNull
@@ -29,8 +27,8 @@ public class LeveledImageCache implements IImageCache {
 	 * @param secondLevelCache
 	 */
 	public LeveledImageCache(IImageCache firstLevelCache, IImageCache secondLevelCache) {
-		if(firstLevelCache == null) throw new ArgumentNullException("firstLevelCache");
-		if(secondLevelCache == null) throw new ArgumentNullException("secondLevelCache");
+		if(firstLevelCache == null) throw new IllegalArgumentException("firstLevelCache");
+		if(secondLevelCache == null) throw new IllegalArgumentException("secondLevelCache");
 
 		this.firstLevelCache = firstLevelCache;
 		this.secondLevelCache = secondLevelCache;

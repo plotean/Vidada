@@ -2,6 +2,11 @@ package vidada.model.security;
 
 import java.io.UnsupportedEncodingException;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
 import archimedesJ.crypto.IByteBufferEncryption;
 import archimedesJ.crypto.XORByteCrypter;
 import archimedesJ.security.Credentials;
@@ -11,16 +16,26 @@ import archimedesJ.security.Credentials;
  * @author IsNull
  *
  */
+@Entity
 public class StoredCredentials {
 
 	transient private final static String StringEncoding = "utf-8";
 	transient private final static IByteBufferEncryption credentialsCrypter = new XORByteCrypter();
 
 	// persisted fields
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private int id;
 	private String authDomain;
 	private byte[] encDomain;
 	private byte[] encUser;
 	private byte[] encPass;
+
+
+	/**
+	 * ORM Constructor
+	 */
+	StoredCredentials() { };
 
 	/**
 	 * 
@@ -31,6 +46,14 @@ public class StoredCredentials {
 	public StoredCredentials(Credentials credentials, String domain, byte[] key) {
 		setCredentials(credentials, key);
 		this.authDomain = domain;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
 	}
 
 	public Credentials getCredentials(byte[] key) {

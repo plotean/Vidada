@@ -2,16 +2,15 @@ package vidada.repositories;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 import vidada.model.media.store.libraries.MediaLibrary;
 import vidada.model.tags.Tag;
 
-public interface ITagRepository {
+public interface ITagRepository extends IRepository<Tag> {
 
 	public abstract void store(Tag newTag);
 
-	public abstract void store(Set<Tag> newTags);
+	public abstract void store(Collection<Tag> newTags);
 
 	public abstract void delete(Tag tag);
 

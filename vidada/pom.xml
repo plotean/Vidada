@@ -131,6 +131,18 @@
 
 	<dependencies>
 	    
+	    <dependency>
+		  <groupId>archimedesJ</groupId>
+		  <artifactId>archimedesJ</artifactId>
+		  <version>0.1.1</version>
+		</dependency>
+		
+	    <dependency>
+	        <groupId>org.securityvision</groupId>
+	        <artifactId>xattrj</artifactId>
+	        <version>1.1</version>
+	    </dependency>
+	    
   		<dependency>
 		    <groupId>org.securityvision</groupId>
   			<artifactId>vidada.core</artifactId>
@@ -138,18 +150,17 @@
 		</dependency>
 
 		<dependency>
-		  <groupId>archimedesJ</groupId>
-		  <artifactId>archimedesJ</artifactId>
-		  <version>0.1.1</version>
+		    <groupId>org.securityvision</groupId>
+  			<artifactId>vidada.server</artifactId>
+  			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		
 		<dependency>
-	        <groupId>org.securityvision</groupId>
-	        <artifactId>xattrj</artifactId>
-	        <version>1.1</version>
-	    </dependency>
+		    <groupId>org.securityvision</groupId>
+  			<artifactId>vidada.dal</artifactId>
+  			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 		
-	
 		<!--  Apache commons io: File support -->
 		<dependency>
 			<groupId>commons-io</groupId>

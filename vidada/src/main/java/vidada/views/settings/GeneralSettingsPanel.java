@@ -17,6 +17,7 @@ import javax.swing.SwingUtilities;
 
 import vidada.model.ServiceProvider;
 import vidada.model.connectivity.IConnectivityService;
+import vidada.model.settings.DataBaseSettingsManager;
 import vidada.model.settings.DatabaseSettings;
 import vidada.model.settings.GlobalSettings;
 import vidada.views.tools.DuplicateManagerDialoge;
@@ -37,7 +38,7 @@ public class GeneralSettingsPanel extends JPanel {
 	private JTextField txtVLCPath;
 	private JTextField txtFFMpegPath;
 
-	private final DatabaseSettings applicationSettings = DatabaseSettings.getSettings();
+	private final DatabaseSettings applicationSettings = DataBaseSettingsManager.getSettings();
 
 	private final JCheckBox chckbxEnableDirectplaySound;
 
@@ -109,7 +110,7 @@ public class GeneralSettingsPanel extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				applicationSettings.setPlaySoundDirectPlay(chckbxEnableDirectplaySound.isSelected());
-				applicationSettings.persist();
+				DataBaseSettingsManager.persist(applicationSettings);
 			}
 		});
 

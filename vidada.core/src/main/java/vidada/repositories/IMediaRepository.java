@@ -7,8 +7,9 @@ import vidada.model.media.MediaItem;
 import vidada.model.media.MediaQuery;
 import vidada.model.media.store.libraries.MediaLibrary;
 import vidada.model.tags.Tag;
+import archimedesJ.io.locations.ResourceLocation;
 
-public interface IMediaRepository {
+public interface IMediaRepository extends IRepository<MediaItem> {
 
 	/**
 	 * Query for all medias which match the given media-query
@@ -38,7 +39,7 @@ public interface IMediaRepository {
 
 	public abstract void delete(Iterable<MediaItem> mediadatas);
 
-	public abstract List<MediaItem> getAllMediaData();
+	public abstract List<MediaItem> getAllMedias();
 
 	public abstract void update(MediaItem mediadata);
 
@@ -47,10 +48,18 @@ public interface IMediaRepository {
 	public abstract void removeAll();
 
 	/**
-	 * 
+	 * Query for the media with the given hash
 	 * @param hash
 	 * @return
 	 */
-	public abstract MediaItem findMediaDataByHash(String hash);
+	public abstract MediaItem queryByHash(String hash);
+
+	/**
+	 * Query for the first media item with the given path
+	 * @param file Full file path to the media
+	 * @param library The library in which this media is
+	 * @return
+	 */
+	public MediaItem queryByPath(ResourceLocation file, MediaLibrary library);
 
 }

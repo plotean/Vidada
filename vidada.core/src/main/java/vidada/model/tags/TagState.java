@@ -7,6 +7,7 @@ package vidada.model.tags;
  *
  */
 public enum TagState {
+
 	/**
 	 * Unknown / not defined State
 	 */
@@ -35,7 +36,7 @@ public enum TagState {
 	Indeterminate,
 
 	/**
-	 * Currently unavaiable
+	 * Currently unavailable
 	 */
 	Unavaiable
 
