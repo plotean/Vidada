@@ -3,21 +3,20 @@ package vidada.viewsFX;
 import javafx.geometry.Insets;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.BorderPane;
+import vidada.client.model.browser.IBrowserItem;
+import vidada.client.model.browser.MediaBrowserModel;
+import vidada.client.services.IMediaClientService;
+import vidada.client.services.ITagClientService;
+import vidada.client.viewmodel.FilterModel;
+import vidada.client.viewmodel.ITagStatesVM;
+import vidada.client.viewmodel.IVMFactory;
+import vidada.client.viewmodel.media.IMediaViewModel;
+import vidada.client.viewmodel.media.MediaDetailViewModel;
+import vidada.client.viewmodel.tags.TagStatesModel;
+import vidada.client.viewmodel.tags.TagViewModel;
 import vidada.controller.filters.MediaFilterDatabaseBinding;
-import vidada.model.browser.IBrowserItem;
-import vidada.model.browser.MediaBrowserModel;
-import vidada.model.media.IMediaService;
-import vidada.model.tags.ITagService;
 import vidada.model.tags.Tag;
 import vidada.model.tags.TagState;
-import vidada.viewmodel.FilterModel;
-import vidada.viewmodel.ITagStatesVM;
-import vidada.viewmodel.IVMFactory;
-import vidada.viewmodel.media.IMediaViewModel;
-import vidada.viewmodel.media.MediaDetailViewModel;
-import vidada.viewmodel.tags.TagServiceModelBinding;
-import vidada.viewmodel.tags.TagStatesModel;
-import vidada.viewmodel.tags.TagViewModel;
 import vidada.viewsFX.filters.FilterViewFx;
 import vidada.viewsFX.mediabrowsers.MediaBrowserFX;
 import vidada.viewsFX.medias.MediaDetailViewFx;
@@ -35,7 +34,7 @@ public class PrimaryMediaBrowserFX extends BorderPane {
 
 	private final FilterModel filterModel;
 
-	private final ITagService tagService;
+	private final ITagClientService tagClientService;
 	private final MediaBrowserModel browserModel;
 	//private final MediaDetailViewModel singleMediaDetailVM;
 
@@ -49,9 +48,8 @@ public class PrimaryMediaBrowserFX extends BorderPane {
 
 
 
-
-	public PrimaryMediaBrowserFX(MediaBrowserModel browserModel, ITagService tagService, IMediaService mediaService){
-		this.tagService = tagService;
+	public PrimaryMediaBrowserFX(MediaBrowserModel browserModel, ITagClientService tagClientService, IMediaClientService mediaService){
+		this.tagClientService = tagClientService;
 		this.browserModel = browserModel;
 		this.filterModel  = new FilterModel(mediaService);;
 
@@ -59,9 +57,9 @@ public class PrimaryMediaBrowserFX extends BorderPane {
 
 		// bind the different models together
 
-		TagServiceModelBinding.bind(tagService, browserModel.getTagStatesModel());
-		TagServiceModelBinding.bind(tagService, mediaDetailTagstates);
-		MediaFilterDatabaseBinding.bind(filterModel, browserModel);
+		//TagServiceModelBinding.bind(tagClientService, browserModel.getTagStatesModel());
+		//TagServiceModelBinding.bind(tagClientService, mediaDetailTagstates);
+		MediaFilterDatabaseBinding.bind(mediaService, filterModel, browserModel);
 
 		// setup views
 
@@ -95,7 +93,7 @@ public class PrimaryMediaBrowserFX extends BorderPane {
 
 	private  IMediaViewModel getMediaDetailVM(ISelectionManager<IBrowserItem> mediaSelection){
 		if(mediaSelection.getSelection().size() <= 1){
-			MediaDetailViewModel vm = new MediaDetailViewModel(tagService);
+			MediaDetailViewModel vm = new MediaDetailViewModel(tagClientService);
 			vm.setModel(mediaSelection.getFirstSelected());
 			return vm;
 		}else{

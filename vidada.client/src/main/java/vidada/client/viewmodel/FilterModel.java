@@ -3,11 +3,11 @@ package vidada.client.viewmodel;
 import java.util.ArrayList;
 import java.util.List;
 
+import vidada.client.services.IMediaClientService;
 import vidada.model.media.MediaLibrary;
 import vidada.model.media.MediaType;
 import vidada.model.media.OrderProperty;
 import vidada.model.tags.Tag;
-import vidada.services.IMediaService;
 import archimedesJ.data.events.CollectionEventArg;
 import archimedesJ.data.observable.IObservableList;
 import archimedesJ.data.observable.ObservableArrayList;
@@ -38,7 +38,7 @@ public class FilterModel {
 	public IEvent<EventArgs> getFilterChangedEvent() { return filterChangedEvent; }
 
 
-	public FilterModel(IMediaService mediaService){
+	public FilterModel(IMediaClientService mediaService){
 
 		requiredTags.getChangeEvent().add(new EventListenerEx<CollectionEventArg<Tag>>() {
 			@Override

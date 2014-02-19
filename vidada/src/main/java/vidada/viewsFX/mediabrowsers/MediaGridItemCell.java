@@ -7,9 +7,9 @@ import javafx.beans.property.DoubleProperty;
 
 import org.controlsfx.control.GridCell;
 
-import vidada.viewmodel.MediaViewModel;
-import vidada.viewmodel.browser.BrowserFolderItemVM;
-import vidada.viewmodel.browser.BrowserItemVM;
+import vidada.client.viewmodel.MediaViewModel;
+import vidada.client.viewmodel.browser.BrowserFolderItemVM;
+import vidada.client.viewmodel.browser.BrowserItemVM;
 import vidada.viewsFX.player.IMediaPlayerService;
 import archimedesJ.events.EventArgs;
 import archimedesJ.events.EventListenerEx;

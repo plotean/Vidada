@@ -1,18 +1,8 @@
 package vidada.model;
 
 
-import vidada.model.images.IThumbnailService;
-import vidada.model.images.ThumbnailService;
-import vidada.model.images.cache.crypto.CryptedCacheUtil;
-import vidada.model.security.AuthenticationRequieredException;
 import vidada.model.security.CredentialManager;
 import vidada.model.security.ICredentialManager;
-import vidada.model.security.IPrivacyService;
-import vidada.model.security.PrivacyService;
-import vidada.model.settings.GlobalSettings;
-import archimedesJ.events.EventArgs;
-import archimedesJ.events.EventListenerEx;
-import archimedesJ.io.locations.DirectoryLocation;
 import archimedesJ.services.ILocator;
 import archimedesJ.services.ISelectionService;
 import archimedesJ.services.IService;
@@ -91,59 +81,17 @@ public class ServiceProvider implements ILocator {
 		System.out.println("config services...");
 
 		//serviceLocator.registerSingleton(IConnectivityService.class, ConnectivityService.class);
-		serviceLocator.registerSingleton(IPrivacyService.class, PrivacyService.class);
 		serviceLocator.registerSingleton(ISelectionService.class, SelectionService.class);
 
-		serviceLocator.registerSingleton(IThumbnailService.class, ThumbnailService.class);
 		serviceLocator.registerSingleton(ICredentialManager.class, CredentialManager.class);
 
 
 		//serviceLocator.registerSingleton(IImageCacheService.class, VidadaImageCache.class);
 
-		registerProtectionHandler();
 
 		System.out.println("config services done...");
 	}
 
-	private void registerProtectionHandler(){
-
-		final IPrivacyService privacyService = ServiceProvider.Resolve(IPrivacyService.class);
-
-		if(privacyService != null)
-		{
-			privacyService.getProtected().add(new EventListenerEx<EventArgs>() {
-				@Override
-				public void eventOccured(Object sender, EventArgs eventArgs) {
-					try {
-						final DirectoryLocation localCache = DirectoryLocation.Factory
-								.create(GlobalSettings.getInstance().getAbsoluteCachePath());
-
-						System.out.println("ServiceProvider: " + privacyService.getCredentials().toString());
-						CryptedCacheUtil.encryptWithPassword(localCache, privacyService.getCredentials());
-					} catch (AuthenticationRequieredException e) {
-						e.printStackTrace();
-					}
-				}
-			});
-
-
-			privacyService.getProtectionRemoved().add(new EventListenerEx<EventArgs>() {
-
-				@Override
-				public void eventOccured(Object sender, EventArgs eventArgs) {
-					try {
-						final DirectoryLocation localCache = DirectoryLocation.Factory
-								.create(GlobalSettings.getInstance().getAbsoluteCachePath());
-
-						CryptedCacheUtil.removeEncryption( localCache, privacyService.getCredentials());
-					} catch (AuthenticationRequieredException e) {
-						e.printStackTrace();
-					}
-				}
-			});
-		}else
-			System.err.println("CacheKeyProvider: IPrivacyService is not avaiable!");
-	}
 
 
 

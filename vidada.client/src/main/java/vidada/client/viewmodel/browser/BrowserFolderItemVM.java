@@ -1,6 +1,6 @@
 package vidada.client.viewmodel.browser;
 
-import vidada.model.browser.BrowserFolderItem;
+import vidada.client.model.browser.BrowserFolderItem;
 
 public class BrowserFolderItemVM extends BrowserItemVM{
 

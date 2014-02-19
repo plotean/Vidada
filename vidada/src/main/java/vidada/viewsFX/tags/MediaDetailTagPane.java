@@ -6,8 +6,8 @@ import java.util.Collection;
 
 import javafx.scene.layout.BorderPane;
 import javafx.util.Callback;
+import vidada.client.viewmodel.media.IMediaViewModel;
 import vidada.model.tags.Tag;
-import vidada.viewmodel.media.IMediaViewModel;
 import vidada.viewsFX.bindings.ObservableListBindingFX;
 import vidada.viewsFX.controls.TagItPanel;
 

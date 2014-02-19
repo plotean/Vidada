@@ -4,24 +4,24 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import vidada.model.ServiceProvider;
-import vidada.model.browser.BrowserMediaItem;
-import vidada.model.browser.IBrowserItem;
-import vidada.model.browser.MediaBrowserModel;
+import vidada.client.model.browser.BrowserMediaItem;
+import vidada.client.model.browser.IBrowserItem;
+import vidada.client.model.browser.MediaBrowserModel;
+import vidada.client.services.IMediaClientService;
+import vidada.client.viewmodel.FilterModel;
 import vidada.model.filters.AsyncFetchData;
 import vidada.model.filters.AsyncFetchData.CancelTokenEventArgs;
-import vidada.model.filters.AsyncFetchMediaItems;
-import vidada.model.media.IMediaService;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaQuery;
 import vidada.model.media.MediaType;
 import vidada.model.media.OrderProperty;
 import vidada.model.media.source.MediaSource;
-import vidada.viewmodel.FilterModel;
 import archimedesJ.events.EventArgs;
 import archimedesJ.events.EventListenerEx;
 import archimedesJ.expressions.Predicate;
 import archimedesJ.threading.CancellationTokenSource;
+import archimedesJ.threading.CancellationTokenSource.CancellationToken;
+import archimedesJ.threading.CancellationTokenSource.OperationCanceledException;
 
 /**
  * Represents a binding between a mediabrowser model an filter settings.
@@ -37,15 +37,15 @@ public class MediaFilterDatabaseBinding {
 
 	private final FilterModel filterModel;
 	private final MediaBrowserModel mediaBrowserModel;
-	private final IMediaService mediaService = ServiceProvider.Resolve(IMediaService.class);
+	private final IMediaClientService mediaClientService;
 
-
-	public static MediaFilterDatabaseBinding bind(FilterModel filterModel, MediaBrowserModel mediaBrowserModel){
-		return new MediaFilterDatabaseBinding(filterModel, mediaBrowserModel);
+	public static MediaFilterDatabaseBinding bind(IMediaClientService mediaClientService, FilterModel filterModel, MediaBrowserModel mediaBrowserModel){
+		return new MediaFilterDatabaseBinding(mediaClientService, filterModel, mediaBrowserModel);
 	}
 
 
-	protected MediaFilterDatabaseBinding(FilterModel filterModel, MediaBrowserModel mediaBrowserModel){
+	protected MediaFilterDatabaseBinding(IMediaClientService mediaClientService, FilterModel filterModel, MediaBrowserModel mediaBrowserModel){
+		this.mediaClientService = mediaClientService;
 		this.filterModel = filterModel;
 		this.mediaBrowserModel = mediaBrowserModel;
 
@@ -90,7 +90,7 @@ public class MediaFilterDatabaseBinding {
 
 			ctx = new CancellationTokenSource();
 
-			datafetcher = new AsyncFetchMediaItems(mediaService, query, ctx.getToken());
+			datafetcher = new AsyncFetchMediaItems(mediaClientService, query, ctx.getToken());
 			datafetcher.setPostFilter(getPostFilter());
 			datafetcher.getFetchingCompleteEvent().add(dataFetchedListener);
 			datafetcher.execute();
@@ -157,5 +157,34 @@ public class MediaFilterDatabaseBinding {
 		}
 
 		return null;
+	}
+
+
+
+
+
+	class AsyncFetchMediaItems extends AsyncFetchData<MediaItem> {
+
+		private final IMediaClientService mediaClientService;
+		private final MediaQuery query;
+
+		public AsyncFetchMediaItems(IMediaClientService mediaClientService,  MediaQuery query, CancellationToken token) {
+			super(token);
+			this.mediaClientService = mediaClientService;
+			this.query = query;
+		}
+
+		@Override
+		protected Collection<MediaItem> fetchData(CancellationToken token)
+				throws OperationCanceledException {
+
+			Collection<MediaItem> fetchedData = null;
+			System.out.println("AsyncFetchMediaItems: fetching media datas...");
+			fetchedData = mediaClientService.query(query);
+			System.out.println("AsyncFetchMediaItems:: fetched: " + fetchedData.size() + " items!" );
+
+			return fetchedData;
+		}
+
 	}
 }

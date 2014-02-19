@@ -10,7 +10,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.UriInfo;
 
-import vidada.model.ServiceProvider;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaQuery;
 import vidada.services.IMediaService;
@@ -25,7 +24,8 @@ public class MediasResource {
 	@Context
 	Request request;
 
-	private final IMediaService mediaService = ServiceProvider.Resolve(IMediaService.class);
+	// TODO
+	private final IMediaService mediaService = null; //ServiceProvider.Resolve(IMediaService.class);
 
 	/**
 	 * Returns all medias

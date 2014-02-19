@@ -2,12 +2,12 @@ package vidada.client.viewmodel.media;
 
 import java.util.Collection;
 
+import vidada.client.model.browser.BrowserMediaItem;
+import vidada.client.model.browser.IBrowserItem;
+import vidada.client.services.ITagClientService;
 import vidada.client.viewmodel.MediaViewModel;
-import vidada.model.browser.BrowserMediaItem;
-import vidada.model.browser.IBrowserItem;
 import vidada.model.media.MediaItem;
 import vidada.model.tags.Tag;
-import vidada.services.ITagService;
 import archimedesJ.data.events.CollectionEventArg;
 import archimedesJ.data.observable.IObservableCollection;
 import archimedesJ.data.observable.IObservableList;
@@ -22,18 +22,17 @@ import archimedesJ.exceptions.NotSupportedException;
  */
 public class MediaDetailViewModel extends MediaViewModel implements IMediaViewModel {
 
-	//transient private final IMediaService mediaService = ServiceProvider.Resolve(IMediaService.class);
-
+	private final ITagClientService tagClientService;
 	private final IObservableList<Tag> observableTags = new ObservableArrayList<Tag>();
-	private final ITagService tagService;
+
 
 	/**
 	 * Creates a new media detail model form the given MediaData
 	 * @param mediaData
 	 */
-	public MediaDetailViewModel(ITagService tagService){
+	public MediaDetailViewModel(ITagClientService tagService){
 		// Do not call any virtual methods here such as setModel!
-		this.tagService = tagService;
+		this.tagClientService = tagService;
 	}
 
 	private MediaItem previousModel = null;
@@ -96,13 +95,13 @@ public class MediaDetailViewModel extends MediaViewModel implements IMediaViewMo
 
 	@Override
 	public Tag createTag(String name) {
-		return tagService.getTag(name);
+		return tagClientService.getTag(name);
 	}
 
 
 	@Override
 	public Collection<Tag> getAvailableTags() {
-		return tagService.getUsedTags();
+		return tagClientService.getUsedTags();
 	}
 
 	@Override

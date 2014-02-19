@@ -1,5 +1,7 @@
-package vidada.model.security;
+package vidada.server.impl;
 
+import vidada.model.security.AuthenticationException;
+import vidada.model.security.AuthenticationRequieredException;
 import vidada.server.settings.DataBaseSettingsManager;
 import vidada.server.settings.DatabaseSettings;
 import archimedesJ.crypto.IByteBufferEncryption;

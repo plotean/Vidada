@@ -4,11 +4,11 @@ import javafx.scene.Node;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
-import vidada.model.ServiceProvider;
-import vidada.model.browser.MediaBrowserModel;
-import vidada.model.media.IMediaService;
-import vidada.model.tags.ITagService;
-import vidada.viewmodel.explorer.MediaExplorerVM;
+import vidada.client.VidadaClientManager;
+import vidada.client.model.browser.MediaBrowserModel;
+import vidada.client.services.IMediaClientService;
+import vidada.client.services.ITagClientService;
+import vidada.client.viewmodel.explorer.MediaExplorerVM;
 import vidada.viewsFX.mediaexplorer.PrimaryMediaExplorerFX;
 
 import com.aquafx_project.AquaFx;
@@ -21,8 +21,8 @@ import com.aquafx_project.controls.skin.styles.TabPaneType;
  */
 public class MainViewFx extends BorderPane {
 
-	private final ITagService tagService = ServiceProvider.Resolve(ITagService.class);
-	private final IMediaService mediaService = ServiceProvider.Resolve(IMediaService.class);
+	private final ITagClientService tagService = VidadaClientManager.instance().getTagClientService();
+	private final IMediaClientService mediaService = VidadaClientManager.instance().getMediaClientService();
 	private final MediaBrowserModel browserModel;
 	private final MediaExplorerVM mediaExplorerVM;
 

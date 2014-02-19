@@ -1,7 +1,7 @@
 package vidada.client.viewmodel.browser;
 
+import vidada.client.model.browser.IBrowserItem;
 import vidada.client.viewmodel.IViewModel;
-import vidada.model.browser.IBrowserItem;
 import archimedesJ.events.EventArgs;
 import archimedesJ.events.EventHandlerEx;
 

@@ -17,7 +17,7 @@ import archimedesJ.images.IMemoryImage;
  */
 public class MediaThumbFetcher {
 
-	transient private static final Size maxThumbSize = GlobalSettings.getInstance().getMaxThumbResolution();
+	transient private static final Size maxThumbSize = GlobalSettings.getMaxThumbResolution();
 	transient private final IThumbImageCreator thumbImageCreator = new ThumbImageExtractor();
 
 	/**

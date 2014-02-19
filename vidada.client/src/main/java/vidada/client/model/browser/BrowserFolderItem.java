@@ -1,4 +1,4 @@
-package vidada.model.browser;
+package vidada.client.model.browser;
 
 import java.util.List;
 
@@ -32,6 +32,10 @@ public abstract class BrowserFolderItem implements IBrowserItem, IDataProvider<I
 	protected BrowserFolderItem() { } 
 
 
+	/**
+	 * Load all children of this folder
+	 * @return
+	 */
 	protected abstract List<IBrowserItem> loadChildren();
 
 	/**
@@ -41,6 +45,9 @@ public abstract class BrowserFolderItem implements IBrowserItem, IDataProvider<I
 	public abstract String getName();
 
 
+	/**
+	 * Since this is a folder, this will always return true.
+	 */
 	@Override
 	public final boolean isFolder() {
 		return true;

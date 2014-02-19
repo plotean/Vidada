@@ -1,8 +1,6 @@
 package vidada.client.viewmodel.tags;
 
-import vidada.client.viewmodel.ITagStatesVM;
-import vidada.services.ITagService;
-
+/*
 public class TagServiceModelBinding {
 
 	private final ITagService tagservice;
@@ -18,7 +16,7 @@ public class TagServiceModelBinding {
 		this.tagservice = tagservice;
 		this.tagsStateModel = tageStateModel;
 
-		/*
+
 		tagservice.getTagAddedEvent().add(new EventListenerEx<EventArgsG<Tag>>() {
 			@Override
 			public void eventOccured(Object sender, EventArgsG<Tag> eventArgs) {
@@ -38,19 +36,21 @@ public class TagServiceModelBinding {
 			public void eventOccured(Object sender, EventArgs eventArgs) {
 				refreshModel();
 			}
-		});*/
+		});
 
-		refreshModel();
-	}
+refreshModel();
+}
 
-	public ITagStatesVM getTagStatesModel(){
-		return tagsStateModel;
-	}
+public ITagStatesVM getTagStatesModel(){
+	return tagsStateModel;
+}
 
 
-	private void refreshModel(){
-		tagsStateModel.clear();
-		tagsStateModel.addAll(tagservice.getUsedTags());
-	}
+private void refreshModel(){
+	tagsStateModel.clear();
+	tagsStateModel.addAll(tagservice.getUsedTags());
+}
 
 }
+ */
+

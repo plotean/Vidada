@@ -2,17 +2,32 @@ package vidada.server;
 
 import vidada.IVidadaServer;
 import vidada.model.ServiceProvider;
+import vidada.model.images.cache.crypto.CryptedCacheUtil;
+import vidada.model.security.AuthenticationRequieredException;
 import vidada.model.security.ICredentialManager;
 import vidada.model.security.ICredentialManager.CredentialsChecker;
-import vidada.model.security.IPrivacyService;
+import vidada.model.settings.GlobalSettings;
+import vidada.server.impl.IPrivacyService;
+import vidada.server.services.MediaLibraryService;
+import vidada.server.services.MediaService;
+import vidada.server.services.TagService;
+import vidada.server.services.ThumbnailService;
+import vidada.services.IMediaLibraryService;
 import vidada.services.IMediaService;
 import vidada.services.ITagService;
-import archimedesJ.exceptions.NotImplementedException;
+import vidada.services.IThumbnailService;
+import archimedesJ.events.EventArgs;
+import archimedesJ.events.EventListenerEx;
+import archimedesJ.io.locations.DirectoryLocation;
 import archimedesJ.security.CredentialType;
 import archimedesJ.security.Credentials;
 
 public class VidadaServer implements IVidadaServer {
 
+	private final IMediaLibraryService mediaLibraryService = new MediaLibraryService();
+	private final IMediaService mediaService = new MediaService(mediaLibraryService);
+	private final ITagService tagService = new TagService();
+	private final IThumbnailService thumbnailService = new ThumbnailService();
 
 	public VidadaServer(){
 
@@ -59,6 +74,45 @@ public class VidadaServer implements IVidadaServer {
 		return false;
 	}
 
+
+	private void registerProtectionHandler(final IPrivacyService privacyService){
+
+		if(privacyService != null)
+		{
+			privacyService.getProtected().add(new EventListenerEx<EventArgs>() {
+				@Override
+				public void eventOccured(Object sender, EventArgs eventArgs) {
+					try {
+						final DirectoryLocation localCache = DirectoryLocation.Factory
+								.create(GlobalSettings.getInstance().getAbsoluteCachePath());
+
+						System.out.println("ServiceProvider: " + privacyService.getCredentials().toString());
+						CryptedCacheUtil.encryptWithPassword(localCache, privacyService.getCredentials());
+					} catch (AuthenticationRequieredException e) {
+						e.printStackTrace();
+					}
+				}
+			});
+
+
+			privacyService.getProtectionRemoved().add(new EventListenerEx<EventArgs>() {
+
+				@Override
+				public void eventOccured(Object sender, EventArgs eventArgs) {
+					try {
+						final DirectoryLocation localCache = DirectoryLocation.Factory
+								.create(GlobalSettings.getInstance().getAbsoluteCachePath());
+
+						CryptedCacheUtil.removeEncryption( localCache, privacyService.getCredentials());
+					} catch (AuthenticationRequieredException e) {
+						e.printStackTrace();
+					}
+				}
+			});
+		}else
+			System.err.println("CacheKeyProvider: IPrivacyService is not avaiable!");
+	}
+
 	private boolean requestAuthentication(final IPrivacyService privacyService, ICredentialManager credentialManager){
 
 		Credentials validCredentials = credentialManager.requestAuthentication(
@@ -84,17 +138,26 @@ public class VidadaServer implements IVidadaServer {
 
 	@Override
 	public IMediaService getMediaService() {
-		throw new NotImplementedException();
+		return mediaService;
 	}
 
 	@Override
 	public ITagService getTagService() {
-		throw new NotImplementedException();
+		return tagService;
+	}
+
+	@Override
+	public IThumbnailService getThumbnailService() {
+		return thumbnailService;
+	}
+
+	@Override
+	public IMediaLibraryService getLibraryService() {
+		return mediaLibraryService;
 	}
 
 	@Override
 	public String getNameId() {
 		return "vidada.local";
 	}
-
 }

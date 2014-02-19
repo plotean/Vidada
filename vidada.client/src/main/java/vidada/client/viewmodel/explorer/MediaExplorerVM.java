@@ -2,11 +2,12 @@ package vidada.client.viewmodel.explorer;
 
 import java.util.List;
 
-import vidada.model.ServiceProvider;
-import vidada.model.browser.BrowserFolderItem;
-import vidada.model.browser.BrowserFolderItemLocation;
-import vidada.model.browser.IBrowserItem;
-import vidada.model.browser.IDataProvider;
+import vidada.IVidadaServer;
+import vidada.client.VidadaClientManager;
+import vidada.client.model.browser.BrowserFolderItem;
+import vidada.client.model.browser.BrowserFolderItemLocation;
+import vidada.client.model.browser.IBrowserItem;
+import vidada.client.model.browser.IDataProvider;
 import vidada.services.IMediaService;
 import archimedesJ.events.EventArgs;
 import archimedesJ.events.EventHandlerEx;
@@ -16,7 +17,10 @@ import archimedesJ.io.locations.DirectoryLocation;
 
 public class MediaExplorerVM {
 
-	private final IMediaService mediaService = ServiceProvider.Resolve(IMediaService.class);
+	private final IVidadaServer localServer = VidadaClientManager.instance().getLocalServer();
+	private final IMediaService localMediaService = localServer.getMediaService();
+
+
 	private BrowserFolderItemLocation browserModel;
 
 	private DirectoryLocation home;
@@ -38,7 +42,7 @@ public class MediaExplorerVM {
 
 	public void setCurrentLocation(DirectoryLocation location){
 		if(getCurrentDirectory() != location){
-			setCurrentLocation(new BrowserFolderItemLocation(location, mediaService));
+			setCurrentLocation(new BrowserFolderItemLocation(location, localMediaService));
 		}else{
 			System.out.println("MediaExplorerVM: ignored setCurrentLocation!!");
 		}

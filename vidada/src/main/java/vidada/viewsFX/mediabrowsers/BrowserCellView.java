@@ -6,7 +6,7 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
-import vidada.viewmodel.browser.BrowserItemVM;
+import vidada.client.viewmodel.browser.BrowserItemVM;
 
 /**
  * Represents a View for a single item in the media Browser

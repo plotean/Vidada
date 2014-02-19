@@ -1,4 +1,4 @@
-package vidada.model.browser;
+package vidada.client.model.browser;
 
 import archimedesJ.data.events.CollectionEventArg;
 import archimedesJ.events.IEvent;

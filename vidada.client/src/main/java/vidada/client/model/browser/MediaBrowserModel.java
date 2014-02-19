@@ -1,11 +1,8 @@
-package vidada.model.browser;
+package vidada.client.model.browser;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import vidada.viewmodel.ITagStatesVM;
-import vidada.viewmodel.tags.TagStatesModel;
-import vidada.viewmodel.tags.TagViewModel;
 import archimedesJ.data.events.CollectionEventArg;
 import archimedesJ.events.EventHandlerEx;
 import archimedesJ.events.IEvent;
@@ -19,7 +16,6 @@ import archimedesJ.events.IEvent;
 public class MediaBrowserModel implements IDataProvider<IBrowserItem> {
 
 	private final List<IBrowserItem> medias = new ArrayList<IBrowserItem>();
-	private final ITagStatesVM tagStatesModel = new TagStatesModel(TagViewModel.VMFactory);
 
 
 	//
@@ -35,10 +31,6 @@ public class MediaBrowserModel implements IDataProvider<IBrowserItem> {
 
 	public MediaBrowserModel(){
 
-	}
-
-	public ITagStatesVM getTagStatesModel(){
-		return tagStatesModel;
 	}
 
 	public void clear() {

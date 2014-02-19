@@ -18,7 +18,7 @@ import org.controlsfx.glyphfont.FontAwesome;
 import org.controlsfx.glyphfont.GlyphFont;
 import org.controlsfx.glyphfont.GlyphFontRegistry;
 
-import vidada.viewmodel.explorer.MediaExplorerVM;
+import vidada.client.viewmodel.explorer.MediaExplorerVM;
 import vidada.viewsFX.mediabrowsers.MediaBrowserFX;
 import archimedesJ.events.EventArgs;
 import archimedesJ.events.EventListenerEx;

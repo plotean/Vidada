@@ -1,11 +1,11 @@
-package vidada.model.browser;
+package vidada.client.model.browser;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import vidada.model.media.IMediaService;
 import vidada.model.media.MediaDirectory;
 import vidada.model.media.MediaItem;
+import vidada.services.IMediaService;
 import archimedesJ.io.locations.DirectoryLocation;
 import archimedesJ.io.locations.ResourceLocation;
 import archimedesJ.io.locations.UniformLocation;
@@ -30,6 +30,7 @@ public class BrowserFolderItemLocation extends BrowserFolderItem {
 		return directory.getName();
 	}
 
+
 	@Override
 	protected List<IBrowserItem> loadChildren() {
 		List<IBrowserItem> children = new ArrayList<IBrowserItem>();
@@ -44,7 +45,7 @@ public class BrowserFolderItemLocation extends BrowserFolderItem {
 				item = new BrowserFolderItemLocation((DirectoryLocation)location, mediaService);
 			}else if(location instanceof ResourceLocation){
 				ResourceLocation resource = (ResourceLocation)location;
-				MediaItem media = mediaService.getLocalMediaStore().findOrCreateMedia(resource, true);
+				MediaItem media = mediaService.findOrCreateMedia(resource, true);
 				if(media != null)
 					item = new BrowserMediaItem(media);
 				else{

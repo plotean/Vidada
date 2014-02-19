@@ -6,9 +6,7 @@ import java.net.URISyntaxException;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 
-import vidada.model.ServiceProvider;
 import vidada.model.entities.IdEntity;
-import vidada.model.images.IThumbnailService;
 import vidada.model.images.cache.IImageCache;
 import vidada.model.images.cache.crypto.ImageCacheFactory;
 import archimedesJ.io.locations.DirectoryLocation;
@@ -86,9 +84,6 @@ public class MediaLibrary extends IdEntity {
 	public synchronized IImageCache getLibraryCache(){
 
 		if(imageCache == null){
-
-			IThumbnailService imageService = ServiceProvider.Resolve(IThumbnailService.class);
-
 			DirectoryLocation libraryRoot = getLibraryRoot();
 			if(libraryRoot != null && libraryRoot.exists()){
 				try {

@@ -15,7 +15,7 @@ import javax.swing.JPanel;
 import vidada.model.ServiceProvider;
 import vidada.model.security.AuthenticationException;
 import vidada.model.security.ICredentialManager;
-import vidada.model.security.IPrivacyService;
+import vidada.server.impl.IPrivacyService;
 import archimedesJ.security.CredentialType;
 import archimedesJ.security.Credentials;
 import archimedesJ.util.Debug;

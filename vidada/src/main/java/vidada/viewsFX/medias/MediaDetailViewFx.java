@@ -11,7 +11,7 @@ import javafx.scene.layout.Priority;
 
 import org.controlsfx.control.Rating;
 
-import vidada.viewmodel.media.IMediaViewModel;
+import vidada.client.viewmodel.media.IMediaViewModel;
 import vidada.viewsFX.tags.MediaDetailTagPane;
 
 public class MediaDetailViewFx extends BorderPane {

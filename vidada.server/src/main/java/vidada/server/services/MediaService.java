@@ -65,12 +65,8 @@ public class MediaService implements IMediaService {
 		repository.delete(media);
 	}
 
-	/**
-	 * Finds an existing media item or creates a new one for the given file
-	 * @param file
-	 * @param persist
-	 * @return
-	 */
+
+	@Override
 	public MediaItem findOrCreateMedia(ResourceLocation file, boolean persist) {
 		return findAndCreateMedia(file, true, persist);
 	}

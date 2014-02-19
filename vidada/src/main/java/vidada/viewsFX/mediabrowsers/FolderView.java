@@ -14,8 +14,8 @@ import org.controlsfx.glyphfont.Glyph;
 import org.controlsfx.glyphfont.GlyphFont;
 import org.controlsfx.glyphfont.GlyphFontRegistry;
 
-import vidada.viewmodel.browser.BrowserFolderItemVM;
-import vidada.viewmodel.browser.BrowserItemVM;
+import vidada.client.viewmodel.browser.BrowserFolderItemVM;
+import vidada.client.viewmodel.browser.BrowserItemVM;
 
 
 public class FolderView extends BrowserCellView {

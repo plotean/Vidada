@@ -4,16 +4,17 @@ import java.lang.ref.WeakReference;
 
 import org.joda.time.format.DateTimeFormat;
 
+import vidada.client.VidadaClientManager;
+import vidada.client.model.browser.BrowserMediaItem;
+import vidada.client.model.browser.IBrowserItem;
+import vidada.client.services.IMediaClientService;
+import vidada.client.services.IThumbnailClientService;
 import vidada.client.viewmodel.browser.BrowserItemVM;
 import vidada.model.ServiceProvider;
-import vidada.model.browser.BrowserMediaItem;
-import vidada.model.browser.IBrowserItem;
-import vidada.model.images.IThumbnailService;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaType;
 import vidada.model.media.source.MediaSource;
 import vidada.model.system.ISystemService;
-import vidada.services.IMediaService;
 import archimedesJ.exceptions.NotSupportedException;
 import archimedesJ.geometry.Size;
 import archimedesJ.images.ImageContainer;
@@ -28,12 +29,13 @@ import archimedesJ.io.locations.ResourceLocation;
  *
  */
 public class MediaViewModel extends BrowserItemVM {
+
+	private final ISystemService systemService = ServiceProvider.Resolve(ISystemService.class);
+	private final IThumbnailClientService thumbService = VidadaClientManager.instance().getThumbnailClientService();
+	private final IMediaClientService mediaClientService = VidadaClientManager.instance().getMediaClientService();
+
 	private WeakReference<ImageContainer> imageContainerRef;
 	private MediaItem mediaData;
-
-	private final IThumbnailService thumbService = ServiceProvider.Resolve(IThumbnailService.class);
-	private final ISystemService systemService = ServiceProvider.Resolve(ISystemService.class);
-	private final IMediaService mediaService = ServiceProvider.Resolve(IMediaService.class);
 
 
 	public MediaViewModel(){
@@ -177,7 +179,7 @@ public class MediaViewModel extends BrowserItemVM {
 
 	protected void persist(){
 		if(mediaData != null)
-			mediaService.update(mediaData);
+			mediaClientService.update(mediaData);
 	}
 
 }

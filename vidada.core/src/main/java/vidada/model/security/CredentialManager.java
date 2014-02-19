@@ -1,75 +1,11 @@
 package vidada.model.security;
 
-import java.util.List;
-
-import vidada.model.ServiceProvider;
-import vidada.server.repositories.ICredentialRepository;
-import vidada.server.repositories.RepositoryProvider;
+import archimedesJ.exceptions.NotImplementedException;
 import archimedesJ.exceptions.NotSupportedException;
 import archimedesJ.security.CredentialType;
 import archimedesJ.security.Credentials;
-import archimedesJ.util.Lists;
 
 public class CredentialManager implements ICredentialManager {
-
-	private final IPrivacyService privacyService = ServiceProvider.Resolve(IPrivacyService.class);
-	private final ICredentialRepository repository = RepositoryProvider.Resolve(ICredentialRepository.class);
-
-	@Override
-	public Credentials creditalsFor(String domain)
-			throws AuthenticationRequieredException {
-		StoredCredentials credentials = findCredentials(domain);
-		return credentials != null ? credentials.getCredentials(privacyService.getCryptoPad()) : null;
-	}
-
-	@Override
-	public void storeCredentials(String domain, Credentials credentials)
-			throws AuthenticationRequieredException {
-
-		StoredCredentials existingCredentials = findCredentials(domain);
-		if(existingCredentials != null){
-			existingCredentials.setCredentials(credentials, privacyService.getCryptoPad());
-			repository.update(existingCredentials);
-		}else {
-			StoredCredentials newCredentials = new StoredCredentials(
-					credentials,
-					domain,
-					privacyService.getCryptoPad());
-			repository.store(newCredentials);
-		}
-	}
-
-	@Override
-	public boolean removeCredentials(String domain) {
-		StoredCredentials credentials = findCredentials(domain);
-		if(credentials != null){
-			repository.delete(credentials);
-			return true;
-		}
-		return false;
-	}
-
-
-	@SuppressWarnings("serial")
-	private StoredCredentials findCredentials(final String domain){
-		List<StoredCredentials> credentials = repository.queryByDomain(domain);
-		return !credentials.isEmpty() ? credentials.get(0) : null;
-	}
-
-	@Override
-	public List<StoredCredentials> getAllStoredCredentials()
-			throws AuthenticationRequieredException {
-
-		List<StoredCredentials> libs = repository.getAllCredentials();
-		return Lists.newList(libs);
-	}
-
-	@Override
-	public void clearCredentialStore() throws AuthenticationRequieredException {
-		for (StoredCredentials credentials : getAllStoredCredentials()) {
-			repository.delete(credentials);
-		}
-	}
 
 
 	@Override
@@ -79,11 +15,13 @@ public class CredentialManager implements ICredentialManager {
 
 		Credentials credentials = null;
 		if(useKeyStore){
+			throw new NotImplementedException(); // TODO
+			/*
 			try {
 				credentials = creditalsFor(domain);
 			} catch (AuthenticationRequieredException e) {
 				e.printStackTrace();
-			}
+			}*/
 		}
 
 		if(credentials == null){
@@ -103,13 +41,14 @@ public class CredentialManager implements ICredentialManager {
 						System.out.println("CredentialManager: User entered correct credentials.");
 
 						if(credentials.isRemember()){
+							/*
 							try {
 								System.out.println("CredentialManager: Storing credentials for " + domain);
-
 								storeCredentials(domain, credentials);
 							} catch (AuthenticationRequieredException e) {
 								e.printStackTrace();
-							}
+							}*/
+							throw new NotImplementedException(); // TODO
 						}
 
 						// Credentials were correct

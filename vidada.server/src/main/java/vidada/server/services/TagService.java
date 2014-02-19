@@ -1,7 +1,6 @@
 package vidada.server.services;
 
 import java.util.Collection;
-import java.util.List;
 
 import vidada.model.media.MediaLibrary;
 import vidada.model.tags.Tag;
@@ -26,15 +25,15 @@ public class TagService implements ITagService {
 	 * Creates a new LocalTagService
 	 * @param tagService
 	 */
-	public TagService(ITagService tagService){
-		this.tagService = tagService;
-		loadTagCacheFromDB();
+	public TagService(){
+		//loadTagCacheFromDB();
 	}
 
+	/*
 	private void loadTagCacheFromDB(){
 		List<Tag> allTags = repository.getAllTags();
 		tagService.cacheTags(allTags);
-	}
+	}*/
 
 	/**{@inheritDoc}*/
 	@Override

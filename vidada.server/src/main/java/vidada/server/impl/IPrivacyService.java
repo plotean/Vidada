@@ -1,5 +1,7 @@
-package vidada.model.security;
+package vidada.server.impl;
 
+import vidada.model.security.AuthenticationException;
+import vidada.model.security.AuthenticationRequieredException;
 import archimedesJ.events.EventArgs;
 import archimedesJ.events.IEvent;
 import archimedesJ.security.Credentials;

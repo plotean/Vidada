@@ -1,26 +1,21 @@
-package vidada.model.media.store.local;
+package vidada.server.services;
 
 import vidada.model.images.cache.IImageCache;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MovieMediaItem;
+import vidada.model.media.store.local.LocalImageCacheManager;
+import vidada.model.media.store.local.MediaThumbFetcher;
+import vidada.services.IThumbnailService;
 import archimedesJ.geometry.Size;
 import archimedesJ.images.IMemoryImage;
 
-/**
- * Represents a local media store which manages all  medias available locally.
- * 
- * @author IsNull
- *
- */
-public class LocalMediaStore {
-
-	public static final String Name = "local.store"; 
+public class ThumbnailService implements IThumbnailService {
 
 	transient private final MediaThumbFetcher localThumbFetcher = new MediaThumbFetcher();
 	transient private final LocalImageCacheManager localImageCacheManager = new LocalImageCacheManager();
 
 
-
+	@Override
 	public IMemoryImage getThumbImage(MediaItem media, Size size) {
 		IMemoryImage thumb = null;
 
@@ -39,6 +34,7 @@ public class LocalMediaStore {
 		return thumb;
 	}
 
+	@Override
 	public IMemoryImage renewThumbImage(MovieMediaItem media, Size size, float pos) {
 
 		IMemoryImage thumb = null;
@@ -57,7 +53,4 @@ public class LocalMediaStore {
 
 		return thumb;
 	}
-
-
-
 }
