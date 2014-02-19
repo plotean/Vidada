@@ -15,6 +15,7 @@ import org.controlsfx.control.action.AbstractAction;
 import org.controlsfx.dialog.Dialog;
 import org.controlsfx.dialog.Dialogs;
 
+import vidada.client.VidadaClientManager;
 import vidada.dal.DAL;
 import vidada.data.DatabaseConnectionException;
 import vidada.images.RawImageFactoryFx;
@@ -58,7 +59,7 @@ public class Application extends  javafx.application.Application {
 	}
 
 	private Stage primaryStage;
-	private VidadaServer server;
+	private VidadaServer localserver;
 
 
 	@Override
@@ -195,10 +196,6 @@ public class Application extends  javafx.application.Application {
 				locator.registerSingleton(ISystemService.class, SystemService.class);
 				locator.registerSingleton(IRawImageFactory.class, RawImageFactoryFx.class);
 				locator.registerSingleton(IImageViewerService.class, ImageViewerServiceFx.class);
-
-
-				//ICredentialManager credentialManager = locator.resolve(ICredentialManager.class);
-				//credentialManager.register(authProvider);
 			}
 		});
 
@@ -223,7 +220,8 @@ public class Application extends  javafx.application.Application {
 			System.out.println("EM created sucessfully.");
 
 			// TODO start local vidada server
-			server = new VidadaServer();
+			localserver = new VidadaServer();
+			VidadaClientManager.instance().addServer(localserver);
 
 
 		}catch(DatabaseConnectionException e){
@@ -236,7 +234,7 @@ public class Application extends  javafx.application.Application {
 			.masthead("Vidada has trouble to access / connect to your database.")
 			.showException(e);
 		}
-		return false;
+		return true;
 	}
 
 

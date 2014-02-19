@@ -8,6 +8,7 @@ import vidada.model.security.ICredentialManager;
 import vidada.model.security.ICredentialManager.CredentialsChecker;
 import vidada.model.settings.GlobalSettings;
 import vidada.server.impl.IPrivacyService;
+import vidada.server.impl.PrivacyService;
 import vidada.server.services.MediaLibraryService;
 import vidada.server.services.MediaService;
 import vidada.server.services.TagService;
@@ -28,16 +29,14 @@ public class VidadaServer implements IVidadaServer {
 	private final IMediaService mediaService = new MediaService(mediaLibraryService);
 	private final ITagService tagService = new TagService();
 	private final IThumbnailService thumbnailService = new ThumbnailService();
+	private final IPrivacyService privacyService = new PrivacyService();
 
 	public VidadaServer(){
-
 		// Etablish databas connection
 
 		if(connectToDB()){
 			// DefaultDataCreator
 		}
-
-
 	}
 
 
@@ -50,28 +49,22 @@ public class VidadaServer implements IVidadaServer {
 
 		System.out.println("Checking user authentication...");
 
-		IPrivacyService privacyService = ServiceProvider.Resolve(IPrivacyService.class);
-		ICredentialManager credentialManager= ServiceProvider.Resolve(ICredentialManager.class);
+		registerProtectionHandler(privacyService);
 
-		if(privacyService == null) return false;
+		ICredentialManager credentialManager= ServiceProvider.Resolve(ICredentialManager.class);
 
 		if(privacyService.isProtected()){
 			System.out.println("Requesting user authentication for privacyService!");
-			if(!requestAuthentication(privacyService, credentialManager)){
+			if(requestAuthentication(privacyService, credentialManager)){
+				return true;
+			}else {
 				System.err.println("Autentification failed, aborting...");
 				return false;
 			}
 		}else {
 			System.out.println("No authentication necessary.");
-		}
-
-		if(privacyService.isAuthenticated() || !privacyService.isProtected())
-		{
 			return true;
-		}else {
-			System.err.println("Authentication failed. Quitting application now.");
 		}
-		return false;
 	}
 
 
@@ -113,6 +106,12 @@ public class VidadaServer implements IVidadaServer {
 			System.err.println("CacheKeyProvider: IPrivacyService is not avaiable!");
 	}
 
+	/**
+	 * Try to authenticate
+	 * @param privacyService
+	 * @param credentialManager
+	 * @return
+	 */
 	private boolean requestAuthentication(final IPrivacyService privacyService, ICredentialManager credentialManager){
 
 		Credentials validCredentials = credentialManager.requestAuthentication(

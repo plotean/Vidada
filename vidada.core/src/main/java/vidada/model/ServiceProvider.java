@@ -79,15 +79,8 @@ public class ServiceProvider implements ILocator {
 	private void configServices(){
 
 		System.out.println("config services...");
-
-		//serviceLocator.registerSingleton(IConnectivityService.class, ConnectivityService.class);
 		serviceLocator.registerSingleton(ISelectionService.class, SelectionService.class);
-
 		serviceLocator.registerSingleton(ICredentialManager.class, CredentialManager.class);
-
-
-		//serviceLocator.registerSingleton(IImageCacheService.class, VidadaImageCache.class);
-
 
 		System.out.println("config services done...");
 	}
