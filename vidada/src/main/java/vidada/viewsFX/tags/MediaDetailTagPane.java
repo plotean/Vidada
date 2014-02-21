@@ -39,8 +39,6 @@ public class MediaDetailTagPane extends BorderPane {
 			}
 		});
 
-
-		//this.setCenter(avaiableTagsPanel);
 		this.setCenter(currentTagsPanel);
 	}
 

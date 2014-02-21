@@ -42,16 +42,29 @@ class VidadaDALServiceJPA implements IVidadaDALService {
 				em = entityManagerFactory.createEntityManager();
 				em.setFlushMode(FlushModeType.AUTO);
 				em.getTransaction().begin();
+
+				System.out.println(">>>UNIT OF WORK START!");
 				return em;
 			}
 
 			@Override
 			public void finalizeUnitOfWork(EntityManager em) {
-				em.getTransaction().commit();
-				em.close();
+				try{
+					em.flush();
+					em.getTransaction().commit();
+				}catch(Exception e){
+					e.printStackTrace();
+					if(em.getTransaction().isActive()){
+						System.out.println("Rolling back transaction...");
+						em.getTransaction().rollback();
+					}
+				}finally{
+					em.close();
+				}
+
+				System.out.println("<<<UNIT OF WORK END!");
 			}
 		});
-
 	}
 
 	private void registerRepos(){

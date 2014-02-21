@@ -1,18 +1,14 @@
 package vidada.controls;
 
 import impl.org.controlsfx.autocompletion.SuggestionProvider;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import vidada.viewsFX.controls.TagControl;
-import vidada.viewsFX.controls.TagControl.RemovedActionEvent;
 import vidada.viewsFX.controls.TagItPanel;
 import archimedesJ.util.Lists;
 
@@ -40,11 +36,12 @@ public class FxApp extends  javafx.application.Application {
 		return tag;
 	}
 
+	TagItPanel<String> tagit;
 	private Node createTestTagIt(){
 
 		BorderPane root = new BorderPane();
 
-		final TagItPanel<String> tagit = new TagItPanel<>();
+		tagit = new TagItPanel<>();
 		tagit.getTags().add("action");
 		tagit.getTags().add("comedy");
 		tagit.getTags().add("horror");
@@ -63,6 +60,7 @@ public class FxApp extends  javafx.application.Application {
 			}
 		});
 
+		/*
 		tagit.setTagNodeFactory(new Callback<String, Node>() {
 			@Override
 			public Node call(final String name) {
@@ -76,26 +74,34 @@ public class FxApp extends  javafx.application.Application {
 				});
 				return tag;
 			}
-		});
+		});*/
 
 
+		/*
 		Button btnAutoComplete = new Button("Enable auto complete");
 		btnAutoComplete.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent ae) {
 
-				SuggestionProvider<String> tagSuggestionProvider = SuggestionProvider.create(
-						Lists.asList("Hell","Hello","Hello World", "App", "Apple", "Test"));
-
-				tagit.setSuggestionProvider(tagSuggestionProvider);
+				installAutoComplete();
 			}
 		});
-
 		root.setBottom(btnAutoComplete);
+		 */
+
+		installAutoComplete();
+
+
 		root.setCenter(tagit);
 
 		BorderPane.setMargin(root, new Insets(15));
 		return root;
+	}
+
+	private void installAutoComplete(){
+		SuggestionProvider<String> tagSuggestionProvider = SuggestionProvider.create(
+				Lists.asList("Hell","Hello","Hello World", "App", "Apple", "Test"));
+		tagit.setSuggestionProvider(tagSuggestionProvider);
 	}
 
 	/**

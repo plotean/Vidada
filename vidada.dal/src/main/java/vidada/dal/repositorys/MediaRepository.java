@@ -96,13 +96,20 @@ public class MediaRepository extends JPARepository implements IMediaRepository{
 
 	@Override
 	public void update(MediaItem media) {
+
+		System.out.println("Persisting media: " +  media + " attached: " + getEntityManager().contains(media));
+
+		for (Tag t : media.getTags()) {
+			System.out.println("Tag: " + t + " attached: " + getEntityManager().contains(media));
+		}
+
 		getEntityManager().merge(media);
 	}
 
 	@Override
 	public void update(Iterable<MediaItem> mediadatas) {
 		for (MediaItem media : mediadatas) {
-			getEntityManager().merge(media);
+			update(media);
 		}
 	}
 

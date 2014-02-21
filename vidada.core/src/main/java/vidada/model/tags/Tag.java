@@ -14,6 +14,8 @@ import javax.persistence.Id;
 @Entity
 public class Tag  implements Comparable<Tag> {
 
+	transient int hashcode_cache = -1;
+
 	@Id
 	@Column(nullable=false)
 	private String name;
@@ -37,8 +39,6 @@ public class Tag  implements Comparable<Tag> {
 	public String toString(){
 		return getName();
 	}
-
-	int hashcode_cache = -1;
 
 	@Override
 	public int hashCode() {
