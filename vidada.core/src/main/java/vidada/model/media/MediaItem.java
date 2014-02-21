@@ -5,7 +5,9 @@ import java.net.URI;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
@@ -38,20 +40,20 @@ public abstract class MediaItem extends BaseEntity {
 	 *                                                                         *
 	 **************************************************************************/
 
-	@OneToMany
+	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	private Set<MediaSource> sources = new HashSet<MediaSource>();
 
-	@ManyToMany
+	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
 	private Set<Tag> tags = new HashSet<Tag>();
 
 	@Id
 	private String filehash = null;
 	private String filename = null;
 	private DateTime addedDate = new DateTime();
-	private Size resolution = null;
+	private Size resolution = Size.Empty;
 	private int opened = 0;
 	private int rating = 0;
-	private MediaType type;
+	private MediaType type = MediaType.NONE;
 
 	/***************************************************************************
 	 *                                                                         *
@@ -59,7 +61,7 @@ public abstract class MediaItem extends BaseEntity {
 	 *                                                                         *
 	 **************************************************************************/
 
-	transient private String originId = "local.store";
+	transient private String originId = "vidada.local";
 	transient private MediaSource source;
 	transient private IObservableCollection<Tag> _tags;
 
@@ -355,7 +357,7 @@ public abstract class MediaItem extends BaseEntity {
 	 * @return
 	 */
 	@Transient
-	public boolean hasResolution(){ return resolution != null;}
+	public boolean hasResolution(){ return resolution != null && !resolution.isEmpty();}
 
 
 	/**

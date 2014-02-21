@@ -37,6 +37,11 @@
          <property name="hibernate.connection.username" value="sa"/>
          <property name="hibernate.connection.password" value=""/>
          <property name="hibernate.connection.url" value="jdbc:h2:data/vidada_h2"/>
+         
+         <property name="jadira.usertype.autoRegisterUserTypes" value="true" />
+         <property name="jadira.usertype.databaseZone" value="UTC"/>
+    	 <property name="jadira.usertype.javaZone" value="UTC"/>
+    	 
       </properties>
    </persistence-unit>
 </persistence>

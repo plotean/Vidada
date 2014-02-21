@@ -72,15 +72,13 @@
       		<artifactId>hibernate-validator</artifactId>
       		<version>4.3.0.Final</version>
     	</dependency>
-    
-		<!-- 
+    	
 		<dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-core</artifactId>
-            <version>4.3.0.Final</version>
-        </dependency>
- 		-->
-
+			<groupId>org.jadira.usertype</groupId>
+			<artifactId>usertype.core</artifactId>
+			<version>3.1.0.CR10</version>
+		</dependency>
+		
         <!-- Hibernate uses slf4j for logging, for our purposes here use the simple backend -->
         <dependency>
             <groupId>org.slf4j</groupId>

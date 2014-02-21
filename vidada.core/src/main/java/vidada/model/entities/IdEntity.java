@@ -1,5 +1,7 @@
 package vidada.model.entities;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
@@ -11,6 +13,7 @@ import javax.persistence.MappedSuperclass;
  *
  */
 @MappedSuperclass
+@Access(AccessType.FIELD)
 public abstract class IdEntity extends BaseEntity {
 
 	@Id

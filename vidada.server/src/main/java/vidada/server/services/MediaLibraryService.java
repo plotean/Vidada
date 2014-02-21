@@ -54,20 +54,35 @@ public class MediaLibraryService extends VidadaServerService implements IMediaLi
 	 * @see vidada.model.libraries.IMediaLibraryService#addLibrary(vidada.model.libraries.MediaLibrary)
 	 */
 	@Override
-	public void addLibrary(MediaLibrary lib){
-		repository.store(lib);
-		libraryAddedEvent.fireEvent(this, EventArgsG.build(lib));
+	public void addLibrary(final MediaLibrary lib){
+		runUnitOfWork(new Runnable() {
+			@Override
+			public void run() {
+				repository.store(lib);
+				libraryAddedEvent.fireEvent(this, EventArgsG.build(lib));
+			}
+		});
 	}
 
 	@Override
 	public void removeLibrary(final MediaLibrary lib) {
-		repository.delete(lib);
-		libraryRemovedEvent.fireEvent(this, EventArgsG.build(lib));
+		runUnitOfWork(new Runnable() {
+			@Override
+			public void run() {
+				repository.delete(lib);
+				libraryRemovedEvent.fireEvent(this, EventArgsG.build(lib));
+			}
+		});
 	}
 
 	@Override
-	public void update(MediaLibrary lib) {
-		repository.update(lib);
+	public void update(final MediaLibrary lib) {
+		runUnitOfWork(new Runnable() {
+			@Override
+			public void run() {
+				repository.update(lib);
+			}
+		});
 	}
 
 	@Override

@@ -15,4 +15,5 @@ Thumbs.db
 Vidada.ini
 *.log
 
-Vidada.json
+vidada-client.json
+vidada-server.json

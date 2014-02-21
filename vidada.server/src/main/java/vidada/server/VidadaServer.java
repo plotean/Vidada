@@ -39,20 +39,21 @@ public class VidadaServer implements IVidadaServer {
 	 *                                                                         *
 	 **************************************************************************/
 
-	private final IDatabaseSettingsService databaseSettingsService = new DataBaseSettingsManager(this);
+	private final IVidadaDALService dalService;
 
-	private final IMediaLibraryService mediaLibraryService = new MediaLibraryService(this);
-	private final IMediaService mediaService = new MediaService(this);
-	private final ITagService tagService = new TagService(this);
-	private final IThumbnailService thumbnailService = new ThumbnailService(this);
-	private final IMediaImportService importService = new MediaImportService(this);
-	private final IPrivacyService privacyService = new PrivacyService(this);
+	private final IDatabaseSettingsService databaseSettingsService;
+	private final IMediaLibraryService mediaLibraryService;
+	private final IMediaService mediaService;
+	private final ITagService tagService;
+	private final IThumbnailService thumbnailService;
+	private final IMediaImportService importService;
+	private final IPrivacyService privacyService;
 
 
 
 	private final IJobService jobService = null;// TODO
 
-	private final IVidadaDALService dalService;
+
 
 	/***************************************************************************
 	 *                                                                         *
@@ -62,13 +63,22 @@ public class VidadaServer implements IVidadaServer {
 
 
 	public VidadaServer(IVidadaDALService dalService){
-
+		if(dalService == null)
+			throw new IllegalArgumentException("dalService must not be NULL");
 		this.dalService = dalService;
 
-		// Etablish databas connection
+		databaseSettingsService = new DataBaseSettingsManager(this);
+		mediaLibraryService = new MediaLibraryService(this);
+		mediaService = new MediaService(this);
+		tagService = new TagService(this);
+		thumbnailService = new ThumbnailService(this);
+		importService = new MediaImportService(this);
+		privacyService = new PrivacyService(this);
+
 
 		if(connectToDB()){
-			// DefaultDataCreator
+			// Create default data etc.
+			// TODO
 		}
 	}
 
@@ -133,7 +143,7 @@ public class VidadaServer implements IVidadaServer {
 
 	@Override
 	public String getNameId() {
-		return "vidada.local";
+		return "vidada.local"; 
 	}
 
 

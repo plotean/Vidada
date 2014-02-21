@@ -24,6 +24,8 @@ public abstract class VidadaServerService {
 	protected VidadaServerService(VidadaServer server){
 		this.server = server;
 		dalService = server.getDalService();
+
+		if(dalService == null) throw new IllegalArgumentException("The provided server has NULL DAL Service.");
 	}
 
 	/**
