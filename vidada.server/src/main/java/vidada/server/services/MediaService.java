@@ -2,67 +2,109 @@ package vidada.server.services;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import vidada.model.media.MediaHashUtil;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaItemFactory;
 import vidada.model.media.MediaLibrary;
 import vidada.model.media.MediaQuery;
-import vidada.server.repositories.IMediaRepository;
-import vidada.server.repositories.RepositoryProvider;
+import vidada.server.VidadaServer;
+import vidada.server.dal.repositories.IMediaRepository;
 import vidada.services.IMediaLibraryService;
 import vidada.services.IMediaService;
 import archimedesJ.exceptions.NotSupportedException;
 import archimedesJ.io.locations.ResourceLocation;
 
-public class MediaService implements IMediaService {
+public class MediaService extends VidadaServerService implements IMediaService {
 
-	transient private final IMediaRepository repository = RepositoryProvider.Resolve(IMediaRepository.class);
+	transient private final IMediaRepository repository = getRepository(IMediaRepository.class);
 
-	private final IMediaLibraryService mediaLibraryService;
 
-	public MediaService(IMediaLibraryService mediaLibraryService){
-		this.mediaLibraryService = mediaLibraryService;
+	public MediaService(VidadaServer server) {
+		super(server);
+	}
+
+
+	@Override
+	public void store(final MediaItem media) {
+		runUnitOfWork(new Runnable() {
+			@Override
+			public void run() {
+				repository.store(media);
+			}
+		});
 	}
 
 	@Override
-	public void store(MediaItem media) {
-		repository.store(media);
+	public void store(final Collection<MediaItem> medias) {
+		runUnitOfWork(new Runnable() {
+			@Override
+			public void run() {
+				repository.store(medias);
+			}
+		});
 	}
 
 	@Override
-	public void store(Collection<MediaItem> media) {
-		repository.store(media);
+	public void update(final MediaItem media) {
+		runUnitOfWork(new Runnable() {
+			@Override
+			public void run() {
+				repository.update(media);
+			}
+		});
 	}
 
 	@Override
-	public void update(MediaItem media) {
-		repository.update(media);
+	public void update(final Collection<MediaItem> medias) {
+		runUnitOfWork(new Runnable() {
+			@Override
+			public void run() {
+				repository.update(medias);
+			}
+		});
 	}
 
 	@Override
-	public void update(Collection<MediaItem> media) {
-		repository.update(media);
-	}
-
-	@Override
-	public List<MediaItem> query(MediaQuery qry) {
-		return repository.query(qry);
+	public List<MediaItem> query(final MediaQuery qry) {
+		return runUnitOfWork(new Callable<List<MediaItem>>() {
+			@Override
+			public List<MediaItem> call() throws Exception {
+				return repository.query(qry);
+			}
+		});
 	}
 
 	@Override
 	public List<MediaItem> getAllMedias(){
-		return repository.getAllMedias();
+		return runUnitOfWork(new Callable<List<MediaItem>>() {
+			@Override
+			public List<MediaItem> call() throws Exception {
+				return repository.getAllMedias();
+			}
+		});
 	}
 
 	@Override
-	public void delete(MediaItem media) {
-		repository.delete(media);
+	public void delete(final MediaItem media) {
+		runUnitOfWork(new Runnable() {
+			@Override
+			public void run() {
+				repository.delete(media);
+			}
+		});
+
 	}
 
 	@Override
-	public void delete(Collection<MediaItem> media) {
-		repository.delete(media);
+	public void delete(final Collection<MediaItem> media) {
+		runUnitOfWork(new Runnable() {
+			@Override
+			public void run() {
+				repository.delete(media);
+			}
+		});
 	}
 
 
@@ -87,40 +129,48 @@ public class MediaService implements IMediaService {
 	 * @param persist
 	 * @return
 	 */
-	private MediaItem findAndCreateMedia(ResourceLocation resource, boolean canCreate, boolean persist){
-		MediaItem mediaData;
-
+	private MediaItem findAndCreateMedia(final ResourceLocation resource, final boolean canCreate, final boolean persist){
 		// We assume the given file is an absolute file path so we search for
 		// a matching media library to substitute the library path
 
-		final MediaLibrary library = mediaLibraryService.findLibrary(resource);
+		return runUnitOfWork(new Callable<MediaItem>() {
+			@Override
+			public MediaItem call() throws Exception {
+				MediaItem mediaData;
 
-		if(library != null){
-			String hash = null;
+				IMediaLibraryService mediaLibraryService = getServer().getLibraryService();
 
-			// first we search for the media
+				final MediaLibrary library = mediaLibraryService.findLibrary(resource);
+				if(library != null){
 
-			mediaData = repository.queryByPath(resource, library);
-			if(mediaData == null)
-			{
-				hash = retriveMediaHash(resource);
-				if(hash != null)
-					mediaData = repository.queryByHash(hash);
+					String hash = null;
+
+					// first we search for the media
+
+					mediaData = repository.queryByPath(resource, library);
+					if(mediaData == null)
+					{
+						hash = retriveMediaHash(resource);
+						if(hash != null)
+							mediaData = repository.queryByHash(hash);
+					}
+
+					if(canCreate && mediaData == null){
+
+						// we could not find a matching media so we create a new one
+
+						mediaData = MediaItemFactory.instance().buildMedia(resource, library, hash);
+						if(persist && mediaData != null){
+							repository.store(mediaData);
+						}
+					}
+				}else
+					throw new NotSupportedException("resource is not part of any media library");
+
+				return mediaData;
 			}
+		});
 
-			if(canCreate && mediaData == null){
-
-				// we could not find a matching media so we create a new one
-
-				mediaData = MediaItemFactory.instance().buildMedia(resource, library, hash);
-				if(persist && mediaData != null){
-					repository.store(mediaData);
-				}
-			}
-		}else
-			throw new NotSupportedException("resource is not part of any media library");
-
-		return mediaData;
 	}
 
 	/**

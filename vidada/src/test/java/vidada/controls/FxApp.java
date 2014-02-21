@@ -14,6 +14,7 @@ import javafx.util.Callback;
 import vidada.viewsFX.controls.TagControl;
 import vidada.viewsFX.controls.TagControl.RemovedActionEvent;
 import vidada.viewsFX.controls.TagItPanel;
+import archimedesJ.util.Lists;
 
 public class FxApp extends  javafx.application.Application {
 
@@ -82,7 +83,10 @@ public class FxApp extends  javafx.application.Application {
 		btnAutoComplete.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent ae) {
-				SuggestionProvider<String> tagSuggestionProvider = SuggestionProvider.create("Hell","Hello","Hello World", "App", "Apple", "Test");
+
+				SuggestionProvider<String> tagSuggestionProvider = SuggestionProvider.create(
+						Lists.asList("Hell","Hello","Hello World", "App", "Apple", "Test"));
+
 				tagit.setSuggestionProvider(tagSuggestionProvider);
 			}
 		});

@@ -216,13 +216,10 @@ public class Application extends  javafx.application.Application {
 
 			System.out.println("setting up EntityManager...");
 			DAL.activate();
-
 			System.out.println("EM created sucessfully.");
 
-			// TODO start local vidada server
 			localserver = new VidadaServer();
 			VidadaClientManager.instance().addServer(localserver);
-
 
 		}catch(DatabaseConnectionException e){
 			e.printStackTrace();

@@ -2,10 +2,11 @@ package vidada.server.services;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import vidada.model.media.MediaLibrary;
-import vidada.server.repositories.IMediaLibraryRepository;
-import vidada.server.repositories.RepositoryProvider;
+import vidada.server.VidadaServer;
+import vidada.server.dal.repositories.IMediaLibraryRepository;
 import vidada.services.IMediaLibraryService;
 import archimedesJ.events.EventArgsG;
 import archimedesJ.events.EventHandlerEx;
@@ -17,9 +18,9 @@ import archimedesJ.io.locations.ResourceLocation;
  * @author IsNull
  *
  */
-public class MediaLibraryService implements IMediaLibraryService {
+public class MediaLibraryService extends VidadaServerService implements IMediaLibraryService {
 
-	private final IMediaLibraryRepository repository = RepositoryProvider.Resolve(IMediaLibraryRepository.class);
+	private final IMediaLibraryRepository repository = getRepository(IMediaLibraryRepository.class);
 
 	private final EventHandlerEx<EventArgsG<MediaLibrary>> libraryAddedEvent = new EventHandlerEx<EventArgsG<MediaLibrary>>();
 	private final EventHandlerEx<EventArgsG<MediaLibrary>> libraryRemovedEvent = new EventHandlerEx<EventArgsG<MediaLibrary>>();
@@ -30,12 +31,23 @@ public class MediaLibraryService implements IMediaLibraryService {
 	@Override
 	public IEvent<EventArgsG<MediaLibrary>> getLibraryRemovedEvent() {return libraryRemovedEvent; }
 
+
+	public MediaLibraryService(VidadaServer server) {
+		super(server);
+	}
+
+
 	/* (non-Javadoc)
 	 * @see vidada.model.libraries.IMediaLibraryService#getAllLibraries()
 	 */
 	@Override
 	public List<MediaLibrary> getAllLibraries(){
-		return repository.getAllLibraries();
+		return runUnitOfWork(new Callable<List<MediaLibrary>>() {
+			@Override
+			public List<MediaLibrary> call() throws Exception {
+				return repository.getAllLibraries();
+			}
+		});
 	}
 
 	/* (non-Javadoc)
@@ -59,13 +71,23 @@ public class MediaLibraryService implements IMediaLibraryService {
 	}
 
 	@Override
-	public MediaLibrary findLibrary(ResourceLocation file) {
-		return repository.queryByLocation(file);
+	public MediaLibrary findLibrary(final ResourceLocation file) {
+		return runUnitOfWork(new Callable<MediaLibrary>() {
+			@Override
+			public MediaLibrary call() throws Exception {
+				return repository.queryByLocation(file);
+			}
+		});
 	}
 
 	@Override
-	public MediaLibrary getById(long id) {
-		return repository.queryById(id);
+	public MediaLibrary getById(final long id) {
+		return runUnitOfWork(new Callable<MediaLibrary>() {
+			@Override
+			public MediaLibrary call() throws Exception {
+				return repository.queryById(id);
+			}
+		});
 	}
 
 	@Override

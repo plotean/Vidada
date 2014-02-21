@@ -1,10 +1,10 @@
-package vidada.server.repositories;
+package vidada.server.dal.repositories;
 
 import java.util.List;
 
 import vidada.model.security.StoredCredentials;
 
-public interface ICredentialRepository extends IRepository<StoredCredentials> {
+public interface ICredentialRepository extends IRepository {
 
 	void update(StoredCredentials existingCredentials);
 

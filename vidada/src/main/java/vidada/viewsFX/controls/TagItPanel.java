@@ -12,7 +12,7 @@ import javafx.scene.control.Control;
 import javafx.scene.control.Skin;
 import javafx.util.Callback;
 
-import org.controlsfx.control.AutoCompletionBinding.ISuggestionRequest;
+import org.controlsfx.control.textfield.AutoCompletionBinding.ISuggestionRequest;
 
 import vidada.viewsFX.controls.TagControl.RemovedActionEvent;
 

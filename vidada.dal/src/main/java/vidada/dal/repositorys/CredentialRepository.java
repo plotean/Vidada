@@ -2,13 +2,20 @@ package vidada.dal.repositorys;
 
 import java.util.List;
 
+import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
+import vidada.aop.IUnitOfWorkService;
 import vidada.dal.JPARepository;
 import vidada.model.security.StoredCredentials;
-import vidada.server.repositories.ICredentialRepository;
+import vidada.server.dal.repositories.ICredentialRepository;
 
 public class CredentialRepository extends JPARepository implements ICredentialRepository {
+
+	public CredentialRepository(
+			IUnitOfWorkService<EntityManager> unitOfWorkService) {
+		super(unitOfWorkService);
+	}
 
 	@Override
 	public void update(StoredCredentials existingCredentials) {

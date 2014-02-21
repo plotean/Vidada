@@ -1,6 +1,9 @@
 package vidada.viewsFX.controls;
 
 
+import impl.org.controlsfx.skin.AutoCompletePopup;
+import impl.org.controlsfx.skin.AutoCompletePopup.SuggestionEvent;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -15,9 +18,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.FlowPane;
 
-import org.controlsfx.control.AutoCompletionBinding;
-import org.controlsfx.control.AutoCompletionBinding.IAutoCompletionListener;
-import org.controlsfx.control.TextFields;
+import org.controlsfx.control.textfield.AutoCompletionBinding;
+import org.controlsfx.control.textfield.TextFields;
 
 import archimedesJ.exceptions.NotSupportedException;
 
@@ -147,18 +149,7 @@ public class TagItPanelSkin<T> extends BehaviorSkinBase<TagItPanel<T>, BehaviorB
 			tagEdit.setPromptText("Add Tag...");
 			tagEdit.setMinWidth(150);
 
-			autoCompletionBinding = TextFields.bindAutoCompletion(tagEdit, getSkinnable().getSuggestionProvider());
-
-			// When the user has picked a suggestion from the auto-completion Popup
-			// we want to add this suggestion immediately 
-			autoCompletionBinding.addListener(new IAutoCompletionListener() {
-				@Override
-				public void onAutoCompleted() {
-					onAddNewTag(tagEdit.getText());
-					tagEdit.setText("");
-				}
-			});
-
+			updateSuggestionProvider();
 
 			tagEdit.setOnKeyPressed(new EventHandler<KeyEvent>() {
 				@Override
@@ -180,10 +171,30 @@ public class TagItPanelSkin<T> extends BehaviorSkinBase<TagItPanel<T>, BehaviorB
 	}
 
 	private void updateSuggestionProvider(){
+
+		if(autoCompletionBinding != null){
+			// Dispose the old binding
+			autoCompletionBinding.dispose();
+		}
+
 		if(getSkinnable().getSuggestionProvider() != null){
-			autoCompletionBinding.setSuggestionProvider(getSkinnable().getSuggestionProvider());
+
+			autoCompletionBinding = TextFields.bindAutoCompletion(tagEdit, getSkinnable().getSuggestionProvider());
+
+			AutoCompletePopup<T> popup = autoCompletionBinding.getPopup();
+
+			popup.setOnSuggestion(new EventHandler<SuggestionEvent<T>>() {
+				@Override
+				public void handle(SuggestionEvent<T> suggestion) {
+					T completion = suggestion.getSuggestion();
+					if(completion != null)
+						appendTag(completion);
+					tagEdit.setText("");
+				}
+			});
 		}
 	}
+
 
 	private void onAddNewTag(String text) {
 		T newTag = null;

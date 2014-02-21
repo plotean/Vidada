@@ -25,10 +25,10 @@ import archimedesJ.util.Lists;
  */
 public final class MediaDirectory {
 
-	private final DirectoryLocation directory;
+	transient private final DirectoryLocation directory;
 
-	private final boolean ignoreMovies;
-	private final boolean ignoreImages;
+	transient private final boolean ignoreMovies;
+	transient private final boolean ignoreImages;
 
 	transient private ILocationFilter mediaFilter = null;
 

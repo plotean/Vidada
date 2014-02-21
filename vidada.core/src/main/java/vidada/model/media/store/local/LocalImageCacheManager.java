@@ -1,5 +1,6 @@
 package vidada.model.media.store.local;
 
+import java.io.File;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
@@ -14,7 +15,6 @@ import vidada.model.media.MediaLibrary;
 import vidada.model.media.source.MediaSource;
 import vidada.model.media.source.MediaSourceLocal;
 import vidada.model.security.ICredentialManager;
-import vidada.model.settings.GlobalSettings;
 import archimedesJ.io.locations.DirectoryLocation;
 
 /**
@@ -30,8 +30,8 @@ public class LocalImageCacheManager {
 	transient private final ImageCacheFactory cacheFactory = new ImageCacheFactory();
 	transient private final Map<MediaLibrary, IImageCache> combinedCachesMap = new HashMap<MediaLibrary, IImageCache>();
 
-	public LocalImageCacheManager(){
-		localImageCache = openLocalCache();
+	public LocalImageCacheManager(File cacheLocation){
+		localImageCache = openLocalCache(cacheLocation);
 	}
 
 
@@ -67,12 +67,11 @@ public class LocalImageCacheManager {
 	 * Should this fail, it will return a dummy cache
 	 * @return
 	 */
-	private synchronized IImageCache openLocalCache() {
+	private synchronized IImageCache openLocalCache(File cacheLocation) {
 		IImageCache cache = null;
 		try {
 			DirectoryLocation localCacheLocation = 
-					DirectoryLocation.Factory.create(
-							GlobalSettings.getInstance().getAbsoluteCachePath().toString());
+					DirectoryLocation.Factory.create(cacheLocation.toString());
 
 			cache = cacheFactory.openEncryptedCache(localCacheLocation, credentialManager);
 

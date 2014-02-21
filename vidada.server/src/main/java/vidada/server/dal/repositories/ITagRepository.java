@@ -1,4 +1,4 @@
-package vidada.server.repositories;
+package vidada.server.dal.repositories;
 
 import java.util.Collection;
 import java.util.List;
@@ -6,7 +6,7 @@ import java.util.List;
 import vidada.model.media.MediaLibrary;
 import vidada.model.tags.Tag;
 
-public interface ITagRepository extends IRepository<Tag> {
+public interface ITagRepository extends IRepository {
 
 	public abstract void store(Tag newTag);
 

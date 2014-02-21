@@ -1,5 +1,7 @@
 package vidada;
 
+import vidada.services.IJobService;
+import vidada.services.IMediaImportService;
 import vidada.services.IMediaLibraryService;
 import vidada.services.IMediaService;
 import vidada.services.ITagService;
@@ -42,6 +44,18 @@ public interface IVidadaServer {
 	 * @return
 	 */
 	IThumbnailService getThumbnailService();
+
+	/**
+	 * 
+	 * @return
+	 */
+	IMediaImportService getImportService();
+
+	/**
+	 * 
+	 * @return
+	 */
+	IJobService getJobService();
 
 	/**
 	 * Gets the unique name identifier of this server

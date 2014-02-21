@@ -1,4 +1,4 @@
-package vidada.server.repositories;
+package vidada.server.dal.repositories;
 
 import java.util.Collection;
 import java.util.List;
@@ -9,7 +9,7 @@ import vidada.model.media.MediaQuery;
 import vidada.model.tags.Tag;
 import archimedesJ.io.locations.ResourceLocation;
 
-public interface IMediaRepository extends IRepository<MediaItem> {
+public interface IMediaRepository extends IRepository {
 
 	/**
 	 * Query for all medias which match the given media-query

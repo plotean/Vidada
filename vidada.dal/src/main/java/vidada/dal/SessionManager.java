@@ -1,23 +1,23 @@
 package vidada.dal;
 
-import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
-public class JPAConfiguration {
-
+public class SessionManager
+{
 	private EntityManagerFactory entityManagerFactory; 
-	private EntityManager defaultEntityManager = null;
 
-	private static JPAConfiguration instance;
-	public synchronized static JPAConfiguration instance(){
+	//private EntityManager defaultEntityManager = null;
+
+	private static SessionManager instance;
+	public synchronized static SessionManager instance(){
 		if(instance == null){
-			instance = new JPAConfiguration();
+			instance = new SessionManager();
 		}
 		return instance;
 	}
 
-	private JPAConfiguration(){
+	private SessionManager(){
 		configure();
 	}
 
@@ -33,10 +33,4 @@ public class JPAConfiguration {
 		return entityManagerFactory;
 	}
 
-	public EntityManager getDefaultEntityManager(){
-		if(defaultEntityManager == null){
-			defaultEntityManager = getSessionFactory().createEntityManager();
-		}
-		return defaultEntityManager;
-	}
 }

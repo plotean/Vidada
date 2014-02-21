@@ -1,9 +1,13 @@
 package vidada.server.impl;
 
+import java.util.concurrent.Callable;
+
 import vidada.model.security.AuthenticationException;
 import vidada.model.security.AuthenticationRequieredException;
-import vidada.server.settings.DataBaseSettingsManager;
+import vidada.server.VidadaServer;
+import vidada.server.services.VidadaServerService;
 import vidada.server.settings.DatabaseSettings;
+import vidada.server.settings.IDatabaseSettingsService;
 import archimedesJ.crypto.IByteBufferEncryption;
 import archimedesJ.crypto.KeyPad;
 import archimedesJ.crypto.XORByteCrypter;
@@ -20,18 +24,16 @@ import archimedesJ.util.Debug;
  * @author IsNull
  *
  */
-public class PrivacyService implements IPrivacyService{
-
+public class PrivacyService extends VidadaServerService implements IPrivacyService{
 
 	private final EventHandlerEx<EventArgs> ProtectedEvent = new EventHandlerEx<EventArgs>();
 	private final EventHandlerEx<EventArgs> ProtectionRemovedEvent = new EventHandlerEx<EventArgs>();
 
 	private final IByteBufferEncryption keyPadCrypter = new XORByteCrypter();
 
-
-	public PrivacyService(){
+	public PrivacyService(VidadaServer server) {
+		super(server);
 	}
-
 
 	@Override
 	public IEvent<EventArgs> getProtected() {return ProtectedEvent;}
@@ -40,61 +42,84 @@ public class PrivacyService implements IPrivacyService{
 	public IEvent<EventArgs> getProtectionRemoved() {return ProtectionRemovedEvent;}
 
 
-	private DatabaseSettings getDBSettings(){
-		return DataBaseSettingsManager.getSettings();
-	}
-
 
 	@Override
 	public boolean isProtected() {
-		return getDBSettings().getPasswordHash() != null;
-	}
-
-	@Override
-	public void protect(Credentials credentials) {
-
-		if(!isProtected())
-		{
-			DatabaseSettings settings = getDBSettings();
-			byte[] hash = KeyPad.hashKey(credentials.getPassword());
-			settings.setPasswordHash(hash);
-
-			if(authenticate(credentials)){
-				byte[] cryptoBlock = settings.getCryptoBlock();
-				settings.setCryptoBlock(keyPadCrypter.enCrypt(cryptoBlock, credentials.getUserSecret()));
-				DataBaseSettingsManager.persist(settings);
-				ProtectedEvent.fireEvent(this, EventArgsG.Empty);
+		return runUnitOfWork(new Callable<Boolean>() {
+			@Override
+			public Boolean call() throws Exception {
+				DatabaseSettings settings = getServer().getDatabaseSettingsService().getSettings();
+				return settings.getPasswordHash() != null;
 			}
-		}
+		});
+	}
+
+	@Override
+	public void protect(final Credentials credentials) {
+		runUnitOfWork(new Runnable() {
+			@Override
+			public void run() {
+				if(!isProtected())
+				{
+					IDatabaseSettingsService databaseSettingsService = getServer().getDatabaseSettingsService();
+
+					DatabaseSettings settings = databaseSettingsService.getSettings();
+
+					byte[] hash = KeyPad.hashKey(credentials.getPassword());
+					settings.setPasswordHash(hash);
+
+					if(authenticate(credentials)){
+						byte[] cryptoBlock = settings.getCryptoBlock();
+						settings.setCryptoBlock(keyPadCrypter.enCrypt(cryptoBlock, credentials.getUserSecret()));
+						databaseSettingsService.update(settings);
+						ProtectedEvent.fireEvent(this, EventArgsG.Empty);
+					}
+				}
+			}
+		});
+
 	}
 
 
 	@Override
-	public void removeProtection(Credentials credentials) throws AuthenticationException {
-		if(isProtected())
-		{
-			if(checkPassword(credentials))
-			{
-				// password seems to be correct
-				if(!isAuthenticated())
-					authenticate(credentials);
+	public void removeProtection(final Credentials credentials) throws AuthenticationException {
 
-				try {
-					// save the crypto block unencrypted in the db
-					getDBSettings().setCryptoBlock(getCryptoPad());
-				} catch (AuthenticationRequieredException e) {
-					e.printStackTrace();
+		runUnitOfWork(new Runnable() {
+
+			@Override
+			public void run() {
+
+				if(isProtected())
+				{
+					if(checkPassword(credentials))
+					{
+						// Password seems to be correct
+						if(!isAuthenticated())
+							authenticate(credentials);
+
+						DatabaseSettings settings = getServer().getDatabaseSettingsService().getSettings();
+
+						try {
+							// Save the crypto block unencrypted in the db
+							settings.setCryptoBlock(getCryptoPad());
+
+							// Finally remove the password hash to indicate that 
+							// this DB is not protected
+							settings.setPasswordHash(null);
+
+							getServer().getDatabaseSettingsService().update(settings);
+
+							ProtectionRemovedEvent.fireEvent(this, EventArgsG.Empty);
+
+						} catch (AuthenticationRequieredException e) {
+							e.printStackTrace();
+						}
+					}
 				}
 
-				// finally remove the password hash to indicate that 
-				// this db is not protected
-				DatabaseSettings settings = getDBSettings();
-				settings.setPasswordHash(null);
-				DataBaseSettingsManager.persist(settings);
-
-				ProtectionRemovedEvent.fireEvent(this, EventArgsG.Empty);
 			}
-		}
+		});
+
 	}
 
 	private Credentials authCredentials = null;
@@ -120,9 +145,9 @@ public class PrivacyService implements IPrivacyService{
 	}
 
 	private boolean checkPassword(Credentials credentials){
-		byte[] hash = getDBSettings().getPasswordHash();
+		DatabaseSettings settings = getServer().getDatabaseSettingsService().getSettings();
+		byte[] hash = settings.getPasswordHash();
 		byte[] userPassHash = KeyPad.hashKey(credentials.getPassword());
-
 		System.out.println("checkPassword: " + Debug.toString(hash) + " == " + Debug.toString(userPassHash));
 		return KeyPad.equals(hash, userPassHash);
 	}
@@ -143,17 +168,31 @@ public class PrivacyService implements IPrivacyService{
 	public byte[] getCryptoPad() throws AuthenticationRequieredException{
 
 		if(plainCryptoPad == null){
-			if(isProtected())
-			{
-				byte[] userKey = getCredentials().getUserSecret(); // throws AuthenticationRequieredException
-				byte[] cryptoPadEncrypted = getDBSettings().getCryptoBlock();
 
-				// we have to decrypt the cryptoPad
-				plainCryptoPad = keyPadCrypter.deCrypt(cryptoPadEncrypted, userKey);
-			}else{
-				// on unprotected systems, the crypto block stored in the DB is not encrypted
-				plainCryptoPad = getDBSettings().getCryptoBlock();
-			}
+			plainCryptoPad = runUnitOfWork(new Callable<byte[]>() {
+				@Override
+				public byte[] call() throws Exception {
+					byte[] plainCryptoPad;
+					DatabaseSettings settings = getServer().getDatabaseSettingsService().getSettings();
+					if(isProtected())
+					{
+						try {
+							byte[] userKey = getCredentials().getUserSecret();
+							byte[] cryptoPadEncrypted = settings.getCryptoBlock();
+							// we have to decrypt the cryptoPad
+							plainCryptoPad = keyPadCrypter.deCrypt(cryptoPadEncrypted, userKey);
+						} catch (AuthenticationRequieredException e) {
+							e.printStackTrace();
+							throw e;
+						} 
+					}else{
+						// on unprotected systems, the crypto block stored in the DB is not encrypted
+						plainCryptoPad = settings.getCryptoBlock();
+					}
+					return plainCryptoPad;
+				}
+			});
+
 		}
 		return plainCryptoPad;
 	}

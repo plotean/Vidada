@@ -1,4 +1,4 @@
-package vidada.server.repositories;
+package vidada.server.dal.repositories;
 
 
 /**
@@ -7,7 +7,7 @@ package vidada.server.repositories;
  *
  * @param <T>
  */
-public interface ISingleEntityRepository<T> extends IRepository<T> {
+public interface ISingleEntityRepository<T> extends IRepository {
 
 	/**
 	 * Get the single entity. The entity will be cached in memory after first call.

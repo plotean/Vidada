@@ -1,4 +1,4 @@
-package vidada.server.repositories;
+package vidada.server.dal.repositories;
 
 import java.util.List;
 
@@ -6,7 +6,7 @@ import vidada.model.media.MediaLibrary;
 import archimedesJ.io.locations.ResourceLocation;
 
 
-public interface IMediaLibraryRepository extends IRepository<MediaLibrary> {
+public interface IMediaLibraryRepository extends IRepository {
 
 	public List<MediaLibrary> getAllLibraries();
 

@@ -3,14 +3,20 @@ package vidada.dal.repositorys;
 import java.util.Collection;
 import java.util.List;
 
+import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
+import vidada.aop.IUnitOfWorkService;
 import vidada.dal.JPARepository;
 import vidada.model.media.MediaLibrary;
 import vidada.model.tags.Tag;
-import vidada.server.repositories.ITagRepository;
+import vidada.server.dal.repositories.ITagRepository;
 
 public class TagRepository extends JPARepository implements ITagRepository {
+
+	public TagRepository(IUnitOfWorkService<EntityManager> unitOfWorkService) {
+		super(unitOfWorkService);
+	}
 
 	@Override
 	public void store(Tag newTag) {

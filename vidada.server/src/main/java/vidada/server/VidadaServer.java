@@ -7,31 +7,64 @@ import vidada.model.security.AuthenticationRequieredException;
 import vidada.model.security.ICredentialManager;
 import vidada.model.security.ICredentialManager.CredentialsChecker;
 import vidada.model.settings.GlobalSettings;
+import vidada.server.dal.IVidadaDALService;
 import vidada.server.impl.IPrivacyService;
 import vidada.server.impl.PrivacyService;
+import vidada.server.services.MediaImportService;
 import vidada.server.services.MediaLibraryService;
 import vidada.server.services.MediaService;
 import vidada.server.services.TagService;
 import vidada.server.services.ThumbnailService;
+import vidada.server.settings.DataBaseSettingsManager;
+import vidada.server.settings.IDatabaseSettingsService;
+import vidada.services.IJobService;
+import vidada.services.IMediaImportService;
 import vidada.services.IMediaLibraryService;
 import vidada.services.IMediaService;
 import vidada.services.ITagService;
 import vidada.services.IThumbnailService;
 import archimedesJ.events.EventArgs;
 import archimedesJ.events.EventListenerEx;
+import archimedesJ.exceptions.NotImplementedException;
 import archimedesJ.io.locations.DirectoryLocation;
 import archimedesJ.security.CredentialType;
 import archimedesJ.security.Credentials;
 
 public class VidadaServer implements IVidadaServer {
 
-	private final IMediaLibraryService mediaLibraryService = new MediaLibraryService();
-	private final IMediaService mediaService = new MediaService(mediaLibraryService);
-	private final ITagService tagService = new TagService();
-	private final IThumbnailService thumbnailService = new ThumbnailService();
-	private final IPrivacyService privacyService = new PrivacyService();
 
-	public VidadaServer(){
+	/***************************************************************************
+	 *                                                                         *
+	 * Private Fields                                                          *
+	 *                                                                         *
+	 **************************************************************************/
+
+	private final IDatabaseSettingsService databaseSettingsService = new DataBaseSettingsManager(this);
+
+	private final IMediaLibraryService mediaLibraryService = new MediaLibraryService(this);
+	private final IMediaService mediaService = new MediaService(this);
+	private final ITagService tagService = new TagService(this);
+	private final IThumbnailService thumbnailService = new ThumbnailService(this);
+	private final IMediaImportService importService = new MediaImportService(this);
+	private final IPrivacyService privacyService = new PrivacyService(this);
+
+
+
+	private final IJobService jobService = null;// TODO
+
+	private final IVidadaDALService dalService;
+
+	/***************************************************************************
+	 *                                                                         *
+	 * Constructor                                                             *
+	 *                                                                         *
+	 **************************************************************************/
+
+
+	public VidadaServer(IVidadaDALService dalService){
+
+		this.dalService = dalService;
+
 		// Etablish databas connection
 
 		if(connectToDB()){
@@ -39,7 +72,81 @@ public class VidadaServer implements IVidadaServer {
 		}
 	}
 
+	/***************************************************************************
+	 *                                                                         *
+	 * Public API                                                              *
+	 *                                                                         *
+	 **************************************************************************/
 
+	/**
+	 * Gets the DAL Service for this Vidada Server
+	 * @return
+	 */
+	public IVidadaDALService getDalService(){
+		return dalService;
+	}
+
+	public IDatabaseSettingsService getDatabaseSettingsService(){
+		return databaseSettingsService;
+	}
+
+	/***************************************************************************
+	 *                                                                         *
+	 * IVidadaServer API implementation                                        *
+	 *                                                                         *
+	 **************************************************************************/
+
+	@Override
+	public boolean isLocal() {
+		return true;
+	}
+
+	@Override
+	public IMediaService getMediaService() {
+		return mediaService;
+	}
+
+	@Override
+	public ITagService getTagService() {
+		return tagService;
+	}
+
+	@Override
+	public IThumbnailService getThumbnailService() {
+		return thumbnailService;
+	}
+
+	@Override
+	public IMediaLibraryService getLibraryService() {
+		return mediaLibraryService;
+	}
+
+	@Override
+	public IMediaImportService getImportService() {
+		return importService;
+	}
+
+	@Override
+	public IJobService getJobService() {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public String getNameId() {
+		return "vidada.local";
+	}
+
+
+	/***************************************************************************
+	 *                                                                         *
+	 * Private Methods                                                         *
+	 *                                                                         *
+	 **************************************************************************/
+
+	/**
+	 * Connect to the database
+	 * @return
+	 */
 	private boolean connectToDB(){
 
 		//
@@ -129,34 +236,4 @@ public class VidadaServer implements IVidadaServer {
 	}
 
 
-
-	@Override
-	public boolean isLocal() {
-		return true;
-	}
-
-	@Override
-	public IMediaService getMediaService() {
-		return mediaService;
-	}
-
-	@Override
-	public ITagService getTagService() {
-		return tagService;
-	}
-
-	@Override
-	public IThumbnailService getThumbnailService() {
-		return thumbnailService;
-	}
-
-	@Override
-	public IMediaLibraryService getLibraryService() {
-		return mediaLibraryService;
-	}
-
-	@Override
-	public String getNameId() {
-		return "vidada.local";
-	}
 }

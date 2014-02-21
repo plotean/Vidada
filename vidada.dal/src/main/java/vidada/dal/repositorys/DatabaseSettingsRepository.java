@@ -1,12 +1,19 @@
 package vidada.dal.repositorys;
 
+import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
+import vidada.aop.IUnitOfWorkService;
 import vidada.dal.JPARepository;
-import vidada.server.repositories.IDatabaseSettingsRepository;
+import vidada.server.dal.repositories.IDatabaseSettingsRepository;
 import vidada.server.settings.DatabaseSettings;
 
 public class DatabaseSettingsRepository extends JPARepository implements IDatabaseSettingsRepository {
+
+	public DatabaseSettingsRepository(
+			IUnitOfWorkService<EntityManager> unitOfWorkService) {
+		super(unitOfWorkService);
+	}
 
 	@Override
 	public DatabaseSettings get() {
@@ -16,7 +23,12 @@ public class DatabaseSettingsRepository extends JPARepository implements IDataba
 
 	@Override
 	public void update(DatabaseSettings settings) {
-		getEntityManager().persist(settings);
+		getEntityManager().merge(settings);
+	}
+
+	@Override
+	public void store(DatabaseSettings newSettings) {
+		getEntityManager().persist(newSettings);
 	}
 
 }

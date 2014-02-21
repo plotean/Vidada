@@ -1,34 +1,49 @@
 package vidada.server.settings;
 
-import vidada.server.repositories.IDatabaseSettingsRepository;
-import vidada.server.repositories.RepositoryProvider;
+import java.util.concurrent.Callable;
 
-public class DataBaseSettingsManager {
+import vidada.server.VidadaServer;
+import vidada.server.dal.repositories.IDatabaseSettingsRepository;
+import vidada.server.services.VidadaServerService;
 
-	transient private final static IDatabaseSettingsRepository repository = RepositoryProvider.Resolve(IDatabaseSettingsRepository.class);
+public class DataBaseSettingsManager extends VidadaServerService implements IDatabaseSettingsService {
 
-	private static DatabaseSettings cacheDatabaseSettings;
+	public DataBaseSettingsManager(VidadaServer server) {
+		super(server);
+	}
+	transient private final IDatabaseSettingsRepository repository = getRepository(IDatabaseSettingsRepository.class);
+
 
 	/**
 	 * Gets the application settings
 	 * @return
 	 */
-	public synchronized static DatabaseSettings getSettings(){
-		if(cacheDatabaseSettings == null){
-			DatabaseSettings settings = repository.get(); 
-			if(settings == null){
-				settings = new DatabaseSettings();
-				persist(settings);
+	@Override
+	public synchronized DatabaseSettings getSettings(){
+		return runUnitOfWork(new Callable<DatabaseSettings>() {
+			@Override
+			public DatabaseSettings call() throws Exception {
+				DatabaseSettings settings = repository.get(); 
+
+				if(settings == null){
+					settings = new DatabaseSettings();
+					repository.store(settings);
+				}
+				return settings;
 			}
-			cacheDatabaseSettings = settings;
-		}
-		return cacheDatabaseSettings;
+		});
 	}
 
 	/**
 	 * Persist the current changes
 	 */
-	public static void persist(DatabaseSettings settings){
-		repository.update(settings);
+	@Override
+	public void update(final DatabaseSettings settings){
+		runUnitOfWork(new Runnable() {
+			@Override
+			public void run() {
+				repository.update(settings);
+			}
+		});
 	}
 }

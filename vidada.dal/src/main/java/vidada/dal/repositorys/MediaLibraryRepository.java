@@ -2,15 +2,22 @@ package vidada.dal.repositorys;
 
 import java.util.List;
 
+import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import vidada.aop.IUnitOfWorkService;
 import vidada.dal.JPARepository;
 import vidada.model.media.MediaLibrary;
-import vidada.server.repositories.IMediaLibraryRepository;
+import vidada.server.dal.repositories.IMediaLibraryRepository;
 import archimedesJ.io.locations.ResourceLocation;
 
 public class MediaLibraryRepository extends JPARepository implements IMediaLibraryRepository {
+
+	public MediaLibraryRepository(
+			IUnitOfWorkService<EntityManager> unitOfWorkService) {
+		super(unitOfWorkService);
+	}
 
 	@Override
 	public List<MediaLibrary> getAllLibraries() {

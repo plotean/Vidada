@@ -13,7 +13,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.util.Callback;
 
-import org.controlsfx.control.TextFields;
+import org.controlsfx.control.textfield.TextFields;
 
 import vidada.client.VidadaClientManager;
 import vidada.client.services.ITagClientService;

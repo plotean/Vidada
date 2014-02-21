@@ -1,0 +1,61 @@
+package vidada.server.services;
+
+import java.util.concurrent.Callable;
+
+import vidada.server.VidadaServer;
+import vidada.server.dal.IVidadaDALService;
+import vidada.server.dal.repositories.IRepository;
+
+/**
+ * Base-class for all Vidada server services
+ * @author IsNull
+ *
+ */
+public abstract class VidadaServerService {
+
+	private final VidadaServer server;
+	private final IVidadaDALService dalService;
+
+
+	/**
+	 * Creates a new server service for the given server
+	 * @param server
+	 */
+	protected VidadaServerService(VidadaServer server){
+		this.server = server;
+		dalService = server.getDalService();
+	}
+
+	/**
+	 * Get the parent server of this service
+	 * @return
+	 */
+	protected VidadaServer getServer(){
+		return server;
+	}
+
+	/**
+	 * Run the given code in a Unit of work.
+	 * 
+	 * Nested calls are supported as long as the same Unit-Of-Work service is used.
+	 * (Which should always be the case.)
+	 * @param code
+	 */
+	protected void runUnitOfWork(Runnable code){
+		dalService.getUnitOfWorkRunner().runUnit(code);
+	}
+
+	/**
+	 * 
+	 * @param code
+	 * @return
+	 */
+	protected <V> V runUnitOfWork(Callable<V> code){
+		return dalService.getUnitOfWorkRunner().runUnit(code);
+	}
+
+	protected <T extends IRepository> T getRepository(Class<T> iclazz){
+		return dalService.getRepository(iclazz);
+	}
+
+}

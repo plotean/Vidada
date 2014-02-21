@@ -4,16 +4,21 @@ import java.util.List;
 
 import vidada.model.security.AuthenticationRequieredException;
 import vidada.model.security.StoredCredentials;
-import vidada.server.repositories.ICredentialRepository;
-import vidada.server.repositories.RepositoryProvider;
+import vidada.server.VidadaServer;
+import vidada.server.dal.repositories.ICredentialRepository;
 import vidada.services.ICredentialStore;
 import archimedesJ.exceptions.NotImplementedException;
 import archimedesJ.security.Credentials;
 import archimedesJ.util.Lists;
 
-public class CredentialStore implements ICredentialStore {
+public class CredentialStore extends VidadaServerService implements ICredentialStore {
 
-	private final ICredentialRepository repository = RepositoryProvider.Resolve(ICredentialRepository.class);
+	protected CredentialStore(VidadaServer server) {
+		super(server);
+		// TODO Auto-generated constructor stub
+	}
+
+	private final ICredentialRepository repository = getRepository(ICredentialRepository.class);
 
 
 	@Override

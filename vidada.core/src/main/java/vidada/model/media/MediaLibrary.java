@@ -1,9 +1,10 @@
 package vidada.model.media;
 
 import java.beans.Transient;
+import java.net.URI;
 import java.net.URISyntaxException;
 
-import javax.persistence.Embedded;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 
 import vidada.model.entities.IdEntity;
@@ -22,14 +23,14 @@ public class MediaLibrary extends IdEntity {
 
 	public static final String VidataThumbsFolder = "vidada.thumbs";
 
-
-	@Embedded
-	private DirectoryLocation libraryRoot;
+	@Column(name="libraryRoot")
+	private URI libraryRoot;
 	private boolean ignoreMovies;
 	private boolean ignoreImages;
 
 	transient private IImageCache imageCache = null;
 	transient private MediaDirectory mediaDirectory = null;
+	transient private DirectoryLocation libraryDirectoryLocation = null;
 
 	/**
 	 *
@@ -71,10 +72,23 @@ public class MediaLibrary extends IdEntity {
 		return mediaDirectory;
 	}
 
+	/**
+	 * Set the root path of this media library
+	 * @param libraryRoot
+	 */
+	@Transient
+	public void setLibraryRoot(DirectoryLocation location) {
+		this.libraryDirectoryLocation = location;
+		libraryRoot = libraryDirectoryLocation.getUri();
+	}
+
 
 	@Transient
 	private DirectoryLocation getLibraryRoot() {
-		return libraryRoot;
+		if(libraryDirectoryLocation == null){
+			libraryDirectoryLocation = DirectoryLocation.Factory.create(libraryRoot);
+		}
+		return libraryDirectoryLocation;
 	}
 
 	/**
@@ -107,14 +121,6 @@ public class MediaLibrary extends IdEntity {
 	public boolean isAvailable(){
 		DirectoryLocation root = getLibraryRoot();
 		return root != null && root.exists();
-	}
-
-	/**
-	 * Set the root path of this media library
-	 * @param libraryRoot
-	 */
-	public void setLibraryRoot(DirectoryLocation libraryRoot) {
-		this.libraryRoot = libraryRoot;
 	}
 
 	@Override
