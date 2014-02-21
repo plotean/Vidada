@@ -2,6 +2,7 @@ package vidada.model.media.source;
 
 import java.beans.Transient;
 import java.net.URI;
+import java.net.URISyntaxException;
 
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
@@ -24,7 +25,7 @@ public class MediaSourceLocal extends MediaSource {
 
 	@ManyToOne
 	private MediaLibrary parentLibrary = null;
-	private URI relativeFilePath = null;
+	private String relativeFilePath = null;
 
 
 	/** ORM Constructor */
@@ -93,12 +94,16 @@ public class MediaSourceLocal extends MediaSource {
 	 * @return
 	 */
 	public URI getRelativeFilePath() {
-		return relativeFilePath;
+		try {
+			return new URI(relativeFilePath);
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	public void setRelativeFilePath(URI relativefilePath) {
-		this.relativeFilePath = relativefilePath;
-		isFileAvaiableDirty = true;
+		this.relativeFilePath = relativefilePath.toString();
 	}
 
 	/**

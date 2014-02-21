@@ -1,10 +1,8 @@
 package vidada.model.media;
 
 import java.beans.Transient;
-import java.net.URI;
 import java.net.URISyntaxException;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 
 import vidada.model.entities.IdEntity;
@@ -23,8 +21,7 @@ public class MediaLibrary extends IdEntity {
 
 	public static final String VidataThumbsFolder = "vidada.thumbs";
 
-	@Column(name="libraryRoot")
-	private URI libraryRoot;
+	private String libraryRootURI;
 	private boolean ignoreMovies;
 	private boolean ignoreImages;
 
@@ -79,14 +76,18 @@ public class MediaLibrary extends IdEntity {
 	@Transient
 	public void setLibraryRoot(DirectoryLocation location) {
 		this.libraryDirectoryLocation = location;
-		libraryRoot = libraryDirectoryLocation.getUri();
+		libraryRootURI = libraryDirectoryLocation.getUri().toString();
 	}
 
 
 	@Transient
 	private DirectoryLocation getLibraryRoot() {
 		if(libraryDirectoryLocation == null){
-			libraryDirectoryLocation = DirectoryLocation.Factory.create(libraryRoot);
+			try {
+				libraryDirectoryLocation = DirectoryLocation.Factory.create(libraryRootURI);
+			} catch (URISyntaxException e) {
+				e.printStackTrace();
+			}
 		}
 		return libraryDirectoryLocation;
 	}

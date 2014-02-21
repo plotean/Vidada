@@ -59,8 +59,7 @@ public class TagClientService extends ClientService implements ITagClientService
 		Tag tag = tagNameCache.get(tagName);
 		if(tag == null){
 			if(isValidTag(tagName)){
-				tag = new Tag(tagName);
-				tagNameCache.put(tagName, tag);
+				tag = createTag(tagName);
 			}
 		}
 		return tag;
@@ -79,5 +78,11 @@ public class TagClientService extends ClientService implements ITagClientService
 		for (Tag tag : tags) {
 			tagNameCache.put(tag.getName(), tag);
 		}
+	}
+
+	private Tag createTag(String name){
+		Tag tag = new Tag(name);
+		tagNameCache.put(name, tag);
+		return tag;
 	}
 }

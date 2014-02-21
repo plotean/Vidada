@@ -37,7 +37,6 @@ public class TagRepository extends JPARepository implements ITagRepository {
 
 	@Override
 	public Collection<Tag> getAllUsedTags(Collection<MediaLibrary> libraries) {
-		// TODO Auto-generated method stub
 		return getAllTags();
 	}
 

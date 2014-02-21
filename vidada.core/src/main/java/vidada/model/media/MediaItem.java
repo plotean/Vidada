@@ -110,7 +110,7 @@ public abstract class MediaItem extends BaseEntity {
 	 * 
 	 * @param prototype
 	 */
-	protected void prototype(MediaItem prototype) {
+	public void prototype(MediaItem prototype) {
 
 		assert prototype != null;
 

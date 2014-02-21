@@ -19,8 +19,6 @@ public class TagService extends VidadaServerService implements ITagService {
 
 	//transient private final ITagService tagService;
 
-
-
 	transient private final TagRelationDefinition relationDefinition = new TagRelationDefinition();
 	transient private final ITagRepository repository = getRepository(ITagRepository.class);
 
@@ -58,8 +56,6 @@ public class TagService extends VidadaServerService implements ITagService {
 				return repository.getAllUsedTags(libraries);
 			}
 		});
-
-
 	}
 
 	/**{@inheritDoc}*/
