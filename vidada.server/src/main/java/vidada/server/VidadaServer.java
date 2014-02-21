@@ -6,7 +6,6 @@ import vidada.model.images.cache.crypto.CryptedCacheUtil;
 import vidada.model.security.AuthenticationRequieredException;
 import vidada.model.security.ICredentialManager;
 import vidada.model.security.ICredentialManager.CredentialsChecker;
-import vidada.model.settings.GlobalSettings;
 import vidada.server.dal.IVidadaDALService;
 import vidada.server.impl.IPrivacyService;
 import vidada.server.impl.PrivacyService;
@@ -17,6 +16,7 @@ import vidada.server.services.TagService;
 import vidada.server.services.ThumbnailService;
 import vidada.server.settings.DataBaseSettingsManager;
 import vidada.server.settings.IDatabaseSettingsService;
+import vidada.server.settings.VidadaServerSettings;
 import vidada.services.IJobService;
 import vidada.services.IMediaImportService;
 import vidada.services.IMediaLibraryService;
@@ -184,7 +184,7 @@ public class VidadaServer implements IVidadaServer {
 				public void eventOccured(Object sender, EventArgs eventArgs) {
 					try {
 						final DirectoryLocation localCache = DirectoryLocation.Factory
-								.create(GlobalSettings.getInstance().getAbsoluteCachePath());
+								.create(VidadaServerSettings.instance().getAbsoluteCachePath());
 
 						System.out.println("ServiceProvider: " + privacyService.getCredentials().toString());
 						CryptedCacheUtil.encryptWithPassword(localCache, privacyService.getCredentials());
@@ -201,7 +201,7 @@ public class VidadaServer implements IVidadaServer {
 				public void eventOccured(Object sender, EventArgs eventArgs) {
 					try {
 						final DirectoryLocation localCache = DirectoryLocation.Factory
-								.create(GlobalSettings.getInstance().getAbsoluteCachePath());
+								.create(VidadaServerSettings.instance().getAbsoluteCachePath());
 
 						CryptedCacheUtil.removeEncryption( localCache, privacyService.getCredentials());
 					} catch (AuthenticationRequieredException e) {

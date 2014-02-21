@@ -7,7 +7,7 @@ import org.securityvision.metadata.MetaDataNotSupportedException;
 
 import vidada.model.metadata.MediaMetaAttribute;
 import vidada.model.metadata.MetaDataSupport;
-import vidada.model.settings.GlobalSettings;
+import vidada.model.settings.VidadaClientSettings;
 import archimedesJ.data.hashing.FileHashAlgorythms;
 import archimedesJ.data.hashing.IFileHashAlgorythm;
 import archimedesJ.io.locations.ResourceLocation;
@@ -45,7 +45,8 @@ public class MediaHashUtil {
 	public MediaHashUtil(IFileHashAlgorythm fileHashAlgorythm){
 		this.fileHashAlgorythm = fileHashAlgorythm;
 
-		if(GlobalSettings.getInstance().isUsingMetaData())
+		// TODO Refactor this dependency away
+		if(VidadaClientSettings.instance().isUsingMetaData())
 		{
 			try {
 				metaDataSupport = new MetaDataSupport();

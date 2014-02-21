@@ -1,5 +1,10 @@
 package vidada.model.settings;
 
+/**
+ * Represents a Vidada database config 
+ * @author IsNull
+ *
+ */
 public class VidadaDatabase {
 
 	private String fileCachePath;

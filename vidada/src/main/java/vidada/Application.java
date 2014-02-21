@@ -21,10 +21,12 @@ import vidada.data.DatabaseConnectionException;
 import vidada.images.RawImageFactoryFx;
 import vidada.model.ServiceProvider;
 import vidada.model.ServiceProvider.IServiceRegisterer;
-import vidada.model.settings.GlobalSettings;
+import vidada.model.settings.VidadaClientSettings;
 import vidada.model.settings.VidadaDatabase;
 import vidada.model.system.ISystemService;
 import vidada.server.VidadaServer;
+import vidada.server.dal.IVidadaDALService;
+import vidada.server.settings.VidadaServerSettings;
 import vidada.viewsFX.MainViewFx;
 import vidada.viewsFX.dialoges.ChooseMediaDatabaseView;
 import vidada.viewsFX.images.ImageViewerServiceFx;
@@ -66,7 +68,7 @@ public class Application extends  javafx.application.Application {
 	public void start(Stage primaryStage) throws Exception {
 		this.primaryStage = primaryStage;
 
-		OSValidator.setForceHDPI(GlobalSettings.getInstance().isForceHDPIRender());
+		OSValidator.setForceHDPI(VidadaClientSettings.instance().isForceHDPIRender());
 
 		ImageIO.setUseCache(false);
 
@@ -155,7 +157,7 @@ public class Application extends  javafx.application.Application {
 
 	private void configDatabase(){
 
-		final GlobalSettings settings = GlobalSettings.getInstance();
+		final VidadaServerSettings settings = VidadaServerSettings.instance();
 
 		if(!settings.autoConfigDatabase()){
 
@@ -200,25 +202,25 @@ public class Application extends  javafx.application.Application {
 		});
 
 
-		System.out.println("loaded settings v" + GlobalSettings.getInstance().getSettingsVersion());
+		System.out.println("Loaded settings v" + VidadaClientSettings.instance().getSettingsVersion());
 
 
 		configDatabase();
 
 
-		if(GlobalSettings.getInstance().getCurrentDBConfig() == null){
+		if(VidadaServerSettings.instance().getCurrentDBConfig() == null){
 			System.err.println("No Database has been choosen - exiting now");
 			return false;
 		}
 
 
 		try{
+			System.out.println("Settings up Vidada DAL...");
+			IVidadaDALService vidadaDALService = DAL.build();
+			System.out.println("DAL Layer loaded successfull.");
 
-			System.out.println("setting up EntityManager...");
-			DAL.activate();
-			System.out.println("EM created sucessfully.");
-
-			localserver = new VidadaServer();
+			System.out.println("Creating Vidada Server...");
+			localserver = new VidadaServer(vidadaDALService);
 			VidadaClientManager.instance().addServer(localserver);
 
 		}catch(DatabaseConnectionException e){

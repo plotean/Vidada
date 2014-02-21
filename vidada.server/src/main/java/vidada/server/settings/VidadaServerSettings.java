@@ -1,15 +1,13 @@
-package vidada.model.settings;
+package vidada.server.settings;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Properties;
 import java.util.Set;
 
+import vidada.model.settings.JsonSettings;
+import vidada.model.settings.VidadaDatabase;
 import archimedesJ.exceptions.NotSupportedException;
 import archimedesJ.expressions.Predicate;
 import archimedesJ.geometry.Size;
@@ -18,20 +16,19 @@ import archimedesJ.util.OSValidator;
 
 import com.google.gson.reflect.TypeToken;
 
-/**
- * Holds the applications global settings
- * @author IsNull
- *
- */
-public class GlobalSettings extends JsonSettings {
+public class VidadaServerSettings extends JsonSettings { 
 
-	// transient fields
-	transient public static final String ProductName = "Vidada";
+	/***************************************************************************
+	 *                                                                         *
+	 * Transient fields                                                        *
+	 *                                                                         *
+	 **************************************************************************/
+
+	transient public static final String ProductName = "vidada-server";
 
 	transient public static File Path;
 	transient public static String defaultCache; 
 	transient public static String defaultDB;
-	transient public static File infoPropertiesFile; 
 
 	static {
 
@@ -40,11 +37,7 @@ public class GlobalSettings extends JsonSettings {
 		Path = new File(".", ProductName + ".json");
 		defaultCache = "data/cache"; 
 		defaultDB  = "data/vidada.db";
-		infoPropertiesFile = new File(".", "info.properties");
-
 	}
-
-	transient private String versionInfo = null;
 
 
 	transient private VidadaDatabase currentDBConfig = null;
@@ -55,12 +48,58 @@ public class GlobalSettings extends JsonSettings {
 	transient public static final int THUMBNAIL_SIZE_GAP = 50;
 	transient public static final double THUMBNAIL_SIDE_RATIO = 0.70;
 
+	/***************************************************************************
+	 *                                                                         *
+	 * Persistent fields                                                       *
+	 *                                                                         *
+	 **************************************************************************/
 
-	// persistent fields
 	private Set<VidadaDatabase> databases = new HashSet<VidadaDatabase>();
-	private boolean forceHDPIRender = false;
 	private boolean usingMetaData = true;
 	private boolean isDebug = false;
+
+
+	/***************************************************************************
+	 *                                                                         *
+	 * Singleton                                                               *
+	 *                                                                         *
+	 **************************************************************************/
+
+	transient private static VidadaServerSettings instance; 
+	public static VidadaServerSettings instance(){ 
+
+		if(instance == null){
+
+			if(Path.exists())
+			{
+				Type settingsType = new TypeToken<VidadaServerSettings>(){}.getType();
+				Object settingsObj = JsonSettings.loadSettings(Path, settingsType);
+				if(settingsObj instanceof VidadaServerSettings)
+				{
+					instance = (VidadaServerSettings)settingsObj;
+				}
+			}
+		}
+
+		if(instance == null){
+			instance = new VidadaServerSettings();
+		}
+
+		instance.setPath(Path);
+		instance.persist();
+
+		return instance; 
+	}
+
+	private VidadaServerSettings(){
+		databases.add(getDefaultConfig());
+	}
+
+	/***************************************************************************
+	 *                                                                         *
+	 * Properties                                                              *
+	 *                                                                         *
+	 **************************************************************************/
 
 
 	/**
@@ -68,14 +107,12 @@ public class GlobalSettings extends JsonSettings {
 	 * (HDPI aware)
 	 * @return
 	 */
-	public static Size getMaxThumbResolution(){
+	public Size getMaxThumbResolution(){
 		int maxWidth = THUMBNAIL_SIZE_MAX * (OSValidator.isHDPI() ? 2 : 1);
 		return new Size(
 				maxWidth,
 				(int)((double)maxWidth*THUMBNAIL_SIDE_RATIO));
 	}
-
-
 
 
 	/**
@@ -93,6 +130,8 @@ public class GlobalSettings extends JsonSettings {
 			}
 		});
 	}
+
+
 
 	/**
 	 * Automatically configure the database
@@ -167,103 +206,6 @@ public class GlobalSettings extends JsonSettings {
 	}
 
 
-
-	public String getVersionInfo() {
-		if(versionInfo == null)
-		{
-			Properties properties = new Properties();
-			if(infoPropertiesFile.exists())
-			{
-				FileInputStream is = null;
-				try {
-					is = new FileInputStream(infoPropertiesFile);
-					properties.load(is);
-				} catch (FileNotFoundException e) {
-					e.printStackTrace();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}finally{
-					if(is != null)
-						try {
-							is.close();
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-				}
-			}else{
-				System.err.println("can not find " + infoPropertiesFile.getAbsolutePath());
-			}
-			versionInfo = properties.getProperty("vidada.version", "unknown");
-		}
-		return versionInfo;
-	}
-
-
-	//
-	// Singleton --Settings construction
-	//
-	transient private static GlobalSettings instance; 
-	public static GlobalSettings getInstance(){ 
-
-		if(instance == null){
-
-			if(Path.exists())
-			{
-				Type settingsType = new TypeToken<GlobalSettings>(){}.getType();
-				Object settingsObj = JsonSettings.loadSettings(Path, settingsType);
-				if(settingsObj instanceof GlobalSettings)
-				{
-					instance = (GlobalSettings)settingsObj;
-				}
-			}
-		}
-
-		if(instance == null){
-			instance = new GlobalSettings();
-		}
-
-		instance.setPath(Path);
-		instance.persist();
-
-		return instance; 
-	}
-	private GlobalSettings(){
-		databases.add(getDefaultConfig());
-	}
-
-	private static VidadaDatabase getDefaultConfig(){
-		VidadaDatabase defaultConfig = new VidadaDatabase();
-		defaultConfig.setDataBasePath(defaultDB);
-		defaultConfig.setFileCachePath(defaultCache);
-		return defaultConfig;
-	}
-
-
-	private static File toAbsolutePath(String path){
-		return toAbsolutePath(new File(path));
-	}
-
-	private static File toAbsolutePath(File path){
-		if(path == null) return null;
-
-		if(path.isAbsolute())
-		{
-			return path;
-		}else {
-			return new File(".", path.getPath());
-		}
-	}
-
-
-	public boolean isForceHDPIRender() {
-		return forceHDPIRender;
-	}
-
-
-	public void setForceHDPIRender(boolean forceHDPIRender) {
-		this.forceHDPIRender = forceHDPIRender;
-	}
-
 	/**
 	 * Determites if meta data is used to help identify files 
 	 * and store additional informations
@@ -293,6 +235,33 @@ public class GlobalSettings extends JsonSettings {
 	public void setDebug(boolean isDebug) {
 		this.isDebug = isDebug;
 	}
+
+	/***************************************************************************
+	 *                                                                         *
+	 * Private static methods                                                  *
+	 *                                                                         *
+	 **************************************************************************/
+
+	private static VidadaDatabase getDefaultConfig(){
+		VidadaDatabase defaultConfig = new VidadaDatabase();
+		defaultConfig.setDataBasePath(defaultDB);
+		defaultConfig.setFileCachePath(defaultCache);
+		return defaultConfig;
+	}
+
+
+	private static File toAbsolutePath(String path){
+		return toAbsolutePath(new File(path));
+	}
+
+	private static File toAbsolutePath(File path){
+		if(path == null) return null;
+
+		if(path.isAbsolute())
+		{
+			return path;
+		}else {
+			return new File(".", path.getPath());
+		}
+	}
 }
-
-

@@ -7,8 +7,8 @@ import vidada.model.images.cache.IImageCache;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MovieMediaItem;
 import vidada.model.media.store.local.LocalImageCacheManager;
-import vidada.model.settings.GlobalSettings;
 import vidada.server.VidadaServer;
+import vidada.server.settings.VidadaServerSettings;
 import vidada.services.IThumbnailService;
 import archimedesJ.geometry.Size;
 import archimedesJ.images.IMemoryImage;
@@ -22,11 +22,9 @@ public class ThumbnailService extends VidadaServerService implements IThumbnailS
 
 	public ThumbnailService(VidadaServer server) {
 		super(server);
-		// TODO Golbal settings refactor to server settings??
-		GlobalSettings settings = GlobalSettings.getInstance();
 
-		maxThumbSize = GlobalSettings.getMaxThumbResolution();
-		localImageCacheManager = new LocalImageCacheManager(settings.getAbsoluteCachePath());
+		maxThumbSize = VidadaServerSettings.instance().getMaxThumbResolution();
+		localImageCacheManager = new LocalImageCacheManager(VidadaServerSettings.instance().getAbsoluteCachePath());
 		thumbImageCreator = new ThumbImageExtractor();
 	}
 

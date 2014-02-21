@@ -6,12 +6,11 @@ import javafx.geometry.Insets;
 import javafx.scene.control.CheckBox;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
-import vidada.server.settings.DataBaseSettingsManager;
-import vidada.server.settings.DatabaseSettings;
+import vidada.model.settings.VidadaClientSettings;
 
 public class GeneralSettings extends BorderPane {
 
-	private final DatabaseSettings applicationSettings = DataBaseSettingsManager.getSettings();
+	private final VidadaClientSettings applicationSettings = VidadaClientSettings.instance();
 
 	private final CheckBox enableDirectPlaySound;
 
@@ -24,8 +23,8 @@ public class GeneralSettings extends BorderPane {
 			@Override
 			public void changed(ObservableValue<? extends Boolean> obs,
 					Boolean oldVal, Boolean newVal) {
-				applicationSettings.setPlaySoundDirectPlay(newVal);
-				DataBaseSettingsManager.persist(applicationSettings);
+				applicationSettings.setEnableDirectPlaySound(newVal);
+				applicationSettings.persist();
 			}
 		});
 		simpleSettings.getChildren().addAll(enableDirectPlaySound);
@@ -40,6 +39,6 @@ public class GeneralSettings extends BorderPane {
 
 
 	private void updateView(){
-		enableDirectPlaySound.setSelected(applicationSettings.isPlaySoundDirectPlay());
+		enableDirectPlaySound.setSelected(applicationSettings.isEnableDirectPlaySound());
 	}
 }

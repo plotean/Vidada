@@ -21,8 +21,7 @@ import uk.co.caprica.vlcj.player.direct.BufferFormatCallback;
 import uk.co.caprica.vlcj.player.direct.DirectMediaPlayer;
 import uk.co.caprica.vlcj.player.direct.RenderCallback;
 import uk.co.caprica.vlcj.player.direct.format.RV32BufferFormat;
-import vidada.server.settings.DataBaseSettingsManager;
-import vidada.server.settings.DatabaseSettings;
+import vidada.model.settings.VidadaClientSettings;
 import vidada.viewsFX.player.IMediaController;
 import vidada.viewsFX.player.MediaPlayerFx;
 import vlcj.VLCMediaController;
@@ -38,7 +37,7 @@ import com.sun.jna.Memory;
 public class MediaPlayerVLC extends MediaPlayerFx 
 {
 	// TODO refactore this dependency away
-	private final DatabaseSettings applicationSettings = DataBaseSettingsManager.getSettings();
+	private final VidadaClientSettings applicationSettings = VidadaClientSettings.instance();
 
 	// player factory config
 	private static String[] args = {"--no-plugins-cache",  "--no-video-title-show", "--no-snapshot-preview", "--quiet", "--quiet-synchro", "--intf", "dummy"};
@@ -257,7 +256,7 @@ public class MediaPlayerVLC extends MediaPlayerFx
 
 		String[] myargs = args;
 
-		if(!applicationSettings.isPlaySoundDirectPlay())
+		if(!applicationSettings.isEnableDirectPlaySound())
 			myargs = Lists.concat(args, directPlaySund);
 
 		return new MediaPlayerFactory(myargs);

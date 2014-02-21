@@ -11,8 +11,7 @@ import javax.swing.JDialog;
 import vidada.IVidadaServer;
 import vidada.client.VidadaClientManager;
 import vidada.model.media.MediaLibrary;
-import vidada.server.settings.DataBaseSettingsManager;
-import vidada.server.settings.DatabaseSettings;
+import vidada.model.settings.VidadaClientSettings;
 import vidada.views.ImageResources;
 import archimedesJ.expressions.Predicate;
 import archimedesJ.io.locations.DirectoryLocation;
@@ -60,7 +59,7 @@ public class AddNewMediaLibraryAction extends AbstractAction{
 		if(dialog.isOk())
 		{
 			MediaLibrary library = new MediaLibrary();
-			DatabaseSettings settings = DataBaseSettingsManager.getSettings();
+			VidadaClientSettings settings = VidadaClientSettings.instance();
 			library.setIgnoreImages(settings.isIgnoreImages());
 			library.setIgnoreMovies(settings.isIgnoreMovies());
 
