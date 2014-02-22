@@ -16,7 +16,7 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
-import vidada.client.model.browser.IDataProvider;
+import vidada.model.pagination.IDataProvider;
 import archimedesJ.data.events.CollectionEventArg;
 import archimedesJ.events.EventHandlerEx;
 import archimedesJ.events.IEvent;
@@ -24,7 +24,6 @@ import archimedesJ.exceptions.NotSupportedException;
 
 /**
  * Virtual data source adapter
- * 
  * 
  * @author IsNull
  *
@@ -38,16 +37,44 @@ public class VirtualListAdapter<T, ST> implements IDataProvider<T>, ObservableLi
 	private final ITransform<T,ST> transformer;
 	private final IDataProvider<ST> source;
 
-	private final EventHandlerEx<CollectionEventArg<T>> mediasChangedEvent = new EventHandlerEx<CollectionEventArg<T>>();
+	private final EventHandlerEx<CollectionEventArg<T>> itemsChangedEvent = new EventHandlerEx<CollectionEventArg<T>>();
 
 	@Override
-	public IEvent<CollectionEventArg<T>> getItemsChangedEvent() { return mediasChangedEvent; }
+	public IEvent<CollectionEventArg<T>> getItemsChangedEvent() { return itemsChangedEvent; }
 
 
 	public VirtualListAdapter(IDataProvider<ST> source, ITransform<T,ST> transformer){
 		this.source = source;
 		this.transformer = transformer;
 	}
+
+
+	@Override
+	public int size() {
+		return source.size();
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return source.isEmpty();
+	}
+
+	@Override
+	public T get(int index) {
+		ST objSt = source.get(index);
+		return objSt != null ? transformer.transform(objSt) : null;
+	}
+
+	@Override
+	public ListIterator<T> listIterator() {
+		return new VirtualListIterator();
+	}
+
+	/***************************************************************************
+	 *                                                                         *
+	 * Empty event listener                                                    *
+	 *                                                                         *
+	 **************************************************************************/
 
 	@Override
 	public void addListener(InvalidationListener listener) {
@@ -69,16 +96,13 @@ public class VirtualListAdapter<T, ST> implements IDataProvider<T>, ObservableLi
 		System.out.println("VirtualListAdapter remove ListChangeListener");
 	}
 
+	/***************************************************************************
+	 *                                                                         *
+	 * Not Supported dummy implementation                                      *
+	 *                                                                         *
+	 **************************************************************************/
 
-	@Override
-	public int size() {
-		return source.size();
-	}
 
-	@Override
-	public boolean isEmpty() {
-		return source.isEmpty();
-	}
 
 	@Override
 	public boolean contains(Object o) {
@@ -150,11 +174,6 @@ public class VirtualListAdapter<T, ST> implements IDataProvider<T>, ObservableLi
 		throw new NotSupportedException();
 	}
 
-	@Override
-	public T get(int index) {
-		ST objSt = source.get(index);
-		return objSt != null ? transformer.transform(objSt) : null;
-	}
 
 	@Override
 	public T set(int index, T element) {
@@ -179,11 +198,6 @@ public class VirtualListAdapter<T, ST> implements IDataProvider<T>, ObservableLi
 	@Override
 	public int lastIndexOf(Object o) {
 		throw new NotSupportedException();
-	}
-
-	@Override
-	public ListIterator<T> listIterator() {
-		return new VirtualListIterator();
 	}
 
 	@Override
@@ -330,7 +344,4 @@ public class VirtualListAdapter<T, ST> implements IDataProvider<T>, ObservableLi
 		}
 
 	}
-
-
-
 }

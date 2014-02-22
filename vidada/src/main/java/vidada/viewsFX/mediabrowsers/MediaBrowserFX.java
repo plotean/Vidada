@@ -12,12 +12,12 @@ import org.controlsfx.control.GridView;
 import vidada.client.model.browser.BrowserFolderItem;
 import vidada.client.model.browser.BrowserMediaItem;
 import vidada.client.model.browser.IBrowserItem;
-import vidada.client.model.browser.IDataProvider;
 import vidada.client.viewmodel.IVMFactory;
 import vidada.client.viewmodel.MediaViewModel;
 import vidada.client.viewmodel.ViewModelPool;
 import vidada.client.viewmodel.browser.BrowserFolderItemVM;
 import vidada.client.viewmodel.browser.BrowserItemVM;
+import vidada.model.pagination.IDataProvider;
 import vidada.viewsFX.mediabrowsers.VirtualListAdapter.ITransform;
 import vidada.viewsFX.player.IMediaPlayerService;
 import vlcj.fx.MediaPlayerService;
@@ -207,10 +207,6 @@ public class MediaBrowserFX extends BorderPane {
 				if(mediaModel != null){
 
 					System.out.println("MediaBrowserFX:updateView items: " + mediaModel.size() + " empty?" + mediaModel.isEmpty() + " :: " + mediaModel);
-
-					for (int i = 0; i <  mediaModel.size() ; i++) {
-						System.out.println();
-					}
 
 					VirtualListAdapter<BrowserItemVM, IBrowserItem> listAdapter =
 							new VirtualListAdapter<>(mediaModel, new ITransform<BrowserItemVM, IBrowserItem>() {

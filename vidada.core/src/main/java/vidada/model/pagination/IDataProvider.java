@@ -1,4 +1,4 @@
-package vidada.client.model.browser;
+package vidada.model.pagination;
 
 import archimedesJ.data.events.CollectionEventArg;
 import archimedesJ.events.IEvent;

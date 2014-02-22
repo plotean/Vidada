@@ -25,24 +25,51 @@ import archimedesJ.threading.CancellationTokenSource.OperationCanceledException;
 
 /**
  * Represents a binding between a mediabrowser model an filter settings.
- * The datasource for the query which is internally performed is the primary database,
- * thus this binding is not really flexible. 
- * 
- * TODO: Refactor this binding to support arbitrary data sources
  * 
  * @author IsNull
  *
  */
 public class MediaFilterDatabaseBinding {
 
-	private final FilterModel filterModel;
-	private final MediaBrowserModel mediaBrowserModel;
-	private final IMediaClientService mediaClientService;
 
+	/***************************************************************************
+	 *                                                                         *
+	 * Static methods                                                          *
+	 *                                                                         *
+	 **************************************************************************/
+
+	/**
+	 * Creates a binding between the filter-model and browser-model using the given mediaClientService
+	 * @param mediaClientService
+	 * @param filterModel
+	 * @param mediaBrowserModel
+	 * @return
+	 */
 	public static MediaFilterDatabaseBinding bind(IMediaClientService mediaClientService, FilterModel filterModel, MediaBrowserModel mediaBrowserModel){
 		return new MediaFilterDatabaseBinding(mediaClientService, filterModel, mediaBrowserModel);
 	}
 
+
+
+	/***************************************************************************
+	 *                                                                         *
+	 * Private fields                                                          *
+	 *                                                                         *
+	 **************************************************************************/
+
+	private final FilterModel filterModel;
+	private final MediaBrowserModel mediaBrowserModel;
+	private final IMediaClientService mediaClientService;
+
+	transient private AsyncFetchData<MediaItem> datafetcher;
+	transient private final Object datafetcherLock = new Object();
+	transient private CancellationTokenSource ctx;
+
+	/***************************************************************************
+	 *                                                                         *
+	 * Constructors                                                            *
+	 *                                                                         *
+	 **************************************************************************/
 
 	protected MediaFilterDatabaseBinding(IMediaClientService mediaClientService, FilterModel filterModel, MediaBrowserModel mediaBrowserModel){
 		this.mediaClientService = mediaClientService;
@@ -59,11 +86,11 @@ public class MediaFilterDatabaseBinding {
 		updateMediaBrowserModel();
 	}
 
-
-
-	transient private AsyncFetchData<MediaItem> datafetcher;
-	transient private final Object datafetcherLock = new Object();
-	transient private CancellationTokenSource ctx;
+	/***************************************************************************
+	 *                                                                         *
+	 * Private methods                                                         *
+	 *                                                                         *
+	 **************************************************************************/
 
 
 	/**
@@ -160,9 +187,18 @@ public class MediaFilterDatabaseBinding {
 	}
 
 
+	/***************************************************************************
+	 *                                                                         *
+	 * Inner classes                                                           *
+	 *                                                                         *
+	 **************************************************************************/
 
 
-
+	/**
+	 * Represents a Task which fetches MediaItems asynchronously
+	 * @author IsNull
+	 *
+	 */
 	class AsyncFetchMediaItems extends AsyncFetchData<MediaItem> {
 
 		private final IMediaClientService mediaClientService;

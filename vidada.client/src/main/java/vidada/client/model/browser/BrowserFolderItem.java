@@ -3,6 +3,7 @@ package vidada.client.model.browser;
 import java.util.List;
 
 import vidada.model.media.MediaItem;
+import vidada.model.pagination.IDataProvider;
 import archimedesJ.data.events.CollectionEventArg;
 import archimedesJ.events.EventArgs;
 import archimedesJ.events.EventHandlerEx;

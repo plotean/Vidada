@@ -32,8 +32,6 @@ class MediaGridItemCell extends GridCell<BrowserItemVM> {
 		}
 	}
 
-	private static boolean tog = false;
-
 	public MediaGridItemCell(IMediaPlayerService mediaPlayerService, DoubleProperty desiredWidth, DoubleProperty desiredHeight){
 
 		mediaView = new MediaItemView(mediaPlayerService);

@@ -3,6 +3,7 @@ package vidada.client.model.browser;
 import java.util.ArrayList;
 import java.util.List;
 
+import vidada.model.pagination.IDataProvider;
 import archimedesJ.data.events.CollectionEventArg;
 import archimedesJ.events.EventHandlerEx;
 import archimedesJ.events.IEvent;
@@ -51,15 +52,6 @@ public class MediaBrowserModel implements IDataProvider<IBrowserItem> {
 		return medias.size() > index ? medias.get(index) : null;
 	}
 
-	/**
-	 * Gets a copy of the internal media list
-	 * @return
-	 */
-	public List<IBrowserItem> getSnapshot(){
-		return new ArrayList<IBrowserItem>(medias);
-	}
-
-
 	@Override
 	public int size() {
 		return medias.size();
@@ -69,14 +61,6 @@ public class MediaBrowserModel implements IDataProvider<IBrowserItem> {
 	@Override
 	public boolean isEmpty() {
 		return medias.isEmpty();
-	}
-
-	/**
-	 * Returns the internal list reference
-	 * @return
-	 */
-	public List<IBrowserItem> getRaw() {
-		return medias;
 	}
 
 }

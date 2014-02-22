@@ -6,9 +6,9 @@ import vidada.model.queries.AbstractQuery;
 import vidada.model.tags.Tag;
 
 /**
- * Represents an generic media query.
+ * Represents an abstract media query.
  * 
- * This query will be translated into a storage specific query and the executed
+ * This query will be translated into a storage specific query for execution.
  * @author IsNull
  *
  */
