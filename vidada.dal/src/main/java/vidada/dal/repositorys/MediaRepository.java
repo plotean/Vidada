@@ -38,6 +38,13 @@ public class MediaRepository extends JPARepository implements IMediaRepository{
 			sQry += "(m.type = :type) AND ";
 		}
 
+		for (Tag requiredTag : qry.getRequiredTags()) {
+			sQry += "('" + requiredTag + "'" + " MEMBER OF m.tags) AND ";
+		}
+
+		for (Tag requiredTag : qry.getBlockedTags()) {
+			sQry += "('" + requiredTag + "'" + " NOT MEMBER OF m.tags) AND ";
+		}
 
 		sQry += "1=1";
 		TypedQuery<MediaItem> q = getEntityManager()
@@ -59,8 +66,10 @@ public class MediaRepository extends JPARepository implements IMediaRepository{
 
 	@Override
 	public Collection<MediaItem> query(Tag tag) {
-		// TODO
-		throw new NotImplementedException();
+		String sQry = "SELECT m from vidada.model.media.MediaItem m WHERE '" + tag + "' MEMBER OF m.tags";
+		TypedQuery<MediaItem> q = getEntityManager()
+				.createQuery(sQry, MediaItem.class);
+		return q.getResultList();
 	}
 
 	@Override
