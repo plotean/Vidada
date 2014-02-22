@@ -21,7 +21,6 @@ import vlcj.fx.MediaPlayerService;
 import archimedesJ.events.EventArgs;
 import archimedesJ.events.EventListenerEx;
 import archimedesJ.services.ISelectionManager;
-import archimedesJ.services.SelectionManager;
 
 /**
  * Represents the media browser
@@ -29,8 +28,6 @@ import archimedesJ.services.SelectionManager;
  *
  */
 public class MediaBrowserFX extends BorderPane {
-
-	private final ISelectionManager<IBrowserItem> selectionManager = new SelectionManager<IBrowserItem>();
 
 	private MediaBrowserModel mediaModel;
 	private GridView<IDeferLoaded<BrowserItemVM>> gridView;
@@ -115,9 +112,6 @@ public class MediaBrowserFX extends BorderPane {
 	public void setDataContext(MediaBrowserModel mediaModel){
 
 		System.out.println("MediaBrowserFX: setDataContext " + mediaModel);
-
-
-		selectionManager.clear();
 
 		if(this.mediaModel != null){
 			this.mediaModel.getMediaChangedEvent().remove(mediasChangedEventListener);
@@ -216,7 +210,7 @@ public class MediaBrowserFX extends BorderPane {
 	}
 
 	public ISelectionManager<IBrowserItem> getSelectionManager() {
-		return selectionManager;
+		return mediaModel.getSelectionManager();
 	}
 
 }

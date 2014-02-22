@@ -12,6 +12,8 @@ import archimedesJ.events.EventArgs;
 import archimedesJ.events.EventHandlerEx;
 import archimedesJ.events.EventListenerEx;
 import archimedesJ.events.IEvent;
+import archimedesJ.services.ISelectionManager;
+import archimedesJ.services.SelectionManager;
 
 
 /**
@@ -20,6 +22,8 @@ import archimedesJ.events.IEvent;
  *
  */
 public class MediaBrowserModel {
+
+	private final ISelectionManager<IBrowserItem> selectionManager = new SelectionManager<IBrowserItem>();
 
 	private IDataProvider<IDeferLoaded<BrowserItemVM>> mediasDataProvider;
 
@@ -37,7 +41,13 @@ public class MediaBrowserModel {
 
 	}
 
+	public ISelectionManager<IBrowserItem> getSelectionManager() {
+		return selectionManager;
+	}
+
 	public void setMedias(IDataProvider<IDeferLoaded<MediaItem>> mediaProvider){
+
+		selectionManager.clear();
 
 		if(mediaProvider != null){
 
@@ -69,7 +79,7 @@ public class MediaBrowserModel {
 		setMedias(null);
 	}
 
-	private static class DerefBrowserItemVM implements IDeferLoaded<BrowserItemVM>{
+	private class DerefBrowserItemVM implements IDeferLoaded<BrowserItemVM>{
 
 		private BrowserItemVM browserItem;
 		private IDeferLoaded<MediaItem> source;
@@ -113,27 +123,29 @@ public class MediaBrowserModel {
 			}
 
 			vm.SelectionChangedEvent.add(VMselectionChangedListener);
-
 			return vm;
 		}
 
-		transient private final EventListenerEx<EventArgs> VMselectionChangedListener = new EventListenerEx<EventArgs>() {
-
-			@Override
-			public void eventOccured(Object sender, EventArgs eventArgs) {
-
-				System.out.println("MediaBrowserModel: VMselectionChangedListener ...");
-				/*
-				BrowserItemVM vm = (BrowserItemVM)sender;
-
-				if(previousSelection != null) previousSelection.setSelected(false);
-
-				selectionManager.trySelect(vm.getModel());
-
-				previousSelection = vm;*/
-			}
-		};
-
 	}
+
+	private BrowserItemVM previousSelection;
+
+	transient private final EventListenerEx<EventArgs> VMselectionChangedListener = new EventListenerEx<EventArgs>() {
+		@Override
+		public void eventOccured(Object sender, EventArgs eventArgs) {
+
+			System.out.println("MediaBrowserModel: VMselectionChangedListener ...");
+
+			BrowserItemVM vm = (BrowserItemVM)sender;
+
+			if(previousSelection != null) previousSelection.setSelected(false);
+
+			selectionManager.trySelect(vm.getModel());
+
+			previousSelection = vm;
+		}
+	};
+
+
 
 }
