@@ -1,9 +1,6 @@
 package vidada.viewsFX.controls;
 
 
-import impl.org.controlsfx.skin.AutoCompletePopup;
-import impl.org.controlsfx.skin.AutoCompletePopup.SuggestionEvent;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -19,6 +16,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.FlowPane;
 
 import org.controlsfx.control.textfield.AutoCompletionBinding;
+import org.controlsfx.control.textfield.AutoCompletionBinding.IAutoCompletionListener;
 import org.controlsfx.control.textfield.TextFields;
 
 import archimedesJ.exceptions.NotSupportedException;
@@ -181,12 +179,9 @@ public class TagItPanelSkin<T> extends BehaviorSkinBase<TagItPanel<T>, BehaviorB
 
 			autoCompletionBinding = TextFields.bindAutoCompletion(tagEdit, getSkinnable().getSuggestionProvider());
 
-			AutoCompletePopup<T> popup = autoCompletionBinding.getPopup();
-
-			popup.setOnSuggestion(new EventHandler<SuggestionEvent<T>>() {
+			autoCompletionBinding.addListener(new IAutoCompletionListener<T>() {
 				@Override
-				public void handle(SuggestionEvent<T> suggestion) {
-					T completion = suggestion.getSuggestion();
+				public void afterAutocompletion(T completion) {
 					if(completion != null)
 						appendTag(completion);
 					tagEdit.setText("");
