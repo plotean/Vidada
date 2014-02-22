@@ -121,14 +121,23 @@ public class MediaFilterDatabaseBinding {
 
 					System.out.println("MediaFilterDatabaseBinding: Data async fetched: " + firstPage);
 
-					VirtualPagedList<MediaItem> pagedList = new VirtualPagedList<MediaItem>(new IPageLoader<MediaItem>() {
-						@Override
-						public ListPage<MediaItem> load(int pageIndex) {
-							return mediaClientService.query(query, pageIndex, maxPageSize);
-						}
-					},firstPage);
+					System.out.println("creating pagedList...");
+					try{
+						VirtualPagedList<MediaItem> pagedList = new VirtualPagedList<MediaItem>(new IPageLoader<MediaItem>() {
+							@Override
+							public ListPage<MediaItem> load(int pageIndex) {
+								return mediaClientService.query(query, pageIndex, maxPageSize);
+							}
+						},firstPage);
 
-					mediaBrowserModel.setMedias(pagedList);
+						System.out.println("setting paged list...");
+						mediaBrowserModel.setMedias(pagedList);
+
+					}catch(Throwable e){
+						e.printStackTrace();
+					}
+
+
 				}
 			});
 			datafetcher.execute();

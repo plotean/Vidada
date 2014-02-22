@@ -74,8 +74,12 @@ public class ListPage<T> {
 	public T getByRealIndex(int index) {
 		int pageStartIndex = getPage() * getMaxPageSize();
 		int localIndex = index - pageStartIndex;
-		if(localIndex < 0) throw new IllegalArgumentException("The given real index "+ index +" is too small for this page (" + getPage() + ").");
-		if(localIndex >= getPageItems().size()) throw new IllegalArgumentException("The given real index "+ index +" is too high for this page (" + getPage() + ").");
+
+		if(localIndex < 0)
+			throw new IllegalArgumentException("The given real index "+ index +" is too small for this page (" + getPage() + ").");
+
+		if(localIndex >= getPageItems().size())
+			throw new IllegalArgumentException("The given real index "+ index +" is too high for this page (" + getPage() + ").");
 
 		return getPageItems().get(localIndex);
 	}

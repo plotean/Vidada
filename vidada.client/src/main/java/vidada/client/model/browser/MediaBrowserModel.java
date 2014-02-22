@@ -41,6 +41,8 @@ public class MediaBrowserModel {
 
 		if(mediaProvider != null){
 
+			System.out.println("MediaBrowserModel:setMedias size(" + mediaProvider.size() + ")");
+
 			ITransform<
 			IDeferLoaded<BrowserItemVM>,
 			IDeferLoaded<MediaItem>> transformer = new ITransform<IDeferLoaded<BrowserItemVM>, IDeferLoaded<MediaItem>>(){
@@ -51,6 +53,8 @@ public class MediaBrowserModel {
 			};
 
 			mediasDataProvider = new DataProviderTransformer<IDeferLoaded<BrowserItemVM>, IDeferLoaded<MediaItem>>(mediaProvider, transformer);
+		}else {
+			System.out.println("MediaBrowserModel:setMedias mediaProvider := NULL");
 		}
 
 		mediasChangedEvent.fireEvent(this, EventArgs.Empty);

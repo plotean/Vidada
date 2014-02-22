@@ -2,6 +2,7 @@ package vidada.viewsFX.mediabrowsers;
 
 
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.layout.BorderPane;
 import javafx.util.Callback;
@@ -113,7 +114,7 @@ public class MediaBrowserFX extends BorderPane {
 
 	public void setDataContext(MediaBrowserModel mediaModel){
 
-		System.out.println("MediaBrowserFX: setDataContext" + mediaModel);
+		System.out.println("MediaBrowserFX: setDataContext " + mediaModel);
 
 
 		selectionManager.clear();
@@ -199,12 +200,16 @@ public class MediaBrowserFX extends BorderPane {
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
-				if(mediaModel != null){
-					ObservableList<IDeferLoaded<BrowserItemVM>> observableMedias = new ObservableListFXAdapter<>(mediaModel.getMedias());
-					gridView.setItems(observableMedias);
+				ObservableList<IDeferLoaded<BrowserItemVM>> observableMedias;
+
+				if(mediaModel != null && mediaModel.getMedias() != null){
+					observableMedias = new ObservableListFXAdapter<>(mediaModel.getMedias());
 				}else {
+					observableMedias = FXCollections.observableArrayList();
 					System.out.println("medias empty");
 				}
+
+				gridView.setItems(observableMedias);
 				gridViewPort.ensureViewportChangedListener(); // TODO HACK: (Should be called once after Scene is shown)
 			}
 		});

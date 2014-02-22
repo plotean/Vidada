@@ -3,7 +3,6 @@ package vidada.model.pagination;
 import java.util.HashMap;
 import java.util.Map;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import archimedesJ.data.events.CollectionEventArg;
 import archimedesJ.events.EventArgs;
 import archimedesJ.events.EventHandlerEx;
@@ -21,6 +20,9 @@ import archimedesJ.events.IEvent;
  */
 public class VirtualPagedList<T> implements IDataProvider<IDeferLoaded<T>>{
 
+	private AsyncPriorityLoader asyncPriorityLoader = new AsyncPriorityLoader();
+
+
 	private final Object pageCacheLock = new Object();
 	private final PageLoadTask[] pageCache;
 	private final IPageLoader<T> pageLoader;
@@ -28,8 +30,10 @@ public class VirtualPagedList<T> implements IDataProvider<IDeferLoaded<T>>{
 	private final int maxPageSize;
 	private final int totalListSize;
 
+	// TODO fire events...
+	private final EventHandlerEx<CollectionEventArg<IDeferLoaded<T>>> itemsChangedEvent = new EventHandlerEx<CollectionEventArg<IDeferLoaded<T>>>();
 	@Override
-	public IEvent<CollectionEventArg<IDeferLoaded<T>>> getItemsChangedEvent() { return null; }
+	public IEvent<CollectionEventArg<IDeferLoaded<T>>> getItemsChangedEvent() { return itemsChangedEvent; }
 
 
 	/***************************************************************************
@@ -40,21 +44,31 @@ public class VirtualPagedList<T> implements IDataProvider<IDeferLoaded<T>>{
 
 	/**
 	 * Creates a new VirtualPagedList
-	 * @param pageLoader The pageloader used to deferred load required pages
+	 * @param pageLoader The page-loader used to deferred load required pages
 	 */
 	public VirtualPagedList(IPageLoader<T> pageLoader, ListPage<T> firstPage){
 		this.pageLoader = pageLoader;
+
+
+		if(firstPage.getPage() != 0)
+			throw new IllegalArgumentException("The firstPage must have the page index 0!");
+
 		maxPageSize = firstPage.getMaxPageSize();
 		totalListSize = (int)firstPage.getTotalListSize();
 		pageCache = new PageLoadTask[getPageCount()];
+
+
+		pageCache[0] = new PageLoadTask<T>(firstPage);
+
+		System.out.println("VirtualPagedList");
 	}
 
 	@Override
 	public IDeferLoaded<T> get(int index) {
 		DeferLoadedItem<T> item;
 
-		int pageNumber = getPageNumberForIndex(index);
-		PageLoadTask<T> pageLoadTask = getPageLoadTask(pageNumber);
+		int pageIndex = getPageIndexForAbsoluteIndex(index);
+		PageLoadTask<T> pageLoadTask = getPageLoadTask(pageIndex);
 
 		item = getItemWrapper(index, pageLoadTask);
 
@@ -93,33 +107,27 @@ public class VirtualPagedList<T> implements IDataProvider<IDeferLoaded<T>>{
 
 	private void loadHighPriority(PageLoadTask<T> page){
 		if(page.isLoaded()) return;
-
-		throw new NotImplementedException();
-		// TODO Start loading of this page / move to top
+		asyncPriorityLoader.loadHighPriority(page);
 	}
 
 	@SuppressWarnings("unchecked")
-	private PageLoadTask<T> getPageLoadTask(int page){
+	private PageLoadTask<T> getPageLoadTask(int pageIndex){
 		synchronized (pageCacheLock) {
-			PageLoadTask<T> task = pageCache[page];
+			PageLoadTask<T> task = pageCache[pageIndex];
 			if(task == null){
-				task = new PageLoadTask<T>(pageLoader, page);
-				pageCache[page] = task;
+				task = new PageLoadTask<T>(pageLoader, pageIndex);
+				pageCache[pageIndex] = task;
 			}
 			return task;
 		}
 	}
 
-	private int getPageNumberForIndex(int index){
-		int pageBase = Math.floorDiv(index, maxPageSize);
-		if((index % maxPageSize) > 0){
-			pageBase++;
-		}
-		return pageBase;
+	private int getPageIndexForAbsoluteIndex(int index){
+		return Math.floorDiv(index, maxPageSize);
 	}
 
 	private int getPageCount(){
-		return (int)(totalListSize / maxPageSize);
+		return Math.floorDiv(totalListSize, maxPageSize) + 1;
 	}
 
 	/***************************************************************************
@@ -210,6 +218,12 @@ public class VirtualPagedList<T> implements IDataProvider<IDeferLoaded<T>>{
 			this.pageLoader = pageLoader;
 		}
 
+		public PageLoadTask(ListPage<T> loadedPage){
+			this.loadedPage = loadedPage;
+			this.page = loadedPage.getPage();
+			this.pageLoader = null;
+		}
+
 		public boolean isLoaded() {
 			return loadedPage != null;
 		}
@@ -218,7 +232,11 @@ public class VirtualPagedList<T> implements IDataProvider<IDeferLoaded<T>>{
 		public void run() {
 			synchronized (loadLock) {
 				if(loadedPage == null){
-					loadedPage = pageLoader.load(page);
+					if(pageLoader != null)
+						loadedPage = pageLoader.load(page);
+					else {
+						System.err.println("VirtualPagedList::PageLoadTask:: pageLoader = NULL");
+					}
 				}
 			}
 			pageLoadedEvent.fireEvent(this, EventArgs.Empty);

@@ -28,7 +28,6 @@ public class MediaRepository extends JPARepository implements IMediaRepository{
 
 	@Override
 	public ListPage<MediaItem> query(MediaQuery qry, int pageIndex, int maxPageSize) {
-
 		long totalCount = queryCount(qry);
 
 		TypedQuery<MediaItem> query = buildQuery(qry);		
@@ -41,6 +40,7 @@ public class MediaRepository extends JPARepository implements IMediaRepository{
 
 	public long queryCount(MediaQuery qry){
 		Query cQuery = getEntityManager().createQuery("SELECT count(m) from MediaItem m WHERE " + buildMediaWhereQuery(qry));
+		setQueryParams(cQuery, qry);
 		Number result = (Number) cQuery.getSingleResult();
 		return result.longValue();
 	}
@@ -53,11 +53,14 @@ public class MediaRepository extends JPARepository implements IMediaRepository{
 		TypedQuery<MediaItem> q = getEntityManager()
 				.createQuery(sQry, MediaItem.class);
 
-
-		if(qry.hasKeyword()) q.setParameter("keywords", "%" + qry.getKeywords() + "%");
-		if(qry.hasMediaType()) q.setParameter("type", qry.getSelectedtype());
+		setQueryParams(q, qry);
 
 		return q;
+	}
+
+	private void setQueryParams(Query q, MediaQuery qry){
+		if(qry.hasKeyword()) q.setParameter("keywords", "%" + qry.getKeywords() + "%");
+		if(qry.hasMediaType()) q.setParameter("type", qry.getSelectedtype());
 	}
 
 	private String buildMediaWhereQuery(MediaQuery qry){

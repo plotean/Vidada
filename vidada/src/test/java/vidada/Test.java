@@ -12,13 +12,14 @@ public class Test {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 
+		System.out.println("PageIndex: " + getPageNumberForIndex(19, 10));
 
-		/*
-		UserDefinedFileAttributeView view = Files
-				.getFileAttributeView(file, UserDefinedFileAttributeView.class);
-		view.write("user.mimetype",
-				Charset.defaultCharset().encode("text/html");
-		 */
+
+	}
+
+	private static int getPageNumberForIndex(int index, int maxPageSize){
+		int pageBase = Math.floorDiv(index+1, maxPageSize);
+		return pageBase;
 	}
 
 }
