@@ -9,6 +9,7 @@ import vidada.model.media.MediaItem;
 import vidada.model.media.MediaItemFactory;
 import vidada.model.media.MediaLibrary;
 import vidada.model.media.MediaQuery;
+import vidada.model.pagination.ListPage;
 import vidada.server.VidadaServer;
 import vidada.server.dal.repositories.IMediaRepository;
 import vidada.services.IMediaLibraryService;
@@ -67,11 +68,11 @@ public class MediaService extends VidadaServerService implements IMediaService {
 	}
 
 	@Override
-	public List<MediaItem> query(final MediaQuery qry) {
-		return runUnitOfWork(new Callable<List<MediaItem>>() {
+	public ListPage<MediaItem> query(final MediaQuery qry, final int pageIndex, final int maxPageSize) {
+		return runUnitOfWork(new Callable<ListPage<MediaItem>>() {
 			@Override
-			public List<MediaItem> call() throws Exception {
-				return repository.query(qry);
+			public ListPage<MediaItem> call() throws Exception {
+				return repository.query(qry, pageIndex, maxPageSize);
 			}
 		});
 	}

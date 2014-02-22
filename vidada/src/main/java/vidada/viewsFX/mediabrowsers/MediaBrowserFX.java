@@ -10,18 +10,13 @@ import org.controlsfx.control.GridCell;
 import org.controlsfx.control.GridView;
 
 import vidada.client.model.browser.BrowserFolderItem;
-import vidada.client.model.browser.BrowserMediaItem;
 import vidada.client.model.browser.IBrowserItem;
-import vidada.client.viewmodel.IVMFactory;
-import vidada.client.viewmodel.MediaViewModel;
-import vidada.client.viewmodel.ViewModelPool;
-import vidada.client.viewmodel.browser.BrowserFolderItemVM;
+import vidada.client.model.browser.MediaBrowserModel;
 import vidada.client.viewmodel.browser.BrowserItemVM;
-import vidada.model.pagination.IDataProvider;
-import vidada.viewsFX.mediabrowsers.VirtualListAdapter.ITransform;
+import vidada.model.pagination.IDeferLoaded;
 import vidada.viewsFX.player.IMediaPlayerService;
+import vidada.viewsFX.util.ObservableListFXAdapter;
 import vlcj.fx.MediaPlayerService;
-import archimedesJ.data.events.CollectionEventArg;
 import archimedesJ.events.EventArgs;
 import archimedesJ.events.EventListenerEx;
 import archimedesJ.services.ISelectionManager;
@@ -36,8 +31,8 @@ public class MediaBrowserFX extends BorderPane {
 
 	private final ISelectionManager<IBrowserItem> selectionManager = new SelectionManager<IBrowserItem>();
 
-	private IDataProvider<IBrowserItem> mediaModel;
-	private GridView<BrowserItemVM> gridView;
+	private MediaBrowserModel mediaModel;
+	private GridView<IDeferLoaded<BrowserItemVM>> gridView;
 	private GridViewViewPort gridViewPort;
 	private IndexRange visibleCells;
 
@@ -52,7 +47,7 @@ public class MediaBrowserFX extends BorderPane {
 	}
 
 	private void initView(){
-		gridView = new GridView<BrowserItemVM>();
+		gridView = new GridView<IDeferLoaded<BrowserItemVM>>();
 
 		gridViewPort = new GridViewViewPort(gridView);
 		gridViewPort.getViewPortItemsChanged().add(new EventListenerEx<EventArgs>() {
@@ -66,9 +61,9 @@ public class MediaBrowserFX extends BorderPane {
 
 		gridView.getStylesheets().add("css/default_media_cell.css");
 
-		gridView.setCellFactory(new Callback<GridView<BrowserItemVM>, GridCell<BrowserItemVM>>() {
+		gridView.setCellFactory(new Callback<GridView<IDeferLoaded<BrowserItemVM>>, GridCell<IDeferLoaded<BrowserItemVM>>>() {
 			@Override
-			public GridCell<BrowserItemVM> call(GridView<BrowserItemVM> arg0) {
+			public GridCell<IDeferLoaded<BrowserItemVM>> call(GridView<IDeferLoaded<BrowserItemVM>> control) {
 				return new MediaGridItemCell(
 						mediaPlayerService,
 						gridView.cellWidthProperty(),
@@ -101,15 +96,14 @@ public class MediaBrowserFX extends BorderPane {
 		IndexRange currentVisibleCells = gridViewPort.getVisibleCellRange();
 		int[] dropped = IndexRange.unused(visibleCells, currentVisibleCells);
 
-
-		ObservableList<BrowserItemVM> observableMedias = gridView.getItems();
+		ObservableList<IDeferLoaded<BrowserItemVM>> observableMedias = gridView.getItems();
 
 		if(dropped.length != 0){
-
 			for (int i : dropped) {
 				if(observableMedias.size() > i){
-					BrowserItemVM droppedVM = observableMedias.get(i);
-					droppedVM.outsideViewPort();
+					IDeferLoaded<BrowserItemVM> droppedVM = observableMedias.get(i);
+					if(droppedVM.isLoaded())
+						droppedVM.getLoadedItem().outsideViewPort();
 				}
 			}
 		}
@@ -117,7 +111,7 @@ public class MediaBrowserFX extends BorderPane {
 		visibleCells = currentVisibleCells;
 	}
 
-	public void setDataContext(IDataProvider<IBrowserItem> mediaModel){
+	public void setDataContext(MediaBrowserModel mediaModel){
 
 		System.out.println("MediaBrowserFX: setDataContext" + mediaModel);
 
@@ -125,29 +119,27 @@ public class MediaBrowserFX extends BorderPane {
 		selectionManager.clear();
 
 		if(this.mediaModel != null){
-			this.mediaModel.getItemsChangedEvent().remove(mediasChangedEventListener);
+			this.mediaModel.getMediaChangedEvent().remove(mediasChangedEventListener);
 		}
 
 		this.mediaModel = mediaModel;
 
 		if(mediaModel != null){
-			mediaModel.getItemsChangedEvent().add(mediasChangedEventListener);
+			mediaModel.getMediaChangedEvent().add(mediasChangedEventListener);
 		}
 
 		updateView();
 	}
 
-
-
-	transient private EventListenerEx<CollectionEventArg<IBrowserItem>> mediasChangedEventListener 
-	= new EventListenerEx<CollectionEventArg<IBrowserItem>>() {
+	transient private EventListenerEx<EventArgs> mediasChangedEventListener 
+	= new EventListenerEx<EventArgs>() {
 		@Override
-		public void eventOccured(Object sender,
-				CollectionEventArg<IBrowserItem> eventArgs) {
+		public void eventOccured(Object sender, EventArgs eventArgs) {
 			updateView();
 		}
 	};
 
+	/*
 	private BrowserItemVM previousSelection;
 
 	transient private final EventListenerEx<EventArgs> VMselectionChangedListener = new EventListenerEx<EventArgs>() {
@@ -164,6 +156,8 @@ public class MediaBrowserFX extends BorderPane {
 			previousSelection = vm;
 		}
 	};
+
+
 
 	private IVMFactory<IBrowserItem, BrowserItemVM> vmFactory = new IVMFactory<IBrowserItem, BrowserItemVM>() {
 		@Override
@@ -188,6 +182,11 @@ public class MediaBrowserFX extends BorderPane {
 		}
 	};
 
+	transient private final ViewModelPool<IBrowserItem, BrowserItemVM> mediaVMPool =
+			new ViewModelPool<IBrowserItem, BrowserItemVM>(vmFactory);
+
+	 */
+
 	/**
 	 * Occurs when a folderItem was opened
 	 * @param folderItem
@@ -196,30 +195,17 @@ public class MediaBrowserFX extends BorderPane {
 		//setDataContext(folderItem);
 	}
 
-	transient private final ViewModelPool<IBrowserItem, BrowserItemVM> mediaVMPool =
-			new ViewModelPool<IBrowserItem, BrowserItemVM>(vmFactory);
-
-
 	private synchronized void updateView(){
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
 				if(mediaModel != null){
-
-					System.out.println("MediaBrowserFX:updateView items: " + mediaModel.size() + " empty?" + mediaModel.isEmpty() + " :: " + mediaModel);
-
-					VirtualListAdapter<BrowserItemVM, IBrowserItem> listAdapter =
-							new VirtualListAdapter<>(mediaModel, new ITransform<BrowserItemVM, IBrowserItem>() {
-								@Override
-								public BrowserItemVM transform(IBrowserItem source) {
-									return mediaVMPool.viewModel(source); //vmFactory.create(source); //
-								}
-							});
-
-							gridView.setItems(listAdapter);
+					ObservableList<IDeferLoaded<BrowserItemVM>> observableMedias = new ObservableListFXAdapter<>(mediaModel.getMedias());
+					gridView.setItems(observableMedias);
 				}else {
 					System.out.println("medias empty");
 				}
+				gridViewPort.ensureViewportChangedListener(); // TODO HACK: (Should be called once after Scene is shown)
 			}
 		});
 	}

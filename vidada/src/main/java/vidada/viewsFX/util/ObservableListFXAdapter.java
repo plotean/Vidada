@@ -1,4 +1,4 @@
-package vidada.viewsFX.mediabrowsers;
+package vidada.viewsFX.util;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -23,31 +23,25 @@ import archimedesJ.events.IEvent;
 import archimedesJ.exceptions.NotSupportedException;
 
 /**
- * Virtual data source adapter
+ * Simple adapter to make {@link IDataProvider<T>} compatible with the {@link ObservableList<T>}.
+ * 
+ * Only read operation are supported, since the {@link IDataProvider<T>} is a read only interface.
  * 
  * @author IsNull
  *
  * @param <T>
- * @param <ST>
  */
-public class VirtualListAdapter<T, ST> implements IDataProvider<T>, ObservableList<T> {
-
-	public static interface ITransform<T,ST> { T transform(ST source); }
-
-	private final ITransform<T,ST> transformer;
-	private final IDataProvider<ST> source;
+public class ObservableListFXAdapter<T> implements IDataProvider<T>, ObservableList<T>{
+	private final IDataProvider<T> source;
 
 	private final EventHandlerEx<CollectionEventArg<T>> itemsChangedEvent = new EventHandlerEx<CollectionEventArg<T>>();
-
 	@Override
 	public IEvent<CollectionEventArg<T>> getItemsChangedEvent() { return itemsChangedEvent; }
 
 
-	public VirtualListAdapter(IDataProvider<ST> source, ITransform<T,ST> transformer){
+	public ObservableListFXAdapter(IDataProvider<T> source){
 		this.source = source;
-		this.transformer = transformer;
 	}
-
 
 	@Override
 	public int size() {
@@ -61,8 +55,7 @@ public class VirtualListAdapter<T, ST> implements IDataProvider<T>, ObservableLi
 
 	@Override
 	public T get(int index) {
-		ST objSt = source.get(index);
-		return objSt != null ? transformer.transform(objSt) : null;
+		return source.get(index);
 	}
 
 	@Override

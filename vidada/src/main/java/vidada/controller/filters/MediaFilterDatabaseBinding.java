@@ -1,11 +1,5 @@
 package vidada.controller.filters;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import vidada.client.model.browser.BrowserMediaItem;
-import vidada.client.model.browser.IBrowserItem;
 import vidada.client.model.browser.MediaBrowserModel;
 import vidada.client.services.IMediaClientService;
 import vidada.client.viewmodel.FilterModel;
@@ -15,10 +9,11 @@ import vidada.model.media.MediaItem;
 import vidada.model.media.MediaQuery;
 import vidada.model.media.MediaType;
 import vidada.model.media.OrderProperty;
-import vidada.model.media.source.MediaSource;
+import vidada.model.pagination.IPageLoader;
+import vidada.model.pagination.ListPage;
+import vidada.model.pagination.VirtualPagedList;
 import archimedesJ.events.EventArgs;
 import archimedesJ.events.EventListenerEx;
-import archimedesJ.expressions.Predicate;
 import archimedesJ.threading.CancellationTokenSource;
 import archimedesJ.threading.CancellationTokenSource.CancellationToken;
 import archimedesJ.threading.CancellationTokenSource.OperationCanceledException;
@@ -61,9 +56,11 @@ public class MediaFilterDatabaseBinding {
 	private final MediaBrowserModel mediaBrowserModel;
 	private final IMediaClientService mediaClientService;
 
-	transient private AsyncFetchData<MediaItem> datafetcher;
+	transient private AsyncFetchData<ListPage<MediaItem>> datafetcher;
 	transient private final Object datafetcherLock = new Object();
 	transient private CancellationTokenSource ctx;
+
+	private int maxPageSize = 50;
 
 	/***************************************************************************
 	 *                                                                         *
@@ -98,8 +95,8 @@ public class MediaFilterDatabaseBinding {
 	 */
 	private void updateMediaBrowserModel(){
 
-		mediaBrowserModel.clear();
-		MediaQuery query = buildQuery();
+		mediaBrowserModel.clearMedias();
+		final MediaQuery query = buildQuery();
 
 		// Since executing the query may take some time
 		// we run it in a background thread
@@ -110,40 +107,33 @@ public class MediaFilterDatabaseBinding {
 				ctx.cancel();
 			}
 
-			if(datafetcher != null)
-			{
-				datafetcher.getFetchingCompleteEvent().remove(dataFetchedListener);
-			}
-
 			ctx = new CancellationTokenSource();
 
 			datafetcher = new AsyncFetchMediaItems(mediaClientService, query, ctx.getToken());
-			datafetcher.setPostFilter(getPostFilter());
-			datafetcher.getFetchingCompleteEvent().add(dataFetchedListener);
+			datafetcher.getFetchingCompleteEvent().add(new EventListenerEx<CancelTokenEventArgs<ListPage<MediaItem>>>(){
+				//
+				// As this event is fired by an async running thread, this method will therefore be async too.
+				//
+				@Override
+				public void eventOccured(Object sender,final CancelTokenEventArgs<ListPage<MediaItem>> eventArgs) {
+
+					ListPage<MediaItem> firstPage = eventArgs.getValue();
+
+					System.out.println("MediaFilterDatabaseBinding: Data async fetched: " + firstPage);
+
+					VirtualPagedList<MediaItem> pagedList = new VirtualPagedList<MediaItem>(new IPageLoader<MediaItem>() {
+						@Override
+						public ListPage<MediaItem> load(int pageIndex) {
+							return mediaClientService.query(query, pageIndex, maxPageSize);
+						}
+					},firstPage);
+
+					mediaBrowserModel.setMedias(pagedList);
+				}
+			});
 			datafetcher.execute();
 		}
 	}
-
-	transient private final EventListenerEx<CancelTokenEventArgs<Collection<MediaItem>>> dataFetchedListener 
-	= new EventListenerEx<CancelTokenEventArgs<Collection<MediaItem>>>(){
-		//
-		// As this event is fired by an async running thread, this method will therefore be async too.
-		//
-		@Override
-		public void eventOccured(Object sender,final CancelTokenEventArgs<Collection<MediaItem>> eventArgs) {
-
-			Collection<MediaItem> medias = eventArgs.getValue();
-			System.out.println("MediaFilterDatabaseBinding: Data async fetched: " + medias.size());
-
-			List<IBrowserItem> browserItems = new ArrayList<IBrowserItem>(medias.size());
-			for (MediaItem mediaItem : medias) {
-				browserItems.add(new BrowserMediaItem(mediaItem));
-			}
-
-			mediaBrowserModel.addAll(browserItems);
-		}
-	};
-
 
 
 	/**
@@ -164,28 +154,6 @@ public class MediaFilterDatabaseBinding {
 		return query;
 	}
 
-	private Predicate<MediaItem> getPostFilter(){
-
-		boolean onlyAvaiable = filterModel.isOnlyAvaiable();
-
-		if(onlyAvaiable){
-
-			return new Predicate<MediaItem>() {
-				@Override
-				public boolean where(MediaItem value) {
-					// filter out medias which have a no available source
-					for (MediaSource s : value.getSources()) {
-						if(s.isAvailable())
-							return true;
-					}
-					return false;
-				}
-			};
-		}
-
-		return null;
-	}
-
 
 	/***************************************************************************
 	 *                                                                         *
@@ -199,7 +167,7 @@ public class MediaFilterDatabaseBinding {
 	 * @author IsNull
 	 *
 	 */
-	class AsyncFetchMediaItems extends AsyncFetchData<MediaItem> {
+	class AsyncFetchMediaItems extends AsyncFetchData<ListPage<MediaItem>> {
 
 		private final IMediaClientService mediaClientService;
 		private final MediaQuery query;
@@ -211,15 +179,15 @@ public class MediaFilterDatabaseBinding {
 		}
 
 		@Override
-		protected Collection<MediaItem> fetchData(CancellationToken token)
+		protected ListPage<MediaItem> fetchData(CancellationToken token)
 				throws OperationCanceledException {
 
-			Collection<MediaItem> fetchedData = null;
+			ListPage<MediaItem> page = null;
 			System.out.println("AsyncFetchMediaItems: fetching media datas...");
-			fetchedData = mediaClientService.query(query);
-			System.out.println("AsyncFetchMediaItems:: fetched: " + fetchedData.size() + " items!" );
+			page = mediaClientService.query(query, 0, maxPageSize);
+			System.out.println("AsyncFetchMediaItems:: fetched: " + page );
 
-			return fetchedData;
+			return page;
 		}
 
 	}

@@ -13,7 +13,7 @@ public class ListPage<T> {
 	private List<T> pageItems;
 	private int page;
 
-	private int totalListSize;
+	private long totalListSize;
 	private int maxPageSize;
 
 	/**
@@ -23,7 +23,7 @@ public class ListPage<T> {
 	 * @param maxPageSize
 	 * @param page
 	 */
-	public ListPage(List<T> pageItems, int totalListSize, int maxPageSize, int page) {
+	public ListPage(List<T> pageItems, long totalListSize, int maxPageSize, int page) {
 		super();
 		this.pageItems = pageItems;
 		this.totalListSize = totalListSize;
@@ -45,7 +45,7 @@ public class ListPage<T> {
 	 * Get the size of the full result set / list
 	 * @return
 	 */
-	public int getTotalListSize() {
+	public long getTotalListSize() {
 		return totalListSize;
 	}
 
@@ -84,7 +84,7 @@ public class ListPage<T> {
 	protected void setPageItems(List<T> pageItems) {
 		this.pageItems = pageItems;
 	}
-	protected void setTotalListSize(int listSize) {
+	protected void setTotalListSize(long listSize) {
 		this.totalListSize = listSize;
 	}
 	protected void setPageSize(int pageSize) {
@@ -94,6 +94,9 @@ public class ListPage<T> {
 		this.page = page;
 	}
 
-
+	@Override
+	public String toString(){
+		return "[Items: " +  getPageItems().size() + ", Page: " + getPage() + ", Total Count: " + getTotalListSize() + ", MaxPageSize: " +maxPageSize+  "]";
+	}
 
 }

@@ -8,15 +8,9 @@ import vidada.client.model.browser.MediaBrowserModel;
 import vidada.client.services.IMediaClientService;
 import vidada.client.services.ITagClientService;
 import vidada.client.viewmodel.FilterModel;
-import vidada.client.viewmodel.ITagStatesVM;
-import vidada.client.viewmodel.IVMFactory;
 import vidada.client.viewmodel.media.IMediaViewModel;
 import vidada.client.viewmodel.media.MediaDetailViewModel;
-import vidada.client.viewmodel.tags.TagStatesModel;
-import vidada.client.viewmodel.tags.TagViewModel;
 import vidada.controller.filters.MediaFilterDatabaseBinding;
-import vidada.model.tags.Tag;
-import vidada.model.tags.TagState;
 import vidada.viewsFX.filters.FilterViewFx;
 import vidada.viewsFX.mediabrowsers.MediaBrowserFX;
 import vidada.viewsFX.medias.MediaDetailViewFx;
@@ -39,12 +33,13 @@ public class PrimaryMediaBrowserFX extends BorderPane {
 	//private final MediaDetailViewModel singleMediaDetailVM;
 
 
+	/*
 	private final ITagStatesVM mediaDetailTagstates = new TagStatesModel(new IVMFactory<Tag, TagViewModel>() {
 		@Override
 		public TagViewModel create(Tag model) {
 			return new TagViewModel(model, TagState.Allowed,  TagState.Required);
 		}
-	});
+	});*/
 
 
 

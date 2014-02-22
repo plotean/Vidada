@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
 import vidada.aop.IUnitOfWorkService;
@@ -11,6 +12,7 @@ import vidada.dal.JPARepository;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaLibrary;
 import vidada.model.media.MediaQuery;
+import vidada.model.pagination.ListPage;
 import vidada.model.tags.Tag;
 import vidada.server.dal.repositories.IMediaRepository;
 import archimedesJ.exceptions.NotImplementedException;
@@ -25,28 +27,29 @@ public class MediaRepository extends JPARepository implements IMediaRepository{
 
 
 	@Override
-	public List<MediaItem> query(MediaQuery qry) {
+	public ListPage<MediaItem> query(MediaQuery qry, int pageIndex, int maxPageSize) {
 
-		String sQry = "SELECT m from vidada.model.media.MediaItem m WHERE ";
+		long totalCount = queryCount(qry);
+
+		TypedQuery<MediaItem> query = buildQuery(qry);		
+		query.setMaxResults(maxPageSize);
+		query.setFirstResult(pageIndex * maxPageSize);
+		List<MediaItem> pageItems = query.getResultList();
+
+		return new ListPage<MediaItem>(pageItems, totalCount, maxPageSize, pageIndex);
+	}
+
+	public long queryCount(MediaQuery qry){
+		Query cQuery = getEntityManager().createQuery("SELECT count(m) from MediaItem m WHERE " + buildMediaWhereQuery(qry));
+		Number result = (Number) cQuery.getSingleResult();
+		return result.longValue();
+	}
 
 
-		if(qry.hasKeyword()){
-			sQry += "(m.filename LIKE :keywords) AND ";
-		}
+	private TypedQuery<MediaItem> buildQuery(MediaQuery qry){
 
-		if(qry.hasMediaType()){
-			sQry += "(m.type = :type) AND ";
-		}
+		String sQry = "SELECT m from MediaItem m WHERE " + buildMediaWhereQuery(qry);
 
-		for (Tag requiredTag : qry.getRequiredTags()) {
-			sQry += "('" + requiredTag + "'" + " MEMBER OF m.tags) AND ";
-		}
-
-		for (Tag requiredTag : qry.getBlockedTags()) {
-			sQry += "('" + requiredTag + "'" + " NOT MEMBER OF m.tags) AND ";
-		}
-
-		sQry += "1=1";
 		TypedQuery<MediaItem> q = getEntityManager()
 				.createQuery(sQry, MediaItem.class);
 
@@ -54,9 +57,34 @@ public class MediaRepository extends JPARepository implements IMediaRepository{
 		if(qry.hasKeyword()) q.setParameter("keywords", "%" + qry.getKeywords() + "%");
 		if(qry.hasMediaType()) q.setParameter("type", qry.getSelectedtype());
 
-
-		return q.getResultList();
+		return q;
 	}
+
+	private String buildMediaWhereQuery(MediaQuery qry){
+
+		String where = ""; 
+
+		if(qry.hasKeyword()){
+			where += "(m.filename LIKE :keywords) AND ";
+		}
+
+		if(qry.hasMediaType()){
+			where += "(m.type = :type) AND ";
+		}
+
+		for (Tag requiredTag : qry.getRequiredTags()) {
+			where += "('" + requiredTag + "'" + " MEMBER OF m.tags) AND ";
+		}
+
+		for (Tag requiredTag : qry.getBlockedTags()) {
+			where += "('" + requiredTag + "'" + " NOT MEMBER OF m.tags) AND ";
+		}
+
+		where += "1=1";
+
+		return where;
+	}
+
 
 	@Override
 	public List<MediaItem> query(Collection<MediaLibrary> libraries) {

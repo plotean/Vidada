@@ -127,10 +127,11 @@ public class PrimaryMediaExplorerFX extends BorderPane {
 
 	private void updateBrowserModel(){
 
-		System.out.println("PrimaryMediaExplorerFX updateBrowserModel!");
+		System.out.println("PrimaryMediaExplorerFX updateBrowserModel! (TODO)");
 
 		if(explorerViewModel != null){
-			mediaBrowserFX.setDataContext(explorerViewModel.getBrowserModel());
+			// TODO
+			//mediaBrowserFX.setDataContext(explorerViewModel.getBrowserModel());
 			filterView.setDataContext(explorerViewModel);
 			breadCrumbModel.setDirectory(explorerViewModel.getHomeLocation(), explorerViewModel.getCurrentDirectory());
 		}else{

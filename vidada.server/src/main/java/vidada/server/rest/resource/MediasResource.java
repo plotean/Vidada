@@ -11,8 +11,8 @@ import javax.ws.rs.core.Request;
 import javax.ws.rs.core.UriInfo;
 
 import vidada.model.media.MediaItem;
-import vidada.model.media.MediaQuery;
 import vidada.services.IMediaService;
+import archimedesJ.exceptions.NotImplementedException;
 
 @Path("/medias")
 public class MediasResource {
@@ -34,7 +34,8 @@ public class MediasResource {
 	@GET
 	@Produces({MediaType.APPLICATION_JSON})
 	public Collection<MediaItem> getMedias() {
-		return mediaService.query(MediaQuery.ALL); 
+		throw new NotImplementedException();
+		//return mediaService.query(MediaQuery.ALL,0, -1); 
 	}
 
 
@@ -48,7 +49,8 @@ public class MediasResource {
 	@Path("count")
 	@Produces(MediaType.TEXT_PLAIN)
 	public String getCount() {
-		int count = mediaService.query(MediaQuery.ALL).size();
-		return String.valueOf(count);
+		throw new NotImplementedException();
+		//int count = mediaService.query(MediaQuery.ALL).size();
+		//return String.valueOf(count);
 	}
 }

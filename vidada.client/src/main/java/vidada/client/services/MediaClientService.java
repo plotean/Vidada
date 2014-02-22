@@ -1,8 +1,6 @@
 package vidada.client.services;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -11,7 +9,8 @@ import vidada.client.VidadaClientManager;
 import vidada.model.media.MediaComparator;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaQuery;
-import vidada.model.media.OrderProperty;
+import vidada.model.pagination.ListPage;
+import archimedesJ.util.Lists;
 
 public class MediaClientService extends ClientService implements IMediaClientService {
 
@@ -22,28 +21,39 @@ public class MediaClientService extends ClientService implements IMediaClientSer
 
 
 	@Override
-	public List<MediaItem> query(MediaQuery qry) {
-		OrderProperty order = qry.getOrder();
+	public ListPage<MediaItem> query(MediaQuery qry, int pageIndex, int maxPageSize) {
 
-		// We don't need results ordered since it will be 
-		// scrambled by the Hash-set merging anyway:
-		qry.setOrder(OrderProperty.NONE);
 		Set<MediaItem> resultSet = new HashSet<MediaItem>();
 		System.out.println("MediaClientService:: query " + getClientManager().getAllServer().size() + "  vidada servers!");
+
+		int totalRequestItems = 0;
+
 		for (IVidadaServer server : getClientManager().getAllServer()) {
-			resultSet.addAll(server.getMediaService().query(qry));
+			ListPage<MediaItem> pagePart = server.getMediaService().query(qry, pageIndex, maxPageSize);
+
+			// Merge the result
+			totalRequestItems += pagePart.getTotalListSize();
+			resultSet.addAll(pagePart.getPageItems());
 		}
 
 		// Now we have to sort the resultSet in memory
 		// since we destroyed the order by using a hash map
 		// and having multiple query result sets merged
-		TreeSet<MediaItem> orderedMedias = new TreeSet<MediaItem>(MediaComparator.build(order, qry.isReverseOrder()));
+		TreeSet<MediaItem> orderedMedias = new TreeSet<MediaItem>(
+				MediaComparator.build(qry.getOrder(), qry.isReverseOrder()));
+
+		// Adding the elements will sort them
 		orderedMedias.addAll(resultSet);
 
-		// restore order to original
-		qry.setOrder(order);
+		// Creates the page
 
-		return new ArrayList<MediaItem>(orderedMedias);
+		ListPage<MediaItem> page = new ListPage<MediaItem>(
+				Lists.top(orderedMedias, maxPageSize),
+				totalRequestItems,
+				maxPageSize,
+				pageIndex);
+
+		return page;
 	}
 
 
@@ -52,7 +62,5 @@ public class MediaClientService extends ClientService implements IMediaClientSer
 		IVidadaServer server = getClientManager().getOriginServer(media);
 		server.getMediaService().update(media);
 	}
-
-
 
 }

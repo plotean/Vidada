@@ -1,15 +1,11 @@
 package vidada.model.filters;
 
-import java.util.Collection;
-
 import archimedesJ.events.EventArgsG;
 import archimedesJ.events.EventHandlerEx;
 import archimedesJ.events.IEvent;
-import archimedesJ.expressions.Predicate;
 import archimedesJ.threading.CancelableTask;
 import archimedesJ.threading.CancellationTokenSource.CancellationToken;
 import archimedesJ.threading.CancellationTokenSource.OperationCanceledException;
-import archimedesJ.util.Lists;
 
 /**
  * Represents a cancelable task which executes a query
@@ -17,7 +13,7 @@ import archimedesJ.util.Lists;
  *
  * @param <T>
  */
-public abstract class AsyncFetchData<T> extends CancelableTask<Collection<T>>{
+public abstract class AsyncFetchData<T> extends CancelableTask<T>{
 
 
 	public static class CancelTokenEventArgs<T>  extends EventArgsG<T>
@@ -34,29 +30,23 @@ public abstract class AsyncFetchData<T> extends CancelableTask<Collection<T>>{
 		}
 	}
 
-	private EventHandlerEx<CancelTokenEventArgs<Collection<T>>> fetchingCompleteEvent = new  EventHandlerEx<CancelTokenEventArgs<Collection<T>>>();
+	private EventHandlerEx<CancelTokenEventArgs<T>> fetchingCompleteEvent = new  EventHandlerEx<CancelTokenEventArgs<T>>();
 
 	/**
 	 * Raised when the fetching of the data has been completed
 	 * @return
 	 */
-	public IEvent<CancelTokenEventArgs<Collection<T>>> getFetchingCompleteEvent(){return fetchingCompleteEvent; }
-
-
-	private Predicate<T> postFilter;
+	public IEvent<CancelTokenEventArgs<T>> getFetchingCompleteEvent(){return fetchingCompleteEvent; }
 
 	public AsyncFetchData(CancellationToken token){
 		super(token);
 	}
 
-	public void setPostFilter(Predicate<T> filter){
-		this.postFilter = filter;
-	}
 
 	@Override
-	public Collection<T> runCancelable(CancellationToken token) throws OperationCanceledException {
+	public T runCancelable(CancellationToken token) throws OperationCanceledException {
 
-		Collection<T> fetchedData = null;
+		T fetchedData = null;
 
 		token.ThrowIfCancellationRequested();
 
@@ -64,20 +54,13 @@ public abstract class AsyncFetchData<T> extends CancelableTask<Collection<T>>{
 		{
 			try {
 				fetchedData = fetchData(token);
-
-				if(postFilter != null){
-					System.out.println("applying post filter to media datas...");
-					fetchedData = Lists.filter(fetchedData, postFilter);
-					System.out.println("filter done: item count is " + fetchedData.size());
-				}
-
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
-		fetchingCompleteEvent.fireEvent(this, new CancelTokenEventArgs<Collection<T>>(fetchedData, token));
+		fetchingCompleteEvent.fireEvent(this, new CancelTokenEventArgs<T>(fetchedData, token));
 		return fetchedData;
 	}
 
-	protected abstract Collection<T> fetchData(CancellationToken token) throws OperationCanceledException; 
+	protected abstract T fetchData(CancellationToken token) throws OperationCanceledException; 
 }

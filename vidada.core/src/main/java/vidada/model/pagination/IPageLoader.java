@@ -1,19 +1,11 @@
 package vidada.model.pagination;
 
+@FunctionalInterface
 public interface IPageLoader<T> {
-
-	ListPage<T> load(int page);
-
 	/**
-	 * Gets the total size of the request
+	 * Load the page for the given pageIndex
+	 * @param pageIndex
 	 * @return
 	 */
-	int getDataSize();
-
-	/**
-	 * Gets the max site of one page of this request
-	 * @return
-	 */
-	int getMaxPageSize();
-
+	ListPage<T> load(int pageIndex);
 }

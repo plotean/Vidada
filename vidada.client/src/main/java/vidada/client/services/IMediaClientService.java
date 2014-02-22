@@ -1,9 +1,8 @@
 package vidada.client.services;
 
-import java.util.List;
-
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaQuery;
+import vidada.model.pagination.ListPage;
 
 /**
  * Provides an API to control media items.
@@ -16,10 +15,13 @@ public interface IMediaClientService {
 	 * Query for all medias which match the {@link MediaQuery}
 	 * 
 	 * Internally queries all known Vidada servers and then merges all the results.
+	 * 
 	 * @param qry
+	 * @param page
+	 * @param pageSize
 	 * @return
 	 */
-	public abstract List<MediaItem> query(MediaQuery qry);
+	public abstract ListPage<MediaItem> query(MediaQuery qry, int pageIndex, int maxPageSize);
 
 	/**
 	 * Update all changes made to this media.

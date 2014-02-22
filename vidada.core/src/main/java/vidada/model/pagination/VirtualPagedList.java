@@ -1,22 +1,32 @@
 package vidada.model.pagination;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import archimedesJ.data.events.CollectionEventArg;
 import archimedesJ.events.EventArgs;
 import archimedesJ.events.EventHandlerEx;
 import archimedesJ.events.EventListenerEx;
 import archimedesJ.events.IEvent;
 
+/**
+ * Represents a List-Datasource which supports asynchronous loading of data.
+ * The data is loaded in page-chunks depending on the required items.
+ * 
+ * 
+ * @author IsNull
+ *
+ * @param <T>
+ */
 public class VirtualPagedList<T> implements IDataProvider<IDeferLoaded<T>>{
 
 	private final Object pageCacheLock = new Object();
-	private final List<PageLoadTask<T>> pageCache;
-
+	private final PageLoadTask[] pageCache;
 	private final IPageLoader<T> pageLoader;
+
+	private final int maxPageSize;
+	private final int totalListSize;
 
 	@Override
 	public IEvent<CollectionEventArg<IDeferLoaded<T>>> getItemsChangedEvent() { return null; }
@@ -28,10 +38,15 @@ public class VirtualPagedList<T> implements IDataProvider<IDeferLoaded<T>>{
 	 *                                                                         *
 	 **************************************************************************/
 
-
-	public VirtualPagedList(IPageLoader<T> pageLoader){
+	/**
+	 * Creates a new VirtualPagedList
+	 * @param pageLoader The pageloader used to deferred load required pages
+	 */
+	public VirtualPagedList(IPageLoader<T> pageLoader, ListPage<T> firstPage){
 		this.pageLoader = pageLoader;
-		pageCache = new ArrayList<PageLoadTask<T>>(getPageCount());
+		maxPageSize = firstPage.getMaxPageSize();
+		totalListSize = (int)firstPage.getTotalListSize();
+		pageCache = new PageLoadTask[getPageCount()];
 	}
 
 	@Override
@@ -50,12 +65,12 @@ public class VirtualPagedList<T> implements IDataProvider<IDeferLoaded<T>>{
 
 	@Override
 	public int size() {
-		return pageLoader.getDataSize();
+		return totalListSize;
 	}
 
 	@Override
 	public boolean isEmpty() {
-		return pageLoader.getDataSize() == 0;
+		return totalListSize == 0;
 	}
 
 	/***************************************************************************
@@ -79,30 +94,32 @@ public class VirtualPagedList<T> implements IDataProvider<IDeferLoaded<T>>{
 	private void loadHighPriority(PageLoadTask<T> page){
 		if(page.isLoaded()) return;
 
-		// TODO Start loading / move to tip
+		throw new NotImplementedException();
+		// TODO Start loading of this page / move to top
 	}
 
+	@SuppressWarnings("unchecked")
 	private PageLoadTask<T> getPageLoadTask(int page){
 		synchronized (pageCacheLock) {
-			PageLoadTask<T> task = pageCache.get(page);
+			PageLoadTask<T> task = pageCache[page];
 			if(task == null){
 				task = new PageLoadTask<T>(pageLoader, page);
-				pageCache.set(page, task);
+				pageCache[page] = task;
 			}
 			return task;
 		}
 	}
 
 	private int getPageNumberForIndex(int index){
-		int pageBase = Math.floorDiv(index, pageLoader.getMaxPageSize());
-		if((index % pageLoader.getMaxPageSize()) > 0){
+		int pageBase = Math.floorDiv(index, maxPageSize);
+		if((index % maxPageSize) > 0){
 			pageBase++;
 		}
 		return pageBase;
 	}
 
 	private int getPageCount(){
-		return pageLoader.getDataSize() / pageLoader.getMaxPageSize();
+		return (int)(totalListSize / maxPageSize);
 	}
 
 	/***************************************************************************
@@ -111,6 +128,12 @@ public class VirtualPagedList<T> implements IDataProvider<IDeferLoaded<T>>{
 	 *                                                                         *
 	 **************************************************************************/
 
+	/**
+	 * Wrapper around a single item which may not yet be loaded.
+	 * @author IsNull
+	 *
+	 * @param <T>
+	 */
 	private static class DeferLoadedItem<T> implements IDeferLoaded<T> {
 
 		private final EventHandlerEx<EventArgs> loadedEvent = new EventHandlerEx<EventArgs>();
@@ -161,7 +184,12 @@ public class VirtualPagedList<T> implements IDataProvider<IDeferLoaded<T>>{
 		}
 	}
 
-
+	/**
+	 * A task responsible of loading and holding a single page
+	 * @author IsNull
+	 *
+	 * @param <T>
+	 */
 	private static class PageLoadTask<T> implements Runnable {
 
 		private final Object loadLock = new Object();
