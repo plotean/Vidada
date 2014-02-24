@@ -1,7 +1,9 @@
 package vidada.controller.filters;
 
+import vidada.IVidadaServer;
 import vidada.client.model.browser.MediaBrowserModel;
 import vidada.client.services.IMediaClientService;
+import vidada.client.services.IVidadaServerClientService;
 import vidada.client.viewmodel.FilterModel;
 import vidada.model.filters.AsyncFetchData;
 import vidada.model.filters.AsyncFetchData.CancelTokenEventArgs;
@@ -40,8 +42,8 @@ public class MediaFilterDatabaseBinding {
 	 * @param mediaBrowserModel
 	 * @return
 	 */
-	public static MediaFilterDatabaseBinding bind(IMediaClientService mediaClientService, FilterModel filterModel, MediaBrowserModel mediaBrowserModel){
-		return new MediaFilterDatabaseBinding(mediaClientService, filterModel, mediaBrowserModel);
+	public static MediaFilterDatabaseBinding bind(IVidadaServerClientService serverClientService,IMediaClientService mediaClientService, FilterModel filterModel, MediaBrowserModel mediaBrowserModel){
+		return new MediaFilterDatabaseBinding(serverClientService, mediaClientService, filterModel, mediaBrowserModel);
 	}
 
 
@@ -55,6 +57,7 @@ public class MediaFilterDatabaseBinding {
 	private final FilterModel filterModel;
 	private final MediaBrowserModel mediaBrowserModel;
 	private final IMediaClientService mediaClientService;
+	private final IVidadaServerClientService serverClientService;
 
 	transient private AsyncFetchData<ListPage<MediaItem>> datafetcher;
 	transient private final Object datafetcherLock = new Object();
@@ -68,7 +71,8 @@ public class MediaFilterDatabaseBinding {
 	 *                                                                         *
 	 **************************************************************************/
 
-	protected MediaFilterDatabaseBinding(IMediaClientService mediaClientService, FilterModel filterModel, MediaBrowserModel mediaBrowserModel){
+	protected MediaFilterDatabaseBinding(IVidadaServerClientService serverClientService, IMediaClientService mediaClientService, FilterModel filterModel, MediaBrowserModel mediaBrowserModel){
+		this.serverClientService = serverClientService;
 		this.mediaClientService = mediaClientService;
 		this.filterModel = filterModel;
 		this.mediaBrowserModel = mediaBrowserModel;
@@ -96,7 +100,10 @@ public class MediaFilterDatabaseBinding {
 	private void updateMediaBrowserModel(){
 
 		mediaBrowserModel.clearMedias();
-		final MediaQuery query = buildQuery();
+		MediaQuery query = buildQuery();
+		// TODO get correct server:
+		IVidadaServer chosenServer = serverClientService.getAllServer().get(0);
+		final ServerMediaQuery serverQuery = new ServerMediaQuery(query, chosenServer);
 
 		// Since executing the query may take some time
 		// we run it in a background thread
@@ -109,7 +116,7 @@ public class MediaFilterDatabaseBinding {
 
 			ctx = new CancellationTokenSource();
 
-			datafetcher = new AsyncFetchMediaItems(mediaClientService, query, ctx.getToken());
+			datafetcher = new AsyncFetchMediaItems(mediaClientService, serverQuery, ctx.getToken());
 			datafetcher.getFetchingCompleteEvent().add(new EventListenerEx<CancelTokenEventArgs<ListPage<MediaItem>>>(){
 				//
 				// As this event is fired by an async running thread, this method will therefore be async too.
@@ -126,7 +133,7 @@ public class MediaFilterDatabaseBinding {
 						VirtualPagedList<MediaItem> pagedList = new VirtualPagedList<MediaItem>(new IPageLoader<MediaItem>() {
 							@Override
 							public ListPage<MediaItem> load(int pageIndex) {
-								return mediaClientService.query(query, pageIndex, maxPageSize);
+								return mediaClientService.queryServer(serverQuery.getServer(), serverQuery.getQuery(), pageIndex, maxPageSize);
 							}
 						},firstPage);
 
@@ -170,6 +177,22 @@ public class MediaFilterDatabaseBinding {
 	 *                                                                         *
 	 **************************************************************************/
 
+	class ServerMediaQuery {
+		private final MediaQuery query;
+		private final  IVidadaServer server;
+		public ServerMediaQuery(MediaQuery query, IVidadaServer server) {
+			this.query = query;
+			this.server = server;
+		}
+		public MediaQuery getQuery() {
+			return query;
+		}
+		public IVidadaServer getServer() {
+			return server;
+		}
+
+	}
+
 
 	/**
 	 * Represents a Task which fetches MediaItems asynchronously
@@ -179,9 +202,9 @@ public class MediaFilterDatabaseBinding {
 	class AsyncFetchMediaItems extends AsyncFetchData<ListPage<MediaItem>> {
 
 		private final IMediaClientService mediaClientService;
-		private final MediaQuery query;
+		private final ServerMediaQuery query;
 
-		public AsyncFetchMediaItems(IMediaClientService mediaClientService,  MediaQuery query, CancellationToken token) {
+		public AsyncFetchMediaItems(IMediaClientService mediaClientService,  ServerMediaQuery query, CancellationToken token) {
 			super(token);
 			this.mediaClientService = mediaClientService;
 			this.query = query;
@@ -193,7 +216,7 @@ public class MediaFilterDatabaseBinding {
 
 			ListPage<MediaItem> page = null;
 			System.out.println("AsyncFetchMediaItems: fetching media datas...");
-			page = mediaClientService.query(query, 0, maxPageSize);
+			page = mediaClientService.queryServer(query.getServer(), query.getQuery(), 0, maxPageSize);
 			System.out.println("AsyncFetchMediaItems:: fetched: " + page );
 
 			return page;

@@ -134,54 +134,6 @@ public class MediaBrowserFX extends BorderPane {
 		}
 	};
 
-	/*
-	private BrowserItemVM previousSelection;
-
-	transient private final EventListenerEx<EventArgs> VMselectionChangedListener = new EventListenerEx<EventArgs>() {
-
-		@Override
-		public void eventOccured(Object sender, EventArgs eventArgs) {
-
-			BrowserItemVM vm = (BrowserItemVM)sender;
-
-			if(previousSelection != null) previousSelection.setSelected(false);
-
-			selectionManager.trySelect(vm.getModel());
-
-			previousSelection = vm;
-		}
-	};
-
-
-
-	private IVMFactory<IBrowserItem, BrowserItemVM> vmFactory = new IVMFactory<IBrowserItem, BrowserItemVM>() {
-		@Override
-		public BrowserItemVM create(IBrowserItem model) {
-			BrowserItemVM vm;
-
-			if(model instanceof BrowserFolderItem){
-				BrowserFolderItem folder = (BrowserFolderItem)model;
-				vm = new BrowserFolderItemVM(folder);
-			}else if(model instanceof BrowserMediaItem){
-				vm = new MediaViewModel();
-				vm.setModel(model);
-			}else{
-				vm = new BrowserItemVM(model);
-			}
-
-			vm.SelectionChangedEvent.add(VMselectionChangedListener);
-
-			gridViewPort.ensureViewportChangedListener(); // Very hacky. (Should be called once after Scene is shown)
-
-			return vm;
-		}
-	};
-
-	transient private final ViewModelPool<IBrowserItem, BrowserItemVM> mediaVMPool =
-			new ViewModelPool<IBrowserItem, BrowserItemVM>(vmFactory);
-
-	 */
-
 	/**
 	 * Occurs when a folderItem was opened
 	 * @param folderItem

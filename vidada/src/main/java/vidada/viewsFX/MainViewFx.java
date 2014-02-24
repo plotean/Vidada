@@ -51,7 +51,7 @@ public class MainViewFx extends BorderPane {
 		mainTab.getTabs().add(browserTab);
 		mainTab.getTabs().add(fileBrowserTab);
 
-		browserTab.setContent(new PrimaryMediaBrowserFX(browserModel, tagService, mediaService));
+		browserTab.setContent(new PrimaryMediaBrowserFX(browserModel,VidadaClientManager.instance(), tagService, mediaService));
 
 		PrimaryMediaExplorerFX mediaExplorerFX = new PrimaryMediaExplorerFX();
 		mediaExplorerFX.setDataContext(mediaExplorerVM);

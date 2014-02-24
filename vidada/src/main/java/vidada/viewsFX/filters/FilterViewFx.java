@@ -1,5 +1,9 @@
 package vidada.viewsFX.filters;
 
+import impl.org.controlsfx.autocompletion.SuggestionProvider;
+
+import java.util.Collection;
+
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -23,9 +27,6 @@ import vidada.model.media.OrderProperty;
 import vidada.model.tags.Tag;
 import vidada.viewsFX.controls.TagItPanel;
 import archimedesJ.util.Lists;
-
-import com.aquafx_project.AquaFx;
-import com.aquafx_project.controls.skin.styles.TextFieldType;
 
 public class FilterViewFx extends BorderPane {
 
@@ -52,8 +53,7 @@ public class FilterViewFx extends BorderPane {
 			}
 		});
 
-		tagPane.setSuggestionProvider(null);
-
+		updateTagSuggestionProvider();
 
 		HBox box = new HBox();
 
@@ -86,10 +86,16 @@ public class FilterViewFx extends BorderPane {
 		cboMediaType.setPromptText("Define mediatype...");
 		cboMediaType.setItems(mediaTypes);
 
-		AquaFx.createTextFieldStyler().setType(TextFieldType.SEARCH).style(searchText); //.createButtonStyler().setSizeVariant(ControlSizeVariant.REGULAR).style(buttonInstance);
+		//AquaFx.createTextFieldStyler().setType(TextFieldType.SEARCH).style(searchText); //.createButtonStyler().setSizeVariant(ControlSizeVariant.REGULAR).style(buttonInstance);
 
 		// register change events
 		registerEventHandler();
+	}
+
+	private void updateTagSuggestionProvider(){
+		Collection<Tag> availableTags = tagClientService.getUsedTags();
+		SuggestionProvider<Tag> tagSuggestionProvider = SuggestionProvider.create(availableTags);
+		tagPane.setSuggestionProvider(tagSuggestionProvider);
 	}
 
 	private void registerEventHandler(){

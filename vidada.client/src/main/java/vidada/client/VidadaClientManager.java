@@ -1,21 +1,22 @@
 package vidada.client;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import vidada.IVidadaServer;
 import vidada.client.services.IMediaClientService;
 import vidada.client.services.ITagClientService;
 import vidada.client.services.IThumbnailClientService;
+import vidada.client.services.IVidadaServerClientService;
 import vidada.client.services.MediaClientService;
 import vidada.client.services.TagClientService;
 import vidada.client.services.ThumbnailClientService;
 import vidada.model.media.MediaItem;
 import archimedesJ.exceptions.NotSupportedException;
 
-public class VidadaClientManager {
+public class VidadaClientManager implements IVidadaServerClientService {
 
 	/***************************************************************************
 	 *                                                                         *
@@ -72,6 +73,7 @@ public class VidadaClientManager {
 	 * Add the given server
 	 * @param server
 	 */
+	@Override
 	public void addServer(IVidadaServer server){
 		allServers.put(server.getNameId(), server);
 		if(server.isLocal())
@@ -82,7 +84,8 @@ public class VidadaClientManager {
 	 * Returns all servers currently known to the client manager
 	 * @return
 	 */
-	public Collection<IVidadaServer> getAllServer(){
+	@Override
+	public List<IVidadaServer> getAllServer(){
 		return new ArrayList<IVidadaServer>(allServers.values());
 	}
 
@@ -90,6 +93,7 @@ public class VidadaClientManager {
 	 * Returns the local server (if any). 
 	 * @return Will return null if there is no local server registered
 	 */
+	@Override
 	public IVidadaServer getLocalServer(){
 		return localServer;
 	}

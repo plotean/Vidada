@@ -1,5 +1,6 @@
 package vidada.client.services;
 
+import vidada.IVidadaServer;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaQuery;
 import vidada.model.pagination.ListPage;
@@ -21,7 +22,7 @@ public interface IMediaClientService {
 	 * @param pageSize
 	 * @return
 	 */
-	public abstract ListPage<MediaItem> query(MediaQuery qry, int pageIndex, int maxPageSize);
+	public abstract ListPage<MediaItem> queryServer(IVidadaServer server,MediaQuery qry, int pageIndex, int maxPageSize);
 
 	/**
 	 * Update all changes made to this media.

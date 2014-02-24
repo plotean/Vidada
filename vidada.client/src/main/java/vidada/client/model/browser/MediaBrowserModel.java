@@ -108,7 +108,6 @@ public class MediaBrowserModel {
 			return source.isLoaded();
 		}
 
-
 		public BrowserItemVM create(IBrowserItem model) {
 			BrowserItemVM vm;
 

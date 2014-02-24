@@ -56,7 +56,6 @@ public class MediaDetailTagPane extends BorderPane {
 			binding = ObservableListBindingFX.bind(currentTagsPanel.getTags(), mediaViewModel.getTags());
 
 			Collection<Tag> availableTags = mediaViewModel.getAvailableTags();
-			System.out.println(availableTags);
 			tagSuggestionProvider = SuggestionProvider.create(availableTags);
 			currentTagsPanel.setSuggestionProvider(tagSuggestionProvider);
 		}

@@ -21,7 +21,13 @@ public class MediaClientService extends ClientService implements IMediaClientSer
 
 
 	@Override
-	public ListPage<MediaItem> query(MediaQuery qry, int pageIndex, int maxPageSize) {
+	public ListPage<MediaItem> queryServer(IVidadaServer server, MediaQuery qry, int pageIndex, int maxPageSize) {
+		System.out.println("MediaClientService:: query " + getClientManager().getAllServer().size() + "  vidada servers!");
+		ListPage<MediaItem> page = server.getMediaService().query(qry, pageIndex, maxPageSize);
+		return page;
+	}
+
+	private ListPage<MediaItem> queryAllServers(MediaQuery qry, int pageIndex, int maxPageSize) {
 
 		Set<MediaItem> resultSet = new HashSet<MediaItem>();
 		System.out.println("MediaClientService:: query " + getClientManager().getAllServer().size() + "  vidada servers!");
@@ -55,6 +61,7 @@ public class MediaClientService extends ClientService implements IMediaClientSer
 
 		return page;
 	}
+
 
 
 	@Override

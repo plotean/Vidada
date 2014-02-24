@@ -89,6 +89,7 @@ public class MediaDetailViewModel extends MediaViewModel implements IMediaViewMo
 	@Override
 	public IObservableCollection<Tag> getTags() {
 		//TODO!!
+
 		return getModel().getData().getTags(); //observableTags;
 	}
 

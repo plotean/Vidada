@@ -182,4 +182,16 @@ public class MediaService extends VidadaServerService implements IMediaService {
 	private String retriveMediaHash(ResourceLocation file){
 		return MediaHashUtil.getDefaultMediaHashUtil().retriveFileHash(file);
 	}
+
+
+	@Override
+	public int count() {
+		return runUnitOfWork(new Callable<Integer>() {
+			@Override
+			public Integer call() throws Exception {
+				return repository.countAll();
+			}
+
+		}) ;
+	}
 }
