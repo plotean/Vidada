@@ -174,4 +174,13 @@ public class MediaRepository extends JPARepository implements IMediaRepository{
 		throw new NotImplementedException();
 	}
 
+
+	@Override
+	public int countAll() {
+		Query cQuery = getEntityManager()
+				.createQuery("SELECT count(m) from MediaItem");
+		Number result = (Number) cQuery.getSingleResult();
+		return (int)result.longValue();
+	}
+
 }

@@ -66,6 +66,12 @@ public interface IMediaService {
 	public List<MediaItem> getAllMedias();
 
 	/**
+	 * Returns the media count
+	 * @return
+	 */
+	public int count();
+
+	/**
 	 * Deletes all medias
 	 * @param media
 	 */

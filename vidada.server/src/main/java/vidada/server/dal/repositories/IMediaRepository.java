@@ -49,6 +49,12 @@ public interface IMediaRepository extends IRepository {
 	public abstract void removeAll();
 
 	/**
+	 * Returns the count of all medias
+	 * @return
+	 */
+	public abstract int countAll();
+
+	/**
 	 * Query for the media with the given hash
 	 * @param hash
 	 * @return
@@ -62,5 +68,7 @@ public interface IMediaRepository extends IRepository {
 	 * @return
 	 */
 	public MediaItem queryByPath(ResourceLocation file, MediaLibrary library);
+
+
 
 }

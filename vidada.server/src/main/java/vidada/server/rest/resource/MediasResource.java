@@ -42,15 +42,13 @@ public class MediasResource {
 	/**
 	 * Retuns the number of medias
 	 * Use vidada/api/medias/count
-	 * to get the total number of records
+	 * to get the total number of medias
 	 * @return
 	 */
 	@GET
 	@Path("count")
 	@Produces(MediaType.TEXT_PLAIN)
-	public String getCount() {
-		throw new NotImplementedException();
-		//int count = mediaService.query(MediaQuery.ALL).size();
-		//return String.valueOf(count);
+	public String getCount() {		
+		return String.valueOf(mediaService.count());
 	}
 }
