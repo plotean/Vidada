@@ -30,7 +30,7 @@ class MediaGridItemCell extends GridCell<IDeferLoaded<BrowserItemVM>> {
 		folderView = new FolderView();
 		simpleView = new SimpleCellItemView();
 		loadingView = new BorderPane();
-		loadingView.setStyle("-fx-background-color: yellow;");
+		loadingView.setStyle("-fx-background-color: yellow;"); // TODO: Create beautiful loading view :)
 
 
 		setId("media-cell");
@@ -71,6 +71,9 @@ class MediaGridItemCell extends GridCell<IDeferLoaded<BrowserItemVM>> {
 		if(simpleView != null) simpleView.setDataContext(null);
 
 		if(item.isLoaded()){
+
+			item.getLoadedEvent().remove(loadLlistener);
+
 			BrowserItemVM browserItem = item.getLoadedItem();
 			if(browserItem instanceof MediaViewModel){
 				mediaView.setDataContext(browserItem);
@@ -83,22 +86,40 @@ class MediaGridItemCell extends GridCell<IDeferLoaded<BrowserItemVM>> {
 				setGraphic(simpleView);
 			}
 		}else {
+			// The item is not yet loaded 
+			// Listen to the load event to set the model
+			item.getLoadedEvent().add(loadLlistener);
+
+			// In the mean time, show a generic loading view
 			setGraphic(loadingView);
 		}
 	}
 
+	private final EventListenerEx<EventArgs> loadLlistener = new EventListenerEx<EventArgs>() {
+		@Override
+		public void eventOccured(Object sender, EventArgs eventArgs) {
+			javafx.application.Platform.runLater(new Runnable() {
+				@Override
+				public void run() {
+					if(item != null)
+						updateVisualTemplate(item);
+				}
+			});	
+		}
+	};
 
 
+	//
+	// TODO: Implement a proper selection model in GridView
+	//
 	// SELECTION HACK:
-
+	// The GridView does currently not support any selection.
+	// Thus we have to hack into this cell system until this is implemented.
+	//
 	private static Method setSelectionMethod;
 
 	static {
-		//
-		// TODO:
-		// Hack: The GridView does currently not support any selection
-		// Thus we have to hack into this cell system until this is implemented.
-		//
+
 		for (Method m : javafx.scene.control.Cell.class.getDeclaredMethods()) {
 			if(m.getName().equals("setSelected")){
 				setSelectionMethod = m;

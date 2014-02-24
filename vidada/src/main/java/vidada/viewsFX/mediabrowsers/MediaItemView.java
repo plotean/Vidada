@@ -316,14 +316,17 @@ public class MediaItemView extends BrowserCellView {
 		}
 	}
 
-	private void requestThumb(int width, int height){
+	private void requestThumb(final int width, final int height){
+
 		if(mediaViewModel != null)
 		{
 			ImageContainer container = mediaViewModel.getThumbnail(
 					(int)(width*dpiMultiplier),
 					(int)(height*dpiMultiplier));
+
 			imageProperty.imageContainerProperty().set(container);
 		}
+
 	}
 
 
