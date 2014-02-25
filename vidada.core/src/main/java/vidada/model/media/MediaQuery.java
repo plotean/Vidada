@@ -1,5 +1,6 @@
 package vidada.model.media;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import vidada.model.queries.AbstractQuery;
@@ -22,8 +23,8 @@ public class MediaQuery extends AbstractQuery<MediaItem>{
 	private MediaType selectedtype = MediaType.ANY;
 	private String keywords = null;
 	private OrderProperty order = OrderProperty.FILENAME;
-	private List<Tag> requiredTags = null;
-	private List<Tag> blockedTags = null;
+	private List<Tag> requiredTags = new ArrayList<Tag>();
+	private List<Tag> blockedTags = new ArrayList<Tag>();
 	private boolean onlyAvailable = false;
 	private boolean reverseOrder = false;
 

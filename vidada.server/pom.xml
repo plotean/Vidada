@@ -22,6 +22,7 @@
   </build>
   
   
+  
   	<repositories>
   		
 	   <repository>
@@ -39,6 +40,7 @@
 			<artifactId>archimedesJ</artifactId>
 			<version>0.1.1</version>
 		</dependency>
+
 		
 		<dependency>
 		    <groupId>org.securityvision</groupId>
@@ -49,13 +51,25 @@
 		<dependency>
 			<groupId>com.sun.jersey</groupId>
 			<artifactId>jersey-core</artifactId>
-			<version>1.18</version>
+			<version>1.9</version>
 		</dependency>
 		
 		<dependency>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-json</artifactId>
+			<version>1.9</version>
+		</dependency>
+		<!-- 
+		<dependency>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-json</artifactId>
+			<version>1.18</version>
+		</dependency>
+ -->
+		<dependency>
 			<groupId>com.sun.jersey.contribs</groupId>
 			<artifactId>jersey-simple-server</artifactId>
-			<version>1.18</version>
+			<version>1.9</version>
 		</dependency>
 	    
 	</dependencies>

@@ -1,8 +1,12 @@
 package vidada.model.tags;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 
 
 
@@ -12,6 +16,8 @@ import javax.persistence.Id;
  *
  */
 @Entity
+@Access(AccessType.FIELD)
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Tag  implements Comparable<Tag> {
 
 	transient int hashcode_cache = -1;

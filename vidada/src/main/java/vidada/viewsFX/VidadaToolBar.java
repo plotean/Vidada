@@ -113,10 +113,11 @@ public class VidadaToolBar extends ToolBar{
 					@Override
 					public void run() {
 						SettingsDialog dlg = new SettingsDialog(null);
+						dlg.getWindow().setWidth(800);
+						dlg.getWindow().setHeight(500);
 						dlg.show();
 					}
 				}));
-
 
 	}
 

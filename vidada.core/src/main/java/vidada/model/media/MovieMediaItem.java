@@ -3,6 +3,7 @@ package vidada.model.media;
 import java.net.URI;
 
 import javax.persistence.Entity;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import vidada.model.video.Video;
 
@@ -14,6 +15,7 @@ import vidada.model.video.Video;
  * 
  */
 @Entity
+@XmlRootElement
 public class MovieMediaItem extends MediaItem implements Cloneable {
 
 	transient public final static int INVALID_POSITION = -1;

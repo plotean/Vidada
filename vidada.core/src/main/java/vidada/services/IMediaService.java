@@ -83,4 +83,6 @@ public interface IMediaService {
 	 */
 	public void delete(Collection<MediaItem> media);
 
+	public MediaItem queryByHash(String hash);
+
 }

@@ -102,7 +102,7 @@ public class Application extends  javafx.application.Application {
 			Node contentPane = new MainViewFx();
 			StackPane root = new StackPane();
 			root.getChildren().add(contentPane);
-			primaryStage.setScene(new Scene(root, 600, 450));
+			primaryStage.setScene(new Scene(root, 1080, 800));
 			primaryStage.show();
 
 		}catch(Exception e){
@@ -222,7 +222,6 @@ public class Application extends  javafx.application.Application {
 			System.out.println("Creating Vidada Server...");
 			localserver = new VidadaServer(vidadaDALService);
 			VidadaClientManager.instance().addServer(localserver);
-
 		}catch(DatabaseConnectionException e){
 			e.printStackTrace();
 

@@ -194,4 +194,15 @@ public class MediaService extends VidadaServerService implements IMediaService {
 
 		}) ;
 	}
+
+
+	@Override
+	public MediaItem queryByHash(final String hash) {
+		return runUnitOfWork(new Callable<MediaItem>() {
+			@Override
+			public MediaItem call() throws Exception {
+				return repository.queryByHash(hash);
+			}
+		}) ;
+	}
 }

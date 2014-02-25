@@ -3,8 +3,10 @@ package vidada.model.media;
 import java.net.URI;
 
 import javax.persistence.Entity;
+import javax.xml.bind.annotation.XmlRootElement;
 
 @Entity
+@XmlRootElement
 public class ImageMediaItem extends MediaItem {
 	/**
 	 * ORM Constructor

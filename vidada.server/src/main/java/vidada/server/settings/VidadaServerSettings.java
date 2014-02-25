@@ -57,6 +57,7 @@ public class VidadaServerSettings extends JsonSettings {
 	private Set<VidadaDatabase> databases = new HashSet<VidadaDatabase>();
 	private boolean usingMetaData = true;
 	private boolean isDebug = false;
+	private boolean enableNetworkSharing = true;
 
 
 	/***************************************************************************
@@ -236,6 +237,14 @@ public class VidadaServerSettings extends JsonSettings {
 		this.isDebug = isDebug;
 	}
 
+	public boolean isEnableNetworkSharing() {
+		return enableNetworkSharing;
+	}
+
+	public void setEnableNetworkSharing(boolean enableNetworkSharing) {
+		this.enableNetworkSharing = enableNetworkSharing;
+	}
+
 	/***************************************************************************
 	 *                                                                         *
 	 * Private static methods                                                  *
@@ -264,4 +273,6 @@ public class VidadaServerSettings extends JsonSettings {
 			return new File(".", path.getPath());
 		}
 	}
+
+
 }

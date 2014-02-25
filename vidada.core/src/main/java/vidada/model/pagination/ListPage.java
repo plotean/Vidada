@@ -2,19 +2,27 @@ package vidada.model.pagination;
 
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAnyElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * Represents a single page of a paged list.
  * @author IsNull
  *
  * @param <T>
  */
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class ListPage<T> {
 
-	private List<T> pageItems;
 	private int page;
-
 	private long totalListSize;
 	private int maxPageSize;
+
+	@XmlAnyElement(lax=true)
+	private List<T> pageItems;
 
 	/**
 	 * Creates a new ListPage

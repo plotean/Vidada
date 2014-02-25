@@ -1,7 +1,5 @@
 package vidada.server.rest.resource;
 
-import java.util.Collection;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -11,8 +9,10 @@ import javax.ws.rs.core.Request;
 import javax.ws.rs.core.UriInfo;
 
 import vidada.model.media.MediaItem;
+import vidada.model.media.MediaQuery;
+import vidada.model.pagination.ListPage;
+import vidada.server.rest.VidadaRestServer;
 import vidada.services.IMediaService;
-import archimedesJ.exceptions.NotImplementedException;
 
 @Path("/medias")
 public class MediasResource {
@@ -24,8 +24,7 @@ public class MediasResource {
 	@Context
 	Request request;
 
-	// TODO
-	private final IMediaService mediaService = null; //ServiceProvider.Resolve(IMediaService.class);
+	private final IMediaService mediaService = VidadaRestServer.VIDADA_SERVER.getMediaService();
 
 	/**
 	 * Returns all medias
@@ -33,10 +32,16 @@ public class MediasResource {
 	 */
 	@GET
 	@Produces({MediaType.APPLICATION_JSON})
-	public Collection<MediaItem> getMedias() {
-		throw new NotImplementedException();
-		//return mediaService.query(MediaQuery.ALL,0, -1); 
+	public ListPage<MediaItem> getMedias() {
+		return mediaService.query(MediaQuery.ALL,0, 5); 
 	}
+
+	/*
+	@GET
+	@Produces({MediaType.APPLICATION_JSON})
+	public MediaItem getMedias() {
+		return mediaService.query(MediaQuery.ALL,0, 5).getPageItems().get(0); 
+	}*/
 
 
 	/**

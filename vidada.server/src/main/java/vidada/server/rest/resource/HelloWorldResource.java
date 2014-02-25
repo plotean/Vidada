@@ -5,12 +5,12 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
 
-@Path("/helloworld")
+@Path("")
 public class HelloWorldResource {
 
 	@GET
 	@Produces("text/html")
 	public String getMessage(){
-		return "Hello, world!";
+		return "Welcome to Vidada REST Server!";
 	}
 }

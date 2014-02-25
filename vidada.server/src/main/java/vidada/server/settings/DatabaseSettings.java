@@ -32,10 +32,7 @@ public class DatabaseSettings extends BaseEntity{
 	private String name;
 	private byte[] passwordHash;
 	private byte[] cryptoBlock = KeyPad.generateKey(30);
-	private boolean ignoreMovies;
-	private boolean ignoreImages;
 	private boolean isNewDatabase;
-	private boolean playSoundDirectPlay;
 
 	public DatabaseSettings(){
 	}
@@ -77,22 +74,6 @@ public class DatabaseSettings extends BaseEntity{
 		this.name = name;
 	}
 
-	public boolean isIgnoreMovies() {
-		return ignoreMovies;
-	}
-
-	public void setIgnoreMovies(boolean ignoreMovies) {
-		this.ignoreMovies = ignoreMovies;
-	}
-
-	public boolean isIgnoreImages() {
-		return ignoreImages;
-	}
-
-	public void setIgnoreImages(boolean ignoreImages) {
-		this.ignoreImages = ignoreImages;
-	}
-
 	public boolean isNewDatabase() {
 		return isNewDatabase;
 	}
@@ -101,12 +82,4 @@ public class DatabaseSettings extends BaseEntity{
 		this.isNewDatabase = isNewDatabase;
 	}
 
-	public boolean isPlaySoundDirectPlay() {
-		return playSoundDirectPlay;
-	}
-
-	public void setPlaySoundDirectPlay(boolean playSoundDirectPlay) {
-		this.playSoundDirectPlay = playSoundDirectPlay;
-		PlaySoundDirectPlayChanged.fireEvent(this, EventArgs.Empty);
-	}
 }

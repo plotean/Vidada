@@ -9,6 +9,7 @@ import vidada.model.security.ICredentialManager.CredentialsChecker;
 import vidada.server.dal.IVidadaDALService;
 import vidada.server.impl.IPrivacyService;
 import vidada.server.impl.PrivacyService;
+import vidada.server.rest.VidadaRestServer;
 import vidada.server.services.MediaImportService;
 import vidada.server.services.MediaLibraryService;
 import vidada.server.services.MediaService;
@@ -80,6 +81,14 @@ public class VidadaServer implements IVidadaServer {
 			// Create default data etc.
 			// TODO
 		}
+
+
+		if(VidadaServerSettings.instance().isEnableNetworkSharing()){
+			startNetworkSharing();
+		}else {
+			System.out.println("Network sharing is disabled.");
+		}
+
 	}
 
 	/***************************************************************************
@@ -98,6 +107,11 @@ public class VidadaServer implements IVidadaServer {
 
 	public IDatabaseSettingsService getDatabaseSettingsService(){
 		return databaseSettingsService;
+	}
+
+
+	public synchronized void startNetworkSharing(){
+		startRestServer();
 	}
 
 	/***************************************************************************
@@ -152,6 +166,32 @@ public class VidadaServer implements IVidadaServer {
 	 * Private Methods                                                         *
 	 *                                                                         *
 	 **************************************************************************/
+	VidadaRestServer restServer;
+	//Thread  restServerThread;
+
+	private synchronized void startRestServer(){
+		if(restServer == null){
+			System.out.println("Starting REST Server...");
+
+			try{
+				restServer = new VidadaRestServer(this);
+				restServer.start();
+				/*
+				restServerThread = new Thread(new Runnable() {
+					@Override
+					public void run() {
+
+					}
+				});
+				restServerThread.start();*/
+			}catch(Throwable e){
+				e.printStackTrace();
+			}
+
+		}else {
+			System.err.println("startRestServer canceled, already running.");
+		}
+	}
 
 	/**
 	 * Connect to the database
