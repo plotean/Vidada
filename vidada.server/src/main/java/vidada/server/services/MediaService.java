@@ -191,7 +191,6 @@ public class MediaService extends VidadaServerService implements IMediaService {
 			public Integer call() throws Exception {
 				return repository.countAll();
 			}
-
 		}) ;
 	}
 

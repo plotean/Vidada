@@ -8,7 +8,6 @@ import javax.persistence.TypedQuery;
 
 import vidada.aop.IUnitOfWorkService;
 import vidada.dal.JPARepository;
-import vidada.model.media.MediaLibrary;
 import vidada.model.tags.Tag;
 import vidada.server.dal.repositories.ITagRepository;
 
@@ -33,11 +32,6 @@ public class TagRepository extends JPARepository implements ITagRepository {
 	@Override
 	public void delete(Tag tag) {
 		getEntityManager().remove(tag);
-	}
-
-	@Override
-	public Collection<Tag> getAllUsedTags(Collection<MediaLibrary> libraries) {
-		return getAllTags();
 	}
 
 	@Override

@@ -3,7 +3,6 @@ package vidada.server.services;
 import java.util.Collection;
 import java.util.concurrent.Callable;
 
-import vidada.model.media.MediaLibrary;
 import vidada.model.tags.Tag;
 import vidada.model.tags.relations.TagRelationDefinition;
 import vidada.server.VidadaServer;
@@ -40,20 +39,6 @@ public class TagService extends VidadaServerService implements ITagService {
 			@Override
 			public void run() {
 				repository.delete(tag);
-			}
-		});
-	}
-
-	/**{@inheritDoc}*/
-	@Override
-	public Collection<Tag> getUsedTags(final Collection<MediaLibrary> libraries) {
-		// TODO Cache this somehow or things get slow.
-		// Realistically the result of this call will get invalidated
-		// every time a tag is added or removed from a media item.
-		return runUnitOfWork(new Callable<Collection<Tag>>() {
-			@Override
-			public Collection<Tag> call() throws Exception {
-				return repository.getAllUsedTags(libraries);
 			}
 		});
 	}

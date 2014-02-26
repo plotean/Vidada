@@ -2,7 +2,6 @@ package vidada.services;
 
 import java.util.Collection;
 
-import vidada.model.media.MediaLibrary;
 import vidada.model.tags.Tag;
 
 /**
@@ -32,12 +31,4 @@ public interface ITagService  {
 	 * @return
 	 */
 	public abstract Collection<Tag> getUsedTags();
-
-
-	/**
-	 * Returns all tags which are used in the given libraries
-	 * @return
-	 */
-	public abstract Collection<Tag> getUsedTags(Collection<MediaLibrary> libraries);
-
 }

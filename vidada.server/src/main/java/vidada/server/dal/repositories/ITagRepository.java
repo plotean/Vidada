@@ -3,7 +3,6 @@ package vidada.server.dal.repositories;
 import java.util.Collection;
 import java.util.List;
 
-import vidada.model.media.MediaLibrary;
 import vidada.model.tags.Tag;
 
 public interface ITagRepository extends IRepository {
@@ -13,13 +12,6 @@ public interface ITagRepository extends IRepository {
 	public abstract void store(Collection<Tag> newTags);
 
 	public abstract void delete(Tag tag);
-
-	/**
-	 * Fetches all Tags which are used in the provided media libraries
-	 * @return
-	 */
-	public abstract Collection<Tag> getAllUsedTags(
-			Collection<MediaLibrary> libraries);
 
 	/**
 	 * Fetches all tags

@@ -15,11 +15,24 @@ public abstract class JPARepository {
 		this.unitOfWorkService = unitOfWorkService;
 	}
 
+	protected  IUnitOfWorkService<EntityManager> getUnitOfWorkService(){
+		return unitOfWorkService;
+	}
+
+	/**
+	 * Returns the current Entity-Manager
+	 * @return
+	 */
 	protected EntityManager getEntityManager(){
 		return unitOfWorkService.getCurrentContext();
 	}
 
 
+	/**
+	 * Returns the first row from the given result set or NULL if not available.
+	 * @param query
+	 * @return
+	 */
 	protected <T> T firstOrDefault(TypedQuery<T> query){
 		List<T> results = query.getResultList();
 		if(!results.isEmpty())

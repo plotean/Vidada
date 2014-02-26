@@ -69,6 +69,8 @@ public interface IMediaRepository extends IRepository {
 	 */
 	public MediaItem queryByPath(ResourceLocation file, MediaLibrary library);
 
+	public abstract List<MediaItem> queryByLibrary(MediaLibrary library);
+
 
 
 }

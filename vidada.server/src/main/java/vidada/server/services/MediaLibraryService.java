@@ -69,7 +69,8 @@ public class MediaLibraryService extends VidadaServerService implements IMediaLi
 		runUnitOfWork(new Runnable() {
 			@Override
 			public void run() {
-				repository.delete(lib);
+				MediaLibrary libToDelete = repository.queryById(lib.getId());
+				repository.delete(libToDelete);
 				libraryRemovedEvent.fireEvent(this, EventArgsG.build(lib));
 			}
 		});

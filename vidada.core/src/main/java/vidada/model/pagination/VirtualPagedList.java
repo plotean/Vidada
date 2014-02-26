@@ -175,9 +175,13 @@ public class VirtualPagedList<T> implements IDataProvider<IDeferLoaded<T>>{
 		private void tryLoad(){
 			if(pageLoader.isLoaded())
 			{
-				ListPage<T> page = pageLoader.getLoadedPage();
-				loadedItem = page.getByRealIndex(index);
-				loadedEvent.fireEvent(this, EventArgs.Empty);
+				try{
+					ListPage<T> page = pageLoader.getLoadedPage();
+					loadedItem = page.getByRealIndex(index);
+					loadedEvent.fireEvent(this, EventArgs.Empty);
+				}catch(IllegalArgumentException e){
+					e.printStackTrace();
+				}
 			}
 		}
 
