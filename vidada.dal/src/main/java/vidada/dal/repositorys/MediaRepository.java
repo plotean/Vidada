@@ -183,4 +183,14 @@ public class MediaRepository extends JPARepository implements IMediaRepository{
 		return (int)result.longValue();
 	}
 
+
+	@Override
+	public List<MediaItem> queryByLibrary(MediaLibrary library) {
+		TypedQuery<MediaItem> query = getEntityManager()
+				.createQuery("SELECT distinct m from MediaItem m inner join m.sources s where s.parentLibrary = :library", MediaItem.class);
+		query.setParameter("library", library);
+
+		return query.getResultList();
+	}
+
 }
