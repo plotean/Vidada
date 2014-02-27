@@ -48,14 +48,13 @@ public class TagClientService extends ClientService implements ITagClientService
 					parsedTags.add( newTag );
 			}
 		}
-
 		return parsedTags;
 	}
 
 
 	@Override
 	public Tag getTag(String tagName){
-		tagName = tagName.toLowerCase();
+		tagName = Tag.toTagString(tagName);
 		Tag tag = tagNameCache.get(tagName);
 		if(tag == null){
 			if(isValidTag(tagName)){
@@ -81,7 +80,7 @@ public class TagClientService extends ClientService implements ITagClientService
 	}
 
 	private Tag createTag(String name){
-		Tag tag = new Tag(name);
+		Tag tag = Tag.create(name);
 		tagNameCache.put(name, tag);
 		return tag;
 	}

@@ -1,7 +1,7 @@
 package vidada.model.media.source;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import vidada.model.entities.IdEntity;
@@ -18,7 +18,7 @@ import archimedesJ.io.locations.ResourceLocation;
 @Entity
 public abstract class MediaSource extends IdEntity {
 
-	@Column(name="location")
+	@Transient
 	private ResourceLocation location;
 
 	/**

@@ -20,17 +20,52 @@ import javax.xml.bind.annotation.XmlAccessorType;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Tag  implements Comparable<Tag> {
 
+
+	/***************************************************************************
+	 *                                                                         *
+	 * Public creator API                                                      *
+	 *                                                                         *
+	 **************************************************************************/
+
+	public static Tag create(String tag){
+		return new Tag(toTagString(tag));
+	}
+
+	public static String toTagString(String tag){
+		// TODO Maybe replace special chars here as well
+		return tag.trim().toLowerCase();
+	}
+
+	/***************************************************************************
+	 *                                                                         *
+	 * Private fields                                                          *
+	 *                                                                         *
+	 **************************************************************************/
+
 	transient int hashcode_cache = -1;
 
 	@Id
 	@Column(nullable=false)
 	private String name;
 
+
+	/***************************************************************************
+	 *                                                                         *
+	 * Constructors                                                            *
+	 *                                                                         *
+	 **************************************************************************/
+
 	protected Tag() { }
 
-	public Tag(String name){
+	protected Tag(String name){
 		this.setName(name);
 	}
+
+	/***************************************************************************
+	 *                                                                         *
+	 * Properties                                                              *
+	 *                                                                         *
+	 **************************************************************************/
 
 	public String getName() {
 		return name;
@@ -40,6 +75,12 @@ public class Tag  implements Comparable<Tag> {
 		this.name = name;
 	}
 
+
+	/***************************************************************************
+	 *                                                                         *
+	 * Overridden Public API                                                   *
+	 *                                                                         *
+	 **************************************************************************/
 
 	@Override
 	public String toString(){

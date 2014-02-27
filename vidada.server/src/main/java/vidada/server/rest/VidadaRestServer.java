@@ -1,17 +1,16 @@
 package vidada.server.rest;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import vidada.IVidadaServer;
-import vidada.server.rest.resource.HelloWorldResource;
-import vidada.server.rest.resource.MediaResource;
-import vidada.server.rest.resource.MediasResource;
+import org.glassfish.grizzly.http.server.HttpServer;
 
+import vidada.IVidadaServer;
+
+import com.sun.jersey.api.container.grizzly2.GrizzlyServerFactory;
 import com.sun.jersey.api.core.DefaultResourceConfig;
-import com.sun.jersey.simple.container.SimpleServerFactory;
+import com.sun.jersey.api.core.PackagesResourceConfig;
 
 public class VidadaRestServer{
 
@@ -25,17 +24,13 @@ public class VidadaRestServer{
 
 
 
-	public Closeable start(){
+	public HttpServer start(){
 
 		System.out.println("Configuration of REST Server...");
 
-		String serverLocation = "http://0.0.0.0:5555";
+		String serverLocation = "http://localhost:5555/api";
+		DefaultResourceConfig resourceConfig = new PackagesResourceConfig("vidada.server.rest.resource");
 
-		DefaultResourceConfig resourceConfig = new DefaultResourceConfig(
-				HelloWorldResource.class,
-				MediaResource.class,
-				MediasResource.class
-				);
 
 
 		final Map<String, Object> config = new HashMap<String, Object>();
@@ -44,12 +39,16 @@ public class VidadaRestServer{
 
 		// The following line is to enable GZIP when client accepts it
 		//resourceConfig.getContainerResponseFilters().add(new GZIPContentEncodingFilter());
-		Closeable server = null;
+
+		resourceConfig.getProperties().put(
+				"com.sun.jersey.spi.container.ContainerRequestFilters",
+				"vidada.server.rest.AuthFilter");
+
+		HttpServer server = null;
 		try {
 			System.out.println("Starting REST Server @ "  + serverLocation);
-			server = SimpleServerFactory.create(serverLocation, resourceConfig);
-			//System.out.println("Press any key to stop the service...");
-			//System.in.read();
+			server = GrizzlyServerFactory.createHttpServer(
+					serverLocation, resourceConfig);
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
 		} catch (IOException e) {

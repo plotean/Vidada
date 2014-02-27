@@ -1,6 +1,8 @@
 package vidada.server.services;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Callable;
 
 import vidada.model.tags.Tag;
@@ -16,7 +18,7 @@ import vidada.services.ITagService;
  */
 public class TagService extends VidadaServerService implements ITagService {
 
-	//transient private final ITagService tagService;
+	transient private final Map<String, Tag> tagCache = new HashMap<String, Tag>();
 
 	transient private final TagRelationDefinition relationDefinition = new TagRelationDefinition();
 	transient private final ITagRepository repository = getRepository(ITagRepository.class);
@@ -52,6 +54,18 @@ public class TagService extends VidadaServerService implements ITagService {
 				return repository.getAllTags();
 			}
 		});
+	}
+
+	/**{@inheritDoc}*/
+	@Override
+	public Tag getTag(String tagName) {
+		tagName = Tag.toTagString(tagName);
+		Tag tag = tagCache.get(tagName);
+		if(tag == null){
+			tag = Tag.create(tagName);
+			tagCache.put(tagName, tag);
+		}
+		return tag;
 	}
 
 }

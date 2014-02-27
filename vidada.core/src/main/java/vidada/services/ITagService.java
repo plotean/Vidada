@@ -13,12 +13,11 @@ public interface ITagService  {
 
 
 	/**
-	 * Gets all related tags for the provided one
+	 * Gets all related tags for the given one.
 	 * @param tag
 	 * @return
 	 */
 	public Collection<Tag> getAllRelatedTags(Tag tag);
-
 
 	/**
 	 * Removes the given tag from all medias
@@ -27,8 +26,17 @@ public interface ITagService  {
 	public abstract void removeTag(Tag tag);
 
 	/**
-	 * Returns all tags which are used by medias
+	 * Returns all tags which are used by medias.
 	 * @return
 	 */
 	public abstract Collection<Tag> getUsedTags();
+
+
+	// NON SERVICE METHODS :
+
+	/**
+	 * Gets the tag for the given string-name
+	 * @return
+	 */
+	public abstract Tag getTag(String tagName);
 }

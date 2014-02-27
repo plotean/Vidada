@@ -55,6 +55,10 @@ public class MediaQuery extends AbstractQuery<MediaItem>{
 		this.reverseOrder = reverseOrder;
 	}
 
+	public MediaQuery(){
+		super(QueryType.Query, MediaItem.class);
+	}
+
 	protected MediaQuery(AbstractQuery.QueryType type) {
 		super(type, MediaItem.class);
 	}
