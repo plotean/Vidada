@@ -12,6 +12,7 @@ import vidada.dal.JPARepository;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaLibrary;
 import vidada.model.media.MediaQuery;
+import vidada.model.media.OrderProperty;
 import vidada.model.pagination.ListPage;
 import vidada.model.tags.Tag;
 import vidada.server.dal.repositories.IMediaRepository;
@@ -48,7 +49,7 @@ public class MediaRepository extends JPARepository implements IMediaRepository{
 
 	private TypedQuery<MediaItem> buildQuery(MediaQuery qry){
 
-		String sQry = "SELECT m from MediaItem m WHERE " + buildMediaWhereQuery(qry);
+		String sQry = "SELECT m from MediaItem m WHERE " + buildMediaWhereQuery(qry) + buildMediaOrderByQuery(qry);
 
 		TypedQuery<MediaItem> q = getEntityManager()
 				.createQuery(sQry, MediaItem.class);
@@ -61,6 +62,38 @@ public class MediaRepository extends JPARepository implements IMediaRepository{
 	private void setQueryParams(Query q, MediaQuery qry){
 		if(qry.hasKeyword()) q.setParameter("keywords", "%" + qry.getKeywords() + "%");
 		if(qry.hasMediaType()) q.setParameter("type", qry.getSelectedtype());
+	}
+
+	private String buildMediaOrderByQuery(MediaQuery qry){
+		String orderBy = ""; 
+
+		OrderProperty order = qry.getOrder();
+		if(!order.equals(OrderProperty.NONE)){
+
+			String direction = "DESC";
+			String reversedirection = "ASC";
+
+			if(qry.isReverseOrder()){
+				// Swap
+				String tmp = direction;
+				direction = reversedirection;
+				reversedirection = tmp;
+			}
+
+			orderBy += "ORDER BY ";
+
+			switch (order) {
+			case FILENAME:
+				// Ignore
+				break;
+			default:
+				orderBy += "m." + order.getProperty() + " " + direction + ","; // By default desc order
+			}
+
+			orderBy += " m.filename " + reversedirection;  // file name is asc order by default
+		}
+
+		return orderBy;
 	}
 
 	private String buildMediaWhereQuery(MediaQuery qry){
@@ -83,7 +116,7 @@ public class MediaRepository extends JPARepository implements IMediaRepository{
 			where += "('" + requiredTag + "'" + " NOT MEMBER OF m.tags) AND ";
 		}
 
-		where += "1=1";
+		where += "1=1 ";
 
 		return where;
 	}
