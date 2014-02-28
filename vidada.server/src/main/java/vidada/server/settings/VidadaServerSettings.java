@@ -1,10 +1,11 @@
 package vidada.server.settings;
 
 import java.io.File;
-import java.lang.reflect.Type;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
 import vidada.model.settings.JsonSettings;
 import vidada.model.settings.VidadaDatabase;
@@ -14,8 +15,7 @@ import archimedesJ.geometry.Size;
 import archimedesJ.util.Lists;
 import archimedesJ.util.OSValidator;
 
-import com.google.gson.reflect.TypeToken;
-
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class VidadaServerSettings extends JsonSettings { 
 
 	/***************************************************************************
@@ -73,12 +73,7 @@ public class VidadaServerSettings extends JsonSettings {
 
 			if(Path.exists())
 			{
-				Type settingsType = new TypeToken<VidadaServerSettings>(){}.getType();
-				Object settingsObj = JsonSettings.loadSettings(Path, settingsType);
-				if(settingsObj instanceof VidadaServerSettings)
-				{
-					instance = (VidadaServerSettings)settingsObj;
-				}
+				instance = JsonSettings.loadSettings(Path, VidadaServerSettings.class);
 			}
 		}
 

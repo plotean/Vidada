@@ -4,16 +4,16 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.Properties;
 
-import com.google.gson.reflect.TypeToken;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
 /**
  * Holds the applications global settings
  * @author IsNull
  *
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class VidadaClientSettings extends JsonSettings {
 
 	/***************************************************************************
@@ -63,15 +63,9 @@ public class VidadaClientSettings extends JsonSettings {
 	public static VidadaClientSettings instance(){ 
 
 		if(instance == null){
-
 			if(Path.exists())
 			{
-				Type settingsType = new TypeToken<VidadaClientSettings>(){}.getType();
-				Object settingsObj = JsonSettings.loadSettings(Path, settingsType);
-				if(settingsObj instanceof VidadaClientSettings)
-				{
-					instance = (VidadaClientSettings)settingsObj;
-				}
+				instance = JsonSettings.loadSettings(Path, VidadaClientSettings.class);
 			}
 		}
 

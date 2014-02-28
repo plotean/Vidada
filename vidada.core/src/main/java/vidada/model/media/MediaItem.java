@@ -13,6 +13,9 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.codehaus.jackson.annotate.JsonSubTypes;
+import org.codehaus.jackson.annotate.JsonSubTypes.Type;
+import org.codehaus.jackson.annotate.JsonTypeInfo;
 import org.joda.time.DateTime;
 
 import vidada.model.entities.BaseEntity;
@@ -30,6 +33,13 @@ import archimedesJ.util.Lists;
  * @author IsNull
  * 
  */
+@JsonTypeInfo(  
+		use = JsonTypeInfo.Id.NAME,  
+		include = JsonTypeInfo.As.PROPERTY,  
+		property = "type")  
+@JsonSubTypes({  
+	@Type(value = MovieMediaItem.class, name = "MOVIE"),  
+	@Type(value = ImageMediaItem.class, name = "IMAGE") })  
 @XmlRootElement
 @Entity
 public abstract class MediaItem extends BaseEntity {

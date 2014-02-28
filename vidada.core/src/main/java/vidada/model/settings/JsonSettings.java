@@ -3,12 +3,13 @@ package vidada.model.settings;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.lang.reflect.Type;
 
-import archimedesJ.util.FileSupport;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
+import org.codehaus.jackson.annotate.JsonMethod;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.SerializationConfig;
 
 /**
  * Base class for Json based settings
@@ -39,32 +40,38 @@ public class JsonSettings {
 
 		assert settingsPath != null : "You must set the Settings path before calling persist()!";
 
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		String jsonString = gson.toJson(this);
+		ObjectMapper mapper = buildMapper();
+
 		try {
-			FileSupport.writeToFile(settingsPath, jsonString);
+			mapper.writeValue(settingsPath, this);
+		} catch (JsonGenerationException e) {
+			e.printStackTrace();
+		} catch (JsonMappingException e) {
+			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
-	public static Object loadSettings(File path, Type type){
-		Object settings = null;
-
+	public static <T> T loadSettings(File path, Class<T> type){
+		T settings = null;
 		try {
-			String json = FileSupport.readFileToString(path);
-
-			Gson gson = new GsonBuilder().create();
-
-			settings = gson.fromJson(json, type);
-
+			ObjectMapper mapper = buildMapper();
+			settings = mapper.readValue(path, type);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
 		return settings;
+	}
+
+	private static ObjectMapper buildMapper(){
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.configure(SerializationConfig.Feature.INDENT_OUTPUT, true);
+		mapper.setVisibility(JsonMethod.ALL, Visibility.NONE);
+		mapper.setVisibility(JsonMethod.FIELD, Visibility.ANY);
+		return mapper;
 	}
 
 
