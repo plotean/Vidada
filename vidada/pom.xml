@@ -2,7 +2,7 @@
  	<modelVersion>4.0.0</modelVersion>
  	<groupId>Vidada</groupId>
 	<artifactId>Vidada</artifactId>
-	<version>0.1.1-BETA</version>
+	<version>0.1.2-BETA</version>
 
 	<repositories>
 	   <repository>
@@ -16,14 +16,15 @@
 	    </repository>
 	</repositories>
 
-	<!-- Deployment info  
+	<!-- Deployment info  -->
 	<distributionManagement>
 	    <repository>
-	      <id>ftp-repository</id>
-	      <url>ftp://repository.mycompany.com/repository</url>
+	      <id>securityvision-repository</id>
+	      <!--<url>sftp://securityvision.ch/~/dl.securityvision.ch/Vidada</url>-->
+	      <url>sftp://securityvision.ch//var/www/vhosts/lvps83-169-20-121.dedicated.hosteurope.de/dl.securityvision.ch</url>
+	      <!-- Credentials are specified in private /.m2/settings.xml  -->
 	    </repository>
 	</distributionManagement>
-	-->
 	
 	
 	<build>
@@ -82,6 +83,9 @@
 				    <manifest>
 				   		<addClasspath>true</addClasspath>
 				    	<mainClass>vidada.Application</mainClass>
+				    	<!-- Copy maven version info to jar -->
+				     	<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                		<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
 				    </manifest>
 				  </archive>
 				  <descriptorRefs>
@@ -99,21 +103,24 @@
 				</executions>
 			</plugin>
 			
-			<!-- Creates a jar 
+			<!-- Configures a jar -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 			 	<artifactId>maven-jar-plugin</artifactId>
 				<version>2.4</version>
 				<configuration>
-				  <archive>
-				    <manifest>
-				      <addClasspath>true</addClasspath>
-				      <mainClass>vidada.Application</mainClass>
-				    </manifest>
-				  </archive>
+					<archive>
+				    	<manifest>
+				    		<addClasspath>true</addClasspath>
+				      		<mainClass>vidada.Application</mainClass>
+				      		<!-- Copy maven version info to jar -->
+				     		<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                			<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+				    	</manifest>
+					</archive>
 				</configuration>
 			</plugin>
-			-->
+			
 					
 			<!-- OSX App bundle generator Plugin  -->
 			<plugin>
@@ -138,8 +145,16 @@
 			         </execution>
 			    </executions>
 			</plugin>
-			
 		</plugins>
+		
+		<extensions>
+		     <!-- Enabling the use of SSH / SFTP -->
+		  <extension>
+		    <groupId>org.apache.maven.wagon</groupId>
+		     <artifactId>wagon-ssh</artifactId>
+		     <version>2.6</version>
+		  </extension>
+		</extensions>
 		
 	</build>
 	
