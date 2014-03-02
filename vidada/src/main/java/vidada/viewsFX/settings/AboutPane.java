@@ -1,8 +1,10 @@
 package vidada.viewsFX.settings;
 
 import javafx.geometry.Insets;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
+import vidada.Application;
 
 public class AboutPane extends AbstractSettingsPane {
 
@@ -41,6 +43,20 @@ public class AboutPane extends AbstractSettingsPane {
 "<li><b>archimedesj</b> - Java paterns/util library</li>" +
 "</ul>"+
 "</html>"*/
+
+		Package pack = Application.class.getPackage();
+		String version = pack.getImplementationVersion();
+		Label versionLabel = new Label();
+
+		if(version != null){
+			versionLabel.setText("Version: " + version);
+		}else {
+			versionLabel.setText("Version information not available.");
+			versionLabel.setDisable(true);
+		}
+
+		BorderPane.setMargin(versionLabel, new Insets(10));
+		setTop(versionLabel);
 
 		TextArea root = new TextArea(aboutVidada + "\n\n"+legalNote + "\n\n" + warrantyNote);
 		root.setWrapText(true);
