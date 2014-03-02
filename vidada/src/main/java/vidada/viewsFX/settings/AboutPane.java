@@ -4,7 +4,7 @@ import javafx.geometry.Insets;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
 
-public class AboutPane extends BorderPane {
+public class AboutPane extends AbstractSettingsPane {
 
 	public AboutPane(){
 

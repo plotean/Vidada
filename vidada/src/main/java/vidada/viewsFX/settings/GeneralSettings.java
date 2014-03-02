@@ -8,7 +8,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import vidada.model.settings.VidadaClientSettings;
 
-public class GeneralSettings extends BorderPane {
+public class GeneralSettings extends AbstractSettingsPane {
 
 	private final VidadaClientSettings applicationSettings = VidadaClientSettings.instance();
 

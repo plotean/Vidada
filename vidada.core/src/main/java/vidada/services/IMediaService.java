@@ -52,6 +52,13 @@ public interface IMediaService {
 	public ListPage<MediaItem> query(MediaQuery qry, int pageIndex, int maxPageSize);
 
 	/**
+	 * Returns the media with the given hash or NULL
+	 * @param hash
+	 * @return
+	 */
+	public MediaItem queryByHash(String hash);
+
+	/**
 	 * Finds an existing media item or creates a new one for the given file
 	 * @param file
 	 * @param persist
@@ -83,6 +90,6 @@ public interface IMediaService {
 	 */
 	public void delete(Collection<MediaItem> media);
 
-	public MediaItem queryByHash(String hash);
+
 
 }

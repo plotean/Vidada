@@ -1,5 +1,6 @@
 package vidada.viewsFX.settings;
 
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
@@ -20,7 +21,7 @@ public class SettingsViewFX extends BorderPane {
 
 		addSettingsTab("Privacy", new Label("TODO-Privacy"));
 
-		addSettingsTab("Server", new Label("TODO-Server"));
+		addSettingsTab("Server", new ServerSettings());
 
 		addSettingsTab("About", new AboutPane());
 
@@ -31,7 +32,12 @@ public class SettingsViewFX extends BorderPane {
 		Tab tab = new Tab();
 		tab.setClosable(false);
 		tab.setText(name);
-		tab.setContent(node);
+
+		BorderPane border = new BorderPane();
+		BorderPane.setMargin(node, new Insets(20));
+		border.setCenter(node);
+		tab.setContent(border);
+
 		tabPane.getTabs().add(tab);
 	}
 }

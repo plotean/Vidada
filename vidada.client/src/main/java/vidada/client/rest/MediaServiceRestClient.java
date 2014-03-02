@@ -1,7 +1,10 @@
 package vidada.client.rest;
 
+import java.net.URI;
 import java.util.Collection;
 import java.util.List;
+
+import javax.ws.rs.core.MediaType;
 
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaQuery;
@@ -10,7 +13,18 @@ import vidada.services.IMediaService;
 import archimedesJ.exceptions.NotImplementedException;
 import archimedesJ.io.locations.ResourceLocation;
 
-public class MediaServiceRestClient implements IMediaService {
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.WebResource;
+
+public class MediaServiceRestClient extends RESTClientService implements IMediaService {
+
+
+	public MediaServiceRestClient(Client client, URI api) {
+		super(client, api);
+	}
+
+
+
 
 
 	@Override
@@ -19,14 +33,14 @@ public class MediaServiceRestClient implements IMediaService {
 	}
 
 	@Override
-	public ListPage<MediaItem> query(MediaQuery qry, int pageIndex,
-			int maxPageSize) {
+	public ListPage<MediaItem> query(MediaQuery qry, int pageIndex, int maxPageSize) {
 		throw new NotImplementedException();
 	}
 
 	@Override
 	public int count() {
-		throw new NotImplementedException();
+		String countStr = mediasResource().path("count").accept(MediaType.TEXT_PLAIN).get(String.class);
+		return Integer.parseInt(countStr);
 	}
 
 
@@ -72,5 +86,9 @@ public class MediaServiceRestClient implements IMediaService {
 	public MediaItem queryByHash(String hash) {
 		throw new NotImplementedException();
 	}
+	//
 
+	protected WebResource mediasResource(){
+		return apiResource().path("medias");
+	}
 }

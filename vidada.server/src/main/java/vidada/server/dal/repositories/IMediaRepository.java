@@ -12,6 +12,14 @@ import archimedesJ.io.locations.ResourceLocation;
 
 public interface IMediaRepository extends IRepository {
 
+
+	/***************************************************************************
+	 *                                                                         *
+	 * Query                                                                   *
+	 *                                                                         *
+	 **************************************************************************/
+
+
 	/**
 	 * Query for all medias which match the given media-query
 	 * @param qry
@@ -32,27 +40,6 @@ public interface IMediaRepository extends IRepository {
 	 */
 	public abstract Collection<MediaItem> query(Tag tag);
 
-	public abstract void store(MediaItem mediadata);
-
-	public abstract void store(Iterable<MediaItem> mediadatas);
-
-	public abstract void delete(MediaItem mediadata);
-
-	public abstract void delete(Iterable<MediaItem> mediadatas);
-
-	public abstract List<MediaItem> getAllMedias();
-
-	public abstract void update(MediaItem mediadata);
-
-	public abstract void update(Iterable<MediaItem> mediadatas);
-
-	public abstract void removeAll();
-
-	/**
-	 * Returns the count of all medias
-	 * @return
-	 */
-	public abstract int countAll();
 
 	/**
 	 * Query for the media with the given hash
@@ -69,8 +56,43 @@ public interface IMediaRepository extends IRepository {
 	 */
 	public MediaItem queryByPath(ResourceLocation file, MediaLibrary library);
 
+	/**
+	 * Returns all medias which are part of the given library
+	 * @param library
+	 * @return
+	 */
 	public abstract List<MediaItem> queryByLibrary(MediaLibrary library);
 
 
+	public abstract List<MediaItem> getAllMedias();
+
+	/**
+	 * Returns the count of all medias
+	 * @return
+	 */
+	public abstract int countAll();
+
+
+
+
+	/***************************************************************************
+	 *                                                                         *
+	 * CRUD                                                                    *
+	 *                                                                         *
+	 **************************************************************************/
+
+	public abstract void store(MediaItem mediadata);
+
+	public abstract void store(Iterable<MediaItem> mediadatas);
+
+	public abstract void update(MediaItem mediadata);
+
+	public abstract void update(Iterable<MediaItem> mediadatas);
+
+	public abstract void delete(MediaItem mediadata);
+
+	public abstract void delete(Iterable<MediaItem> mediadatas);
+
+	public abstract void removeAll();
 
 }

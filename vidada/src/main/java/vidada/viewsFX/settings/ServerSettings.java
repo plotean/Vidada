@@ -1,8 +1,7 @@
 package vidada.viewsFX.settings;
 
-import javafx.scene.layout.BorderPane;
 
-public class ServerSettings extends BorderPane {
+public class ServerSettings extends AbstractSettingsPane {
 
 	public ServerSettings(){
 

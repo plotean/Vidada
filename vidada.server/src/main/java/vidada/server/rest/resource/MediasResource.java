@@ -55,12 +55,8 @@ public class MediasResource {
 				query.getRequiredTags().add(tag);
 			}
 		}
-
-		type = (type != null) ? type : vidada.model.media.MediaType.ANY;
-		order = (order != null) ? order : OrderProperty.FILENAME;
-		query.setSelectedtype(type);
-		query.setOrder(order);
-
+		query.setSelectedtype((type != null) ? type : vidada.model.media.MediaType.ANY);
+		query.setOrder((order != null) ? order : OrderProperty.FILENAME);
 
 		return mediaService.query(query,0, 5); 
 	}

@@ -8,7 +8,6 @@ import javafx.scene.image.WritableImage;
 import archimedesJ.images.IMemoryImage;
 import archimedesJ.swing.images.ScalrEx;
 
-import com.db4o.foundation.ArgumentNullException;
 
 public class MemoryImageFx implements IMemoryImage {
 
@@ -20,7 +19,7 @@ public class MemoryImageFx implements IMemoryImage {
 	 */
 	public MemoryImageFx(Image original){
 		if(original == null)
-			throw new ArgumentNullException("original");
+			throw new IllegalArgumentException("original");
 
 		this.original = original;
 	}
