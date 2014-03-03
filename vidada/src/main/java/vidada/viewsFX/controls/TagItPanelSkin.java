@@ -16,7 +16,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.FlowPane;
 
 import org.controlsfx.control.textfield.AutoCompletionBinding;
-import org.controlsfx.control.textfield.AutoCompletionBinding.IAutoCompletionListener;
+import org.controlsfx.control.textfield.AutoCompletionBinding.AutoCompletionEvent;
 import org.controlsfx.control.textfield.TextFields;
 
 import archimedesJ.exceptions.NotSupportedException;
@@ -179,11 +179,11 @@ public class TagItPanelSkin<T> extends BehaviorSkinBase<TagItPanel<T>, BehaviorB
 
 			autoCompletionBinding = TextFields.bindAutoCompletion(tagEdit, getSkinnable().getSuggestionProvider());
 
-			autoCompletionBinding.addListener(new IAutoCompletionListener<T>() {
+			autoCompletionBinding.setOnAutoCompleted(new EventHandler<AutoCompletionEvent<T>>() {
 				@Override
-				public void afterAutocompletion(T completion) {
-					if(completion != null)
-						appendTag(completion);
+				public void handle(AutoCompletionEvent<T> completionArgs) {
+					if(completionArgs.getCompletion() != null)
+						appendTag(completionArgs.getCompletion());
 					tagEdit.setText("");
 				}
 			});
