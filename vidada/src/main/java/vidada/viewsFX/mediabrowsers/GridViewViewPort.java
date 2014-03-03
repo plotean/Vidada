@@ -29,8 +29,12 @@ import com.sun.javafx.scene.control.skin.VirtualFlow;
  */
 public class GridViewViewPort {
 
-	private final GridView gridview;
-	private VirtualFlow vf;
+	/***************************************************************************
+	 *                                                                         *
+	 * Static                                                                  *
+	 *                                                                         *
+	 **************************************************************************/
+
 
 	private static Field flowField;
 
@@ -45,6 +49,17 @@ public class GridViewViewPort {
 		}
 	}
 
+	/***************************************************************************
+	 *                                                                         *
+	 * Private fields                                                          *
+	 *                                                                         *
+	 **************************************************************************/
+
+	private final GridView gridview;
+	private VirtualFlow vf;
+	private boolean registered;
+	private IndexRange visibleCells = null;
+
 	private final EventHandlerEx<EventArgs> viewPortItemsChanged = new EventHandlerEx<>();
 
 	/**
@@ -58,25 +73,17 @@ public class GridViewViewPort {
 		this.gridview = gridview;
 	}
 
-	private VirtualFlow getVirtualFlow(){
+	/***************************************************************************
+	 *                                                                         *
+	 * Public methods                                                          *
+	 *                                                                         *
+	 **************************************************************************/
 
-		if(vf == null){
-			GridViewSkin skin = (GridViewSkin)gridview.getSkin();
-			VirtualContainerBase virtalContainer= skin;
-			try {
-				vf = (VirtualFlow)flowField.get(virtalContainer);
-			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
-			}
-		}
 
-		return vf;
-	}
 
-	private boolean registered;
-
+	/**
+	 * Ensures that a scroll listener is added to the internal ScrollBar to track view port change events.
+	 */
 	public void ensureViewportChangedListener(){
 		if(!registered){
 
@@ -96,10 +103,26 @@ public class GridViewViewPort {
 		}
 	}
 
-	private IndexRange visibleCells = null;
+	/**
+	 * Gets the visible cell range (cached)
+	 * @return
+	 */
+	public IndexRange getVisibleCellRange(){
+		return visibleCells;
+	}
+
+	/***************************************************************************
+	 *                                                                         *
+	 * Private methods                                                         *
+	 *                                                                         *
+	 **************************************************************************/
 
 
-	public void updateVisibleCells(){
+
+	/**
+	 * Updates the visible cells
+	 */
+	private void updateVisibleCells(){
 		IndexRange currentVisibleCells = this.fetchVisibleCellRange();
 
 		if(!currentVisibleCells.equals(visibleCells))
@@ -111,13 +134,24 @@ public class GridViewViewPort {
 		visibleCells = currentVisibleCells;
 	}
 
-	/**
-	 * Gets the visible cell range (cached)
-	 * @return
-	 */
-	public IndexRange getVisibleCellRange(){
-		return visibleCells;
+
+	private VirtualFlow getVirtualFlow(){
+
+		if(vf == null){
+			GridViewSkin skin = (GridViewSkin)gridview.getSkin();
+			VirtualContainerBase virtalContainer= skin;
+			try {
+				vf = (VirtualFlow)flowField.get(virtalContainer);
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			}
+		}
+
+		return vf;
 	}
+
 
 	/**
 	 * Gets the visible cell range in this gridview viewport
