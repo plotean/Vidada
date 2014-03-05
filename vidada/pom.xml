@@ -232,8 +232,37 @@
 		           </execution>
 			    </executions>
 			</plugin>
-			   
 			
+			<!-- Deploy the Platform specific builds -->
+			<plugin>
+			    <groupId>org.codehaus.mojo</groupId>
+			    <artifactId>build-helper-maven-plugin</artifactId>
+			    <executions>
+			        <execution>
+			            <id>install-installation</id>
+			            <phase>install</phase>
+			            <goals>
+			                <goal>attach-artifact</goal>
+			            </goals>
+			            <configuration>
+			                <artifacts>
+			                    <artifact>
+			                        <file>${basedir}/target/${project.artifactId}.exe</file>
+			                        <classifier>windows</classifier>
+			                        <type>exe</type>
+			                    </artifact>
+			                    <artifact>
+			                        <file>${basedir}/target/${project.artifactId}.app.zip</file>
+			                        <classifier>osx-universal</classifier>
+			                        <type>zip</type>
+			                    </artifact>
+			                </artifacts>
+			            </configuration>
+			        </execution>
+			    </executions>
+			</plugin>
+			   
+
 		</plugins>
 		
 		<extensions>
@@ -307,13 +336,6 @@
 			<artifactId>vlcj</artifactId>
 			<version>2.4.1</version>
 		</dependency>
-	    
-	    <!--  JmDNS: Platform independent ZeroConfig Network discovery, supporting Apple's Bonjour
-	    <dependency>
-			<groupId>javax.jmdns</groupId>
-			<artifactId>jmdns</artifactId>
-			<version>3.2.2</version>
-		</dependency> -->
 	   
 		<dependency>
 	        <groupId>org.slf4j</groupId>
