@@ -3,7 +3,35 @@
  	<groupId>Vidada</groupId>
 	<artifactId>Vidada</artifactId>
 	<version>0.1.2-BETA</version>
-
+	
+	<!-- PLatform specific profiles  -->
+	<!-- We set the os specific variables -->
+	<profiles>
+	  <profile>
+	    <id>Windows</id>
+	    <activation>
+	      <os>
+	        <family>Windows</family>
+	      </os>
+	    </activation>
+	    <properties>
+	      <script.extension>.bat</script.extension>
+	    </properties>
+	  </profile>
+	  <profile>
+	    <id>unix</id>
+	    <activation>
+	      <os>
+	        <family>unix</family>
+	      </os>
+	    </activation>
+	    <properties>
+	      <script.extension>.sh</script.extension>
+	    </properties>
+	  </profile>
+	</profiles>
+	
+	<!-- Other Repository sources than maven central  -->
 	<repositories>
 	   <repository>
 		    <id>java.net</id>
@@ -28,6 +56,7 @@
 	
 	
 	<build>
+	    <finalName>${project.artifactId}</finalName>
 		<sourceDirectory>src</sourceDirectory>
 		<resources>
 			<resource>
@@ -79,18 +108,19 @@
 				<artifactId>maven-assembly-plugin</artifactId>
 				<version>2.4</version>
 				<configuration>
-				  <archive>
-				    <manifest>
-				   		<addClasspath>true</addClasspath>
-				    	<mainClass>vidada.Application</mainClass>
-				    	<!-- Copy maven version info to jar -->
-				     	<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                		<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-				    </manifest>
-				  </archive>
-				  <descriptorRefs>
-				      <descriptorRef>jar-with-dependencies</descriptorRef>
-				  </descriptorRefs>
+				    <appendAssemblyId>false</appendAssemblyId>
+					<archive>
+					  <manifest>
+					 		<addClasspath>true</addClasspath>
+					  	<mainClass>vidada.Application</mainClass>
+					  	<!-- Copy maven version info to jar -->
+					   	<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+					          		<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+					  </manifest>
+					</archive>
+					<descriptorRefs>
+					    <descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
 				</configuration>
 				<executions>
 				    <execution>
@@ -103,7 +133,7 @@
 				</executions>
 			</plugin>
 			
-			<!-- Configures a jar -->
+			<!-- Configures a jar 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 			 	<artifactId>maven-jar-plugin</artifactId>
@@ -113,16 +143,15 @@
 				    	<manifest>
 				    		<addClasspath>true</addClasspath>
 				      		<mainClass>vidada.Application</mainClass>
-				      		<!-- Copy maven version info to jar -->
 				     		<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                 			<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
 				    	</manifest>
 					</archive>
 				</configuration>
 			</plugin>
-			
+			-->
 					
-			<!-- OSX App bundle generator Plugin  -->
+			<!-- OSX App bundle generator Plugin 
 			<plugin>
 			     <groupId>org.codehaus.mojo</groupId>
 			     <artifactId>osxappbundle-maven-plugin</artifactId>
@@ -132,9 +161,6 @@
 			         <jvmVersion>1.8+</jvmVersion>
 			         <iconFile>${basedir}/src/main/resources/images/logo.icns</iconFile>
 			         <javaApplicationStub>JavaApplicationStub</javaApplicationStub>
-			         <!-- 
-			         <javaApplicationStub>/System/Library/Frameworks/JavaVM.framework/Versions/Current/Resources/MacOS/JavaApplicationStub</javaApplicationStub>	
-			    	 -->
 			     </configuration>
 			     <executions>
 			         <execution>
@@ -143,6 +169,24 @@
 			                 <goal>bundle</goal>
 			             </goals>
 			         </execution>
+			    </executions>
+			</plugin>
+			 -->
+			<plugin>
+			  <groupId>org.codehaus.mojo</groupId>
+			  <artifactId>exec-maven-plugin</artifactId>
+			  <version>1.2.1</version>
+			    <executions>
+			        <execution>
+			            <id>bundle-osx-app</id>
+			            <phase>package</phase>
+			            <goals>
+			                <goal>exec</goal>
+			            </goals>
+			            <configuration>
+			                <executable>./build/bundle-app${script.extension}</executable>
+			            </configuration>
+			        </execution>
 			    </executions>
 			</plugin>
 			
@@ -161,7 +205,7 @@
 		            <configuration>
 		                <headerType>gui</headerType>
 		                <outfile>target/${project.artifactId}.exe</outfile>
-		                <jar>target/${project.artifactId}-${project.version}-jar-with-dependencies.jar</jar> 
+		                <jar>target/${project.artifactId}.jar</jar> 
 		                <errTitle>App Err</errTitle>
 		                <classPath>
 		                    <mainClass>vidada.Application</mainClass>
@@ -264,12 +308,12 @@
 			<version>2.4.1</version>
 		</dependency>
 	    
-	    <!--  JmDNS: Platform independent ZeroConfig Network discovery, supporting Apple's Bonjour -->
+	    <!--  JmDNS: Platform independent ZeroConfig Network discovery, supporting Apple's Bonjour
 	    <dependency>
 			<groupId>javax.jmdns</groupId>
 			<artifactId>jmdns</artifactId>
 			<version>3.2.2</version>
-		</dependency>
+		</dependency> -->
 	   
 		<dependency>
 	        <groupId>org.slf4j</groupId>
