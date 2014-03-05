@@ -23,4 +23,7 @@ cd ./../target/
 echo "Assembling Vidada.jar into app..."
 cp Vidada.jar Vidada.app/Contents/Resources/Java/Vidada.jar
 
+echo "Compressing App to ZIP..."
+zip -r Vidada.app.zip Vidada.app
+
 echo "OSX App created successfully!"
