@@ -1,4 +1,16 @@
 .DS_Store
 Thumbs.db
+
+*.class
+# Package Files #
+*.war
+*.ear
+.apt_*
+/bin/
 /vidada/
 /vidada.core/
+/vidada.client/
+/vidada.dal/
+/vidada.server/
+
+*.log
