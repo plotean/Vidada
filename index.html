@@ -59,9 +59,9 @@
         <p class="lead">Grab your copy of Vidada for free</p>
 
         <div>
-          <a class="btn btn-large btn-info" onClick="a_download_win()">Windows</a>
-          <a class="btn btn-large btn-info" href="http://dl.securityvision.ch/Vidada/osx/vidada.dmg">Mac</a>
-          <a class="btn btn-large btn-info" href="http://dl.securityvision.ch/Vidada/linux/vidada.zip">Linux</a>
+          <a class="btn btn-large btn-info" href="http://dl.securityvision.ch/RepositoryClient.php?group=Vidada&artifact=Vidada&action=DOWNLOAD&platform=windows">Windows</a>
+          <a class="btn btn-large btn-info" href="http://dl.securityvision.ch/RepositoryClient.php?group=Vidada&artifact=Vidada&action=DOWNLOAD&platform=osx">Mac</a>
+          <a class="btn btn-large btn-info" href="http://dl.securityvision.ch/RepositoryClient.php?group=Vidada&artifact=Vidada&action=DOWNLOAD&platform=linux">Linux</a>
         </div>
       </div>
 
@@ -204,22 +204,6 @@
         e.preventDefault();
         $(this).tab('show');
       });
-
-      function a_download_win() {
-        
-
-        downloadVidada('windows');
-
-
-      };
-
-      function downloadVidada(platform) {
-        
-
-        alert(platform);
-
-
-      };
 
     </script>
 
