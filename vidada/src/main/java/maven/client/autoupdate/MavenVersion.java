@@ -1,6 +1,7 @@
 package maven.client.autoupdate;
 
 
+
 /**
  * Represents a version in the Maven world.
  * Immutable implementation.
@@ -16,18 +17,37 @@ public final class MavenVersion implements Comparable<MavenVersion> {
 	public static final MavenVersion INVLAID = new MavenVersion(-1, -1, -1, "INVALID");
 
 	/**
+	 * Thrown when the version format is invalid
+	 * @author IsNull
+	 *
+	 */
+	public static class VersionFormatException extends Exception {
+		private static final long serialVersionUID = 1L;
+		public VersionFormatException(String message){
+			super(message);
+		}
+		public VersionFormatException(String message, Throwable t){
+			super(message, t);
+		}
+	}
+
+	/**
 	 * Parses a maven version: <Major>.<Minor>.<Patch>-<Qualifier>
 	 * Example: 0.1.2-BETA
 	 * @param version
 	 * @return
 	 */
-	public static MavenVersion parse(String version){
-		String[] parts = version.split("[\\.|-]");
-		int major = parts.length > 0 ? Integer.parseInt(parts[0]) : 0;
-		int minor = parts.length > 1 ? Integer.parseInt(parts[1]) : 0;
-		int patch = parts.length > 2 ? Integer.parseInt(parts[2]) : 0;
-		String qualifier = parts.length > 3 ? parts[3] : null;
-		return new MavenVersion(major, minor, patch, qualifier);
+	public static MavenVersion parse(String version) throws VersionFormatException{
+		try{
+			String[] parts = version.trim().split("[\\.|-]");
+			int major = parts.length > 0 ? Integer.parseInt(parts[0]) : 0;
+			int minor = parts.length > 1 ? Integer.parseInt(parts[1]) : 0;
+			int patch = parts.length > 2 ? Integer.parseInt(parts[2]) : 0;
+			String qualifier = parts.length > 3 ? parts[3] : null;
+			return new MavenVersion(major, minor, patch, qualifier);
+		}catch(Exception e){
+			throw new VersionFormatException("Invalid Maven-Version Format: '" + version + "'",e);
+		}
 	}
 
 	private final int major;
@@ -59,7 +79,14 @@ public final class MavenVersion implements Comparable<MavenVersion> {
 		return qualifier;
 	}
 
-
+	/**
+	 * Is this version newer than the given one?
+	 * @param o
+	 * @return
+	 */
+	public boolean isNewerThan(MavenVersion o){
+		return this.compareTo(o) > 0;
+	}
 
 	/**
 	 * Compares this Version against the given one.

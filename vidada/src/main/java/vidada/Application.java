@@ -24,9 +24,11 @@ import vidada.model.ServiceProvider.IServiceRegisterer;
 import vidada.model.settings.VidadaClientSettings;
 import vidada.model.settings.VidadaDatabase;
 import vidada.model.system.ISystemService;
+import vidada.selfupdate.SelfUpdateService;
 import vidada.server.VidadaServer;
 import vidada.server.dal.IVidadaDALService;
 import vidada.server.settings.VidadaServerSettings;
+import vidada.services.ISelfUpdateService;
 import vidada.viewsFX.MainViewFx;
 import vidada.viewsFX.dialoges.ChooseMediaDatabaseView;
 import vidada.viewsFX.images.ImageViewerServiceFx;
@@ -198,6 +200,7 @@ public class Application extends  javafx.application.Application {
 				locator.registerSingleton(ISystemService.class, SystemService.class);
 				locator.registerSingleton(IRawImageFactory.class, RawImageFactoryFx.class);
 				locator.registerSingleton(IImageViewerService.class, ImageViewerServiceFx.class);
+				locator.registerSingleton(ISelfUpdateService.class, SelfUpdateService.class); 
 			}
 		});
 

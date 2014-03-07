@@ -109,7 +109,7 @@ public class MediaFilterDatabaseBinding {
 		// we run it in a background thread
 
 		synchronized (datafetcherLock) {
-			if(datafetcher != null && !datafetcher.isDone() && ctx != null && !ctx.isCancellationRequested())
+			if(datafetcher != null && !datafetcher.isCompleted() && ctx != null && !ctx.isCancellationRequested())
 			{
 				ctx.cancel();
 			}
