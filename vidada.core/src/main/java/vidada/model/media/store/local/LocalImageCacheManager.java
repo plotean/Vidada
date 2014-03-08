@@ -1,7 +1,6 @@
 package vidada.model.media.store.local;
 
 import java.io.File;
-import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -69,15 +68,12 @@ public class LocalImageCacheManager {
 	 */
 	private synchronized IImageCache openLocalCache(File cacheLocation) {
 		IImageCache cache = null;
-		try {
-			DirectoryLocation localCacheLocation = 
-					DirectoryLocation.Factory.create(cacheLocation.getAbsolutePath());
 
-			cache = cacheFactory.openEncryptedCache(localCacheLocation, credentialManager);
+		File absCacheLocation = new File(cacheLocation.getAbsolutePath());
+		DirectoryLocation localCacheLocation = 
+				DirectoryLocation.Factory.create(absCacheLocation);
 
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
-		}
+		cache = cacheFactory.openEncryptedCache(localCacheLocation, credentialManager);
 
 		if(cache != null){
 			return cache;
@@ -85,6 +81,7 @@ public class LocalImageCacheManager {
 			System.err.println("LocalImageCacheManager: Injecting a MemoryCache to replace LocalFile Cache");
 			return new MemoryImageCache(new ImageCacheProxyBase(null));
 		}
+
 	}
 
 
