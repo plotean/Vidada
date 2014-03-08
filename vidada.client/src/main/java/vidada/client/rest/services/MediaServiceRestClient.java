@@ -1,8 +1,11 @@
-package vidada.client.rest;
+package vidada.client.rest.services;
 
 import java.net.URI;
 
 import javax.ws.rs.core.MediaType;
+
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.type.TypeReference;
 
 import vidada.client.services.IMediaClientService;
 import vidada.model.media.MediaItem;
@@ -13,10 +16,10 @@ import archimedesJ.exceptions.NotImplementedException;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 
-public class MediaServiceRestClient extends RESTClientService implements IMediaClientService {
+public class MediaServiceRestClient extends AbstractRestService implements IMediaClientService {
 
-	public MediaServiceRestClient(Client client, URI api) {
-		super(client, api);
+	public MediaServiceRestClient(Client client, URI api, ObjectMapper mapper) {
+		super(client, api, mapper);
 	}
 
 	@Override
@@ -26,12 +29,14 @@ public class MediaServiceRestClient extends RESTClientService implements IMediaC
 
 	@Override
 	public ListPage<MediaItem> query(MediaQuery qry, int pageIndex, int maxPageSize) {
-		throw new NotImplementedException();
+		String mediasJson = mediasResource().accept(MediaType.APPLICATION_JSON_TYPE).get(String.class);
+		ListPage<MediaItem> page = deserialize(mediasJson, new TypeReference<ListPage<MediaItem>>() {});
+		return page;
 	}
 
 	@Override
 	public int count() {
-		String countStr = mediasResource().path("count").accept(MediaType.TEXT_PLAIN).get(String.class);
+		String countStr = mediasResource().path("count").accept(MediaType.TEXT_PLAIN_TYPE).get(String.class);
 		return Integer.parseInt(countStr);
 	}
 
