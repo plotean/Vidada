@@ -71,7 +71,7 @@ public class LocalImageCacheManager {
 		IImageCache cache = null;
 		try {
 			DirectoryLocation localCacheLocation = 
-					DirectoryLocation.Factory.create(cacheLocation.toString());
+					DirectoryLocation.Factory.create(cacheLocation.getAbsolutePath());
 
 			cache = cacheFactory.openEncryptedCache(localCacheLocation, credentialManager);
 
