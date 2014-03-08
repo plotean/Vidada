@@ -5,26 +5,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import vidada.IVidadaServer;
-import vidada.client.services.IMediaClientService;
-import vidada.client.services.ITagClientService;
-import vidada.client.services.IThumbnailClientService;
-import vidada.client.services.IVidadaServerClientService;
-import vidada.client.services.MediaClientService;
-import vidada.client.services.TagClientService;
-import vidada.client.services.ThumbnailClientService;
-import vidada.model.media.MediaItem;
-import archimedesJ.exceptions.NotSupportedException;
+import vidada.client.facade.VidadaClientFacade;
 
-public class VidadaClientManager implements IVidadaServerClientService {
-
-	/***************************************************************************
-	 *                                                                         *
-	 * Singleton implementation                                                *
-	 *                                                                         *
-	 **************************************************************************/
+public class VidadaClientManager implements IVidadaClientManager {
 
 
+
+	/*
 	private static VidadaClientManager instance;
 
 	public synchronized static VidadaClientManager instance(){
@@ -32,7 +19,7 @@ public class VidadaClientManager implements IVidadaServerClientService {
 			instance = new VidadaClientManager();
 		}
 		return instance;
-	}
+	}*/
 
 	/***************************************************************************
 	 *                                                                         *
@@ -40,13 +27,8 @@ public class VidadaClientManager implements IVidadaServerClientService {
 	 *                                                                         *
 	 **************************************************************************/
 
-	transient private final Map<String, IVidadaServer> allServers = new HashMap<String, IVidadaServer>();
-
-	private final IMediaClientService mediaClientService;
-	private final ITagClientService tagClientService;
-	private final IThumbnailClientService thumbnailClientService;
-
-	private IVidadaServer localServer;
+	transient private final Map<String, IVidadaClientFacade> allClients = new HashMap<String, IVidadaClientFacade>();
+	transient private IVidadaClientFacade active = null;
 
 	/***************************************************************************
 	 *                                                                         *
@@ -57,11 +39,7 @@ public class VidadaClientManager implements IVidadaServerClientService {
 	/**
 	 * Singleton private constructor
 	 */
-	private VidadaClientManager(){
-		mediaClientService = new MediaClientService(this);
-		tagClientService = new TagClientService(this);
-		thumbnailClientService = new ThumbnailClientService(this);
-	}
+	public VidadaClientManager(){ }
 
 	/***************************************************************************
 	 *                                                                         *
@@ -69,41 +47,40 @@ public class VidadaClientManager implements IVidadaServerClientService {
 	 *                                                                         *
 	 **************************************************************************/
 
-	/**
-	 * Add the given server
-	 * @param server
-	 */
+	/**{@inheritDoc}*/
 	@Override
-	public void addServer(IVidadaServer server){
-		allServers.put(server.getNameId(), server);
-		if(server.isLocal())
-			localServer = server;
+	public void addClient(IVidadaClient client){
+		IVidadaClientFacade clientFacade = new VidadaClientFacade(client);
+		allClients.put(clientFacade.getInstanceId(), clientFacade);
+		if(getActive() == null)
+			setActive(clientFacade);
 	}
 
-	/**
-	 * Returns all servers currently known to the client manager
-	 * @return
-	 */
+	/**{@inheritDoc}*/
 	@Override
-	public List<IVidadaServer> getAllServer(){
-		return new ArrayList<IVidadaServer>(allServers.values());
+	public List<IVidadaClientFacade> getAllClients(){
+		return new ArrayList<IVidadaClientFacade>(allClients.values());
+	}
+
+	private void setActive(IVidadaClientFacade active){
+		this.active = active;
+	}
+
+	/**{@inheritDoc}*/
+	@Override
+	public IVidadaClientFacade getActive() {
+		return active;
 	}
 
 	/**
 	 * Returns the local server (if any). 
 	 * @return Will return null if there is no local server registered
-	 */
+
 	@Override
 	public IVidadaServer getLocalServer(){
 		return localServer;
 	}
 
-
-	/***************************************************************************
-	 *                                                                         *
-	 * Exposed Services                                                        *
-	 *                                                                         *
-	 **************************************************************************/
 
 	public IMediaClientService getMediaClientService(){
 		return mediaClientService;
@@ -123,7 +100,7 @@ public class VidadaClientManager implements IVidadaServerClientService {
 			throw new NotSupportedException("Can not find origin of media "  + media + " media.origin name: " + media.getOriginId());
 		}
 		return origin;
-	}
+	} */
 
 }
 

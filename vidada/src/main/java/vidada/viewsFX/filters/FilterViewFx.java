@@ -19,12 +19,14 @@ import javafx.util.Callback;
 
 import org.controlsfx.control.textfield.TextFields;
 
-import vidada.client.VidadaClientManager;
+import vidada.client.IVidadaClientManager;
 import vidada.client.services.ITagClientService;
 import vidada.client.viewmodel.FilterModel;
+import vidada.model.ServiceProvider;
 import vidada.model.media.MediaType;
 import vidada.model.media.OrderProperty;
 import vidada.model.tags.Tag;
+import vidada.model.tags.TagFactory;
 import vidada.viewsFX.controls.TagItPanel;
 import archimedesJ.util.Lists;
 
@@ -38,7 +40,7 @@ public class FilterViewFx extends BorderPane {
 	private final ComboBox<MediaType> cboMediaType= new ComboBox<>();
 	private final ComboBox<OrderProperty> cboOrder= new ComboBox<>();
 
-	private final ITagClientService tagClientService = VidadaClientManager.instance().getTagClientService();
+	private final ITagClientService tagClientService = ServiceProvider.Resolve(IVidadaClientManager.class).getActive().getTagClientService();
 
 
 	public FilterViewFx(final FilterModel filtermodel){
@@ -49,7 +51,7 @@ public class FilterViewFx extends BorderPane {
 		tagPane.setTagModelFactory(new Callback<String, Tag>() {
 			@Override
 			public Tag call(String text) {
-				return tagClientService.getTag(text);
+				return TagFactory.instance().createTag(text);
 			}
 		});
 

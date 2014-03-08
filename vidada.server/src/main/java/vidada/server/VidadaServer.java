@@ -31,6 +31,11 @@ import archimedesJ.io.locations.DirectoryLocation;
 import archimedesJ.security.CredentialType;
 import archimedesJ.security.Credentials;
 
+/**
+ * Implements a Vidada Server
+ * @author IsNull
+ *
+ */
 public class VidadaServer implements IVidadaServer {
 
 
@@ -62,7 +67,11 @@ public class VidadaServer implements IVidadaServer {
 	 *                                                                         *
 	 **************************************************************************/
 
-
+	/**
+	 * Creates a new VidadaServer with the given DAL-Service.
+	 * 
+	 * @param dalService The DAL to use for persistence
+	 */
 	public VidadaServer(IVidadaDALService dalService){
 		if(dalService == null)
 			throw new IllegalArgumentException("dalService must not be NULL");
@@ -81,7 +90,6 @@ public class VidadaServer implements IVidadaServer {
 			// Create default data etc.
 			// TODO
 		}
-
 
 		if(VidadaServerSettings.instance().isEnableNetworkSharing()){
 			startNetworkSharing();

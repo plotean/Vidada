@@ -1,4 +1,4 @@
-package vidada.client.services;
+package vidada.client.facade;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -7,8 +7,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import vidada.IVidadaServer;
-import vidada.client.VidadaClientManager;
+import vidada.client.services.IThumbnailClientService;
 import vidada.model.images.ImageContainerBase;
 import vidada.model.images.cache.MemoryImageCache;
 import vidada.model.media.MediaItem;
@@ -17,20 +16,46 @@ import archimedesJ.geometry.Size;
 import archimedesJ.images.IMemoryImage;
 import archimedesJ.images.ImageContainer;
 
-public class ThumbnailClientService extends ClientService implements IThumbnailClientService {
+/**
+ * Wraps a {@link IThumbnailClientService} in an simpler to use facade.
+ * Primary purpose is to shield clients form the complexity of
+ * possible long running thumbnail generation and fetching.
+ * 
+ * Using this service, clients recive an {@link ImageContainer} which encapsulates
+ * the async loading task of an thumbnail. The tasks are internally queued and executed in order. 
+ * Further, the service ensures that only a small amount of parallel thumbnails are being loaded. 
+ * (Fetching a thumbnail can be very CPU consuming)
+ * 
+ * @author IsNull
+ *
+ */
+public class ThumbContainerService implements IThumbConatinerService {
 
-	transient private final ExecutorService executorService = Executors.newFixedThreadPool(1);
+	/**
+	 * Defines how many thumbnails can be fetched at the same time.
+	 */
+	transient private static int MAX_PARALLEL_THUMBFETCHER = 1;
+
+	transient private final ExecutorService executorService = Executors.newFixedThreadPool(MAX_PARALLEL_THUMBFETCHER);
 	/**
 	 * Maps the media id to a size specific image container
 	 */
 	transient private final Map<String, Map<Size, ImageContainer>> imageContainerCache;
 
+	transient private final IThumbnailClientService thumbnailClientService;
 
-	public ThumbnailClientService(VidadaClientManager manager) {
-		super(manager);
+	/**
+	 * Creates a new ThumbContainerService
+	 * @param thumbnailClientService
+	 */
+	public ThumbContainerService(IThumbnailClientService thumbnailClientService){
+		if(thumbnailClientService == null) throw new IllegalArgumentException("thumbnailClientService must not be Null!");
+
+		this.thumbnailClientService = thumbnailClientService;
 		this.imageContainerCache = Collections.synchronizedMap(
 				new LRUCache<String, Map<Size, ImageContainer>>((int)MemoryImageCache.MAX_MEMORY_SCALED_CACHE));
 	}
+
 
 	/***************************************************************************
 	 *                                                                         *
@@ -38,6 +63,9 @@ public class ThumbnailClientService extends ClientService implements IThumbnailC
 	 *                                                                         *
 	 **************************************************************************/
 
+	/* (non-Javadoc)
+	 * @see vidada.client.facade.IThumConatinerService#retrieveThumbnail(vidada.model.media.MediaItem, archimedesJ.geometry.Size)
+	 */
 	@Override
 	public ImageContainer retrieveThumbnail(MediaItem media, Size size) {
 		ImageContainer container = null;
@@ -57,19 +85,11 @@ public class ThumbnailClientService extends ClientService implements IThumbnailC
 		return container;
 	}
 
-
 	/***************************************************************************
 	 *                                                                         *
 	 * Private methods                                                         *
 	 *                                                                         *
 	 **************************************************************************/
-
-	private IMemoryImage getThumbImage(MediaItem media, Size size) {
-		// TODO maybe add local cache?
-		IVidadaServer origin = getClientManager().getOriginServer(media);
-		return origin.getThumbnailService().getThumbImage(media, size);
-	}
-
 
 	private ImageContainer buildContainer(MediaItem media, Size size){
 		return new ImageContainerBase(
@@ -77,26 +97,10 @@ public class ThumbnailClientService extends ClientService implements IThumbnailC
 				new ImageLoaderTask(media, size));
 	}
 
-	/*
-	private void removeImage(MediaItem media) {
-		// clear the cache
-		getImageCache(media).removeImage(media.getFilehash());
-
-		Map<Size, ImageContainer> containerSize = imageContainerCache.get(media.getId());
-		if(containerSize != null){
-			for (ImageContainer container : containerSize.values()) {
-				container.notifyImageChanged();
-			}
-		}
+	private IMemoryImage getThumbImage(MediaItem media, Size size) {
+		// TODO local file cache?
+		return thumbnailClientService.retrieveThumbnail(media, size);
 	}
-
-
-	private void storeImage(MediaItem media, IMemoryImage image){
-		getImageCache(media).storeImage(media.getFilehash(), image);
-	}
-	 */
-
-
 
 	/***************************************************************************
 	 *                                                                         *
@@ -124,8 +128,4 @@ public class ThumbnailClientService extends ClientService implements IThumbnailC
 			return getThumbImage(media, size);
 		}
 	}
-
-
-
-
 }

@@ -90,6 +90,4 @@ public interface IMediaService {
 	 */
 	public void delete(Collection<MediaItem> media);
 
-
-
 }

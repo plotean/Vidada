@@ -3,7 +3,6 @@ package vidada.client.viewmodel.explorer;
 import java.util.List;
 
 import vidada.IVidadaServer;
-import vidada.client.VidadaClientManager;
 import vidada.client.model.browser.BrowserFolderItem;
 import vidada.client.model.browser.BrowserFolderItemLocation;
 import vidada.client.model.browser.IBrowserItem;
@@ -17,8 +16,9 @@ import archimedesJ.io.locations.DirectoryLocation;
 
 public class MediaExplorerVM {
 
-	private final IVidadaServer localServer = VidadaClientManager.instance().getLocalServer();
-	private final IMediaService localMediaService = localServer.getMediaService();
+
+	private final IVidadaServer localServer = null; // TODO: VidadaClientManager.instance().getLocalServer();
+	private final IMediaService localMediaService = null;//localServer.getMediaService();
 
 
 	private BrowserFolderItemLocation browserModel;

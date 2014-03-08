@@ -32,7 +32,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import vidada.client.VidadaClientManager;
+import vidada.IVidadaServer;
 import vidada.commands.AddNewMediaLibraryAction;
 import vidada.model.media.MediaLibrary;
 import vidada.services.IMediaLibraryService;
@@ -52,8 +52,6 @@ public class ManageLibraryFoldersDialog extends JDialog {
 	private JList listAllLibraries;
 	private FileChooserPanel txtCurrentPath;
 
-	private IMediaLibraryService libService = VidadaClientManager.instance().getLocalServer().getLibraryService();
-
 	private DefaultListModel allLibrariesModel = new DefaultListModel();
 
 	private Action removeLibraryAction;
@@ -64,65 +62,73 @@ public class ManageLibraryFoldersDialog extends JDialog {
 	boolean librariesHasChanged = false;
 	private Callback<Void, Void> libraryChangedCallback;
 
+	private IMediaLibraryService libService = null;
 
 	private void init(){
 
-		List<MediaLibrary> allibraries = libService.getAllLibraries();
-		for (MediaLibrary mediaLibrary : allibraries) {
-			allLibrariesModel.addElement(mediaLibrary);
-		}
+		IVidadaServer localServer = vidada.Application.getLocalServer();
 
-		//
-		// Remove selected Library 
-		//
-		removeLibraryAction = new AbstractAction("", ImageResources.DELETE_ICON_32) {
+		if(localServer != null){
+			libService = localServer.getLibraryService();
 
-			@Override
-			public void actionPerformed(ActionEvent evt) {
-
-				libService.removeLibrary((MediaLibrary)listAllLibraries.getSelectedValue());
+			List<MediaLibrary> allibraries = libService.getAllLibraries();
+			for (MediaLibrary mediaLibrary : allibraries) {
+				allLibrariesModel.addElement(mediaLibrary);
 			}
-		};
-		removeLibraryAction.putValue(Action.SHORT_DESCRIPTION, "Remove the selected library ");
-
-		//
-		// Add a new MediaLibrary 
-		//
-		addLibraryAction =  new AddNewMediaLibraryAction(ManageLibraryFoldersDialog.this);
 
 
-		saveCurrentLibAction = new AbstractAction("save") { //Images.ADD_ICON_16
-			@Override
-			public void actionPerformed(ActionEvent evt) {
-				MediaLibrary library = (MediaLibrary)listAllLibraries.getSelectedValue();
-				if(library != null)
-				{
-					URI location = txtCurrentPath.getFile().toURI();
-					library.setLibraryRoot(DirectoryLocation.Factory.create(location, null));
+			//
+			// Remove selected Library 
+			//
+			removeLibraryAction = new AbstractAction("", ImageResources.DELETE_ICON_32) {
+
+				@Override
+				public void actionPerformed(ActionEvent evt) {
+					libService.removeLibrary((MediaLibrary)listAllLibraries.getSelectedValue());
 				}
-			}
-		};
+			};
+			removeLibraryAction.putValue(Action.SHORT_DESCRIPTION, "Remove the selected library ");
+
+			//
+			// Add a new MediaLibrary 
+			//
+			addLibraryAction =  new AddNewMediaLibraryAction(ManageLibraryFoldersDialog.this);
 
 
-		//
-		// Register event listeners
-		//
+			saveCurrentLibAction = new AbstractAction("save") { //Images.ADD_ICON_16
+				@Override
+				public void actionPerformed(ActionEvent evt) {
+					MediaLibrary library = (MediaLibrary)listAllLibraries.getSelectedValue();
+					if(library != null)
+					{
+						URI location = txtCurrentPath.getFile().toURI();
+						library.setLibraryRoot(DirectoryLocation.Factory.create(location, null));
+					}
+				}
+			};
 
-		libService.getLibraryAddedEvent().add(new EventListenerEx<EventArgsG<MediaLibrary>>() {
-			@Override
-			public void eventOccured(Object sender, EventArgsG<MediaLibrary> eventArgs) {
-				allLibrariesModel.addElement(eventArgs.getValue());
-				librariesHasChanged = true;
-			}
-		});
+			//
+			// Register event listeners
+			//
 
-		libService.getLibraryRemovedEvent().add(new EventListenerEx<EventArgsG<MediaLibrary>>() {
-			@Override
-			public void eventOccured(Object sender, EventArgsG<MediaLibrary> eventArgs) {
-				allLibrariesModel.removeElement(eventArgs.getValue());
-				librariesHasChanged = true;
-			}
-		});
+			libService.getLibraryAddedEvent().add(new EventListenerEx<EventArgsG<MediaLibrary>>() {
+				@Override
+				public void eventOccured(Object sender, EventArgsG<MediaLibrary> eventArgs) {
+					allLibrariesModel.addElement(eventArgs.getValue());
+					librariesHasChanged = true;
+				}
+			});
+
+			libService.getLibraryRemovedEvent().add(new EventListenerEx<EventArgsG<MediaLibrary>>() {
+				@Override
+				public void eventOccured(Object sender, EventArgsG<MediaLibrary> eventArgs) {
+					allLibrariesModel.removeElement(eventArgs.getValue());
+					librariesHasChanged = true;
+				}
+			});
+
+		}else
+			System.err.println("No local server available!");
 
 	}
 

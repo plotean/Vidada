@@ -4,11 +4,11 @@ import java.lang.ref.WeakReference;
 
 import org.joda.time.format.DateTimeFormat;
 
-import vidada.client.VidadaClientManager;
+import vidada.client.IVidadaClientManager;
+import vidada.client.facade.IThumbConatinerService;
 import vidada.client.model.browser.BrowserMediaItem;
 import vidada.client.model.browser.IBrowserItem;
 import vidada.client.services.IMediaClientService;
-import vidada.client.services.IThumbnailClientService;
 import vidada.client.viewmodel.browser.BrowserItemVM;
 import vidada.model.ServiceProvider;
 import vidada.model.media.MediaItem;
@@ -31,8 +31,9 @@ import archimedesJ.io.locations.ResourceLocation;
 public class MediaViewModel extends BrowserItemVM {
 
 	private final ISystemService systemService = ServiceProvider.Resolve(ISystemService.class);
-	private final IThumbnailClientService thumbService = VidadaClientManager.instance().getThumbnailClientService();
-	private final IMediaClientService mediaClientService = VidadaClientManager.instance().getMediaClientService();
+	private final IVidadaClientManager clientManager = ServiceProvider.Resolve(IVidadaClientManager.class);
+	private final IThumbConatinerService thumbService = clientManager.getActive().getThumbConatinerService();
+	private final IMediaClientService mediaClientService = clientManager.getActive().getMediaClientService();
 
 	private WeakReference<ImageContainer> imageContainerRef;
 	private MediaItem mediaData;

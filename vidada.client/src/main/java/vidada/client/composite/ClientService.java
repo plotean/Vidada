@@ -1,4 +1,4 @@
-package vidada.client.services;
+package vidada.client.composite;
 
 import vidada.client.VidadaClientManager;
 

@@ -11,7 +11,6 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import vidada.IVidadaServer;
-import vidada.client.VidadaClientManager;
 import vidada.client.viewmodel.explorer.MediaExplorerVM;
 import vidada.model.media.MediaLibrary;
 import vidada.services.IMediaLibraryService;
@@ -25,7 +24,7 @@ public class ExplorerFilterFX extends BorderPane {
 	private final Label libraryDescription = new Label("Media Library:");
 	private final ObservableList<MediaLibrary> observableMedias;
 
-	private final IVidadaServer localServer = VidadaClientManager.instance().getLocalServer();
+	private final IVidadaServer localServer = vidada.Application.getLocalServer();
 	private final IMediaLibraryService mediaLibraryService = localServer.getLibraryService();
 
 

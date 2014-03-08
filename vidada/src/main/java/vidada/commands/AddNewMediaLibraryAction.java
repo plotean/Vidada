@@ -9,7 +9,6 @@ import javax.swing.Action;
 import javax.swing.JDialog;
 
 import vidada.IVidadaServer;
-import vidada.client.VidadaClientManager;
 import vidada.model.media.MediaLibrary;
 import vidada.model.settings.VidadaClientSettings;
 import vidada.views.ImageResources;
@@ -27,7 +26,7 @@ import archimedesJ.swing.components.ChooseFileDialog;
 @SuppressWarnings("serial")
 public class AddNewMediaLibraryAction extends AbstractAction{
 
-	private final IVidadaServer localServer = VidadaClientManager.instance().getLocalServer();
+	private final IVidadaServer localServer = vidada.Application.getLocalServer();
 
 	private final Window owner;
 

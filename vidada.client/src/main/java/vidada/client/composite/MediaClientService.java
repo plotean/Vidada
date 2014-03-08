@@ -1,17 +1,7 @@
-package vidada.client.services;
+package vidada.client.composite;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.TreeSet;
 
-import vidada.IVidadaServer;
-import vidada.client.VidadaClientManager;
-import vidada.model.media.MediaComparator;
-import vidada.model.media.MediaItem;
-import vidada.model.media.MediaQuery;
-import vidada.model.pagination.ListPage;
-import archimedesJ.util.Lists;
-
+/*
 public class MediaClientService extends ClientService implements IMediaClientService {
 
 
@@ -22,11 +12,12 @@ public class MediaClientService extends ClientService implements IMediaClientSer
 
 	@Override
 	public ListPage<MediaItem> queryServer(IVidadaServer server, MediaQuery qry, int pageIndex, int maxPageSize) {
-		System.out.println("MediaClientService:: query " + getClientManager().getAllServer().size() + "  vidada servers!");
+		System.out.println("MediaClientService:: query " + getClientManager().getAllClients().size() + "  vidada servers!");
 		ListPage<MediaItem> page = server.getMediaService().query(qry, pageIndex, maxPageSize);
 		return page;
-	}
+	}*/
 
+/*
 	private ListPage<MediaItem> queryAllServers(MediaQuery qry, int pageIndex, int maxPageSize) {
 
 		Set<MediaItem> resultSet = new HashSet<MediaItem>();
@@ -60,9 +51,9 @@ public class MediaClientService extends ClientService implements IMediaClientSer
 				pageIndex);
 
 		return page;
-	}
+	}*/
 
-
+/*
 
 	@Override
 	public void update(MediaItem media) {
@@ -70,4 +61,4 @@ public class MediaClientService extends ClientService implements IMediaClientSer
 		server.getMediaService().update(media);
 	}
 
-}
+}*/

@@ -8,6 +8,7 @@ import vidada.client.services.ITagClientService;
 import vidada.client.viewmodel.MediaViewModel;
 import vidada.model.media.MediaItem;
 import vidada.model.tags.Tag;
+import vidada.model.tags.TagFactory;
 import archimedesJ.data.events.CollectionEventArg;
 import archimedesJ.data.observable.IObservableCollection;
 import archimedesJ.data.observable.IObservableList;
@@ -96,7 +97,7 @@ public class MediaDetailViewModel extends MediaViewModel implements IMediaViewMo
 
 	@Override
 	public Tag createTag(String name) {
-		return tagClientService.getTag(name);
+		return TagFactory.instance().createTag(name);
 	}
 
 

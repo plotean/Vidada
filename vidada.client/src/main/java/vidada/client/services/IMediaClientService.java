@@ -1,6 +1,5 @@
 package vidada.client.services;
 
-import vidada.IVidadaServer;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaQuery;
 import vidada.model.pagination.ListPage;
@@ -15,14 +14,17 @@ public interface IMediaClientService {
 	/**
 	 * Query for all medias which match the {@link MediaQuery}
 	 * 
-	 * Internally queries all known Vidada servers and then merges all the results.
-	 * 
 	 * @param qry
 	 * @param page
 	 * @param pageSize
 	 * @return
 	 */
-	public abstract ListPage<MediaItem> queryServer(IVidadaServer server,MediaQuery qry, int pageIndex, int maxPageSize);
+	public abstract ListPage<MediaItem> query(MediaQuery qry, int pageIndex, int maxPageSize);
+
+	/**
+	 * Returns the total count of all medias
+	 */
+	public abstract int count();
 
 	/**
 	 * Update all changes made to this media.

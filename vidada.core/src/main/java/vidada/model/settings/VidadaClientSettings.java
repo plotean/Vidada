@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
@@ -44,6 +46,7 @@ public class VidadaClientSettings extends JsonSettings {
 	 *                                                                         *
 	 **************************************************************************/
 
+	public List<VidadaServer> remoteServer = new ArrayList<VidadaServer>();
 	private String localCachePath = defaultCache;
 	private boolean enableDirectPlaySound = false;
 	private boolean ignoreImages = false;

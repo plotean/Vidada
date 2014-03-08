@@ -19,17 +19,19 @@ public interface ITagService  {
 	 */
 	public Collection<Tag> getAllRelatedTags(Tag tag);
 
-	/**
-	 * Removes the given tag from all medias
-	 * @param tag
-	 */
-	public abstract void removeTag(Tag tag);
 
 	/**
 	 * Returns all tags which are used by medias.
 	 * @return
 	 */
 	public abstract Collection<Tag> getUsedTags();
+
+
+	/**
+	 * Removes the given tag from all medias
+	 * @param tag
+	 */
+	public abstract void removeTag(Tag tag);
 
 
 	// NON SERVICE METHODS :

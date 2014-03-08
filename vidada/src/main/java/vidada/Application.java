@@ -15,7 +15,10 @@ import org.controlsfx.control.action.AbstractAction;
 import org.controlsfx.dialog.Dialog;
 import org.controlsfx.dialog.Dialogs;
 
+import vidada.client.IVidadaClient;
+import vidada.client.IVidadaClientManager;
 import vidada.client.VidadaClientManager;
+import vidada.client.local.LocalVidadaClient;
 import vidada.dal.DAL;
 import vidada.data.DatabaseConnectionException;
 import vidada.images.RawImageFactoryFx;
@@ -41,6 +44,7 @@ import archimedesJ.util.OSValidator;
 public class Application extends  javafx.application.Application {
 
 
+
 	/**
 	 * Primary entry point for this Application
 	 * 
@@ -63,7 +67,17 @@ public class Application extends  javafx.application.Application {
 	}
 
 	private Stage primaryStage;
-	private VidadaServer localserver;
+	private static IVidadaServer localserver;
+
+	/**
+	 * Gets the local server. 
+	 * This might be null if no server is running.
+	 * 
+	 * @return
+	 */
+	public static IVidadaServer getLocalServer(){
+		return localserver;
+	}
 
 
 	@Override
@@ -201,6 +215,8 @@ public class Application extends  javafx.application.Application {
 				locator.registerSingleton(IRawImageFactory.class, RawImageFactoryFx.class);
 				locator.registerSingleton(IImageViewerService.class, ImageViewerServiceFx.class);
 				locator.registerSingleton(ISelfUpdateService.class, SelfUpdateService.class); 
+
+				locator.registerSingleton(IVidadaClientManager.class, VidadaClientManager.class);
 			}
 		});
 
@@ -216,7 +232,6 @@ public class Application extends  javafx.application.Application {
 			return false;
 		}
 
-
 		try{
 			System.out.println("Settings up Vidada DAL...");
 			IVidadaDALService vidadaDALService = DAL.build();
@@ -224,7 +239,11 @@ public class Application extends  javafx.application.Application {
 
 			System.out.println("Creating Vidada Server...");
 			localserver = new VidadaServer(vidadaDALService);
-			VidadaClientManager.instance().addServer(localserver);
+
+			// Create a local client for the local server
+			IVidadaClient localClient = new LocalVidadaClient(localserver);
+			ServiceProvider.Resolve(IVidadaClientManager.class).addClient(localClient);
+
 		}catch(DatabaseConnectionException e){
 			e.printStackTrace();
 
@@ -237,10 +256,6 @@ public class Application extends  javafx.application.Application {
 		}
 		return true;
 	}
-
-
-
-
 
 	/*
 	private final CredentialsProvider authProvider = new CredentialsProvider() {
@@ -280,10 +295,5 @@ public class Application extends  javafx.application.Application {
 							: null;
 		}
 	};*/
-
-
-
-
-
 
 }

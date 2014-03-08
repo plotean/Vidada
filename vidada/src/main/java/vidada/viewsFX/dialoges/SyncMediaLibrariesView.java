@@ -9,7 +9,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import vidada.IVidadaServer;
-import vidada.client.VidadaClientManager;
 import vidada.model.media.store.local.IMediaImportStrategy;
 import vidada.model.media.store.local.MediaImportStrategy;
 import archimedesJ.events.EventArgs;
@@ -77,13 +76,16 @@ public class SyncMediaLibrariesView extends GridPane {
 				System.out.println("SyncMediaLibrariesView: synchronizing media libraries...");
 
 				try{
-					IVidadaServer localServer = VidadaClientManager.instance().getLocalServer();
-
-					IMediaImportStrategy mediaImporter = new MediaImportStrategy(
-							localServer.getMediaService(),
-							localServer.getTagService(),
-							localServer.getLibraryService());
-					mediaImporter.scanAndUpdateDatabases(listener);
+					IVidadaServer localServer = vidada.Application.getLocalServer();
+					if(localServer != null){
+						IMediaImportStrategy mediaImporter = new MediaImportStrategy(
+								localServer.getMediaService(),
+								localServer.getTagService(),
+								localServer.getLibraryService());
+						mediaImporter.scanAndUpdateDatabases(listener);
+					}else {
+						System.err.println("SyncMediaLibrariesView: LocalServer not available");
+					}
 				}catch(Exception e){
 					e.printStackTrace();
 

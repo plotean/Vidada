@@ -3,11 +3,11 @@ package vidada.viewsFX;
 import javafx.geometry.Insets;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.BorderPane;
+import vidada.client.IVidadaClientManager;
 import vidada.client.model.browser.IBrowserItem;
 import vidada.client.model.browser.MediaBrowserModel;
 import vidada.client.services.IMediaClientService;
 import vidada.client.services.ITagClientService;
-import vidada.client.services.IVidadaServerClientService;
 import vidada.client.viewmodel.FilterModel;
 import vidada.client.viewmodel.media.IMediaViewModel;
 import vidada.client.viewmodel.media.MediaDetailViewModel;
@@ -44,7 +44,7 @@ public class PrimaryMediaBrowserFX extends BorderPane {
 
 
 
-	public PrimaryMediaBrowserFX(MediaBrowserModel browserModel,IVidadaServerClientService serverClientService, ITagClientService tagClientService, IMediaClientService mediaService){
+	public PrimaryMediaBrowserFX(MediaBrowserModel browserModel, IVidadaClientManager serverClientService, ITagClientService tagClientService, IMediaClientService mediaService){
 		this.tagClientService = tagClientService;
 		this.browserModel = browserModel;
 		this.filterModel  = new FilterModel(mediaService);;

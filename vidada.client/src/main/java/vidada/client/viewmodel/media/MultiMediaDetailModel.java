@@ -2,8 +2,9 @@ package vidada.client.viewmodel.media;
 
 import java.util.List;
 
-import vidada.client.VidadaClientManager;
+import vidada.client.IVidadaClientManager;
 import vidada.client.services.IMediaClientService;
+import vidada.model.ServiceProvider;
 import vidada.model.media.MediaItem;
 import vidada.model.tags.Tag;
 import archimedesJ.data.observable.IObservableList;
@@ -16,7 +17,8 @@ import archimedesJ.util.Lists;
  */
 public class MultiMediaDetailModel implements IMediaViewModel{
 
-	transient private final IMediaClientService mediaClientService = VidadaClientManager.instance().getMediaClientService();
+	transient private final IVidadaClientManager clientManager  = ServiceProvider.Resolve(IVidadaClientManager.class);
+	transient private final IMediaClientService mediaClientService = clientManager.getActive().getMediaClientService();
 	private final List<MediaItem> modelMedias;
 
 
