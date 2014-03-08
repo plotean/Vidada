@@ -3,6 +3,8 @@ package vidada.model.media;
 import java.beans.Transient;
 import java.net.URISyntaxException;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.Entity;
 
 import vidada.model.entities.IdEntity;
@@ -17,6 +19,7 @@ import archimedesJ.io.locations.DirectoryLocation;
  *
  */
 @Entity
+@Access(AccessType.FIELD)
 public class MediaLibrary extends IdEntity {
 
 	public static final String VidataThumbsFolder = "vidada.thumbs";

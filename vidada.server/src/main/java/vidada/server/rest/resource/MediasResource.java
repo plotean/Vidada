@@ -36,7 +36,8 @@ public class MediasResource extends AbstractResource {
 	// JAXBElement<MediaItem>
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response update(MediaItem media){
+	public Response update(String mediaJson){
+		MediaItem media = deserialize(mediaJson, MediaItem.class);
 		mediaService.update(media);
 		return Response.ok().build();
 	}

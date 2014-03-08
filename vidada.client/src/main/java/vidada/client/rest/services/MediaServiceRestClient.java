@@ -1,9 +1,12 @@
 package vidada.client.rest.services;
 
+import java.io.IOException;
 import java.net.URI;
 
 import javax.ws.rs.core.MediaType;
 
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 
@@ -23,7 +26,18 @@ public class MediaServiceRestClient extends AbstractRestService implements IMedi
 
 	@Override
 	public void update(MediaItem media) {
-		mediasResource().post(media);
+
+		try {
+			String mediaJson = getMapper().writeValueAsString(media);
+			mediasResource().post(mediaJson);
+		} catch (JsonGenerationException e) {
+			e.printStackTrace();
+		} catch (JsonMappingException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	@Override

@@ -4,6 +4,8 @@ import java.beans.Transient;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 
@@ -18,6 +20,7 @@ import archimedesJ.io.locations.ResourceLocation;
  *
  */
 @Entity
+@Access(AccessType.FIELD)
 public class MediaSourceLocal extends MediaSource {
 
 	transient private boolean isFileAvaiableDirty = true;
