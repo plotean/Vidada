@@ -4,6 +4,10 @@ import javax.persistence.Entity;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.codehaus.jackson.annotate.JsonSubTypes;
+import org.codehaus.jackson.annotate.JsonSubTypes.Type;
+import org.codehaus.jackson.annotate.JsonTypeInfo;
+
 import vidada.model.entities.IdEntity;
 import archimedesJ.io.locations.ResourceLocation;
 
@@ -14,6 +18,13 @@ import archimedesJ.io.locations.ResourceLocation;
  * @author IsNull
  *
  */
+@JsonTypeInfo(  
+		use = JsonTypeInfo.Id.NAME,  
+		include = JsonTypeInfo.As.PROPERTY,  
+		property = "type")  
+@JsonSubTypes({  
+	@Type(value = MediaSourceLocal.class, name = "MediaSourceLocal")
+})  
 @XmlRootElement
 @Entity
 public abstract class MediaSource extends IdEntity {

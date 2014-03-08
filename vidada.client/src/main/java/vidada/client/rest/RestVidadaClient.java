@@ -17,6 +17,7 @@ import vidada.client.services.IThumbnailClientService;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
+import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 
 public class RestVidadaClient implements IVidadaClient{
 
@@ -35,7 +36,10 @@ public class RestVidadaClient implements IVidadaClient{
 
 		this.vidadaBaseUri = vidadaBaseUri;
 		ClientConfig config = new DefaultClientConfig();
+
 		client = Client.create(config);
+		// TODO replace with real credentials
+		client.addFilter(new HTTPBasicAuthFilter("admin", "1337")); 
 
 		mediaClientService = new MediaServiceRestClient(client, vidadaBaseUri, getJsonMapper());
 		tagClientService = new TagServiceRestClient(client, vidadaBaseUri, getJsonMapper());

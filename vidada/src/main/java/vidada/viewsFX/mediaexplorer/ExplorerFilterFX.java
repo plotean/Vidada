@@ -22,15 +22,20 @@ public class ExplorerFilterFX extends BorderPane {
 
 	private final ComboBox<MediaLibrary> cboMediaLibrary= new ComboBox<>();
 	private final Label libraryDescription = new Label("Media Library:");
-	private final ObservableList<MediaLibrary> observableMedias;
+	private ObservableList<MediaLibrary> observableMedias;
 
 	private final IVidadaServer localServer = vidada.Application.getLocalServer();
-	private final IMediaLibraryService mediaLibraryService = localServer.getLibraryService();
+	private IMediaLibraryService mediaLibraryService;
 
 
 	private MediaExplorerVM mediaExplorerVm;
 
 	public ExplorerFilterFX(){
+
+		if(localServer != null){
+			mediaLibraryService = localServer.getLibraryService();
+
+		}
 
 		this.setPadding(new Insets(10));
 
@@ -41,10 +46,6 @@ public class ExplorerFilterFX extends BorderPane {
 		HBox box = new HBox();
 		box.getChildren().add(libraryDescription);
 		box.getChildren().add(cboMediaLibrary);
-
-
-		observableMedias = FXCollections.observableArrayList(mediaLibraryService.getAllLibraries());
-		cboMediaLibrary.setItems(observableMedias);
 
 		cboMediaLibrary.valueProperty().addListener(new ChangeListener<MediaLibrary>() {
 
@@ -63,30 +64,36 @@ public class ExplorerFilterFX extends BorderPane {
 
 		});
 
-		mediaLibraryService.getLibraryAddedEvent().add(new EventListenerEx<EventArgsG<MediaLibrary>>() {
-			@Override
-			public void eventOccured(Object sender, final EventArgsG<MediaLibrary> eventArgs) {
-				Platform.runLater(new Runnable() {
-					@Override
-					public void run() {
-						observableMedias.add(eventArgs.getValue());
-					}
-				});
+		if(mediaLibraryService != null){
 
-			}
-		});
+			observableMedias = FXCollections.observableArrayList(mediaLibraryService.getAllLibraries());
+			cboMediaLibrary.setItems(observableMedias);
 
-		mediaLibraryService.getLibraryRemovedEvent().add(new EventListenerEx<EventArgsG<MediaLibrary>>() {
-			@Override
-			public void eventOccured(Object sender, final EventArgsG<MediaLibrary> eventArgs) {
-				Platform.runLater(new Runnable() {
-					@Override
-					public void run() {
-						observableMedias.remove(eventArgs.getValue());
-					}
-				});
-			}
-		});
+			mediaLibraryService.getLibraryAddedEvent().add(new EventListenerEx<EventArgsG<MediaLibrary>>() {
+				@Override
+				public void eventOccured(Object sender, final EventArgsG<MediaLibrary> eventArgs) {
+					Platform.runLater(new Runnable() {
+						@Override
+						public void run() {
+							observableMedias.add(eventArgs.getValue());
+						}
+					});
+
+				}
+			});
+
+			mediaLibraryService.getLibraryRemovedEvent().add(new EventListenerEx<EventArgsG<MediaLibrary>>() {
+				@Override
+				public void eventOccured(Object sender, final EventArgsG<MediaLibrary> eventArgs) {
+					Platform.runLater(new Runnable() {
+						@Override
+						public void run() {
+							observableMedias.remove(eventArgs.getValue());
+						}
+					});
+				}
+			});
+		}
 
 		setCenter(box);
 	}
