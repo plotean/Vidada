@@ -11,17 +11,15 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.UriInfo;
 
-import vidada.model.media.MediaItem;
 import vidada.model.media.MediaQuery;
 import vidada.model.media.OrderProperty;
-import vidada.model.pagination.ListPage;
 import vidada.model.tags.Tag;
 import vidada.server.rest.VidadaRestServer;
 import vidada.services.IMediaService;
 import vidada.services.ITagService;
 
 @Path("/medias")
-public class MediasResource {
+public class MediasResource extends AbstractResource {
 
 	// Allows to insert contextual objects into the class, 
 	// e.g. ServletContext, Request, Response, UriInfo
@@ -40,7 +38,7 @@ public class MediasResource {
 	 */
 	@GET
 	@Produces({MediaType.APPLICATION_JSON})
-	public ListPage<MediaItem> getMedias(
+	public String getMedias(
 			@QueryParam("query") String queryStr,
 			@QueryParam("tags") List<String> tags,
 			@QueryParam("type") vidada.model.media.MediaType type,
@@ -58,7 +56,7 @@ public class MediasResource {
 		query.setSelectedtype((type != null) ? type : vidada.model.media.MediaType.ANY);
 		query.setOrder((order != null) ? order : OrderProperty.FILENAME);
 
-		return mediaService.query(query,0, 5); 
+		return serializeJson(mediaService.query(query,0, 5)); 
 	}
 
 

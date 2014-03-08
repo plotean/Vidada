@@ -47,8 +47,6 @@ public class AuthFilter implements ContainerRequestFilter {
 		String method = containerRequest.getMethod();
 		String path = containerRequest.getPath(true).trim();
 
-		System.out.println("auth for path: " + path);
-
 		if(method.equals("GET")){
 			// Allow empty gets of root pages
 			if(path.isEmpty()){

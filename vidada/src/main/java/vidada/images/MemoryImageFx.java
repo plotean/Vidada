@@ -1,10 +1,15 @@
 package vidada.images;
 
 import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.OutputStream;
 
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
+
+import javax.imageio.ImageIO;
+
 import archimedesJ.images.IMemoryImage;
 import archimedesJ.swing.images.ScalrEx;
 
@@ -57,6 +62,11 @@ public class MemoryImageFx implements IMemoryImage {
 	@Override
 	public String toString(){
 		return "MemoryImageFx: org: " + getOriginal() + " (" + getWidth() + "x" + getHeight() +")";
+	}
+
+	@Override
+	public void writePNG(OutputStream outputstream) throws IOException {
+		ImageIO.write(SwingFXUtils.fromFXImage((Image)getOriginal(), null), "png", outputstream);
 	}
 
 }

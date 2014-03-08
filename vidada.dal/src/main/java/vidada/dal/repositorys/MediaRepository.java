@@ -197,8 +197,11 @@ public class MediaRepository extends JPARepository implements IMediaRepository{
 
 	@Override
 	public MediaItem queryByHash(String hash) {
-		TypedQuery<MediaItem> query = getEntityManager().createQuery("SELECT m from MediaItem m WHERE m.fileHash = '" + hash + "'", MediaItem.class);
-		return firstOrDefault(query);
+
+		return getEntityManager().find(MediaItem.class, hash);
+
+		//TypedQuery<MediaItem> query = getEntityManager().createQuery("SELECT m from MediaItem m WHERE m.fileHash = '" + hash + "'", MediaItem.class);
+		//return firstOrDefault(query);
 	}
 
 	@Override

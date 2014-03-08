@@ -12,6 +12,7 @@ import com.sun.jersey.api.container.grizzly2.GrizzlyServerFactory;
 import com.sun.jersey.api.core.DefaultResourceConfig;
 import com.sun.jersey.api.core.PackagesResourceConfig;
 
+
 public class VidadaRestServer{
 
 	public static IVidadaServer VIDADA_SERVER;
@@ -29,26 +30,23 @@ public class VidadaRestServer{
 		System.out.println("Configuration of REST Server...");
 
 		String serverLocation = "http://localhost:5555/api";
-		DefaultResourceConfig resourceConfig = new PackagesResourceConfig("vidada.server.rest.resource");
-
-
+		DefaultResourceConfig rc = new PackagesResourceConfig("vidada.server.rest.resource");
 
 		final Map<String, Object> config = new HashMap<String, Object>();
 		config.put("com.sun.jersey.api.json.POJOMappingFeature", true);
-		resourceConfig.setPropertiesAndFeatures(config);
+		rc.setPropertiesAndFeatures(config);
 
 		// The following line is to enable GZIP when client accepts it
 		//resourceConfig.getContainerResponseFilters().add(new GZIPContentEncodingFilter());
 
-		resourceConfig.getProperties().put(
-				"com.sun.jersey.spi.container.ContainerRequestFilters",
-				"vidada.server.rest.AuthFilter");
+		rc.getProperties().put(
+				"com.sun.jersey.spi.container.ContainerRequestFilters", "vidada.server.rest.AuthFilter");
 
 		HttpServer server = null;
 		try {
 			System.out.println("Starting REST Server @ "  + serverLocation);
 			server = GrizzlyServerFactory.createHttpServer(
-					serverLocation, resourceConfig);
+					serverLocation, rc);
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
