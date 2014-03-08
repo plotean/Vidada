@@ -26,10 +26,12 @@ public class MediaServiceRestClient extends AbstractRestService implements IMedi
 
 	@Override
 	public void update(MediaItem media) {
-
 		try {
 			String mediaJson = getMapper().writeValueAsString(media);
-			mediasResource().post(mediaJson);
+			mediasResource()
+			.type(MediaType.APPLICATION_JSON_TYPE)
+			.accept(MediaType.APPLICATION_JSON_TYPE)
+			.post(mediaJson);
 		} catch (JsonGenerationException e) {
 			e.printStackTrace();
 		} catch (JsonMappingException e) {
@@ -37,7 +39,6 @@ public class MediaServiceRestClient extends AbstractRestService implements IMedi
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
 	}
 
 	@Override
@@ -61,6 +62,11 @@ public class MediaServiceRestClient extends AbstractRestService implements IMedi
 		if(!qry.getRequiredTags().isEmpty()){
 			resource.queryParam("tags", multiValueQueryParam(qry.getRequiredTags()));
 		}
+
+		if(qry.getMediaType() != null){
+			resource.queryParam("type", qry.getMediaType().toString());
+		}
+
 
 		String mediasJson =	resource.accept(MediaType.APPLICATION_JSON_TYPE).get(String.class);
 

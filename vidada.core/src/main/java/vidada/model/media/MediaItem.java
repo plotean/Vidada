@@ -36,7 +36,7 @@ import archimedesJ.util.Lists;
 @JsonTypeInfo(  
 		use = JsonTypeInfo.Id.NAME,  
 		include = JsonTypeInfo.As.PROPERTY,  
-		property = "type")  
+		property = "class")  
 @JsonSubTypes({  
 	@Type(value = MovieMediaItem.class, name = "MOVIE"),  
 	@Type(value = ImageMediaItem.class, name = "IMAGE") })  
