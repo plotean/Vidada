@@ -2,14 +2,16 @@ package vidada.server.rest.resource;
 
 import java.io.IOException;
 
-import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.JsonParseException;
-import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
-import org.codehaus.jackson.annotate.JsonMethod;
-import org.codehaus.jackson.map.JsonMappingException;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.SerializationConfig;
-import org.codehaus.jackson.type.TypeReference;
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+
+
 
 public abstract class AbstractResource {
 
@@ -25,9 +27,9 @@ public abstract class AbstractResource {
 
 	private static ObjectMapper buildMapper(){
 		ObjectMapper mapper = new ObjectMapper();
-		mapper.configure(SerializationConfig.Feature.INDENT_OUTPUT, true);
-		mapper.setVisibility(JsonMethod.ALL, Visibility.NONE);
-		mapper.setVisibility(JsonMethod.FIELD, Visibility.ANY);
+		mapper.enable(SerializationFeature.INDENT_OUTPUT);
+		mapper.setVisibility(PropertyAccessor.ALL, Visibility.NONE);
+		mapper.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
 		return mapper;
 	}
 

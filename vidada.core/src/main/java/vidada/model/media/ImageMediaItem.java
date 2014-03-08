@@ -12,6 +12,7 @@ public class ImageMediaItem extends MediaItem {
 	 * ORM Constructor
 	 */
 	ImageMediaItem() {
+		classinfo = "image";
 	}
 
 	/**
@@ -19,6 +20,7 @@ public class ImageMediaItem extends MediaItem {
 	 * @param prototype
 	 */
 	public ImageMediaItem(ImageMediaItem prototype){
+		this();
 		prototype(prototype);
 	}
 
@@ -33,6 +35,7 @@ public class ImageMediaItem extends MediaItem {
 		super(parentLibrary, relativeFilePath);
 		setFilehash(hash);
 		setType(MediaType.IMAGE);
+		classinfo = "image";
 	}
 
 }

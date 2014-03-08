@@ -5,8 +5,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-
 import vidada.model.settings.JsonSettings;
 import vidada.model.settings.VidadaDatabase;
 import archimedesJ.exceptions.NotSupportedException;
@@ -14,6 +12,8 @@ import archimedesJ.expressions.Predicate;
 import archimedesJ.geometry.Size;
 import archimedesJ.util.Lists;
 import archimedesJ.util.OSValidator;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class VidadaServerSettings extends JsonSettings { 

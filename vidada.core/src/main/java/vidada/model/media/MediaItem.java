@@ -13,9 +13,6 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.codehaus.jackson.annotate.JsonSubTypes;
-import org.codehaus.jackson.annotate.JsonSubTypes.Type;
-import org.codehaus.jackson.annotate.JsonTypeInfo;
 import org.joda.time.DateTime;
 
 import vidada.model.entities.BaseEntity;
@@ -27,6 +24,10 @@ import archimedesJ.data.observable.ObservableCollection;
 import archimedesJ.geometry.Size;
 import archimedesJ.util.Lists;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 /**
  * Represents a single media item
  * 
@@ -36,10 +37,10 @@ import archimedesJ.util.Lists;
 @JsonTypeInfo(  
 		use = JsonTypeInfo.Id.NAME,  
 		include = JsonTypeInfo.As.PROPERTY,  
-		property = "polymorphism")  
+		property = "classinfo")  
 @JsonSubTypes({  
-	@Type(value = MovieMediaItem.class, name = "MOVIE"),  
-	@Type(value = ImageMediaItem.class, name = "IMAGE") })  
+	@Type(value = MovieMediaItem.class, name = "movie"),  
+	@Type(value = ImageMediaItem.class, name = "image") })  
 @XmlRootElement
 @Entity
 public abstract class MediaItem extends BaseEntity {
@@ -64,6 +65,9 @@ public abstract class MediaItem extends BaseEntity {
 	private int opened = 0;
 	private int rating = 0;
 	private MediaType type = MediaType.NONE;
+
+	@javax.persistence.Transient
+	protected String classinfo;
 
 	/***************************************************************************
 	 *                                                                         *

@@ -4,12 +4,14 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
-import org.codehaus.jackson.annotate.JsonMethod;
-import org.codehaus.jackson.map.JsonMappingException;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.SerializationConfig;
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+
+
 
 /**
  * Base class for Json based settings
@@ -68,9 +70,9 @@ public class JsonSettings {
 
 	private static ObjectMapper buildMapper(){
 		ObjectMapper mapper = new ObjectMapper();
-		mapper.configure(SerializationConfig.Feature.INDENT_OUTPUT, true);
-		mapper.setVisibility(JsonMethod.ALL, Visibility.NONE);
-		mapper.setVisibility(JsonMethod.FIELD, Visibility.ANY);
+		mapper.enable(SerializationFeature.INDENT_OUTPUT);
+		mapper.setVisibility(PropertyAccessor.ALL, Visibility.NONE);
+		mapper.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
 		return mapper;
 	}
 

@@ -5,16 +5,15 @@ import java.net.URI;
 
 import javax.ws.rs.core.MediaType;
 
-import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.map.JsonMappingException;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.type.TypeReference;
-
 import vidada.client.services.IMediaClientService;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaQuery;
 import vidada.model.pagination.ListPage;
 
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 

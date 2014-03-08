@@ -3,8 +3,6 @@ package vidada.client.rest.services;
 import java.io.InputStream;
 import java.net.URI;
 
-import org.codehaus.jackson.map.ObjectMapper;
-
 import vidada.client.services.IThumbnailClientService;
 import vidada.model.ServiceProvider;
 import vidada.model.media.MediaItem;
@@ -12,6 +10,7 @@ import archimedesJ.geometry.Size;
 import archimedesJ.images.IMemoryImage;
 import archimedesJ.images.IRawImageFactory;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 

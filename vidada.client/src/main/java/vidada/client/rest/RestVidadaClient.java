@@ -2,10 +2,6 @@ package vidada.client.rest;
 
 import java.net.URI;
 
-import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
-import org.codehaus.jackson.annotate.JsonMethod;
-import org.codehaus.jackson.map.ObjectMapper;
-
 import vidada.client.IVidadaClient;
 import vidada.client.rest.services.MediaServiceRestClient;
 import vidada.client.rest.services.TagServiceRestClient;
@@ -14,6 +10,9 @@ import vidada.client.services.IMediaClientService;
 import vidada.client.services.ITagClientService;
 import vidada.client.services.IThumbnailClientService;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
@@ -72,8 +71,8 @@ public class RestVidadaClient implements IVidadaClient{
 	private ObjectMapper getJsonMapper(){
 		if(mapper == null){
 			mapper = new ObjectMapper();
-			mapper.setVisibility(JsonMethod.ALL, Visibility.NONE);
-			mapper.setVisibility(JsonMethod.FIELD, Visibility.ANY);
+			mapper.setVisibility(PropertyAccessor.ALL, Visibility.NONE);
+			mapper.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
 		}
 		return mapper;
 	}

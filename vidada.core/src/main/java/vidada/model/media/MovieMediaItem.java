@@ -32,7 +32,7 @@ public class MovieMediaItem extends MediaItem implements Cloneable {
 	 * ORM constructor
 	 */
 	MovieMediaItem() {
-
+		classinfo = "movie";
 	}
 
 	/**
@@ -46,6 +46,7 @@ public class MovieMediaItem extends MediaItem implements Cloneable {
 		super(parentLibrary, relativePath);
 		setFilehash(hash);
 		setType(MediaType.MOVIE);
+		classinfo = "movie";
 	}
 
 	/**
@@ -54,6 +55,7 @@ public class MovieMediaItem extends MediaItem implements Cloneable {
 	 * @param prototype
 	 */
 	public MovieMediaItem(MovieMediaItem prototype) {
+		this();
 		prototype(prototype);
 	}
 

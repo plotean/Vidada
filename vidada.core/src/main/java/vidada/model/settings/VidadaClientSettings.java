@@ -9,7 +9,8 @@ import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 
 /**
  * Holds the applications global settings
