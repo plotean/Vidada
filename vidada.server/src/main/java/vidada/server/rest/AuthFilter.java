@@ -32,7 +32,7 @@ public class AuthFilter implements ContainerRequestFilter {
 			String userColonPass = Base64.base64Decode(auth);
 
 			// TODO replace with auth handler
-			if (!userColonPass.equals("admin:admin"))
+			if (!userColonPass.equals("admin:1337"))
 				throw unauthorized;
 		}
 		return containerRequest;
