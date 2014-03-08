@@ -4,9 +4,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Properties;
+import java.util.Set;
 
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
@@ -39,6 +40,7 @@ public class VidadaClientSettings extends JsonSettings {
 	}
 
 	transient private String versionInfo = null;
+	transient private VidadaInstance currentInstance;
 
 	/***************************************************************************
 	 *                                                                         *
@@ -46,7 +48,7 @@ public class VidadaClientSettings extends JsonSettings {
 	 *                                                                         *
 	 **************************************************************************/
 
-	public List<VidadaServer> remoteServer = new ArrayList<VidadaServer>();
+	public Set<VidadaInstance> vidadaInstances = new HashSet<VidadaInstance>();
 	private String localCachePath = defaultCache;
 	private boolean enableDirectPlaySound = false;
 	private boolean ignoreImages = false;
@@ -83,7 +85,8 @@ public class VidadaClientSettings extends JsonSettings {
 	}
 
 	private VidadaClientSettings(){ 
-
+		vidadaInstances.add(VidadaInstance.LOCAL);
+		vidadaInstances.add(new VidadaInstance("REST Localhost", "http://localhost:5555/api"));
 	}
 
 
@@ -202,6 +205,24 @@ public class VidadaClientSettings extends JsonSettings {
 		this.usingMetaData = usingMetaData;
 	}
 
+	public Collection<VidadaInstance> getVidadaInstances(){
+		return vidadaInstances;
+	}
+
+
+	/***************************************************************************
+	 *                                                                         *
+	 * Transient Properties                                                    *
+	 *                                                                         *
+	 **************************************************************************/
+
+	public void setCurrentInstnace(VidadaInstance instance) {
+		currentInstance = instance;
+	}
+
+	public VidadaInstance getCurrentInstance(){
+		return currentInstance;
+	}
 
 	/***************************************************************************
 	 *                                                                         *
@@ -224,6 +245,7 @@ public class VidadaClientSettings extends JsonSettings {
 			return new File(".", path.getPath());
 		}
 	}
+
 
 
 }

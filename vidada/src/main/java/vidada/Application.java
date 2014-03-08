@@ -1,5 +1,8 @@
 package vidada;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
@@ -19,6 +22,7 @@ import vidada.client.IVidadaClient;
 import vidada.client.IVidadaClientManager;
 import vidada.client.VidadaClientManager;
 import vidada.client.local.LocalVidadaClient;
+import vidada.client.rest.RestVidadaClient;
 import vidada.dal.DAL;
 import vidada.data.DatabaseConnectionException;
 import vidada.images.RawImageFactoryFx;
@@ -26,6 +30,7 @@ import vidada.model.ServiceProvider;
 import vidada.model.ServiceProvider.IServiceRegisterer;
 import vidada.model.settings.VidadaClientSettings;
 import vidada.model.settings.VidadaDatabase;
+import vidada.model.settings.VidadaInstance;
 import vidada.model.system.ISystemService;
 import vidada.selfupdate.SelfUpdateService;
 import vidada.server.VidadaServer;
@@ -34,6 +39,7 @@ import vidada.server.settings.VidadaServerSettings;
 import vidada.services.ISelfUpdateService;
 import vidada.viewsFX.MainViewFx;
 import vidada.viewsFX.dialoges.ChooseMediaDatabaseView;
+import vidada.viewsFX.dialoges.ChooseVidadaInstanceView;
 import vidada.viewsFX.images.ImageViewerServiceFx;
 import archimedesJ.images.IRawImageFactory;
 import archimedesJ.images.viewer.IImageViewerService;
@@ -171,15 +177,42 @@ public class Application extends  javafx.application.Application {
 			}*/
 	}
 
-	private void configDatabase(){
+	private VidadaInstance configInstance(){
+
+		System.out.println("configuring Vidada Instance");
+
+		Dialog dlg = new Dialog(null, "Vidada Instance Chooser");
+		final ChooseVidadaInstanceView chooseView =new ChooseVidadaInstanceView(VidadaClientSettings.instance().getVidadaInstances());
+		final AbstractAction actionChoose = new AbstractAction("Choose") {
+			{  
+				ButtonBar.setType(this, ButtonType.OK_DONE); 
+			}
+			@Override
+			public void execute(ActionEvent ae) {
+				Dialog dlg = (Dialog) ae.getSource();
+				VidadaInstance instance = chooseView.getDatabase();
+				VidadaClientSettings.instance().setCurrentInstnace(instance);
+				dlg.hide();
+			}
+		};
+		dlg.setContent(chooseView);	
+		dlg.setMasthead("Choose to which Vidada Instance you want to connect.");
+		dlg.getActions().addAll(actionChoose, Dialog.Actions.CANCEL);
+		dlg.show();
+
+		return VidadaClientSettings.instance().getCurrentInstance(); 
+	}
+
+
+	private void configLocalServerDatabase(){
 
 		final VidadaServerSettings settings = VidadaServerSettings.instance();
 
 		if(!settings.autoConfigDatabase()){
 
-			System.out.println("database must be choosen by user:");
+			System.out.println("Vidada instance must be choosen by user:");
 
-			Dialog dlg = new Dialog(null, "Vidada Database Chooser");
+			Dialog dlg = new Dialog(null, "Vidada-Server Database Chooser");
 			final ChooseMediaDatabaseView chooseView = new ChooseMediaDatabaseView(settings.getAvaiableDatabases());
 			final AbstractAction actionChoose = new AbstractAction("Choose") {
 				{  
@@ -204,10 +237,11 @@ public class Application extends  javafx.application.Application {
 	}
 
 	/**
-	 * Initialize the contents of the frame.
+	 * Initialize Vidada
 	 */
 	private boolean initialize() {
 
+		// Register global services
 		ServiceProvider.getInstance().startup(new IServiceRegisterer(){
 			@Override
 			public void registerServices(ServiceLocator locator) {
@@ -219,17 +253,48 @@ public class Application extends  javafx.application.Application {
 				locator.registerSingleton(IVidadaClientManager.class, VidadaClientManager.class);
 			}
 		});
-
-
 		System.out.println("Loaded settings v" + VidadaClientSettings.instance().getSettingsVersion());
 
+		// now we have to choose either to connect to a client or the local embeded vidada instance
 
-		configDatabase();
+		VidadaInstance instance = configInstance();
 
+		if(instance != null){
+			IVidadaClient vidadaClient;
+			if(instance.equals(VidadaInstance.LOCAL)){
+				vidadaClient = createlocalServerAndClient();
+			}else{
+				vidadaClient = connectToRemoteVidadaInstance(instance);
+			}
+
+			if(vidadaClient != null){
+				ServiceProvider.Resolve(IVidadaClientManager.class).addClient(vidadaClient);
+				return true;
+			}
+		}
+		return false;
+	}
+
+
+	private IVidadaClient connectToRemoteVidadaInstance(VidadaInstance instance){
+		IVidadaClient vidadaClient = null;
+		try {
+			URI serverUri = new URI(instance.getUri());
+			vidadaClient = new RestVidadaClient(serverUri);
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		}
+		return vidadaClient;
+	}
+
+	private IVidadaClient createlocalServerAndClient(){
+		IVidadaClient vidadaClient = null;
+
+		configLocalServerDatabase();
 
 		if(VidadaServerSettings.instance().getCurrentDBConfig() == null){
 			System.err.println("No Database has been choosen - exiting now");
-			return false;
+			return null;
 		}
 
 		try{
@@ -241,9 +306,7 @@ public class Application extends  javafx.application.Application {
 			localserver = new VidadaServer(vidadaDALService);
 
 			// Create a local client for the local server
-			IVidadaClient localClient = new LocalVidadaClient(localserver);
-			ServiceProvider.Resolve(IVidadaClientManager.class).addClient(localClient);
-
+			vidadaClient = new LocalVidadaClient(localserver);
 		}catch(DatabaseConnectionException e){
 			e.printStackTrace();
 
@@ -254,7 +317,8 @@ public class Application extends  javafx.application.Application {
 			.masthead("Vidada has trouble to access / connect to your database.")
 			.showException(e);
 		}
-		return true;
+
+		return vidadaClient;
 	}
 
 	/*
