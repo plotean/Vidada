@@ -13,6 +13,7 @@ import vidada.client.services.IThumbnailClientService;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.joda.JodaModule;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
@@ -71,6 +72,7 @@ public class RestVidadaClient implements IVidadaClient{
 	private ObjectMapper getJsonMapper(){
 		if(mapper == null){
 			mapper = new ObjectMapper();
+			mapper.registerModule(new JodaModule());
 			mapper.setVisibility(PropertyAccessor.ALL, Visibility.NONE);
 			mapper.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
 		}

@@ -10,6 +10,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.joda.JodaModule;
 
 
 
@@ -27,6 +28,7 @@ public abstract class AbstractResource {
 
 	private static ObjectMapper buildMapper(){
 		ObjectMapper mapper = new ObjectMapper();
+		mapper.registerModule(new JodaModule());
 		mapper.enable(SerializationFeature.INDENT_OUTPUT);
 		mapper.setVisibility(PropertyAccessor.ALL, Visibility.NONE);
 		mapper.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
