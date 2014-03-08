@@ -58,7 +58,6 @@ public class VidadaRestServer{
 		return server;
 	}
 
-
 	public static void main(String[] args) {
 		System.out.println("Server: Starting...");
 		//VidadaRestServer server = new VidadaRestServer();

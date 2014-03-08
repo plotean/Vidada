@@ -46,4 +46,8 @@ public abstract class AbstractResource {
 		}
 		return "403 - Internal Error";
 	}
+
+	protected String[] parseMultiValueParam(String multiParams){
+		return multiParams.split(" ");
+	}
 }

@@ -61,7 +61,7 @@ public class MediaRepository extends JPARepository implements IMediaRepository{
 
 	private void setQueryParams(Query q, MediaQuery qry){
 		if(qry.hasKeyword()) q.setParameter("keywords", "%" + qry.getKeywords() + "%");
-		if(qry.hasMediaType()) q.setParameter("type", qry.getSelectedtype());
+		if(qry.hasMediaType()) q.setParameter("type", qry.getMediaType());
 	}
 
 	private String buildMediaOrderByQuery(MediaQuery qry){

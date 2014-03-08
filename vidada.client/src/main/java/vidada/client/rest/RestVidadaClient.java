@@ -20,8 +20,8 @@ import com.sun.jersey.api.client.config.DefaultClientConfig;
 
 public class RestVidadaClient implements IVidadaClient{
 
-	private URI vidadaBaseUri;
-	private Client client;
+	private final URI vidadaBaseUri;
+	private final Client client;
 
 
 	private final IMediaClientService mediaClientService;
@@ -32,15 +32,16 @@ public class RestVidadaClient implements IVidadaClient{
 	 * Rest client
 	 */
 	public RestVidadaClient(URI vidadaBaseUri){
+
+		this.vidadaBaseUri = vidadaBaseUri;
+		ClientConfig config = new DefaultClientConfig();
+		client = Client.create(config);
+
 		mediaClientService = new MediaServiceRestClient(client, vidadaBaseUri, getJsonMapper());
 		tagClientService = new TagServiceRestClient(client, vidadaBaseUri, getJsonMapper());
 		thumbnailClientService = new ThumbnailRestClientService(client, vidadaBaseUri, getJsonMapper());
 	}
 
-	public void init(){
-		ClientConfig config = new DefaultClientConfig();
-		client = Client.create(config);
-	}
 
 	@Override
 	public IMediaClientService getMediaClientService() {

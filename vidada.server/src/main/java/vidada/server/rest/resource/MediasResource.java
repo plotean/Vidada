@@ -1,7 +1,5 @@
 package vidada.server.rest.resource;
 
-import java.util.List;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -40,19 +38,28 @@ public class MediasResource extends AbstractResource {
 	@Produces({MediaType.APPLICATION_JSON})
 	public String getMedias(
 			@QueryParam("query") String queryStr,
-			@QueryParam("tags") List<String> tags,
+			@QueryParam("tags") String alltags,
 			@QueryParam("type") vidada.model.media.MediaType type,
 			@QueryParam("orderby") OrderProperty order) {
 
 		MediaQuery query = new MediaQuery();
 		query.setKeywords(queryStr);
 
-		if(tags != null && !tags.isEmpty()){
+		String[] tags = parseMultiValueParam(alltags);
+
+		System.out.println("alltags: " + alltags);
+		System.out.println("tags: " + tags);
+
+		if(tags != null && tags.length > 0){
 			for (String tagStr : tags) {
 				Tag tag = tagService.getTag(tagStr);
 				query.getRequiredTags().add(tag);
 			}
 		}
+
+		System.out.println("tags as objects:" + query.getRequiredTags());
+
+
 		query.setSelectedtype((type != null) ? type : vidada.model.media.MediaType.ANY);
 		query.setOrder((order != null) ? order : OrderProperty.FILENAME);
 

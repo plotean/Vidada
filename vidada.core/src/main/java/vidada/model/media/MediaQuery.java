@@ -64,7 +64,7 @@ public class MediaQuery extends AbstractQuery<MediaItem>{
 	}
 
 
-	public MediaType getSelectedtype() {
+	public MediaType getMediaType() {
 		return selectedtype;
 	}
 
@@ -129,7 +129,7 @@ public class MediaQuery extends AbstractQuery<MediaItem>{
 	}
 
 	public boolean hasMediaType() {
-		return !MediaType.ANY.equals(getSelectedtype());
+		return !MediaType.ANY.equals(getMediaType());
 	}
 
 }

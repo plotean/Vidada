@@ -2,6 +2,7 @@ package vidada.client.rest.services;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.Collection;
 
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
@@ -79,5 +80,17 @@ public abstract class AbstractRestService {
 			e.printStackTrace();
 		}
 		return obj;
+	}
+
+	protected String multiValueQueryParam(Collection<?> values){
+		StringBuilder builder = new StringBuilder();
+		if(!values.isEmpty()){
+			for (Object object : values) {
+				builder.append(object.toString());
+				builder.append("+");
+			}
+			return builder.substring(0, builder.length()-1);
+		}
+		return "";
 	}
 }
