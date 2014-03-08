@@ -48,6 +48,6 @@ public abstract class AbstractResource {
 	}
 
 	protected String[] parseMultiValueParam(String multiParams){
-		return multiParams.split(" ");
+		return multiParams != null ? multiParams.split(" ") : null;
 	}
 }
