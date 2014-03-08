@@ -29,7 +29,7 @@ public class VidadaRestServer{
 
 		System.out.println("Configuration of REST Server...");
 
-		String serverLocation = "http://localhost:5555/api";
+		String serverLocation = "http://0.0.0.0:5555/api";
 		DefaultResourceConfig rc = new PackagesResourceConfig("vidada.server.rest.resource");
 
 		final Map<String, Object> config = new HashMap<String, Object>();
