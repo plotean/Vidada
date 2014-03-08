@@ -38,6 +38,8 @@ public class MediaServiceRestClient extends AbstractRestService implements IMedi
 				.accept(MediaType.APPLICATION_JSON_TYPE).get(String.class);*/
 
 		String mediasJson = mediasResource()
+				.queryParam("page", pageIndex+"")
+				.queryParam("pageSize", maxPageSize+"")
 				.accept(MediaType.APPLICATION_JSON_TYPE).get(String.class);
 
 		ListPage<MediaItem> page = deserialize(mediasJson, new TypeReference<ListPage<MediaItem>>() {});
