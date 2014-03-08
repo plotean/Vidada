@@ -2,6 +2,7 @@ package ffmpeg.Interop;
 
 
 import java.io.File;
+import java.net.URI;
 
 class FFmpegInteropWindows extends FFmpegInterop
 {
@@ -13,6 +14,17 @@ class FFmpegInteropWindows extends FFmpegInterop
 	@Override
 	public File getFFmpegBinaryFile() {
 		return encoder;
+	}
+
+	@Override
+	protected String shieldPathArgument(File pathArg){
+		return pathArg.getAbsolutePath();
+	}
+
+	@Override
+	protected String shieldPathArgument(URI pathArg){
+		String path = pathArg.getPath();
+		return path.substring(1, path.length());
 	}
 
 
