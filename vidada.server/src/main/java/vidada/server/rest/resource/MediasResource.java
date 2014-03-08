@@ -1,14 +1,18 @@
 package vidada.server.rest.resource;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import vidada.model.media.MediaItem;
 import vidada.model.media.MediaQuery;
 import vidada.model.media.OrderProperty;
 import vidada.model.tags.Tag;
@@ -29,6 +33,13 @@ public class MediasResource extends AbstractResource {
 	private final IMediaService mediaService = VidadaRestServer.VIDADA_SERVER.getMediaService();
 	private final ITagService tagService = VidadaRestServer.VIDADA_SERVER.getTagService();
 
+	// JAXBElement<MediaItem>
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response update(MediaItem media){
+		mediaService.update(media);
+		return Response.ok().build();
+	}
 
 	/**
 	 * Returns all medias
