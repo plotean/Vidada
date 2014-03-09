@@ -86,7 +86,7 @@ public class MediaServiceRestClient extends AbstractRestService implements IMedi
 		ResourceLocation mediaResource = null;
 		// Request that a media stream server is started for this media
 
-		String mediaStreamUri = mediasResource().path("stream").path(media.getFilehash())
+		String mediaStreamUri =  apiResource().path("stream").path(media.getFilehash())
 				.queryParam("mode", "link").accept(MediaType.TEXT_PLAIN_TYPE).get(String.class);
 
 		try {
