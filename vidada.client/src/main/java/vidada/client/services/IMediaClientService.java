@@ -3,6 +3,7 @@ package vidada.client.services;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaQuery;
 import vidada.model.pagination.ListPage;
+import archimedesJ.io.locations.ResourceLocation;
 
 /**
  * Provides an API to control media items.
@@ -31,4 +32,11 @@ public interface IMediaClientService {
 	 * @param media
 	 */
 	public abstract void update(MediaItem media);
+
+	/**
+	 * Gets the resource location for this media
+	 * @param mediaData
+	 * @return
+	 */
+	public abstract ResourceLocation openResource(MediaItem media);
 }

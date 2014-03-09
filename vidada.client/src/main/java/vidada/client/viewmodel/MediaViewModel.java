@@ -13,7 +13,6 @@ import vidada.client.viewmodel.browser.BrowserItemVM;
 import vidada.model.ServiceProvider;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaType;
-import vidada.model.media.source.MediaSource;
 import vidada.model.system.ISystemService;
 import archimedesJ.exceptions.NotSupportedException;
 import archimedesJ.geometry.Size;
@@ -141,13 +140,10 @@ public class MediaViewModel extends BrowserItemVM {
 	@Override
 	public boolean open(){
 		if(mediaData != null){
-			MediaSource source = mediaData.getSource();
-			if(source != null){
-				ResourceLocation resource = source.getResourceLocation();
-				if(systemService.open(resource)){
-					mediaData.setOpened(mediaData.getOpened() + 1);
-					persist();
-				}
+			ResourceLocation mediaResource = mediaClientService.openResource(mediaData);
+			if(mediaResource != null && systemService.open(mediaResource)){
+				mediaData.setOpened(mediaData.getOpened() + 1);
+				persist();
 			}
 		}
 		return false;

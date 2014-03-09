@@ -3,8 +3,10 @@ package vidada.client.local.impl;
 import vidada.client.services.IMediaClientService;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaQuery;
+import vidada.model.media.source.MediaSource;
 import vidada.model.pagination.ListPage;
 import vidada.services.IMediaService;
+import archimedesJ.io.locations.ResourceLocation;
 
 public class LocalMediaClientService implements IMediaClientService {
 
@@ -27,5 +29,16 @@ public class LocalMediaClientService implements IMediaClientService {
 	@Override
 	public void update(MediaItem media) {
 		mediaService.update(media);
+	}
+
+	@Override
+	public ResourceLocation openResource(MediaItem media) {
+		ResourceLocation resource = null;
+		MediaSource source = media.getSource();
+		if(source != null){
+			resource = source.getResourceLocation();
+		}
+		return resource;
+
 	}
 }

@@ -3,6 +3,8 @@ package vidada.model;
 
 import vidada.model.security.CredentialManager;
 import vidada.model.security.ICredentialManager;
+import vidada.streaming.IStreamService;
+import vidada.streaming.StreamService;
 import archimedesJ.services.ILocator;
 import archimedesJ.services.ISelectionService;
 import archimedesJ.services.IService;
@@ -81,7 +83,7 @@ public class ServiceProvider implements ILocator {
 		System.out.println("config services...");
 		serviceLocator.registerSingleton(ISelectionService.class, SelectionService.class);
 		serviceLocator.registerSingleton(ICredentialManager.class, CredentialManager.class);
-
+		serviceLocator.registerSingleton(IStreamService.class, StreamService.class);
 		System.out.println("config services done...");
 	}
 
