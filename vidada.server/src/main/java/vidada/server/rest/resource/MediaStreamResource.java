@@ -1,9 +1,13 @@
 package vidada.server.rest.resource;
 
+import java.net.URI;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import vidada.model.ServiceProvider;
@@ -20,10 +24,19 @@ public class MediaStreamResource extends AbstractStreamResource {
 	private final IMediaService mediaService = VidadaRestServer.VIDADA_SERVER.getMediaService();
 	private final IStreamService streamService = ServiceProvider.Resolve(IStreamService.class);
 
+	/**
+	 * 
+	 * @param hash The media id
+	 * @param range The requested byte range
+	 * @param mode (REDIRECT | LINK)
+	 * @return
+	 */
 	@GET
-	//@Produces("video/mp4")
 	@Path("{hash}")
-	public Response getMedia(@PathParam("hash") String hash, @HeaderParam("Range") String range) {
+	public Response getMedia(
+			@PathParam("hash") String hash,
+			@HeaderParam("Range") String range,
+			@QueryParam("mode") String mode) {
 
 		System.out.println("Server: Stream requested!");
 
@@ -34,8 +47,17 @@ public class MediaStreamResource extends AbstractStreamResource {
 			if(localSource != null){
 				ResourceLocation resource = localSource.getResourceLocation();
 				IResourceStreamServer streamServer = streamService.streamMedia(resource);
-				System.out.println("stream @ " + streamServer.getUri());
-				return Response.seeOther(streamServer.getUri()).build();
+				URI directLink = streamServer.getUri();
+				System.out.println("stream @ " + directLink);
+
+				if(mode != null && mode.toUpperCase().equals("LINK")){
+					return Response.ok(directLink.toString()).type(MediaType.TEXT_PLAIN_TYPE).build();
+				}else{
+					// REDIRECT (default)
+					return Response.seeOther(directLink).build();
+				}
+
+
 			}else{
 				System.err.println("Server: Stream - Media has no source!");
 			}
