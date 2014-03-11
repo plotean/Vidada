@@ -52,7 +52,7 @@ public abstract class SeekableHttpHandler extends StaticHttpHandler {
 			response.setHeader(Header.ContentLength, streamLenght+"");
 			response.addHeader(Header.ContentType, resource.getMimeType());
 
-			sendUsingBuffers(response, resource, range);
+			send(response, resource, range);
 
 			response.sendAcknowledgement();
 		} catch (IOException e) {
@@ -103,14 +103,11 @@ public abstract class SeekableHttpHandler extends StaticHttpHandler {
 	}
 
 
-	private static void sendUsingBuffers(final Response response, final ResourceLocation file, HeaderRange range) {
-		//final int chunkSize = 8192;
-
+	private void send(final Response response, final ResourceLocation file, HeaderRange range) {
 		final InputStream inputStream = file.openInputStream();
 		OutputStream outputStream = null;
 
 		try {
-
 			if(inputStream instanceof ISeekableInputStream)
 				((ISeekableInputStream) inputStream).seek(range.from);
 
@@ -121,7 +118,7 @@ public abstract class SeekableHttpHandler extends StaticHttpHandler {
 			IOUtils.copy(inputStream, outputStream);
 
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.err.println("SeekableHttpHandler:send -> " + e.getMessage());
 		}finally{
 			try {
 				inputStream.close();
