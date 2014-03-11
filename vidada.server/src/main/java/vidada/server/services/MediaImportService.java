@@ -6,8 +6,6 @@ import vidada.model.jobs.JobServiceProgressListener;
 import vidada.model.media.store.local.IMediaImportStrategy;
 import vidada.model.media.store.local.MediaImportStrategy;
 import vidada.server.VidadaServer;
-import vidada.services.IJobService;
-import vidada.services.IMediaImportService;
 import archimedesJ.threading.IProgressListener;
 import archimedesJ.threading.ProgressEventArgs;
 

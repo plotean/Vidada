@@ -13,7 +13,7 @@ import javafx.scene.layout.HBox;
 import vidada.IVidadaServer;
 import vidada.client.viewmodel.explorer.MediaExplorerVM;
 import vidada.model.media.MediaLibrary;
-import vidada.services.IMediaLibraryService;
+import vidada.server.services.IMediaLibraryService;
 import archimedesJ.events.EventArgsG;
 import archimedesJ.events.EventListenerEx;
 import archimedesJ.io.locations.DirectoryLocation;

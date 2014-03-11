@@ -5,7 +5,7 @@ import vidada.model.media.MediaItem;
 import vidada.model.media.MediaQuery;
 import vidada.model.media.source.MediaSource;
 import vidada.model.pagination.ListPage;
-import vidada.services.IMediaService;
+import vidada.server.services.IMediaService;
 import archimedesJ.io.locations.ResourceLocation;
 
 public class LocalMediaClientService implements IMediaClientService {

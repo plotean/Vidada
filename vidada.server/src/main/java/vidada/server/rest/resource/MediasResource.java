@@ -17,8 +17,8 @@ import vidada.model.media.MediaQuery;
 import vidada.model.media.OrderProperty;
 import vidada.model.tags.Tag;
 import vidada.server.rest.VidadaRestServer;
-import vidada.services.IMediaService;
-import vidada.services.ITagService;
+import vidada.server.services.IMediaService;
+import vidada.server.services.ITagService;
 
 @Path("/medias")
 public class MediasResource extends AbstractResource {

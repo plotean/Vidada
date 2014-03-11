@@ -8,7 +8,7 @@ import javax.ws.rs.core.MediaType;
 
 import vidada.model.media.MediaItem;
 import vidada.server.rest.VidadaRestServer;
-import vidada.services.IMediaService;
+import vidada.server.services.IMediaService;
 
 @Path("/media")
 public class MediaResource {

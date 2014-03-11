@@ -4,7 +4,7 @@ import java.util.Collection;
 
 import vidada.client.services.ITagClientService;
 import vidada.model.tags.Tag;
-import vidada.services.ITagService;
+import vidada.server.services.ITagService;
 
 public class LocalTagClientService implements ITagClientService {
 

@@ -15,8 +15,8 @@ import javax.ws.rs.core.StreamingOutput;
 
 import vidada.model.media.MediaItem;
 import vidada.server.rest.VidadaRestServer;
-import vidada.services.IMediaService;
-import vidada.services.IThumbnailService;
+import vidada.server.services.IMediaService;
+import vidada.server.services.IThumbnailService;
 import archimedesJ.geometry.Size;
 import archimedesJ.images.IMemoryImage;
 

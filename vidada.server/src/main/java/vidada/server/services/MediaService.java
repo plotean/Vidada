@@ -12,8 +12,6 @@ import vidada.model.media.MediaQuery;
 import vidada.model.pagination.ListPage;
 import vidada.server.VidadaServer;
 import vidada.server.dal.repositories.IMediaRepository;
-import vidada.services.IMediaLibraryService;
-import vidada.services.IMediaService;
 import archimedesJ.exceptions.NotSupportedException;
 import archimedesJ.io.locations.ResourceLocation;
 

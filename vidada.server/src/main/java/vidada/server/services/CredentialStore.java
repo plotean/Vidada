@@ -6,7 +6,6 @@ import vidada.model.security.AuthenticationRequieredException;
 import vidada.model.security.StoredCredentials;
 import vidada.server.VidadaServer;
 import vidada.server.dal.repositories.ICredentialRepository;
-import vidada.services.ICredentialStore;
 import archimedesJ.exceptions.NotImplementedException;
 import archimedesJ.security.Credentials;
 import archimedesJ.util.Lists;

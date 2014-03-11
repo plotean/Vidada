@@ -7,7 +7,6 @@ import java.util.concurrent.Callable;
 import vidada.model.media.MediaLibrary;
 import vidada.server.VidadaServer;
 import vidada.server.dal.repositories.IMediaLibraryRepository;
-import vidada.services.IMediaLibraryService;
 import archimedesJ.events.EventArgsG;
 import archimedesJ.events.EventHandlerEx;
 import archimedesJ.events.IEvent;

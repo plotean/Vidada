@@ -5,7 +5,7 @@ import java.util.List;
 
 import vidada.model.media.MediaDirectory;
 import vidada.model.media.MediaItem;
-import vidada.services.IMediaService;
+import vidada.server.services.IMediaService;
 import archimedesJ.io.locations.DirectoryLocation;
 import archimedesJ.io.locations.ResourceLocation;
 import archimedesJ.io.locations.UniformLocation;

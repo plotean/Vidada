@@ -9,7 +9,6 @@ import vidada.model.tags.Tag;
 import vidada.model.tags.relations.TagRelationDefinition;
 import vidada.server.VidadaServer;
 import vidada.server.dal.repositories.ITagRepository;
-import vidada.services.ITagService;
 
 /**
  * Implements a {@link ITagService}

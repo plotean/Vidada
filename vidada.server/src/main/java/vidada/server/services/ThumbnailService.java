@@ -9,7 +9,6 @@ import vidada.model.media.MovieMediaItem;
 import vidada.model.media.store.local.LocalImageCacheManager;
 import vidada.server.VidadaServer;
 import vidada.server.settings.VidadaServerSettings;
-import vidada.services.IThumbnailService;
 import archimedesJ.geometry.Size;
 import archimedesJ.images.IMemoryImage;
 

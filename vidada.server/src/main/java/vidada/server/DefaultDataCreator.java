@@ -1,7 +1,7 @@
 package vidada.server;
 
 import vidada.IVidadaServer;
-import vidada.services.ITagService;
+import vidada.server.services.ITagService;
 
 
 

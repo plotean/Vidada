@@ -9,7 +9,7 @@ import javax.ws.rs.core.Request;
 import javax.ws.rs.core.UriInfo;
 
 import vidada.server.rest.VidadaRestServer;
-import vidada.services.ITagService;
+import vidada.server.services.ITagService;
 
 @Path("/tags")
 public class TagsResource extends AbstractResource {

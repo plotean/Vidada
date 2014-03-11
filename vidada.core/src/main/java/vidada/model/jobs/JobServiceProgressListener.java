@@ -1,7 +1,7 @@
 package vidada.model.jobs;
 
 
-import vidada.services.IJobService;
+import vidada.server.services.IJobService;
 import archimedesJ.exceptions.NotSupportedException;
 import archimedesJ.threading.IProgressListener;
 import archimedesJ.threading.ProgressEventArgs;

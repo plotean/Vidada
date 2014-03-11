@@ -30,6 +30,7 @@ import archimedesJ.io.locations.ResourceLocation;
 public class MediaViewModel extends BrowserItemVM {
 
 	private final ISystemService systemService = ServiceProvider.Resolve(ISystemService.class);
+
 	private final IVidadaClientManager clientManager = ServiceProvider.Resolve(IVidadaClientManager.class);
 	private final IThumbConatinerService thumbService = clientManager.getActive().getThumbConatinerService();
 	private final IMediaClientService mediaClientService = clientManager.getActive().getMediaClientService();
@@ -141,6 +142,9 @@ public class MediaViewModel extends BrowserItemVM {
 	public boolean open(){
 		if(mediaData != null){
 			ResourceLocation mediaResource = mediaClientService.openResource(mediaData);
+
+
+
 			if(mediaResource != null && systemService.open(mediaResource)){
 				mediaData.setOpened(mediaData.getOpened() + 1);
 				persist();

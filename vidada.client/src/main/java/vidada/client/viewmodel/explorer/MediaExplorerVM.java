@@ -7,7 +7,7 @@ import vidada.client.model.browser.BrowserFolderItem;
 import vidada.client.model.browser.BrowserFolderItemLocation;
 import vidada.client.model.browser.IBrowserItem;
 import vidada.model.pagination.IDataProvider;
-import vidada.services.IMediaService;
+import vidada.server.services.IMediaService;
 import archimedesJ.events.EventArgs;
 import archimedesJ.events.EventHandlerEx;
 import archimedesJ.events.EventListenerEx;

@@ -1,4 +1,4 @@
-package vidada.services;
+package vidada.server.services;
 
 import vidada.IVidadaServer;
 import vidada.model.media.MediaItem;

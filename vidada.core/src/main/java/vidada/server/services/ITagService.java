@@ -1,4 +1,4 @@
-package vidada.services;
+package vidada.server.services;
 
 import java.util.Collection;
 
