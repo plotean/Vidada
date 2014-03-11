@@ -12,7 +12,7 @@ public class FrameExtractorVlcjTest {
 	@SuppressWarnings("unused")
 	public static void main(String[] args) {
 
-		VlcjUtil.ensureVLCLib();
+		VLCjUtil.ensureVLCLib();
 
 		extractor = new FrameExtractorVlcj();
 		System.out.println("extractor ready!");

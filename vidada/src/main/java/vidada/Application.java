@@ -25,9 +25,8 @@ import vidada.client.local.LocalVidadaClient;
 import vidada.client.rest.RestVidadaClient;
 import vidada.dal.DAL;
 import vidada.data.DatabaseConnectionException;
+import vidada.handlers.ExternalVideoProgramHandler;
 import vidada.images.RawImageFactoryFx;
-import vidada.model.ServiceProvider;
-import vidada.model.ServiceProvider.IServiceRegisterer;
 import vidada.model.settings.VidadaClientSettings;
 import vidada.model.settings.VidadaDatabase;
 import vidada.model.settings.VidadaInstance;
@@ -36,7 +35,10 @@ import vidada.selfupdate.SelfUpdateService;
 import vidada.server.VidadaServer;
 import vidada.server.dal.IVidadaDALService;
 import vidada.server.settings.VidadaServerSettings;
+import vidada.services.IMediaPresenterService;
 import vidada.services.ISelfUpdateService;
+import vidada.services.ServiceProvider;
+import vidada.services.ServiceProvider.IServiceRegisterer;
 import vidada.viewsFX.MainViewFx;
 import vidada.viewsFX.dialoges.ChooseMediaDatabaseView;
 import vidada.viewsFX.dialoges.ChooseVidadaInstanceView;
@@ -48,8 +50,6 @@ import archimedesJ.util.OSValidator;
 
 
 public class Application extends  javafx.application.Application {
-
-
 
 	/**
 	 * Primary entry point for this Application
@@ -145,36 +145,14 @@ public class Application extends  javafx.application.Application {
 	 */
 	private void afterStartup() {
 
-		/*
-		DatabaseSettings settings = DataBaseSettingsManager.getSettings();
+		// register media play handlers
+		IMediaPresenterService mediaPresenterService = ServiceProvider.Resolve(IMediaPresenterService.class);
 
-		if(settings.isNewDatabase()){
+		String externalVideoPlayer = VidadaClientSettings.instance().getVideoPlayer();
+		if(externalVideoPlayer != null && !externalVideoPlayer.isEmpty()){
+			mediaPresenterService.chainMediaHandler(new ExternalVideoProgramHandler(externalVideoPlayer));
+		}
 
-			DefaultDataCreator.createDefaultData();
-
-			settings.setNewDatabase(false);
-			DataBaseSettingsManager.persist(settings);
-		}*/
-
-		//IMediaLibraryManager libService = ServiceProvider.Resolve(IMediaService.class).getLocalMediaStore().getLibraryManager();
-
-		//
-		// Wizards
-		//
-
-		// TODO
-		/*
-		if(libService != null)
-			if(libService.getAllLibraries().size() == 0){
-				// no media libraries registered
-				Action newLibAction = new AddNewMediaLibraryAction(MainFrame);
-				newLibAction.actionPerformed(null);
-
-				if(libService.getAllLibraries().size() != 0){
-					Action updateMediaLibraryAction = new UpdateMediaLibraryAction(MainFrame); 
-					updateMediaLibraryAction.actionPerformed(null);
-				}
-			}*/
 	}
 
 	private VidadaInstance configInstance(){

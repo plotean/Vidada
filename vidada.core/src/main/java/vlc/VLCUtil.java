@@ -1,36 +1,28 @@
-package vlcj;
+package vlc;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import uk.co.caprica.vlcj.binding.LibVlc;
-import uk.co.caprica.vlcj.runtime.RuntimeUtil;
 import archimedesJ.util.Lists;
 import archimedesJ.util.OSValidator;
 import archimedesJ.util.RegistryUtil;
 
-import com.sun.jna.Native;
-import com.sun.jna.NativeLibrary;
-
 /**
- * VlcjUtil - Thread safe
+ * VLCUtil - Thread safe
  * @author IsNull
  *
  */
-public class VlcjUtil {
-
-	static volatile boolean vlcjLoaded = false;
-	static boolean vlcjLoadError = false;
+public class VLCUtil {
 
 	/**
 	 * Checks if VLC is installed
 	 * @return
 	 */
 	public static boolean isVlcInstalled(){
-		List<String> vlcPaths = getVLCSearchPaths();
-		for (String vlcPath : vlcPaths) {
-			File libDir = new File(vlcPath);
+		String vlc = getVLCBinaryPath();
+		if(vlc != null){
+			File libDir = new File(vlc);
 			if(libDir.exists())
 				return true;
 		}
@@ -38,62 +30,44 @@ public class VlcjUtil {
 	}
 
 
-	/**
-	 * Is the vlcj binding available?
-	 * Requires that the native VLC libs are found and loaded by JNA
-	 * 
-	 * @return
-	 */
-	public synchronized static boolean isVlcjAvaiable(){
-		ensureVLCLib();
-		return vlcjLoaded;
-	}
-
-
-	/**
-	 * Ensures that the vlcj Lib is properly loaded
-	 */
-	public synchronized static void ensureVLCLib(){
-
-		if(!vlcjLoaded && !vlcjLoadError)
-		{
-			String vlclibName = RuntimeUtil.getLibVlcLibraryName();
-			List<String> vlcPaths = getVLCSearchPaths();
-			System.out.println("jni loading: " + vlclibName);
-			
-			
-			for (String vlcPath : vlcPaths) {
-				System.out.println("adding search path: " + vlcPath);
-				NativeLibrary.addSearchPath(vlclibName, vlcPath);
+	public static String getVLCBinaryPath(){
+		if(OSValidator.isWindows()){
+			List<String> paths = getVLCInstallPathsWindows();
+			if(!paths.isEmpty()){
+				File vlcFolder = new File(paths.get(0));
+				return (new File(vlcFolder, "vlc.exe")).toString();
 			}
-
-			try{
-				Native.loadLibrary(vlclibName, LibVlc.class);
-				vlcjLoaded = true;
-			}catch(UnsatisfiedLinkError e){
-				vlcjLoadError = true;
-				e.printStackTrace();
-			}
+		}else if(OSValidator.isOSX()){
+			return "/Applications/VLC.app/Contents/MacOS/VLC";
+		}else{
+			// Linux / UNIX
+			return "/usr/bin/vlc";
 		}
+		return null;
 	}
 
 	public static String getVLCLibPath(){
 		String path = null;
-		List<String> vlcPaths = getVLCSearchPaths();
+		List<String> vlcPaths = getVLCLibPaths();
 		if(!vlcPaths.isEmpty())
 			path = Lists.getFirst(vlcPaths);
 		return path; 
 	}
 
 
-	public static List<String> getVLCSearchPaths(){
+
+	public static List<String> getVLCLibPaths(){
 		List<String> paths = new ArrayList<String>();
-		
+
 		//get the install directory of the VLC for windows
 		if(OSValidator.isWindows()){
 			paths.addAll(getVLCInstallPathsWindows());
-		}else{
+		}else if(OSValidator.isOSX()){
 			paths.add("/Applications/VLC.app/Contents/MacOS/lib");
+		}else{
+			// Linux / UNIX
+			paths.add("/usr/lib");
+			paths.add("/usr/lib/vlc");
 		}
 		return paths;
 	}
@@ -104,7 +78,7 @@ public class VlcjUtil {
 	 * Windows 32bit and 64bit registry paths will be searched.
 	 * if one string is empty and the other one is not: return not empty string
 	 * if both are empty: return null
-	 * if both are not empty: return windows64
+	 * if both are not empty: return 32bit AND windows64 paths
 	 * @return
 	 */
 	public static List<String> getVLCInstallPathsWindows(){
@@ -130,7 +104,6 @@ public class VlcjUtil {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}									
-
 
 		if(windows64 != null)
 			paths.add(windows64);

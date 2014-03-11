@@ -23,11 +23,11 @@ import org.controlsfx.dialog.Dialogs;
 
 import vidada.client.viewmodel.MediaViewModel;
 import vidada.client.viewmodel.browser.BrowserItemVM;
-import vidada.model.ServiceProvider;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaType;
 import vidada.model.media.source.MediaSource;
 import vidada.model.system.ISystemService;
+import vidada.services.ServiceProvider;
 import vidada.viewsFX.player.IMediaPlayerService;
 import vidada.viewsFX.player.IMediaPlayerService.IMediaPlayerComponent;
 import vidada.viewsFX.player.MediaPlayerFx;

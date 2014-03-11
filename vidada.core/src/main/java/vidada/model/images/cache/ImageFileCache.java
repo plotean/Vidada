@@ -13,7 +13,7 @@ import java.util.Set;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
 
-import vidada.model.ServiceProvider;
+import vidada.services.ServiceProvider;
 import archimedesJ.data.BiTuple;
 import archimedesJ.geometry.Size;
 import archimedesJ.images.IMemoryImage;

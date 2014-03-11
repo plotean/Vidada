@@ -10,17 +10,6 @@ import vidada.client.facade.VidadaClientFacade;
 public class VidadaClientManager implements IVidadaClientManager {
 
 
-
-	/*
-	private static VidadaClientManager instance;
-
-	public synchronized static VidadaClientManager instance(){
-		if(instance == null){
-			instance = new VidadaClientManager();
-		}
-		return instance;
-	}*/
-
 	/***************************************************************************
 	 *                                                                         *
 	 * Private fields                                                          *
@@ -71,36 +60,6 @@ public class VidadaClientManager implements IVidadaClientManager {
 	public IVidadaClientFacade getActive() {
 		return active;
 	}
-
-	/**
-	 * Returns the local server (if any). 
-	 * @return Will return null if there is no local server registered
-
-	@Override
-	public IVidadaServer getLocalServer(){
-		return localServer;
-	}
-
-
-	public IMediaClientService getMediaClientService(){
-		return mediaClientService;
-	}
-
-	public ITagClientService getTagClientService(){
-		return tagClientService;
-	}
-
-	public IThumbnailClientService getThumbnailClientService(){
-		return thumbnailClientService;
-	}
-
-	public IVidadaServer getOriginServer(MediaItem media) {
-		IVidadaServer origin = allServers.get(media.getOriginId());
-		if(origin == null){
-			throw new NotSupportedException("Can not find origin of media "  + media + " media.origin name: " + media.getOriginId());
-		}
-		return origin;
-	} */
 
 }
 

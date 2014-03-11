@@ -9,6 +9,8 @@ import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
 
+import vlc.VLCUtil;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 
@@ -57,7 +59,7 @@ public class VidadaClientSettings extends JsonSettings {
 	private boolean forceHDPIRender = false;
 	private boolean usingMetaData = true;
 	private boolean isDebug = false;
-
+	private String videoPlayer;
 
 	/***************************************************************************
 	 *                                                                         *
@@ -86,8 +88,10 @@ public class VidadaClientSettings extends JsonSettings {
 	}
 
 	private VidadaClientSettings(){ 
+		// Defaults
 		vidadaInstances.add(VidadaInstance.LOCAL);
 		vidadaInstances.add(new VidadaInstance("REST Localhost", "http://localhost:5555/api"));
+		videoPlayer = "\"" + VLCUtil.getVLCBinaryPath() + "\" $media" ;
 	}
 
 
@@ -210,6 +214,14 @@ public class VidadaClientSettings extends JsonSettings {
 		return vidadaInstances;
 	}
 
+	public String getVideoPlayer() {
+		return videoPlayer;
+	}
+
+	public void setVideoPlayer(String videoPlayer) {
+		this.videoPlayer = videoPlayer;
+	}
+
 
 	/***************************************************************************
 	 *                                                                         *
@@ -246,8 +258,6 @@ public class VidadaClientSettings extends JsonSettings {
 			return new File(".", path.getPath());
 		}
 	}
-
-
 
 }
 

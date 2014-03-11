@@ -3,13 +3,13 @@ package vidada.model.images;
 import java.io.IOException;
 import java.io.InputStream;
 
-import vidada.model.ServiceProvider;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaType;
 import vidada.model.media.MovieMediaItem;
 import vidada.model.media.source.MediaSource;
 import vidada.model.video.Video;
 import vidada.model.video.VideoInfo;
+import vidada.services.ServiceProvider;
 import archimedesJ.exceptions.NotSupportedException;
 import archimedesJ.geometry.Size;
 import archimedesJ.images.IMemoryImage;

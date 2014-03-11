@@ -7,8 +7,8 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
 
 import vidada.client.services.IThumbnailClientService;
-import vidada.model.ServiceProvider;
 import vidada.model.media.MediaItem;
+import vidada.services.ServiceProvider;
 import archimedesJ.geometry.Size;
 import archimedesJ.images.IMemoryImage;
 import archimedesJ.images.IRawImageFactory;

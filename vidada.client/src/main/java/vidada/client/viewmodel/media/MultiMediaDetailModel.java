@@ -4,9 +4,9 @@ import java.util.List;
 
 import vidada.client.IVidadaClientManager;
 import vidada.client.services.IMediaClientService;
-import vidada.model.ServiceProvider;
 import vidada.model.media.MediaItem;
 import vidada.model.tags.Tag;
+import vidada.services.ServiceProvider;
 import archimedesJ.data.observable.IObservableList;
 import archimedesJ.util.Lists;
 

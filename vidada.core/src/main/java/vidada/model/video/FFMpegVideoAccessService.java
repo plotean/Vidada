@@ -8,7 +8,7 @@ import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 
-import vidada.model.ServiceProvider;
+import vidada.services.ServiceProvider;
 import archimedesJ.geometry.Size;
 import archimedesJ.images.IMemoryImage;
 import archimedesJ.images.IRawImageFactory;

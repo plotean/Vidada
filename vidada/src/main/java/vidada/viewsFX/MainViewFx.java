@@ -9,7 +9,7 @@ import vidada.client.model.browser.MediaBrowserModel;
 import vidada.client.services.IMediaClientService;
 import vidada.client.services.ITagClientService;
 import vidada.client.viewmodel.explorer.MediaExplorerVM;
-import vidada.model.ServiceProvider;
+import vidada.services.ServiceProvider;
 import vidada.viewsFX.mediaexplorer.PrimaryMediaExplorerFX;
 
 import com.aquafx_project.AquaFx;

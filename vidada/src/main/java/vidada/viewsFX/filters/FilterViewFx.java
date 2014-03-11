@@ -22,11 +22,11 @@ import org.controlsfx.control.textfield.TextFields;
 import vidada.client.IVidadaClientManager;
 import vidada.client.services.ITagClientService;
 import vidada.client.viewmodel.FilterModel;
-import vidada.model.ServiceProvider;
 import vidada.model.media.MediaType;
 import vidada.model.media.OrderProperty;
 import vidada.model.tags.Tag;
 import vidada.model.tags.TagFactory;
+import vidada.services.ServiceProvider;
 import vidada.viewsFX.controls.TagItPanel;
 import archimedesJ.util.Lists;
 

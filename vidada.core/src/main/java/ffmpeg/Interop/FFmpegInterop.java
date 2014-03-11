@@ -16,7 +16,6 @@ import org.joda.time.Duration;
 import vidada.model.video.VideoInfo;
 import archimedesJ.geometry.Size;
 import archimedesJ.io.ShellExec;
-import archimedesJ.util.FileSupport;
 import archimedesJ.util.OSValidator;
 import archimedesJ.util.PackageUtil;
 import ffmpeg.FFmpegException;
@@ -219,10 +218,6 @@ public abstract class FFmpegInterop {
 		try {
 			args.add(0, getFFmpegCMD());
 			String[] command = args.toArray(new String[0]);
-			String commandLine =  toCommandLine(args);
-			System.out.println("shell: " + commandLine);
-			output.append("shell: " + commandLine + FileSupport.NEWLINE);
-
 			System.out.println("FFmpegInterop: running ShellExecute.executeAndWait ...");
 
 			int exitVal = ShellExec.executeAndWait(command, output, true, timeout);
@@ -238,14 +233,6 @@ public abstract class FFmpegInterop {
 
 		return output.toString();
 	} 
-
-	private String toCommandLine(Iterable<String> str){
-		StringBuilder sb = new StringBuilder();
-		for (String string : str) {
-			sb.append(string + " ");
-		}
-		return sb.toString();
-	}
 
 	protected String dimensionToString(Size size){
 		return  size.width + "x" + size.height;

@@ -2,7 +2,7 @@ package vlcj.fx;
 
 import vidada.viewsFX.player.IMediaPlayerService;
 import vidada.viewsFX.player.MediaPlayerFx;
-import vlcj.VlcjUtil;
+import vlcj.VLCjUtil;
 import archimedesJ.events.EventArgs;
 import archimedesJ.events.EventHandlerEx;
 import archimedesJ.events.IEvent;
@@ -65,6 +65,6 @@ public class MediaPlayerService implements IMediaPlayerService {
 
 	@Override
 	public boolean isMediaPlayerAvaiable() {
-		return VlcjUtil.isVlcjAvaiable();
+		return VLCjUtil.isVlcjAvaiable();
 	}
 }

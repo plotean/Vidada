@@ -1,7 +1,6 @@
 package vidada.server;
 
 import vidada.IVidadaServer;
-import vidada.model.ServiceProvider;
 import vidada.model.images.cache.crypto.CryptedCacheUtil;
 import vidada.model.security.AuthenticationRequieredException;
 import vidada.model.security.ICredentialManager;
@@ -24,6 +23,7 @@ import vidada.server.services.ThumbnailService;
 import vidada.server.settings.DataBaseSettingsManager;
 import vidada.server.settings.IDatabaseSettingsService;
 import vidada.server.settings.VidadaServerSettings;
+import vidada.services.ServiceProvider;
 import archimedesJ.events.EventArgs;
 import archimedesJ.events.EventListenerEx;
 import archimedesJ.exceptions.NotImplementedException;

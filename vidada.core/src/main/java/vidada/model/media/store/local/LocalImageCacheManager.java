@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-import vidada.model.ServiceProvider;
 import vidada.model.images.cache.IImageCache;
 import vidada.model.images.cache.ImageCacheProxyBase;
 import vidada.model.images.cache.MemoryImageCache;
@@ -14,6 +13,7 @@ import vidada.model.media.MediaLibrary;
 import vidada.model.media.source.MediaSource;
 import vidada.model.media.source.MediaSourceLocal;
 import vidada.model.security.ICredentialManager;
+import vidada.services.ServiceProvider;
 import archimedesJ.io.locations.DirectoryLocation;
 
 /**

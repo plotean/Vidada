@@ -16,16 +16,12 @@ public class SystemService implements ISystemService{
 		boolean success = false;
 
 		if (resource.exists()) {
-			try {
-				try{
-					System.out.println("shell open: " + resource);
-					File file = new File(resource.getUri());
-					Desktop.getDesktop().open(file);
-					success = true;
-				}catch(IllegalArgumentException e){
-					e.printStackTrace();
-				}
-			} catch (IOException e) {
+			try{
+				System.out.println("shell open: " + resource);
+				File file = new File(resource.getUri());
+				Desktop.getDesktop().open(file);
+				success = true;
+			}catch(IllegalArgumentException | IOException e){
 				e.printStackTrace();
 			}
 		}

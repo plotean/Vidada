@@ -10,10 +10,11 @@ import vidada.client.model.browser.BrowserMediaItem;
 import vidada.client.model.browser.IBrowserItem;
 import vidada.client.services.IMediaClientService;
 import vidada.client.viewmodel.browser.BrowserItemVM;
-import vidada.model.ServiceProvider;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaType;
 import vidada.model.system.ISystemService;
+import vidada.services.IMediaPresenterService;
+import vidada.services.ServiceProvider;
 import archimedesJ.exceptions.NotSupportedException;
 import archimedesJ.geometry.Size;
 import archimedesJ.images.ImageContainer;
@@ -30,6 +31,7 @@ import archimedesJ.io.locations.ResourceLocation;
 public class MediaViewModel extends BrowserItemVM {
 
 	private final ISystemService systemService = ServiceProvider.Resolve(ISystemService.class);
+	private final IMediaPresenterService mediaPresenter = ServiceProvider.Resolve(IMediaPresenterService.class);
 
 	private final IVidadaClientManager clientManager = ServiceProvider.Resolve(IVidadaClientManager.class);
 	private final IThumbConatinerService thumbService = clientManager.getActive().getThumbConatinerService();
@@ -141,14 +143,9 @@ public class MediaViewModel extends BrowserItemVM {
 	@Override
 	public boolean open(){
 		if(mediaData != null){
-			ResourceLocation mediaResource = mediaClientService.openResource(mediaData);
-
-
-
-			if(mediaResource != null && systemService.open(mediaResource)){
-				mediaData.setOpened(mediaData.getOpened() + 1);
-				persist();
-			}
+			ResourceLocation resourceLocation = mediaClientService.openResource(mediaData);
+			if(resourceLocation != null)
+				return mediaPresenter.showMedia(mediaData, resourceLocation);
 		}
 		return false;
 	}
