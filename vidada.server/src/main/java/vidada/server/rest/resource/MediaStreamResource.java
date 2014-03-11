@@ -1,13 +1,9 @@
 package vidada.server.rest.resource;
 
-import java.net.URI;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import vidada.model.ServiceProvider;
@@ -17,9 +13,8 @@ import vidada.server.rest.VidadaRestServer;
 import vidada.services.IMediaService;
 import vidada.streaming.IStreamService;
 import archimedesJ.io.locations.ResourceLocation;
-import archimedesJ.streaming.IResourceStreamServer;
 
-@Path("/stream")
+@Path("/streamOld")
 public class MediaStreamResource extends AbstractStreamResource {
 	private final IMediaService mediaService = VidadaRestServer.VIDADA_SERVER.getMediaService();
 	private final IStreamService streamService = ServiceProvider.Resolve(IStreamService.class);
@@ -31,6 +26,7 @@ public class MediaStreamResource extends AbstractStreamResource {
 	 * @param mode (REDIRECT | LINK)
 	 * @return
 	 */
+	/*
 	@GET
 	@Path("{hash}")
 	public Response getMedia(
@@ -66,10 +62,10 @@ public class MediaStreamResource extends AbstractStreamResource {
 		}
 		return Response.status(Response.Status.NOT_FOUND).build();
 	}
+	 */
 
-	/*
+
 	@GET
-	@Produces("video/mp4")
 	@Path("{hash}")
 	public Response getMedia(@PathParam("hash") String hash, @HeaderParam("Range") String range) {
 
@@ -82,6 +78,7 @@ public class MediaStreamResource extends AbstractStreamResource {
 			if(localSource != null){
 
 				ResourceLocation resource = localSource.getResourceLocation();
+				System.out.println("resource mime type: " + resource.getMimeType());
 				try {
 					return buildStream(resource, range);
 				} catch (Exception e) {
@@ -95,6 +92,6 @@ public class MediaStreamResource extends AbstractStreamResource {
 			System.err.println("Server: Stream - No media found with hash " + hash);
 		}
 		return Response.status(Response.Status.NOT_FOUND).build();
-	}*/
+	}
 
 }

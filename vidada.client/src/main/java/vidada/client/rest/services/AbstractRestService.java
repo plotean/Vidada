@@ -4,12 +4,14 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Collection;
 
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.WebTarget;
+
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.WebResource;
+
 
 /**
  * Base class for all Rest-Client Services
@@ -40,8 +42,8 @@ public abstract class AbstractRestService {
 		//System.out.println(resource().path("rest").path("hello").accept(MediaType.TEXT_PLAIN).get(String.class));
 	}
 
-	protected WebResource apiResource(){
-		return client.resource(getApiURI());
+	protected WebTarget apiResource(){
+		return client.target(getApiURI());
 	}
 
 	private URI getApiURI() {

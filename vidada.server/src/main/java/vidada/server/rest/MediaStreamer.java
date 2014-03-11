@@ -21,14 +21,16 @@ public class MediaStreamer implements StreamingOutput {
 	@Override
 	public void write(OutputStream outputStream) throws IOException, WebApplicationException {
 		try {
+			System.out.println("writing bytes to output stream...");
+
 			while( length != 0) {
 				int read = randomAccess.read(buf, 0, buf.length > length ? length : buf.length);
-				System.out.println("writing " + read + " bytes to output stream.");
 				outputStream.write(buf, 0, read);
 				length -= read;
 			}
 		} finally {
 			randomAccess.close();
+			System.out.println("writing bytes done.");
 		}
 	}
 

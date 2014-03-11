@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 
 import vidada.client.services.IMediaClientService;
@@ -16,8 +19,7 @@ import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.WebResource;
+
 
 public class MediaServiceRestClient extends AbstractRestService implements IMediaClientService {
 
@@ -30,9 +32,8 @@ public class MediaServiceRestClient extends AbstractRestService implements IMedi
 		try {
 			String mediaJson = getMapper().writeValueAsString(media);
 			mediasResource()
-			.type(MediaType.APPLICATION_JSON_TYPE)
-			.accept(MediaType.APPLICATION_JSON_TYPE)
-			.post(mediaJson);
+			.request(MediaType.APPLICATION_JSON_TYPE)
+			.post( Entity.entity(mediaJson, MediaType.APPLICATION_JSON_TYPE));
 		} catch (JsonGenerationException e) {
 			e.printStackTrace();
 		} catch (JsonMappingException e) {
@@ -52,7 +53,7 @@ public class MediaServiceRestClient extends AbstractRestService implements IMedi
 				.queryParam("orderby", qry.getOrder().toString())
 				.accept(MediaType.APPLICATION_JSON_TYPE).get(String.class);*/
 
-		WebResource resource = mediasResource()
+		WebTarget resource = mediasResource()
 				.queryParam("page", pageIndex+"")
 				.queryParam("pageSize", maxPageSize+"");
 
@@ -69,7 +70,7 @@ public class MediaServiceRestClient extends AbstractRestService implements IMedi
 		}
 
 
-		String mediasJson =	resource.accept(MediaType.APPLICATION_JSON_TYPE).get(String.class);
+		String mediasJson =	resource.request(MediaType.APPLICATION_JSON_TYPE).get(String.class);
 
 		ListPage<MediaItem> page = deserialize(mediasJson, new TypeReference<ListPage<MediaItem>>() {});
 		return page;
@@ -77,7 +78,7 @@ public class MediaServiceRestClient extends AbstractRestService implements IMedi
 
 	@Override
 	public int count() {
-		String countStr = mediasResource().path("count").accept(MediaType.TEXT_PLAIN_TYPE).get(String.class);
+		String countStr = mediasResource().path("count").request(MediaType.TEXT_PLAIN_TYPE).get(String.class);
 		return Integer.parseInt(countStr);
 	}
 
@@ -87,7 +88,7 @@ public class MediaServiceRestClient extends AbstractRestService implements IMedi
 		// Request that a media stream server is started for this media
 
 		String mediaStreamUri =  apiResource().path("stream").path(media.getFilehash())
-				.queryParam("mode", "link").accept(MediaType.TEXT_PLAIN_TYPE).get(String.class);
+				.queryParam("mode", "link").request(MediaType.TEXT_PLAIN_TYPE).get(String.class);
 
 		try {
 			mediaResource = ResourceLocation.Factory.create(mediaStreamUri);
@@ -100,7 +101,7 @@ public class MediaServiceRestClient extends AbstractRestService implements IMedi
 
 
 
-	protected WebResource mediasResource(){
+	protected WebTarget mediasResource(){
 		return apiResource().path("medias");
 	}
 }

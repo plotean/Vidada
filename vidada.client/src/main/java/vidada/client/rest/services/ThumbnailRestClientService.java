@@ -3,6 +3,9 @@ package vidada.client.rest.services;
 import java.io.InputStream;
 import java.net.URI;
 
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.WebTarget;
+
 import vidada.client.services.IThumbnailClientService;
 import vidada.model.ServiceProvider;
 import vidada.model.media.MediaItem;
@@ -11,8 +14,6 @@ import archimedesJ.images.IMemoryImage;
 import archimedesJ.images.IRawImageFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.WebResource;
 
 public class ThumbnailRestClientService extends AbstractRestService implements IThumbnailClientService {
 
@@ -29,12 +30,12 @@ public class ThumbnailRestClientService extends AbstractRestService implements I
 				.path(media.getFilehash())
 				.queryParam("width", size.width+"")
 				.queryParam("height", size.height+"")
-				.accept("image/png").get(InputStream.class);
+				.request("image/png").get(InputStream.class);
 		return rawImageFactory.createImage(istream);
 	}
 
 
-	protected WebResource thumbResource(){
+	protected WebTarget thumbResource(){
 		return apiResource().path("thumbnail");
 	}
 

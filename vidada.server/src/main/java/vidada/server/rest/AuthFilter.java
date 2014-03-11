@@ -1,13 +1,18 @@
 package vidada.server.rest;
 
+import java.io.IOException;
+import java.util.Base64;
+
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import com.sun.jersey.core.util.Base64;
-import com.sun.jersey.spi.container.ContainerRequest;
-import com.sun.jersey.spi.container.ContainerRequestFilter;
+import org.glassfish.jersey.server.ContainerRequest;
+
+
 
 public class AuthFilter implements ContainerRequestFilter {
 
@@ -18,18 +23,17 @@ public class AuthFilter implements ContainerRequestFilter {
 					.header(HttpHeaders.WWW_AUTHENTICATE, "Basic realm=\"realm\"")
 					.entity("Page requires login.").build());
 
-	@Override
 	public ContainerRequest filter(ContainerRequest containerRequest) 
 			throws WebApplicationException {
 
 		if(!isPuplic(containerRequest)){
 			// Get the authentication passed in HTTP headers parameters
-			String auth = containerRequest.getHeaderValue("authorization");
+			String auth = containerRequest.getHeaderString("authorization");
 			if (auth == null)
 				throw unauthorized;
 
 			auth = auth.replaceFirst("[Bb]asic ", "");
-			String userColonPass = Base64.base64Decode(auth);
+			String userColonPass = new String(Base64.getDecoder().decode(auth));
 
 			// TODO replace with auth handler
 			if (!userColonPass.equals("admin:1337"))
@@ -54,5 +58,11 @@ public class AuthFilter implements ContainerRequestFilter {
 			}
 		}
 		return false;
+	}
+
+	@Override
+	public void filter(ContainerRequestContext arg0) throws IOException {
+		// TODO Auto-generated method stub
+
 	}
 }

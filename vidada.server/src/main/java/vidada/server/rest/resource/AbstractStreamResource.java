@@ -40,9 +40,12 @@ public abstract class AbstractStreamResource extends AbstractResource {
 			return Response.ok(streamer)
 					.header(HttpHeaders.CONTENT_LENGTH, asset.length())
 					.header("Accept-Ranges", "bytes")
-					//.type(asset.getMimeType())
+					.type(asset.getMimeType())
+					.location(null)
 					.build();
 		}
+
+		System.out.println("range: " + range);
 
 		String[] ranges = range.split("=")[1].split("-");
 		final int from = Integer.parseInt(ranges[0]);
@@ -68,8 +71,8 @@ public abstract class AbstractStreamResource extends AbstractResource {
 				.status(STATUS_PARTIAL_CONTENT)
 				.header("Accept-Ranges", "bytes")
 				.header("Content-Range", responseRange)
+				.header("Content-Type", asset.getMimeType())
 				.header(HttpHeaders.CONTENT_LENGTH, streamer.getLenth())
-				//.type(asset.getMimeType())
 				; // .header(HttpHeaders.LAST_MODIFIED, new Date(asset.lastModified()))
 		return res.build();
 	}
