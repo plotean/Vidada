@@ -21,7 +21,7 @@ public class MediaStreamResource extends AbstractResource {
 			@QueryParam("mode") String mode) {
 
 		// Streams are handled by a special module outside the REST API
-		URI streamLocation =  uriInfo.getBaseUri().resolve(hash);
+		URI streamLocation =  uriInfo.getBaseUri().resolve("..").resolve("stream").resolve(hash);
 		System.out.println("stream location: " + streamLocation.toString());
 
 		if(mode != null && mode.toUpperCase().equals("LINK")){
