@@ -18,10 +18,10 @@ public class MediaStreamHttpHandler extends SeekableHttpHandler {
 	}
 
 	@Override
-	protected ResourceLocation getStreamResource(Request request, Response response,
-			String relativeUri) {
+	protected ResourceLocation getStreamResource(Request request, Response response, String relativeUri) {
 
 		ResourceLocation resource = null;
+		relativeUri = relativeUri.replaceAll("/", "");
 
 		MediaItem media = mediaService.queryByHash(relativeUri);
 
@@ -32,7 +32,10 @@ public class MediaStreamHttpHandler extends SeekableHttpHandler {
 			}else{
 				System.err.println("Server: Stream - Media has no source!");
 			}
+		}else{
+			System.out.println("Requested media '" + relativeUri + "' could not be found.");
 		}
+
 
 		return resource;
 	}
