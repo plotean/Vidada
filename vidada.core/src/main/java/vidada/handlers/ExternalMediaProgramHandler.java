@@ -23,7 +23,7 @@ public abstract class ExternalMediaProgramHandler implements IMediaHandler {
 	 * @param command 
 	 */
 	public ExternalMediaProgramHandler(String command){
-		this.template = new CommandTemplate(ShellExec.parseCommand(command));
+		this.template = new CommandTemplate(ShellExec.parseCommand(command, true));
 	}
 
 

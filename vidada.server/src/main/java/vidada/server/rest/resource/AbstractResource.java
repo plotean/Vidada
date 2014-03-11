@@ -1,6 +1,7 @@
 package vidada.server.rest.resource;
 
 import java.io.IOException;
+import java.net.URI;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
@@ -79,6 +80,10 @@ public abstract class AbstractResource {
 			e.printStackTrace();
 		}
 		return obj;
+	}
+
+	protected URI getParent(URI uri){
+		return  uri.getPath().endsWith("/") ? uri.resolve("..") : uri.resolve(".");
 	}
 
 	protected String[] parseMultiValueParam(String multiParams){

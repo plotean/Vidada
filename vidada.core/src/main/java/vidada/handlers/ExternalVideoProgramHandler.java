@@ -63,6 +63,6 @@ public class ExternalVideoProgramHandler extends ExternalMediaProgramHandler {
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
-		return mediaPath;
+		return mediaPath.trim();
 	}
 }
