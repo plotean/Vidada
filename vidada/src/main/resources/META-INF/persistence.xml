@@ -33,11 +33,12 @@
          <property name="hibernate.hbm2ddl.auto" value="update"/>
          <property name="hibernate.connection.autocommit" value="true"/>
           
-         
+         <!-- dynamically configured by applicaiton
          <property name="hibernate.connection.username" value="sa"/>
          <property name="hibernate.connection.password" value=""/>
          <property name="hibernate.connection.url" value="jdbc:h2:data/vidada_h2"/>
-         
+          -->
+          
          <property name="jadira.usertype.autoRegisterUserTypes" value="true" />
          <property name="jadira.usertype.databaseZone" value="UTC"/>
     	 <property name="jadira.usertype.javaZone" value="UTC"/>

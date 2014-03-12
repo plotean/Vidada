@@ -1,5 +1,6 @@
 package vidada;
 
+import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -269,15 +270,18 @@ public class Application extends  javafx.application.Application {
 		IVidadaClient vidadaClient = null;
 
 		configLocalServerDatabase();
+		
+		VidadaDatabase dbconfig = VidadaServerSettings.instance().getCurrentDBConfig();
 
-		if(VidadaServerSettings.instance().getCurrentDBConfig() == null){
+		if(dbconfig == null){
 			System.err.println("No Database has been choosen - exiting now");
 			return null;
 		}
 
 		try{
 			System.out.println("Settings up Vidada DAL...");
-			IVidadaDALService vidadaDALService = DAL.build();
+			
+			IVidadaDALService vidadaDALService = DAL.build(new File(dbconfig.getDataBasePath()));
 			System.out.println("DAL Layer loaded successfull.");
 
 			System.out.println("Creating Vidada Server...");
