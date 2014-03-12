@@ -2,8 +2,13 @@ package vidada.aop;
 
 import vidada.aop.UnitOfWorkService.IUnitOfWorkIntercepter;
 
+/**
+ * Manages a unit of work branch
+ * @author IsNull
+ *
+ * @param <T>
+ */
 public interface IUnitOfWorkService<T> extends IUnitOfWorkRunner {
-
 
 	/**
 	 * Set the Unit of work intercepter.
@@ -13,8 +18,8 @@ public interface IUnitOfWorkService<T> extends IUnitOfWorkRunner {
 	public abstract void setIntercepter(IUnitOfWorkIntercepter<T> interceptor);
 
 	/**
-	 * Returns the currents Unit-Of-Work context
+	 * Returns the current Unit-Of-Work
 	 * @return
 	 */
-	public T getCurrentContext();
+	public T getCurrentUnitContext();
 }

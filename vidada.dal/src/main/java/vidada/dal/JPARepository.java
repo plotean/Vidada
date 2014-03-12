@@ -24,7 +24,7 @@ public abstract class JPARepository {
 	 * @return
 	 */
 	protected EntityManager getEntityManager(){
-		return unitOfWorkService.getCurrentContext();
+		return unitOfWorkService.getCurrentUnitContext();
 	}
 
 

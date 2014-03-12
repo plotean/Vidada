@@ -4,7 +4,14 @@ import java.util.concurrent.Callable;
 
 
 /**
- * Implements the Unit-Of-Work AOP pattern
+ * Implements the Unit-Of-Work AOP pattern.
+ * 
+ * The idea is to have a so called Unit-Of-Work per Request.
+ * A request likely spans over multiple methods and service boundaries,
+ * but the unit of work is always the same.
+ * 
+ * This way, sessions and transactions of any kind can be managed very
+ * efficiently.
  * 
  * @author IsNull
  *
@@ -72,7 +79,7 @@ public class UnitOfWorkService<T> implements IUnitOfWorkService<T> {
 
 	/**{@inheritDoc} */
 	@Override
-	public T getCurrentContext() {
+	public T getCurrentUnitContext() {
 		UnitOfWork<T> unit = currentUnitOfWork.get();
 		if(unit == null)
 			throw new IllegalStateException("Illegal access of Unit context outside Unit-Of-Work.");
@@ -139,6 +146,14 @@ public class UnitOfWorkService<T> implements IUnitOfWorkService<T> {
 	 *                                                                         *
 	 **************************************************************************/
 
+	/**
+	 * An interceptor is a life time manager of a unit of work.
+	 * It is called upon the creation of a unit of work (initUnitOfWork)
+	 * and later when the uint is finished (finalizeUnitOfWork).
+	 * @author IsNull
+	 *
+	 * @param <T>
+	 */
 	public interface IUnitOfWorkIntercepter<T> {
 
 		/**
