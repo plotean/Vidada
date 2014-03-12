@@ -60,6 +60,8 @@ public class MovieMediaItem extends MediaItem implements Cloneable {
 
 		setPreferredThumbPosition(prototype.getPreferredThumbPosition());
 		setCurrentThumbPosition(prototype.getCurrentThumbPosition());
+		setBitrate(prototype.getBitrate());
+		setDuration(prototype.getDuration());
 
 		super.prototype(prototype);
 	}
