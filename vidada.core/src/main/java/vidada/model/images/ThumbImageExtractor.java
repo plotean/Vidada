@@ -9,15 +9,12 @@ import vidada.model.media.MediaType;
 import vidada.model.media.MovieMediaItem;
 import vidada.model.media.source.MediaSource;
 import vidada.model.video.Video;
-import vidada.model.video.VideoInfo;
 import vidada.services.ServiceProvider;
 import archimedesJ.exceptions.NotSupportedException;
 import archimedesJ.geometry.Size;
 import archimedesJ.images.IMemoryImage;
 import archimedesJ.images.IRawImageFactory;
 import archimedesJ.io.locations.ResourceLocation;
-import archimedesJ.swing.images.ImageInfo;
-import archimedesJ.swing.images.SimpleImageInfo;
 
 public class ThumbImageExtractor implements IThumbImageCreator {
 
@@ -59,18 +56,6 @@ public class ThumbImageExtractor implements IThumbImageCreator {
 		return image;
 	}
 
-
-	/**{@inheritDoc}*/
-	@Override
-	public boolean updateInfo(MediaItem media) {
-		if(media.getType().equals(MediaType.IMAGE)){
-			return resolveImageResolution((ImageMediaItem)media);
-		}else if(media.getType().equals(MediaType.MOVIE)){
-			return resolveMovieResolution((MovieMediaItem)media);
-		}else{
-			throw new NotSupportedException("Not supported media type: " + media.getType());
-		}
-	}
 
 
 	/***************************************************************************
@@ -136,7 +121,6 @@ public class ThumbImageExtractor implements IThumbImageCreator {
 
 		IMemoryImage frame = video.getFrame(position, size);
 		if (frame != null) {
-			updateInfo(media);
 			media.setCurrentThumbPosition(position);
 			media.onThumbCreationSuccess();
 		} else {
@@ -145,52 +129,6 @@ public class ThumbImageExtractor implements IThumbImageCreator {
 		}
 
 		return frame;
-	}
-
-	private boolean resolveMovieResolution(MovieMediaItem movieMedia){
-		boolean success = false;
-		Video myVideo = getVideo(movieMedia);
-		if(myVideo != null){
-			VideoInfo info = myVideo.getVideoInfo();
-			if(info != null){
-				movieMedia.setResolution(info.NativeResolution);
-				success = true;
-			}
-		}
-		return success;
-	}
-
-	private boolean resolveImageResolution(ImageMediaItem imageMedia){
-		boolean success = false;
-
-		try {
-			MediaSource source = imageMedia.getSource();
-
-			ResourceLocation imagePath = source.getResourceLocation();
-			if(imagePath != null && imagePath.exists()){
-
-				InputStream is = null;
-				try{
-					is = imagePath.openInputStream();
-					ImageInfo info = SimpleImageInfo.parseInfo(is);
-					if(info != null && info.isValid()){
-						imageMedia.setResolution(new Size(info.getWidth(), info.getHeight()));
-						success = true;
-					}else
-						System.err.println("resolveResolution(): ImageInfo is NOT VALID! " + info);
-				}catch(Exception e){
-					e.printStackTrace();
-				}finally{
-					if(is != null){
-						is.close();
-					}
-				}
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		return success;
 	}
 
 	private Video getVideo(MovieMediaItem media){

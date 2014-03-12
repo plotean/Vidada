@@ -23,16 +23,4 @@ public interface IThumbImageCreator {
 	 */
 	public abstract IMemoryImage extractThumb(MediaItem media, Size size);
 
-
-	/**
-	 * Updates the media info from the media raw data. 
-	 * Properties like...
-	 * - resolution
-	 * - duration
-	 * - etc
-	 * ... depending on the media type and information present in the raw data.
-	 * @param media
-	 * @return
-	 */
-	public abstract boolean updateInfo(MediaItem media);
 }

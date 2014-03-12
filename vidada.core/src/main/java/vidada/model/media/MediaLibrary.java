@@ -1,6 +1,7 @@
 package vidada.model.media;
 
 import java.beans.Transient;
+import java.io.File;
 import java.net.URISyntaxException;
 
 import javax.persistence.Access;
@@ -10,6 +11,8 @@ import javax.persistence.Entity;
 import vidada.model.entities.IdEntity;
 import vidada.model.images.cache.IImageCache;
 import vidada.model.images.cache.crypto.ImageCacheFactory;
+import vidada.model.media.extracted.IMediaPropertyStore;
+import vidada.model.media.extracted.MediaPropertyStore;
 import archimedesJ.io.locations.DirectoryLocation;
 
 /**
@@ -27,7 +30,7 @@ public class MediaLibrary extends IdEntity {
 	 */
 	public static final String VidataCacheFolder = "vidada.db";
 	public static final String VidataThumbsFolder = VidataCacheFolder + "/thumbs";
-	public static final String VidataExtractedFolder = VidataCacheFolder + "/extracted";
+	public static final String VidataInfoFolder = VidataCacheFolder + "/info";
 
 
 	private String libraryRootURI;
@@ -35,6 +38,7 @@ public class MediaLibrary extends IdEntity {
 	private boolean ignoreImages;
 
 	transient private IImageCache imageCache = null;
+	transient private IMediaPropertyStore propertyStore = null;
 	transient private MediaDirectory mediaDirectory = null;
 	transient private DirectoryLocation libraryDirectoryLocation = null;
 
@@ -121,6 +125,21 @@ public class MediaLibrary extends IdEntity {
 			}
 		}
 		return imageCache;
+	}
+
+	/**
+	 * Returns the property cache / store for this media library.
+	 * 
+	 * @return
+	 */
+	public synchronized IMediaPropertyStore getPropertyStore(){
+		if(propertyStore == null){
+			DirectoryLocation libraryRoot = getLibraryRoot();
+			if(libraryRoot != null && libraryRoot.exists()){
+				propertyStore = new MediaPropertyStore(new File(libraryRoot.getPath(), VidataInfoFolder));
+			}
+		}
+		return propertyStore;
 	}
 
 	/**

@@ -1,15 +1,13 @@
 package vidada.model.video;
 
-import org.joda.time.Duration;
-
 import archimedesJ.geometry.Size;
 
 public class VideoInfo {
 
 	/**
-	 * Gets the duration of this video
+	 * Gets the duration of this video in Seconds
 	 */
-	public final Duration Duration;
+	public final int Duration;
 
 	/**
 	 * Gets the bitrate in kb/s
@@ -23,11 +21,17 @@ public class VideoInfo {
 
 
 	public boolean hasAllInfos(){
-		return Duration != null && BitRate != 0 && NativeResolution != null;
+		return Duration != 0 && BitRate != 0 && NativeResolution != null;
 	}
 
 
-	public VideoInfo(Duration duration, int bitrate, Size resolution){
+	/**
+	 * 
+	 * @param duration duration in seconds
+	 * @param bitrate bitrate in Kb
+	 * @param resolution resolution in pixels
+	 */
+	public VideoInfo(int duration, int bitrate, Size resolution){
 		this.Duration = duration;
 		this.BitRate = bitrate;
 		this.NativeResolution = resolution;

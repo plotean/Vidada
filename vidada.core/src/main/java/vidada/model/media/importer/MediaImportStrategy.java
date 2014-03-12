@@ -10,12 +10,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import vidada.model.images.IThumbImageCreator;
-import vidada.model.images.ThumbImageExtractor;
 import vidada.model.media.MediaHashUtil;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaItemFactory;
 import vidada.model.media.MediaLibrary;
+import vidada.model.media.info.IMediaInfoUpdateService;
+import vidada.model.media.info.MediaInfoUpdateService;
 import vidada.model.media.source.MediaSource;
 import vidada.model.media.source.MediaSourceLocal;
 import vidada.model.tags.autoTag.AutoTagSupport;
@@ -43,7 +43,7 @@ public class MediaImportStrategy implements IMediaImportStrategy {
 	private MediaHashUtil mediaHashUtil;
 	private ITagGuessingStrategy tagguesser;
 
-	private IThumbImageCreator thumbImageCreator =  new ThumbImageExtractor(); 
+	private IMediaInfoUpdateService mediaInfoUpdateService =  new MediaInfoUpdateService(); 
 
 
 	public MediaImportStrategy(IMediaService mediaService, ITagService tagService, IMediaLibraryService libraryManager){
@@ -193,12 +193,6 @@ public class MediaImportStrategy implements IMediaImportStrategy {
 				{
 					// add the media data to the probably existing, but default the exists to false
 					realExistingMediaDatas.put(mediaData, false);
-
-					// update resolution
-					if(!mediaData.hasResolution()){
-						thumbImageCreator.updateInfo(mediaData);
-						updateMedias.add(mediaData);
-					}
 				}
 			}
 		}catch(Exception e){
@@ -377,7 +371,7 @@ public class MediaImportStrategy implements IMediaImportStrategy {
 	/**
 	 * Import the new found media files
 	 * @param progressListener
-	 * @param newfilesWithHash New file tuples, with precalculated file content hashes
+	 * @param newfilesWithHash New file tuples, with pre-calculated file content hashes
 	 */
 	private void importNewFiles(IProgressListener progressListener, MediaLibrary parentlibrary, Map<String, ResourceLocation> newfilesWithHash){
 		progressListener.currentProgress(new ProgressEventArgs(true, "Importing " + newfilesWithHash.size() + " new files..."));
@@ -391,14 +385,18 @@ public class MediaImportStrategy implements IMediaImportStrategy {
 
 			int progress = (int)(100d / fileMapSize * (double)i);
 			progressListener.currentProgress(new ProgressEventArgs(progress, "Importing new media:\t" + entry.getValue().getName()));
+			MediaItem newMedia = MediaItemFactory.instance().buildMedia(entry.getValue(), parentlibrary, entry.getKey());
 
-			MediaItem newDataPart = MediaItemFactory.instance().buildMedia(entry.getValue(), parentlibrary, entry.getKey());
-
-			if(newDataPart != null)
+			if(newMedia != null)
 			{
+				// Add tags guessed from the file structure
 				if(tagguesser != null)
-					AutoTagSupport.updateTags(tagguesser, newDataPart);
-				newmedias.add(newDataPart);
+					AutoTagSupport.updateTags(tagguesser, newMedia);
+
+				// Add media infos which might be present from previous caches
+				mediaInfoUpdateService.updateInfoFromCache(newMedia, parentlibrary.getPropertyStore());
+
+				newmedias.add(newMedia);
 			}
 			i++;
 		}

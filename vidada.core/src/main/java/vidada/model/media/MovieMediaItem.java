@@ -22,6 +22,8 @@ public class MovieMediaItem extends MediaItem implements Cloneable {
 	private float preferredThumbPosition = INVALID_POSITION;
 	private float currentThumbPosition = INVALID_POSITION;
 	private volatile int thumbCreationFails = 0;
+	private int bitrate;
+	private int duration;
 
 	/**
 	 * ORM constructor
@@ -144,5 +146,37 @@ public class MovieMediaItem extends MediaItem implements Cloneable {
 			pos = (float)Math.random();
 		}
 		return pos;
+	}
+
+	/**
+	 * Set the bitrate in Kilo bits (Kb)
+	 * @param bitRate
+	 */
+	public void setBitrate(int bitrate) {
+		this.bitrate = bitrate;
+	}
+
+	/**
+	 * Gets the bitrate in Kilo bits per second
+	 * @return
+	 */
+	public int getBitrate() {
+		return bitrate;
+	}
+
+	/**
+	 * Gets the duration in seconds
+	 * @return
+	 */
+	public int getDuration() {
+		return duration;
+	}
+
+	/**
+	 * Sets the duration in seconds
+	 * @param duration
+	 */
+	public void setDuration(int duration) {
+		this.duration = duration;
 	}
 }
