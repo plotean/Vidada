@@ -102,26 +102,21 @@ public abstract class FFmpegInterop {
 		argumentBuilder.add("-frames:v");	// frames to extract
 		argumentBuilder.add("1");
 
-		/*
-		argumentBuilder.add("-f");			// format
-		argumentBuilder.add("mjpeg");		//image2 / mjpeg
-		 */
 		argumentBuilder.add("-y");			// overwrite existing thumb
 
-
-		argumentBuilder.add("-s"); 			// thumb size
-		argumentBuilder.add(dimensionToString(size));
+		// thumb size
+		argumentBuilder.add("-vf");
+		// the following will scale the thumb to the desired size but not stretch the image
+		argumentBuilder.add("scale=max("+size.width+"\\,a*"+size.height+"):max("+size.height+"\\,"+size.width+"/a),crop="+size.width+":"+size.height);
 
 		argumentBuilder.add(shieldPathArgument(pathToImage));
 
 		String log = ffmpegExec(argumentBuilder, DEFAULT_TIMEOUT);
 
-
 		if(!pathToImage.exists())
 		{
 			throw new FFmpegException("Image could not been created.(file missing)", log);
 		}
-
 	}	
 
 
