@@ -101,9 +101,6 @@ public class MediaFilterDatabaseBinding {
 		mediaBrowserModel.clearMedias();
 		final MediaQuery query = buildQuery();
 
-		//IVidadaServer chosenServer = serverClientService.getAllClients().get(0);
-		//final ServerMediaQuery serverQuery = new ServerMediaQuery(query, chosenServer);
-
 		// Since executing the query may take some time
 		// we run it in a background thread
 
@@ -124,25 +121,25 @@ public class MediaFilterDatabaseBinding {
 				public void eventOccured(Object sender,final CancelTokenEventArgs<ListPage<MediaItem>> eventArgs) {
 
 					ListPage<MediaItem> firstPage = eventArgs.getValue();
-
 					System.out.println("MediaFilterDatabaseBinding: Data async fetched: " + firstPage);
 
-					System.out.println("creating pagedList...");
-					try{
-						VirtualPagedList<MediaItem> pagedList = new VirtualPagedList<MediaItem>(new IPageLoader<MediaItem>() {
-							@Override
-							public ListPage<MediaItem> load(int pageIndex) {
-								return mediaClientService.query(query, pageIndex, maxPageSize);
-							}
-						},firstPage);
+					if(firstPage != null){
+						System.out.println("creating pagedList...");
+						try{
+							VirtualPagedList<MediaItem> pagedList = new VirtualPagedList<MediaItem>(new IPageLoader<MediaItem>() {
+								@Override
+								public ListPage<MediaItem> load(int pageIndex) {
+									return mediaClientService.query(query, pageIndex, maxPageSize);
+								}
+							},firstPage);
 
-						System.out.println("setting paged list...");
-						mediaBrowserModel.setMedias(pagedList);
+							System.out.println("setting paged list...");
+							mediaBrowserModel.setMedias(pagedList);
 
-					}catch(Throwable e){
-						e.printStackTrace();
+						}catch(Throwable e){
+							e.printStackTrace();
+						}
 					}
-
 
 				}
 			});

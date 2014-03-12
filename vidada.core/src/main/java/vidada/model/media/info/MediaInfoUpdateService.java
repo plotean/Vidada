@@ -40,6 +40,7 @@ public class MediaInfoUpdateService implements IMediaInfoUpdateService {
 		}
 	}
 
+	@Override
 	public boolean updateInfoFromCache(MediaItem media, IMediaPropertyStore propertyStore){
 		if(media.getType().equals(MediaType.IMAGE)){
 			return updateImageInfoCache((ImageMediaItem)media, propertyStore);
@@ -62,14 +63,14 @@ public class MediaInfoUpdateService implements IMediaInfoUpdateService {
 			}
 
 			// PROPERTY_BITRATE
-			int bitrate = Integer.parseInt(propertyStore.getProperty(movieMedia, PROPERTY_BITRATE));
+			int bitrate = parseIntRelaxed(propertyStore.getProperty(movieMedia, PROPERTY_BITRATE));
 			if(bitrate != 0){
 				movieMedia.setBitrate(bitrate);
 				updatedMedia = true;
 			}
 
 			// PROPERTY_DURATION
-			int duration = Integer.parseInt(propertyStore.getProperty(movieMedia, PROPERTY_DURATION));
+			int duration = parseIntRelaxed(propertyStore.getProperty(movieMedia, PROPERTY_DURATION));
 			if(duration != 0){
 				movieMedia.setDuration(duration);
 				updatedMedia = true;
@@ -77,6 +78,8 @@ public class MediaInfoUpdateService implements IMediaInfoUpdateService {
 		}
 		return updatedMedia;
 	}
+
+
 
 	private boolean updateMovieInfo(MovieMediaItem movieMedia){
 
@@ -189,6 +192,18 @@ public class MediaInfoUpdateService implements IMediaInfoUpdateService {
 			library = ((MediaSourceLocal) source).getParentLibrary();
 		}
 		return library;
+	}
+
+	private int parseIntRelaxed(String str){
+		int i = 0;
+		try{
+			if(str != null && !str.isEmpty()){
+				i = Integer.parseInt(str);
+			}
+		}catch(NumberFormatException e){
+			i = 0;
+		}
+		return i;
 	}
 
 

@@ -49,6 +49,11 @@ public class VirtualPagedList<T> implements IDataProvider<IDeferLoaded<T>>{
 	public VirtualPagedList(IPageLoader<T> pageLoader, ListPage<T> firstPage){
 		this.pageLoader = pageLoader;
 
+		if(pageLoader == null)
+			throw new IllegalArgumentException("The pageLoader must not be null");
+
+		if(firstPage == null)
+			throw new IllegalArgumentException("The firstPage must not be null");
 
 		if(firstPage.getPage() != 0)
 			throw new IllegalArgumentException("The firstPage must have the page index 0!");
