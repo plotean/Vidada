@@ -36,7 +36,7 @@ import com.sun.jna.Memory;
  */
 public class MediaPlayerVLC extends MediaPlayerFx 
 {
-	// TODO refactore this dependency away
+	// TODO refactor this dependency away
 	private final VidadaClientSettings applicationSettings = VidadaClientSettings.instance();
 
 	// player factory config
@@ -313,11 +313,5 @@ public class MediaPlayerVLC extends MediaPlayerFx
 			tmpformat = bufferFormat;
 		}
 	};
-
-
-
-
-
-
 
 }

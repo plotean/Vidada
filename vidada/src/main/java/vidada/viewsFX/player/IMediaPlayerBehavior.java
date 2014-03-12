@@ -1,6 +1,5 @@
-package vlcj.fx;
+package vidada.viewsFX.player;
 
-import vidada.viewsFX.player.MediaPlayerFx;
 
 public interface IMediaPlayerBehavior {
 

@@ -1,8 +1,7 @@
-package vlcj.fx;
+package vidada.viewsFX.player;
 
-import vidada.viewsFX.player.IMediaPlayerService;
-import vidada.viewsFX.player.MediaPlayerFx;
 import vlcj.VLCjUtil;
+import vlcj.fx.MediaPlayerVLC;
 import archimedesJ.events.EventArgs;
 import archimedesJ.events.EventHandlerEx;
 import archimedesJ.events.IEvent;

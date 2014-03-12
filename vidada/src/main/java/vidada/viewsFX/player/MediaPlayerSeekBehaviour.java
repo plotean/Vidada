@@ -1,8 +1,7 @@
-package vlcj.fx;
+package vidada.viewsFX.player;
 
 import javafx.event.EventHandler;
 import javafx.scene.input.MouseEvent;
-import vidada.viewsFX.player.MediaPlayerFx;
 
 public class MediaPlayerSeekBehaviour implements IMediaPlayerBehavior {
 
