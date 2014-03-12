@@ -30,9 +30,9 @@ import vidada.model.system.ISystemService;
 import vidada.services.ServiceProvider;
 import vidada.viewsFX.player.IMediaPlayerBehavior;
 import vidada.viewsFX.player.IMediaPlayerService;
-import vidada.viewsFX.player.MediaPlayerSeekBehaviour;
 import vidada.viewsFX.player.IMediaPlayerService.IMediaPlayerComponent;
 import vidada.viewsFX.player.MediaPlayerFx;
+import vidada.viewsFX.player.MediaPlayerSeekBehaviour;
 import vidada.viewsFX.util.AsyncImageProperty;
 import archimedesJ.events.EventArgs;
 import archimedesJ.events.EventListenerEx;
@@ -42,6 +42,7 @@ import archimedesJ.images.ImageContainer;
 import archimedesJ.images.viewer.IImageViewerService;
 import archimedesJ.images.viewer.ISmartImage;
 import archimedesJ.images.viewer.SmartImageLazy;
+import archimedesJ.io.locations.ResourceLocation;
 import archimedesJ.util.FileSupport;
 
 /**
@@ -201,8 +202,10 @@ public class MediaItemView extends BrowserCellView {
 				MediaPlayerFx playerView = addMediaPlayer();
 
 				// start playing and set initial position relative
-				MediaSource source = mediaViewModel.getModel().getData().getSource();
-				playerView.getMediaController().playMedia(source.getResourceLocation().getUriString());
+				ResourceLocation mediaResource = mediaViewModel.getMediaResource();
+				String mediaUri = mediaResource.getUriString();
+
+				playerView.getMediaController().playMedia(mediaUri);
 				playerView.getMediaController().setPosition(relativePos);
 
 			}else {

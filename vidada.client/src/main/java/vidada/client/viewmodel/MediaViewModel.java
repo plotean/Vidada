@@ -142,12 +142,26 @@ public class MediaViewModel extends BrowserItemVM {
 
 	@Override
 	public boolean open(){
-		if(mediaData != null){
-			ResourceLocation resourceLocation = mediaClientService.openResource(mediaData);
-			if(resourceLocation != null)
-				return mediaPresenter.showMedia(mediaData, resourceLocation);
-		}
+		ResourceLocation resourceLocation = getMediaResource();
+		if(resourceLocation != null)
+			return mediaPresenter.showMedia(mediaData, resourceLocation);
 		return false;
+	}
+
+	/**
+	 * Returns a ResourceLocation with points to the raw media data.
+	 * Depending on the media origin, this might point to 
+	 * 	- a local file
+	 *  - a computer in your network
+	 *  - any other URI to the web 
+	 * @return
+	 */
+	public ResourceLocation getMediaResource(){
+		ResourceLocation resourceLocation = null;
+		if(mediaData != null){
+			resourceLocation = mediaClientService.openResource(mediaData);
+		}
+		return resourceLocation;
 	}
 
 	public MediaType getMediaType(){
