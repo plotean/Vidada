@@ -198,7 +198,7 @@ public abstract class FFmpegInterop {
 			System.err.println("resolution info not found!");
 		}
 
-		return new VideoInfo(videoDuration, videoBitrate, resolution);
+		return new VideoInfo((int)videoDuration.getStandardSeconds(), videoBitrate, resolution);
 	}
 
 

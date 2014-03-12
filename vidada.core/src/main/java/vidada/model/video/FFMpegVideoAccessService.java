@@ -80,8 +80,8 @@ public class FFMpegVideoAccessService implements IVideoAccessService {
 		VideoInfo info = extractVideoInfo(pathToVideFile);
 		if(info != null)
 		{
-			if(info.Duration != null){
-				int second =(int)((float)info.Duration.getStandardSeconds() * position);
+			if(info.Duration != 0){
+				int second =(int)((float)info.Duration * position);
 				frame = extractFrame(pathToVideFile, second, frameSize);
 
 			}else{
