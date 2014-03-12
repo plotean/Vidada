@@ -1,4 +1,4 @@
-package vidada.model.media.store.local;
+package vidada.model.images;
 
 import java.io.File;
 import java.util.HashMap;

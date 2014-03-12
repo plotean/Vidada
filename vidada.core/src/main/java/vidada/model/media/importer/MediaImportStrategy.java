@@ -1,4 +1,4 @@
-package vidada.model.media.store.local;
+package vidada.model.media.importer;
 
 import java.net.URI;
 import java.util.ArrayList;

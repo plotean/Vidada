@@ -1,12 +1,12 @@
 package vidada.server.services;
 
 import vidada.model.images.IThumbImageCreator;
+import vidada.model.images.LocalImageCacheManager;
 import vidada.model.images.ThumbImageExtractor;
 import vidada.model.images.cache.CacheUtils;
 import vidada.model.images.cache.IImageCache;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MovieMediaItem;
-import vidada.model.media.store.local.LocalImageCacheManager;
 import vidada.server.VidadaServer;
 import vidada.server.settings.VidadaServerSettings;
 import archimedesJ.geometry.Size;
