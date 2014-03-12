@@ -62,7 +62,7 @@ public class ThumbImageExtractor implements IThumbImageCreator {
 
 	/**{@inheritDoc}*/
 	@Override
-	public boolean updateResolution(MediaItem media) {
+	public boolean updateInfo(MediaItem media) {
 		if(media.getType().equals(MediaType.IMAGE)){
 			return resolveImageResolution((ImageMediaItem)media);
 		}else if(media.getType().equals(MediaType.MOVIE)){
@@ -114,7 +114,6 @@ public class ThumbImageExtractor implements IThumbImageCreator {
 
 	private IMemoryImage extractImageThumb(ImageMediaItem media, Size size){
 		IMemoryImage nativeImage = readNativeImage(media);
-		// TODO how to update media resolution here?
 		nativeImage = nativeImage.rescale(size.width, size.height);
 		return nativeImage;
 	}
@@ -137,10 +136,10 @@ public class ThumbImageExtractor implements IThumbImageCreator {
 
 		IMemoryImage frame = video.getFrame(position, size);
 		if (frame != null) {
-			updateResolution(media);
+			updateInfo(media);
 			media.setCurrentThumbPosition(position);
 			media.onThumbCreationSuccess();
-		}else {
+		} else {
 			// the thumb could not be generated
 			media.onThumbCreationFailed();
 		}

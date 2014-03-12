@@ -196,7 +196,7 @@ public class MediaImportStrategy implements IMediaImportStrategy {
 
 					// update resolution
 					if(!mediaData.hasResolution()){
-						thumbImageCreator.updateResolution(mediaData);
+						thumbImageCreator.updateInfo(mediaData);
 						updateMedias.add(mediaData);
 					}
 				}

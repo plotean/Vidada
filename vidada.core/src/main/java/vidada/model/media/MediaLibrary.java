@@ -13,7 +13,7 @@ import vidada.model.images.cache.crypto.ImageCacheFactory;
 import archimedesJ.io.locations.DirectoryLocation;
 
 /**
- * Represents an local MediaLibrary
+ * Represents an local user MediaLibrary folder.
  * 
  * @author IsNull
  *
@@ -22,7 +22,13 @@ import archimedesJ.io.locations.DirectoryLocation;
 @Access(AccessType.FIELD)
 public class MediaLibrary extends IdEntity {
 
-	public static final String VidataThumbsFolder = "vidada.thumbs";
+	/**
+	 * Vidadas cache directory name in a users library folder root
+	 */
+	public static final String VidataCacheFolder = "vidada.db";
+	public static final String VidataThumbsFolder = VidataCacheFolder + "/thumbs";
+	public static final String VidataExtractedFolder = VidataCacheFolder + "/extracted";
+
 
 	private String libraryRootURI;
 	private boolean ignoreMovies;
@@ -60,7 +66,7 @@ public class MediaLibrary extends IdEntity {
 
 
 	/**
-	 * Gets the media directory which represents the root of this media library
+	 * Gets the media directory which represents the root of this media library.
 	 * @return
 	 */
 	public MediaDirectory getMediaDirectory(){

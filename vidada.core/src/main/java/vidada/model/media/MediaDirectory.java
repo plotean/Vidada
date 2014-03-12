@@ -16,10 +16,11 @@ import archimedesJ.util.FileSupport;
 import archimedesJ.util.Lists;
 
 /**
- * Represents an abstract directory containing media files
- * Provides convenient methods to (recursively) list all matching media items.
+ * Represents an abstract directory containing media files.
  * 
- * This implementation is immutable
+ * Provides convenient methods to (recursively) list all media items.
+ * 
+ * This implementation is immutable.
  * @author IsNull
  *
  */
@@ -115,7 +116,7 @@ public final class MediaDirectory {
 	 */
 	public List<ResourceLocation> getAllMediaFilesRecursive(){
 		if(directory != null)
-			return Lists.asTypedList(directory.listAll(buildFilter(), ignoreVidadaThumbs));
+			return Lists.asTypedList(directory.listAll(buildFilter(), ignoreVidadaCache));
 		return new ArrayList<ResourceLocation>();
 	}
 
@@ -210,13 +211,14 @@ public final class MediaDirectory {
 	};
 
 	/**
-	 * A simple filter to igonre vidada generated thumbs
+	 * A simple filter to ignore Vidada generated cache items in the media library
+	 * 
 	 */
-	private transient static final IDirectoryFilter ignoreVidadaThumbs = new IDirectoryFilter() {
+	private transient static final IDirectoryFilter ignoreVidadaCache = new IDirectoryFilter() {
 		@Override
 		public boolean accept(DirectoryLocation directoiry) {
 			String name = directoiry.getName();
-			return !name.equals(MediaLibrary.VidataThumbsFolder);
+			return !name.equals(MediaLibrary.VidataCacheFolder);
 		}
 	};
 
