@@ -147,7 +147,7 @@ public abstract class FFmpegInterop {
 
 		String log = ffmpegExec(argumentBuilder, DEFAULT_TIMEOUT);
 
-		Duration videoDuration = null;
+		int videoDuration = 0;
 		int videoBitrate = 0;
 		Size resolution = null;
 
@@ -163,13 +163,14 @@ public abstract class FFmpegInterop {
 			Duration minutes = Duration.standardMinutes(Integer.parseInt(m.group(2)));
 			Duration seconds = Duration.standardSeconds(Integer.parseInt(m.group(3)));
 
-			videoDuration = Duration.millis(hours.getMillis() + minutes.getMillis() + seconds.getMillis());
+			Duration d = Duration.millis(hours.getMillis() + minutes.getMillis() + seconds.getMillis());
+			videoDuration = (int)d.getStandardSeconds();
 		}else {
 			System.err.println("duration info not found!");
 		}
 
 		//
-		// parse duration
+		// parse bitrate
 		//
 		m = regex_BitRate.matcher(log);
 		if(m.find()){
@@ -193,7 +194,7 @@ public abstract class FFmpegInterop {
 			System.err.println("resolution info not found!");
 		}
 
-		return new VideoInfo((int)videoDuration.getStandardSeconds(), videoBitrate, resolution);
+		return new VideoInfo(videoDuration, videoBitrate, resolution);
 	}
 
 
