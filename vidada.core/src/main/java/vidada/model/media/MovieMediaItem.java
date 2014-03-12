@@ -5,8 +5,6 @@ import java.net.URI;
 import javax.persistence.Entity;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import vidada.model.video.Video;
-
 /**
  * Represents a playable MoviePart. A full Movie can be composed of multiple
  * MovieParts
@@ -20,9 +18,6 @@ public class MovieMediaItem extends MediaItem implements Cloneable {
 
 	transient public final static int INVALID_POSITION = -1;
 	transient private final static int MAX_THUMB_RETRY_COUT = 2;
-	transient private Video video;
-	//transient private final Lock thumbnailCreatorLock = new ReentrantLock();
-
 
 	private float preferredThumbPosition = INVALID_POSITION;
 	private float currentThumbPosition = INVALID_POSITION;

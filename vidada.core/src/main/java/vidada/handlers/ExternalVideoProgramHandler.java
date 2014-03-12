@@ -1,10 +1,5 @@
 package vidada.handlers;
 
-import java.io.File;
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URLDecoder;
-
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaType;
 import archimedesJ.io.locations.ResourceLocation;
@@ -39,30 +34,9 @@ public class ExternalVideoProgramHandler extends ExternalMediaProgramHandler {
 
 	@Override
 	protected String[] getCommandArgs(CommandTemplate command, MediaItem media, ResourceLocation mediaResource) {
-		String mediaPath =	getMediaPath(mediaResource);
-		return command.substitute("$media", mediaPath).toArgs();
+		CommandTemplate exec = command
+				.substitute("$media", mediaResource.getPath());
+		return exec.toArgs();		
 	}
 
-	/**
-	 * Returns the media path. This will remove the URI parts if it is a local file.
-	 * In any other case, this will return the normal decoded URL
-	 * @param mediaResource
-	 * @return
-	 */
-	private String getMediaPath(ResourceLocation mediaResource){
-		String mediaPath = "";
-		try {
-			URI resource = mediaResource.getUri();
-			if("file".equals(resource.getScheme())){
-				mediaPath = URLDecoder.decode(resource.toString(), "utf-8");
-				mediaPath = new File(mediaPath).getPath();
-				mediaPath = mediaPath.replace("file:", "");
-			}else{
-				mediaPath = mediaResource.getUriString();
-			}
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		}
-		return mediaPath.trim();
-	}
 }

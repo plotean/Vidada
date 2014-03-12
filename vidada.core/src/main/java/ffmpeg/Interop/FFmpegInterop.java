@@ -87,9 +87,6 @@ public abstract class FFmpegInterop {
 	 */
 	public void createImage(URI pathToVideo, File pathToImage, int second, Size size) throws FFmpegException {
 
-		//if(!pathToVideo.exists())
-		//	throw new IllegalArgumentException("file must exist and being readable! @ " + pathToVideo.toString());
-
 		FileUtils.deleteQuietly(pathToImage);
 
 		List<String> argumentBuilder = new ArrayList<String>();

@@ -1,7 +1,5 @@
 package vidada.handlers;
 
-import java.util.regex.Pattern;
-
 import vidada.model.media.MediaItem;
 import archimedesJ.io.ShellExec;
 import archimedesJ.io.locations.ResourceLocation;
@@ -78,10 +76,8 @@ public abstract class ExternalMediaProgramHandler implements IMediaHandler {
 		 */
 		public CommandTemplate substitute(String variable, String value){
 			String[] args = this.toArgs();
-
 			for (int i = 0; i < args.length; i++) {
-				System.out.println("arg: " + args[i]);
-				args[i] = args[i].replaceAll(Pattern.quote(variable), value);
+				args[i] = args[i].replace(variable, value);
 			}
 			return new CommandTemplate(args);
 		}
@@ -94,6 +90,16 @@ public abstract class ExternalMediaProgramHandler implements IMediaHandler {
 		public String[] toArgs(){
 			return this.parts.clone();
 		}
+		
+		@Override
+		public String toString(){
+			String str = "";
+			for (String arg : parts) {
+				str += arg + " ";
+			}
+			return str.trim();
+		}
+		
 	}
 
 }

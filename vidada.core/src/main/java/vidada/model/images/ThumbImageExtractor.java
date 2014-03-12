@@ -3,6 +3,7 @@ package vidada.model.images;
 import java.io.IOException;
 import java.io.InputStream;
 
+import vidada.model.media.ImageMediaItem;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaType;
 import vidada.model.media.MovieMediaItem;
@@ -49,7 +50,7 @@ public class ThumbImageExtractor implements IThumbImageCreator {
 		IMemoryImage image = null;
 
 		if(media.getType() == MediaType.IMAGE){
-			image = extractImageThumb(media, size);
+			image = extractImageThumb((ImageMediaItem)media, size);
 		}else if(media.getType() == MediaType.MOVIE){
 			image = extractMovieThumb((MovieMediaItem)media, size);
 		}else
@@ -63,9 +64,9 @@ public class ThumbImageExtractor implements IThumbImageCreator {
 	@Override
 	public boolean updateResolution(MediaItem media) {
 		if(media.getType().equals(MediaType.IMAGE)){
-			return resolveImageResolution(media);
+			return resolveImageResolution((ImageMediaItem)media);
 		}else if(media.getType().equals(MediaType.MOVIE)){
-			return resolveMovieResolution(media);
+			return resolveMovieResolution((MovieMediaItem)media);
 		}else{
 			throw new NotSupportedException("Not supported media type: " + media.getType());
 		}
@@ -82,7 +83,7 @@ public class ThumbImageExtractor implements IThumbImageCreator {
 	/**
 	 * Read the image file into a IMemoryImage in its native resolution
 	 */
-	private IMemoryImage readImage(MediaItem media) {
+	private IMemoryImage readNativeImage(ImageMediaItem media) {
 		IMemoryImage bufferedImage = null;
 
 		MediaSource source = media.getSource();
@@ -108,12 +109,11 @@ public class ThumbImageExtractor implements IThumbImageCreator {
 				}
 			}
 		}
-
 		return bufferedImage;
 	}
 
-	private IMemoryImage extractImageThumb(MediaItem media, Size size){
-		IMemoryImage nativeImage = readImage(media);
+	private IMemoryImage extractImageThumb(ImageMediaItem media, Size size){
+		IMemoryImage nativeImage = readNativeImage(media);
 		// TODO how to update media resolution here?
 		nativeImage = nativeImage.rescale(size.width, size.height);
 		return nativeImage;
@@ -148,16 +148,10 @@ public class ThumbImageExtractor implements IThumbImageCreator {
 		return frame;
 	}
 
-
-
-
-	private boolean resolveMovieResolution(MediaItem movieMedia){
-
+	private boolean resolveMovieResolution(MovieMediaItem movieMedia){
 		boolean success = false;
-
-		MediaSource source = movieMedia.getSource();
-		if(source != null){
-			Video myVideo = new Video(source.getResourceLocation());
+		Video myVideo = getVideo(movieMedia);
+		if(myVideo != null){
 			VideoInfo info = myVideo.getVideoInfo();
 			if(info != null){
 				movieMedia.setResolution(info.NativeResolution);
@@ -167,7 +161,7 @@ public class ThumbImageExtractor implements IThumbImageCreator {
 		return success;
 	}
 
-	private boolean resolveImageResolution(MediaItem imageMedia){
+	private boolean resolveImageResolution(ImageMediaItem imageMedia){
 		boolean success = false;
 
 		try {
@@ -200,7 +194,7 @@ public class ThumbImageExtractor implements IThumbImageCreator {
 		return success;
 	}
 
-	private Video getVideo(MediaItem media){
+	private Video getVideo(MovieMediaItem media){
 		Video video = null;
 		MediaSource source = media.getSource();
 		if(source != null && source.isAvailable())
