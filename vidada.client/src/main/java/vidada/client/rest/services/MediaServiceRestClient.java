@@ -58,15 +58,15 @@ public class MediaServiceRestClient extends AbstractRestService implements IMedi
 				.queryParam("pageSize", maxPageSize+"");
 
 		if(qry.getKeywords() != null && !qry.getKeywords().isEmpty()){
-			resource.queryParam("query", qry.getKeywords());
+			resource = resource.queryParam("query", qry.getKeywords());
 		}
 
 		if(!qry.getRequiredTags().isEmpty()){
-			resource.queryParam("tags", multiValueQueryParam(qry.getRequiredTags()));
+			resource = resource.queryParam("tags", multiValueQueryParam(qry.getRequiredTags()));
 		}
 
 		if(qry.getMediaType() != null){
-			resource.queryParam("type", qry.getMediaType().toString());
+			resource = resource.queryParam("type", qry.getMediaType().name());
 		}
 
 
