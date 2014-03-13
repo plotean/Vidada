@@ -36,28 +36,37 @@ public abstract class SeekableHttpHandler extends StaticHttpHandler {
 		printRequestHeader(request);
 		// check header for range request:
 
-		long length = resource.length();
+		final long totalLength = resource.length();
 
 		//Range
 		String requestRange = request.getHeader(Header.Range);
-		HeaderRange range = HeaderRange.parse(requestRange);
+		HttpByteRange range = HttpByteRange.parse(requestRange);
+		// Ensure that we send to an index > 0
+		if(range.to == 0){
+			range.to = totalLength;
+		}
 
 		// Ensure range is in valid bounds
+		range.from = Math.max(0, range.from); 			// Smallest value is zero
+		range.from = Math.min(totalLength, range.from);	// Biggest value is resource.length
+		range.to = Math.max(0, range.to);				// Smallest value is zero
+		range.to = Math.min(totalLength, range.to);		// Biggest value is resource.length
 
-		// Absolute bounds
-		range.from = Math.max(0, range.from); 		// Smallest value is zero
-		range.from = Math.min(length, range.from);	// Biggest value is resource.length
-		range.to = Math.max(0, range.to);			// Smallest value is zero
-		range.to = Math.min(length, range.to);		// Biggest value is resource.length
 
+		System.out.println("requested range: " + requestRange);
+		System.out.println("interpreted range: " + range);
+		
 		long requestLenght = range.to - range.from;
 
 		try {
-			response.addHeader(Header.AcceptRanges, "bytes");	
+			response.addHeader(Header.AcceptRanges, "bytes");
+			response.setHeader(Header.ContentRange, range.toByteRange(totalLength));
 			response.setHeader(Header.ContentLength, requestLenght+"");
 			response.addHeader(Header.ContentType, resource.getMimeType());
 
-			send(response, resource, range);
+			response.flush(); // Flush the response header.
+			
+			sendStream(response, resource, range);
 
 			response.sendAcknowledgement();
 		} catch (IOException e) {
@@ -107,16 +116,19 @@ public abstract class SeekableHttpHandler extends StaticHttpHandler {
 		return uri;
 	}
 
-
-	private void send(final Response response, final ResourceLocation file, HeaderRange range) {
-		final InputStream inputStream = file.openInputStream();
+	/**
+	 * Send the given range from the given resource as stream
+	 * @param response
+	 * @param resource The resource to stream
+	 * @param range The range of the resource to stream
+	 */
+	private void sendStream(final Response response, final ResourceLocation resource, HttpByteRange range) {
+		final InputStream inputStream = resource.openInputStream();
 		OutputStream outputStream = null;
 
 		try {
 			if(inputStream instanceof ISeekableInputStream)
 				((ISeekableInputStream) inputStream).seek(range.from);
-
-			response.flush(); // Flush the response header.
 
 			// Stream the file content
 			outputStream = response.getOutputStream();
@@ -125,13 +137,14 @@ public abstract class SeekableHttpHandler extends StaticHttpHandler {
 		} catch (IOException e) {
 			System.err.println("SeekableHttpHandler:send -> " + e.getMessage());
 		}finally{
+			
+			response.finish();
+			
 			try {
 				inputStream.close();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-
-			response.finish();
 		}
 	}
 
