@@ -1,9 +1,11 @@
 package vidada.server.rest;
 
 import java.net.URI;
+import java.util.Set;
 
 import javax.ws.rs.core.UriBuilder;
 
+import org.glassfish.grizzly.http.CompressionConfig;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.grizzly.http.server.StaticHttpHandler;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
@@ -21,6 +23,9 @@ public class VidadaRestServer extends ResourceConfig{
 
 	public VidadaRestServer(IVidadaServer server){
 		packages("vidada.server.rest.resource");
+	
+
+		
 		this.vidadaServer = server;
 		VIDADA_SERVER = server;
 	}
@@ -34,8 +39,7 @@ public class VidadaRestServer extends ResourceConfig{
 
 		//rc.property("com.sun.jersey.api.json.POJOMappingFeature", true);
 
-		// The following line is to enable GZIP when client accepts it
-		//resourceConfig.getContainerResponseFilters().add(new GZIPContentEncodingFilter());
+		
 		//rc.getProperties().put("com.sun.jersey.spi.container.ContainerRequestFilters", "vidada.server.rest.AuthFilter");
 
 		HttpServer server = null;
@@ -51,6 +55,15 @@ public class VidadaRestServer extends ResourceConfig{
 			server.getServerConfiguration().addHttpHandler(new MediaStreamHttpHandler(vidadaServer.getMediaService()), "/stream");
 			server.getServerConfiguration().getMonitoringConfig().getWebServerConfig().addProbes(new AuthProbe());
 
+
+			
+			// The following line is to enable GZIP when client accepts it
+			
+			CompressionConfig compressionConfig =
+					server.getListener("grizzly").getCompressionConfig();
+			compressionConfig.setCompressionMode(CompressionConfig.CompressionMode.ON); // the mode
+			compressionConfig.setCompressionMinSize(1); // the min amount of bytes to compress
+			compressionConfig.setCompressableMimeTypes((Set<String>)null); // the mime types to compress
 
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
