@@ -36,20 +36,25 @@ public abstract class SeekableHttpHandler extends StaticHttpHandler {
 		printRequestHeader(request);
 		// check header for range request:
 
+		long length = resource.length();
+
 		//Range
 		String requestRange = request.getHeader(Header.Range);
 		HeaderRange range = HeaderRange.parse(requestRange);
 
-		if(range.to < 1){
-			range.to = resource.length();
-		}
+		// Ensure range is in valid bounds
 
-		long streamLenght = range.to - range.from;
+		// Absolute bounds
+		range.from = Math.max(0, range.from); 		// Smallest value is zero
+		range.from = Math.min(length, range.from);	// Biggest value is resource.length
+		range.to = Math.max(0, range.to);			// Smallest value is zero
+		range.to = Math.min(length, range.to);		// Biggest value is resource.length
 
+		long requestLenght = range.to - range.from;
 
 		try {
 			response.addHeader(Header.AcceptRanges, "bytes");	
-			response.setHeader(Header.ContentLength, streamLenght+"");
+			response.setHeader(Header.ContentLength, requestLenght+"");
 			response.addHeader(Header.ContentType, resource.getMimeType());
 
 			send(response, resource, range);
