@@ -70,6 +70,14 @@ public class MediaService extends VidadaServerService implements IMediaService {
 		return runUnitOfWork(new Callable<ListPage<MediaItem>>() {
 			@Override
 			public ListPage<MediaItem> call() throws Exception {
+
+				// Add additional related tags to the users request
+				// This is what vidada makes intelligent
+
+				ITagService tagService = getServer().getTagService();
+				qry.setRequiredTags(tagService.getAllRelatedTags(qry.getRequiredTags()));
+				qry.setBlockedTags(tagService.getAllRelatedTags(qry.getBlockedTags()));
+
 				return repository.query(qry, pageIndex, maxPageSize);
 			}
 		});

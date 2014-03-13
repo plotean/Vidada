@@ -45,4 +45,9 @@ public class TagRepository extends JPARepository implements ITagRepository {
 		getEntityManager().persist(tag);
 	}
 
+	@Override
+	public Tag queryById(String tagName) {
+		return getEntityManager().find(Tag.class, tagName);
+	}
+
 }

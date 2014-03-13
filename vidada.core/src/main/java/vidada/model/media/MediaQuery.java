@@ -1,6 +1,7 @@
 package vidada.model.media;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import vidada.model.queries.AbstractQuery;
@@ -23,8 +24,8 @@ public class MediaQuery extends AbstractQuery<MediaItem>{
 	private MediaType selectedtype = MediaType.ANY;
 	private String keywords = null;
 	private OrderProperty order = OrderProperty.FILENAME;
-	private List<Tag> requiredTags = new ArrayList<Tag>();
-	private List<Tag> blockedTags = new ArrayList<Tag>();
+	private Collection<Tag> requiredTags = new ArrayList<Tag>();
+	private Collection<Tag> blockedTags = new ArrayList<Tag>();
 	private boolean onlyAvailable = false;
 	private boolean reverseOrder = false;
 
@@ -76,11 +77,11 @@ public class MediaQuery extends AbstractQuery<MediaItem>{
 		return order;
 	}
 
-	public List<Tag> getRequiredTags() {
+	public Collection<Tag> getRequiredTags() {
 		return requiredTags;
 	}
 
-	public List<Tag> getBlockedTags() {
+	public Collection<Tag> getBlockedTags() {
 		return blockedTags;
 	}
 
@@ -100,11 +101,11 @@ public class MediaQuery extends AbstractQuery<MediaItem>{
 		this.order = order;
 	}
 
-	public void setRequiredTags(List<Tag> requiredTags) {
+	public void setRequiredTags(Collection<Tag> requiredTags) {
 		this.requiredTags = requiredTags;
 	}
 
-	public void setBlockedTags(List<Tag> blockedTags) {
+	public void setBlockedTags(Collection<Tag> blockedTags) {
 		this.blockedTags = blockedTags;
 	}
 

@@ -21,4 +21,6 @@ public interface ITagRepository extends IRepository {
 
 	public abstract void update(Tag tag);
 
+	public abstract Tag queryById(String tagName);
+
 }

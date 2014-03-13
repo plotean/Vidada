@@ -1,8 +1,10 @@
 package vidada.server.services;
 
 import java.util.Collection;
+import java.util.Set;
 
 import vidada.model.tags.Tag;
+import vidada.model.tags.relations.TagRelationDefinition;
 
 /**
  * Manages all tags of a Vidada Server
@@ -17,7 +19,14 @@ public interface ITagService  {
 	 * @param tag
 	 * @return
 	 */
-	public Collection<Tag> getAllRelatedTags(Tag tag);
+	public Set<Tag> getAllRelatedTags(Tag tag);
+
+	/**
+	 * Gets all related tags for the given one.
+	 * @param tag
+	 * @return
+	 */
+	public Set<Tag> getAllRelatedTags(Collection<Tag> tag);
 
 
 	/**
@@ -35,6 +44,8 @@ public interface ITagService  {
 
 
 	// NON SERVICE METHODS :
+
+	public abstract void mergeRelation(TagRelationDefinition relationDef);
 
 	/**
 	 * Gets the tag for the given string-name

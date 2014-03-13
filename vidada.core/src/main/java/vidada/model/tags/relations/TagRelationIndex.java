@@ -8,13 +8,33 @@ import java.util.Set;
 import vidada.model.tags.Tag;
 import archimedesJ.exceptions.NotSupportedException;
 
+/**
+ * Implementation of a Tag Relation Index.
+ * 
+ * Tags can have a hierarchical relation towards each other, therefore
+ * this implementation uses a Tree Structure for the Tag-Nodes.
+ * 
+ * 
+ * @author IsNull
+ *
+ */
 public class TagRelationIndex {
 
 	transient private final Map<Tag, TagNode> rootNodes = new HashMap<Tag, TagNode>(5000);
 	transient private final Map<TagNode, Set<Tag>> equalTags = new HashMap<TagNode, Set<Tag>>(5000);
 
+
+	/***************************************************************************
+	 *                                                                         *
+	 * Public API                                                              *
+	 *                                                                         *
+	 **************************************************************************/
+
+
+
 	/**
-	 * Add a relation between two tags
+	 * Add a relation between two tags. 
+	 * This will update this index accordingly.
 	 * 
 	 * @param left
 	 * @param relation
@@ -36,8 +56,66 @@ public class TagRelationIndex {
 	}
 
 	/**
+	 * Returns all tags which are mutually related to the given tag.
+	 * I.e. it will tags with synonymous meaning or tags
+	 * which are specalisations of the given tag.
+	 * 
+	 * @param tag
+	 * @return
+	 */
+	public Set<Tag> getAllRelatedTags(Tag tag){
+		Set<Tag> relatedTags = new HashSet<Tag>();
+
+		relatedTags.addAll(getAllEqualTags(tag));
+
+		relatedTags.addAll(getSpecialisations(tag));
+
+		relatedTags.add(tag);
+
+		return relatedTags;
+	}
+
+	/**
+	 * Returns all tags which as synonyms to the given tag
+	 * @param tag
+	 * @return
+	 */
+	public Set<Tag> getAllEqualTags(Tag tag){
+		TagNode node = getNode(tag);
+		return equalTags.get(node);
+	}
+
+	/**
+	 * Returns all tags which are hierarchical synonyms (specalisations)
+	 * @param tag
+	 * @return
+	 */
+	public Set<Tag> getSpecialisations(Tag tag){
+
+		Set<Tag> hirarchical = new HashSet<Tag>();
+
+		TagNode node = getNode(tag);
+
+		for (TagNode child : node.getChildren()) {
+			hirarchical.add(child.getTag());
+			hirarchical.addAll(getSpecialisations(child.getTag()));
+		}
+		return hirarchical;
+	}
+
+	public Tag getMasterTag(Tag tag){
+		return getNode(tag).getTag();
+	}
+
+	/***************************************************************************
+	 *                                                                         *
+	 * Private methods                                                         *
+	 *                                                                         *
+	 **************************************************************************/
+
+	/**
 	 * Introduce an equality relation between two tags
-	 * This will infact merge all the references of the two tags into the left one
+	 * This will in fact merge all the references of the two tags into the left one
 	 * @param left
 	 * @param right
 	 */
@@ -99,60 +177,41 @@ public class TagRelationIndex {
 	}
 
 	/**
-	 * Finds a matching Node for the given Tag
+	 * Finds a matching Node for the given Tag, but does not 
+	 * create a new Node.
 	 * @param tag
-	 * @return May return <code>null</code> if no matching node exists
+	 * @return May return <code>null</code> if no matching {@link TagNode} exists
 	 */
 	private TagNode findNode(Tag tag){
 		return rootNodes.get(tag);
 	}
 
 
-	/**
-	 * Returns all tags which as synonyms to the given tag
-	 * @param tag
-	 * @return
-	 */
-	public Set<Tag> getAllEqualTags(Tag tag){
-		TagNode node = getNode(tag);
-		return equalTags.get(node);
-	}
+	/***************************************************************************
+	 *                                                                         *
+	 * Inner classes                                                           *
+	 *                                                                         *
+	 **************************************************************************/
 
 	/**
-	 * Returns all tags which are hierarchical synonyms (specalisations)
-	 * @param tag
-	 * @return
+	 * Tree-Node wrapper for a Tag
+	 * @author IsNull
+	 *
 	 */
-	public Set<Tag> getSpecialisations(Tag tag){
+	private class TagNode {
+		private final Tag tag;
+		private final Set<TagNode> children = new HashSet<TagNode>();
 
-		Set<Tag> hirarchical = new HashSet<Tag>();
-
-		TagNode node = getNode(tag);
-
-		for (TagNode child : node.getChildren()) {
-			hirarchical.add(child.getTag());
-			hirarchical.addAll(getSpecialisations(child.getTag()));
+		public TagNode(Tag tag){
+			this.tag = tag;
 		}
-		return hirarchical;
-	}
 
-	/**
-	 * Returns all tags which are mutually related to the given tag
-	 * @param tag
-	 * @return
-	 */
-	public Set<Tag> getAllRelatedTags(Tag tag){
-		Set<Tag> relatedTags = new HashSet<Tag>();
+		public Tag getTag(){
+			return tag;
+		}
 
-		relatedTags.addAll(getAllEqualTags(tag));
-
-		relatedTags.addAll(getSpecialisations(tag));
-		//relatedTags.add(tag);
-
-		return relatedTags;
-	}
-
-	public Tag getMasterTag(Tag tag){
-		return getNode(tag).getTag();
+		public Set<TagNode> getChildren() {
+			return children;
+		}
 	}
 }
