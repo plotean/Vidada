@@ -46,16 +46,10 @@ public class MediaServiceRestClient extends AbstractRestService implements IMedi
 	@Override
 	public ListPage<MediaItem> query(MediaQuery qry, int pageIndex, int maxPageSize) {
 
-		/*String mediasJson = mediasResource()
-
-				.queryParam("tags", multiValueQueryParam(qry.getRequiredTags()))
-				.queryParam("type", qry.getMediaType().toString())
-				.queryParam("orderby", qry.getOrder().toString())
-				.accept(MediaType.APPLICATION_JSON_TYPE).get(String.class);*/
-
 		WebTarget resource = mediasResource()
 				.queryParam("page", pageIndex+"")
-				.queryParam("pageSize", maxPageSize+"");
+				.queryParam("pageSize", maxPageSize+"")
+				.queryParam("orderby", qry.getOrder().name());
 
 		if(qry.getKeywords() != null && !qry.getKeywords().isEmpty()){
 			resource = resource.queryParam("query", qry.getKeywords());
@@ -68,7 +62,6 @@ public class MediaServiceRestClient extends AbstractRestService implements IMedi
 		if(qry.getMediaType() != null){
 			resource = resource.queryParam("type", qry.getMediaType().name());
 		}
-
 
 		String mediasJson =	resource.request(MediaType.APPLICATION_JSON_TYPE).get(String.class);
 
