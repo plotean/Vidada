@@ -1,8 +1,5 @@
 package vidada.viewsFX.mediabrowsers;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -13,18 +10,17 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 
 import org.controlsfx.control.Rating;
-import org.controlsfx.control.action.Action;
 import org.controlsfx.dialog.Dialogs;
 
 import vidada.client.viewmodel.MediaViewModel;
 import vidada.client.viewmodel.browser.BrowserItemVM;
 import vidada.model.media.MediaType;
-import vidada.model.media.source.MediaSource;
 import vidada.model.system.ISystemService;
 import vidada.services.ServiceProvider;
 import vidada.viewsFX.player.IMediaPlayerBehavior;
@@ -104,7 +100,7 @@ public class MediaItemView extends BrowserCellView {
 		this.setBottom(description);
 
 		// event listener
-		imagePane.addEventFilter(MouseEvent.MOUSE_CLICKED, mouseInspectHandler);
+		imagePane.addEventFilter(MouseEvent.MOUSE_PRESSED, mouseInspectHandler);
 		openButton.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseOpenHandler);
 
 
@@ -244,6 +240,7 @@ public class MediaItemView extends BrowserCellView {
 
 		playerView.addEventHandler(MouseEvent.MOUSE_EXITED, mouseExitedListener);
 		playerView.addEventHandler(MouseEvent.MOUSE_CLICKED, mousePrevClickedHandler);
+		playerView.addEventHandler(KeyEvent.KEY_PRESSED, playerKeyPressListener);
 
 		return playerView;
 	}
@@ -258,8 +255,11 @@ public class MediaItemView extends BrowserCellView {
 			playerView.getMediaController().stop();
 			player.getRequestReleaseEvent().remove(playerReleaseListener);
 			primaryContent.getChildren().remove(playerView);
+
 			playerView.removeEventHandler(MouseEvent.MOUSE_EXITED, mouseExitedListener);
 			playerView.removeEventHandler(MouseEvent.MOUSE_CLICKED, mousePrevClickedHandler);
+			playerView.removeEventHandler(KeyEvent.KEY_PRESSED, playerKeyPressListener);
+
 			player = null;
 		}
 	}
@@ -278,6 +278,13 @@ public class MediaItemView extends BrowserCellView {
 		}
 	};
 
+	private final EventHandler<KeyEvent> playerKeyPressListener = new EventHandler<KeyEvent>() {
+		@Override
+		public void handle(KeyEvent ke) {
+			System.out.println("keeeyy on player :D");
+		}
+	};
+
 
 	/**
 	 * Occurs when a media is opened
@@ -288,27 +295,20 @@ public class MediaItemView extends BrowserCellView {
 			// In case it is an image, show it in internal preview
 			//
 			ISmartImage smartImage;
-			try {
-				MediaSource source = mediaViewModel.getModel().getData().getSource();
+			ResourceLocation resource = mediaViewModel.getMediaResource();
+			smartImage = new SmartImageLazy(imageFactory, resource.getUri());
+			imageViewer.showImage(smartImage);
 
-				smartImage = new SmartImageLazy(imageFactory, new URI(source.getResourceLocation().toString()));
-				imageViewer.showImage(smartImage);
-			} catch (URISyntaxException e) {
-				e.printStackTrace();
-			}
 		}else{
-
-			//removeMediaPlayer();
-
 			if(!mediaViewModel.open()){
-				Action response = Dialogs.create()
-						.owner(null)
-						.title("Can not open Media")
-						.masthead("No media source found!")
-						.message("The file " + mediaViewModel.getTitle() + 
-								" could not be opened!" +
-								FileSupport.NEWLINE + mediaViewModel.getModel().getData().getSource())
-								.showWarning();
+				Dialogs.create()
+				.owner(null)
+				.title("Can not open Media")
+				.masthead("No media source found!")
+				.message("The file " + mediaViewModel.getTitle() + 
+						" could not be opened!" +
+						FileSupport.NEWLINE + mediaViewModel.getModel().getData().getSource())
+						.showWarning();
 			}
 		}
 	}
