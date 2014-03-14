@@ -3,20 +3,23 @@ package vidada.viewsFX.player;
 import javafx.event.EventHandler;
 import javafx.scene.input.MouseEvent;
 
+/**
+ * Provides instant seeking to the relative position 
+ * of the mouse to the player boundaries.
+ * 
+ * @author IsNull
+ *
+ */
 public class MediaPlayerSeekBehaviour implements IMediaPlayerBehavior {
 
 
-	/* (non-Javadoc)
-	 * @see vlcj.fx.IMediaPlayerBehaviour#activate(vlcj.fx.MediaPlayerVLC)
-	 */
+	/**{@inheritDoc}*/
 	@Override
 	public void activate(final MediaPlayerFx mediaPlayer){
 		mediaPlayer.addEventHandler(MouseEvent.MOUSE_MOVED, eventListener);
 	}
 
-	/* (non-Javadoc)
-	 * @see vlcj.fx.IMediaPlayerBehaviour#remove(vlcj.fx.MediaPlayerVLC)
-	 */
+	/**{@inheritDoc}*/
 	@Override
 	public void disable(final MediaPlayerFx mediaPlayer){
 		mediaPlayer.removeEventHandler(MouseEvent.MOUSE_MOVED, eventListener);

@@ -31,7 +31,7 @@ public interface IMediaPlayerService {
 	IMediaPlayerComponent resolveMediaPlayer();
 
 	/**
-	 * Is a mediaplayer avaiable
+	 * Is a media player available?
 	 * @return
 	 */
 	boolean isMediaPlayerAvaiable();
