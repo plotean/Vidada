@@ -15,4 +15,19 @@ public interface IThumbConatinerService {
 	 */
 	public abstract ImageContainer retrieveThumbnail(MediaItem media, Size size);
 
+
+	/**
+	 * Renews the given media's thumbnail. 
+	 * 
+	 * First, this will clear any caches of the existing thumb.
+	 * Then it will clear saved thumb position information saved in the media item.
+	 * 
+	 * The next request to retrieveThumbnail(...) will then cause the generation
+	 * of a new thumbnail. 
+	 * 
+	 * @param media
+	 * @param pos
+	 * @return
+	 */
+	boolean renewThumbImage(MediaItem media, float pos);
 }

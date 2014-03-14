@@ -21,7 +21,7 @@ import archimedesJ.images.ImageContainer;
  * Primary purpose is to shield clients form the complexity of
  * possible long running thumbnail generation and fetching.
  * 
- * Using this service, clients recive an {@link ImageContainer} which encapsulates
+ * Using this service, clients receive an {@link ImageContainer} which encapsulates
  * the async loading task of an thumbnail. The tasks are internally queued and executed in order. 
  * Further, the service ensures that only a small amount of parallel thumbnails are being loaded. 
  * (Fetching a thumbnail can be very CPU consuming)
@@ -63,14 +63,12 @@ public class ThumbContainerService implements IThumbConatinerService {
 	 *                                                                         *
 	 **************************************************************************/
 
-	/* (non-Javadoc)
-	 * @see vidada.client.facade.IThumConatinerService#retrieveThumbnail(vidada.model.media.MediaItem, archimedesJ.geometry.Size)
-	 */
+	/**{@inheritDoc}*/
 	@Override
 	public ImageContainer retrieveThumbnail(MediaItem media, Size size) {
 		ImageContainer container = null;
 
-		Map<Size, ImageContainer> containerSize = imageContainerCache.get(media.getFilehash());
+		Map<Size, ImageContainer> containerSize = findAll(media);
 
 		if(containerSize != null){
 			container = containerSize.get(size);
@@ -84,6 +82,15 @@ public class ThumbContainerService implements IThumbConatinerService {
 		}
 		return container;
 	}
+
+	/**{@inheritDoc}*/
+	@Override
+	public boolean renewThumbImage(MediaItem media, float pos) {
+		boolean state = thumbnailClientService.renewThumbImage(media, pos);
+		invalidateImage(media);
+		return state;
+	}
+
 
 	/***************************************************************************
 	 *                                                                         *
@@ -101,6 +108,33 @@ public class ThumbContainerService implements IThumbConatinerService {
 		// TODO local file cache?
 		return thumbnailClientService.retrieveThumbnail(media, size);
 	}
+
+	/**
+	 * Invalidates all image containers of this media item.
+	 * 
+	 * @param media
+	 */
+	private void invalidateImage(MediaItem media) {
+		// find the existing containers of this media
+		Map<Size, ImageContainer> containerSize = findAll(media);
+
+		if(containerSize != null){
+			for (ImageContainer container : containerSize.values()) {
+				container.invalidate();
+			}
+		}
+	}
+
+	/**
+	 * Finds all image containers for the given id
+	 * (all different resolutions)
+	 * @param media
+	 * @return
+	 */
+	private Map<Size, ImageContainer> findAll(MediaItem media){
+		return imageContainerCache.get(media.getFilehash());
+	}
+
 
 	/***************************************************************************
 	 *                                                                         *

@@ -126,9 +126,11 @@ public class ImageContainerBase implements ImageContainer, Runnable {
 	}
 
 
-	protected void setRawImage(IMemoryImage rawImage){
-		this.rawImage = rawImage;
-		onImageChanged();
+	protected void setRawImage(IMemoryImage newRawImage){
+		if(this.rawImage != newRawImage){
+			this.rawImage = newRawImage;
+			onImageChanged();
+		}
 	}
 
 
@@ -187,4 +189,8 @@ public class ImageContainerBase implements ImageContainer, Runnable {
 	}
 
 
+	@Override
+	public void invalidate() {
+		setRawImage(null);
+	}
 }

@@ -6,8 +6,6 @@ import archimedesJ.images.IMemoryImage;
 
 public interface IThumbnailClientService {
 
-	//public IMemoryImage getThumbImage(MediaItem media, Size size);
-
 	/**
 	 * Retrieves a preview image of the given media item in the requested size.
 	 * 
@@ -18,12 +16,18 @@ public interface IThumbnailClientService {
 	IMemoryImage retrieveThumbnail(MediaItem media, Size size);
 
 	/**
+	 * Renews the given media's thumbnail. 
+	 * 
+	 * First, this will clear any caches of the existing thumb.
+	 * Then it will clear saved thumb position information saved in the media item.
+	 * 
+	 * The next request to retrieveThumbnail(...) will then cause the generation
+	 * of a new thumbnail. 
 	 * 
 	 * @param media
-	 * @param size
 	 * @param pos
 	 * @return
-
-	ImageContainer renewThumbImage(MovieMediaItem media, Size size, float pos);
 	 */
+	boolean renewThumbImage(MediaItem media, float pos);
+
 }

@@ -28,6 +28,6 @@ public interface IThumbnailService {
 	 * @param pos
 	 * @return
 	 */
-	public IMemoryImage renewThumbImage(MovieMediaItem media, Size size, float pos);
+	public void renewThumbImage(MovieMediaItem media, float pos);
 
 }

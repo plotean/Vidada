@@ -9,6 +9,8 @@ import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.concurrent.Worker.State;
 import javafx.scene.image.Image;
+import archimedesJ.events.EventArgs;
+import archimedesJ.events.EventListenerEx;
 import archimedesJ.images.IMemoryImage;
 import archimedesJ.images.ImageContainer;
 
@@ -26,7 +28,6 @@ public class AsyncImageProperty extends SimpleObjectProperty<Image> {
 					set(null);
 					System.err.println("AsyncImageProperty.imageLoadService: image failed to load.");
 				}else if(value == State.CANCELLED) {
-
 					// loading has been canceled
 					set(null);
 				}
@@ -37,11 +38,11 @@ public class AsyncImageProperty extends SimpleObjectProperty<Image> {
 			@Override
 			public void changed(ObservableValue<? extends ImageContainer> observable, ImageContainer oldValue, ImageContainer value) {
 
-				if(imageLoadService.isRunning()) {
-					imageLoadService.cancel();
-				}
+				if(oldValue != null) oldValue.getImageChangedEvent().remove(imageContainerImageChanged);
 
-				loadImageInBackground();
+				updateImage();
+
+				if(value != null) value.getImageChangedEvent().add(imageContainerImageChanged);
 			}
 		});
 	}
@@ -49,6 +50,26 @@ public class AsyncImageProperty extends SimpleObjectProperty<Image> {
 	public ObjectProperty<ImageContainer> imageContainerProperty() {
 		return imageContainer;
 	}
+
+	private void updateImage(){
+
+		if(imageLoadService.isRunning()) {
+			imageLoadService.cancel();
+		}
+
+		loadImageInBackground();
+	}
+
+
+	private EventListenerEx<EventArgs> imageContainerImageChanged = new EventListenerEx<EventArgs>() {
+		@Override
+		public void eventOccured(Object sender, EventArgs eventArgs) {
+			final ImageContainer container = imageContainer.get(); 
+			if(!container.isImageLoaded()){
+				updateImage();
+			}
+		}
+	};
 
 	private void loadImageInBackground() {
 		synchronized(imageLoadService) {
@@ -73,12 +94,14 @@ public class AsyncImageProperty extends SimpleObjectProperty<Image> {
 					container.awaitImage();
 
 					IMemoryImage image = container.getRawImage();
-					if(image.getOriginal() instanceof Image){
-						return (Image)image.getOriginal();
-					}else{
-						System.err.println("recived image of wrong type: " + image.getOriginal());
-					}
 
+					if(image != null){
+						if(image.getOriginal() instanceof Image){
+							return (Image)image.getOriginal();
+						}else{
+							System.err.println("recived image of wrong type: " + image.getOriginal());
+						}
+					}
 					return null;
 				}
 			};

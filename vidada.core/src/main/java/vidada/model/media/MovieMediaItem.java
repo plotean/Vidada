@@ -145,8 +145,25 @@ public class MovieMediaItem extends MediaItem implements Cloneable {
 		} else if (getCurrentThumbPosition() != MovieMediaItem.INVALID_POSITION) {
 			pos = getCurrentThumbPosition();
 		} else {
-			pos = (float)Math.random();
+			pos = randomRelativePos();
 		}
+		return pos;
+	}
+
+	/**
+	 * Returns a random relative position in the movie.
+	 * This method ensures that the position is not too near 
+	 * of the start or end of the movie. 
+	 * 
+	 * (Lots of movies have a boring screener at the start
+	 * and even more boring credits listing at the end.)
+	 * 
+	 * @return
+	 */
+	public static final float randomRelativePos(){
+		float pos = (float)Math.random();
+		pos = Math.max(pos, 0.08f);
+		pos = Math.min(pos, 0.90f);
 		return pos;
 	}
 

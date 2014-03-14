@@ -12,6 +12,7 @@ import vidada.client.services.IMediaClientService;
 import vidada.client.viewmodel.browser.BrowserItemVM;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaType;
+import vidada.model.media.MovieMediaItem;
 import vidada.model.system.ISystemService;
 import vidada.services.IMediaPresenterService;
 import vidada.services.ServiceProvider;
@@ -123,6 +124,41 @@ public class MediaViewModel extends BrowserItemVM {
 	}
 
 
+	@Override
+	public boolean open(){
+		ResourceLocation resourceLocation = getMediaResource();
+		if(resourceLocation != null)
+			return mediaPresenter.showMedia(mediaData, resourceLocation);
+		return false;
+	}
+
+
+	public boolean canOpenFolder() {
+		return true;
+	}
+
+	/**
+	 * Open the containing folder of this media.
+	 * (Only possible for local files)
+	 */
+	public void openContainingFolder(){
+		MediaItem media = getModel().getData();
+		systemService.showResourceHome(media.getSource().getResourceLocation());
+	}
+
+
+	public boolean canNewRandomThumb() {
+		return MediaType.MOVIE.equals(getMediaType());
+	}
+
+	public void newRandomThumb() {
+		newThumbnailAt(MovieMediaItem.randomRelativePos());
+	}
+
+	public void newThumbnailAt(float pos) {
+		MediaItem media = getModel().getData();
+		thumbService.renewThumbImage(media, MovieMediaItem.randomRelativePos());
+	}
 
 	public ImageContainer getThumbnail(int widthPxl, int heightPxl){
 		ImageContainer imageContainer = null;
@@ -137,15 +173,6 @@ public class MediaViewModel extends BrowserItemVM {
 			imageContainerRef = null;
 		}
 		return imageContainer;
-	}
-
-
-	@Override
-	public boolean open(){
-		ResourceLocation resourceLocation = getMediaResource();
-		if(resourceLocation != null)
-			return mediaPresenter.showMedia(mediaData, resourceLocation);
-		return false;
 	}
 
 	/**
@@ -178,8 +205,10 @@ public class MediaViewModel extends BrowserItemVM {
 	@Override
 	public void outsideViewPort() {
 
-		// we have to notify the image container
-		// that the image is no longer required
+		// We have to notify the image container
+		// that the image is no longer required.
+		// The idea is that if loading has not yet
+		// started, this image can be completely skipped.
 
 		if(imageContainerRef != null){
 			ImageContainer container = imageContainerRef.get();
@@ -193,5 +222,6 @@ public class MediaViewModel extends BrowserItemVM {
 		if(mediaData != null)
 			mediaClientService.update(mediaData);
 	}
+
 
 }

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -14,6 +15,7 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.StreamingOutput;
 
 import vidada.model.media.MediaItem;
+import vidada.model.media.MovieMediaItem;
 import vidada.server.rest.VidadaRestServer;
 import vidada.server.services.IMediaService;
 import vidada.server.services.IThumbnailService;
@@ -29,6 +31,25 @@ public class ThumbnailResource extends AbstractResource {
 
 	private static int MIN_SIZE = 50;
 	private static int MAX_SIZE = 1000;
+
+	@POST
+	@Path("{hash}")
+	public Response updateThumb(
+			@PathParam("hash") String hash,
+			float pos){
+
+		MediaItem media = mediaService.queryByHash(hash);
+		if(media != null){
+			if(media instanceof MovieMediaItem){
+				thumbnailService.renewThumbImage((MovieMediaItem)media, pos);
+				return Response.status(Status.ACCEPTED).build();
+			}else{
+				System.err.println("Can not recreate thumb of media type: " + media.getType());
+				Response.status(Status.UNSUPPORTED_MEDIA_TYPE).build();
+			}
+		}
+		return Response.status(Status.NOT_FOUND).build();
+	}
 
 	@GET
 	@Path("{hash}")

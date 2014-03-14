@@ -23,7 +23,6 @@ import org.controlsfx.dialog.Dialogs;
 
 import vidada.client.viewmodel.MediaViewModel;
 import vidada.client.viewmodel.browser.BrowserItemVM;
-import vidada.model.media.MediaItem;
 import vidada.model.media.MediaType;
 import vidada.model.media.source.MediaSource;
 import vidada.model.system.ISystemService;
@@ -123,7 +122,6 @@ public class MediaItemView extends BrowserCellView {
 				onItemImageChanged(false);
 			}
 		});
-
 	}
 
 	@Override
@@ -131,16 +129,28 @@ public class MediaItemView extends BrowserCellView {
 
 		final ContextMenu cm = new ContextMenu();
 
-		MenuItem cmItem1 = new MenuItem("Open Folder");
-		cmItem1.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent e) {
-				MediaItem media = mediaViewModel.getModel().getData();
-				systemService.open(media.getSource().getResourceLocation());
-			}
-		});
+		if(mediaViewModel.canOpenFolder()){
+			MenuItem openContainingFolder = new MenuItem("Open Folder");
+			openContainingFolder.setOnAction(new EventHandler<ActionEvent>() {
+				@Override
+				public void handle(ActionEvent e) {
+					mediaViewModel.openContainingFolder();
+				}
+			});
+			cm.getItems().add(openContainingFolder);
+		}
 
-		cm.getItems().add(cmItem1);
+
+		if(mediaViewModel.canNewRandomThumb()){
+			MenuItem newRandomThumb = new MenuItem("Renew Thumb");
+			newRandomThumb.setOnAction(new EventHandler<ActionEvent>() {
+				@Override
+				public void handle(ActionEvent e) {
+					mediaViewModel.newRandomThumb();
+				}
+			});
+			cm.getItems().add(newRandomThumb);
+		}
 
 		return cm;
 	}
@@ -179,7 +189,8 @@ public class MediaItemView extends BrowserCellView {
 	transient private final EventHandler<MouseEvent> mouseInspectHandler = new EventHandler<MouseEvent>(){
 		@Override
 		public void handle(MouseEvent me) {
-			onMediaInspectAction((float)(me.getX() / MediaItemView.this.getWidth()));
+			if(me.isPrimaryButtonDown() && !me.isSecondaryButtonDown())
+				onMediaInspectAction((float)(me.getX() / MediaItemView.this.getWidth()));
 		}
 	};
 
@@ -320,7 +331,6 @@ public class MediaItemView extends BrowserCellView {
 	}
 
 	private void requestThumb(final int width, final int height){
-
 		if(mediaViewModel != null)
 		{
 			ImageContainer container = mediaViewModel.getThumbnail(
@@ -329,7 +339,6 @@ public class MediaItemView extends BrowserCellView {
 
 			imageProperty.imageContainerProperty().set(container);
 		}
-
 	}
 
 

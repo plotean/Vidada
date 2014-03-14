@@ -4,7 +4,10 @@ import java.io.InputStream;
 import java.net.URI;
 
 import javax.ws.rs.client.Client;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import vidada.client.services.IThumbnailClientService;
 import vidada.model.media.MediaItem;
@@ -32,6 +35,15 @@ public class ThumbnailRestClientService extends AbstractRestService implements I
 				.queryParam("height", size.height+"")
 				.request("image/png").get(InputStream.class);
 		return rawImageFactory.createImage(istream);
+	}
+
+	@Override
+	public boolean renewThumbImage(MediaItem media, float pos) {
+		Response r =  thumbResource()
+				.path(media.getFilehash())
+				.request()
+				.post( Entity.entity(pos, MediaType.TEXT_PLAIN_TYPE) );
+		return r.getStatus() == 202;
 	}
 
 
