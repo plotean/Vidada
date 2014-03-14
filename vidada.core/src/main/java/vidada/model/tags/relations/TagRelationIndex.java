@@ -117,9 +117,14 @@ public class TagRelationIndex {
 	}
 
 	public void print(){
+		Set<TagNode> addedNodes = new HashSet<TagNode>();
+		
 		System.out.println("-------------- "+ rootNodes.size() +" ------------- ");
 		for (Tag tag : rootNodes.keySet()) {
-			findNode(tag).print();
+			TagNode node = findNode(tag);
+			if(addedNodes.add(node)){ // ensure we print each node max once
+				node.print();
+			}
 		} 
 		System.out.println("------------------------------");
 	}
