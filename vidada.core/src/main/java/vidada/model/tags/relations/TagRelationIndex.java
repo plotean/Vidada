@@ -118,7 +118,6 @@ public class TagRelationIndex {
 	public void print(){
 		System.out.println("-------------- "+ rootNodes.size() +" ------------- ");
 		for (Tag tag : rootNodes.keySet()) {
-			System.out.print(tag + " ");
 			findNode(tag).print();
 		} 
 		System.out.println("------------------------------");
@@ -238,7 +237,7 @@ public class TagRelationIndex {
 
 		@Override
 		public String toString(){
-			return "<" + tag.getName() + " " + hashCode() + ">";
+			return tag.getName();
 		}
 
 		private void print(String prefix, boolean isTail) {
