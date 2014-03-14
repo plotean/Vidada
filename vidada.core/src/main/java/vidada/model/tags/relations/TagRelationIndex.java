@@ -1,5 +1,6 @@
 package vidada.model.tags.relations;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -23,7 +24,7 @@ import archimedesJ.util.Lists;
 public class TagRelationIndex {
 
 	transient private final Map<Tag, TagNode> rootNodes = new HashMap<Tag, TagNode>(5000);
-	transient private final Map<TagNode, Set<Tag>> equalTags = new HashMap<TagNode, Set<Tag>>(5000);
+	//transient private final Map<TagNode, Set<Tag>> equalTags = new HashMap<TagNode, Set<Tag>>(5000);
 
 
 	/***************************************************************************
@@ -84,7 +85,7 @@ public class TagRelationIndex {
 	 */
 	private Set<Tag> getAllEqualTags(Tag tag){
 		TagNode node = findNode(tag);
-		return node != null ? equalTags.get(node) : new HashSet<Tag>();
+		return node != null ? node.getSynonyms() : new HashSet<Tag>();
 	}
 
 	/**
@@ -143,17 +144,13 @@ public class TagRelationIndex {
 			mergeInto(masterNode, slaveNode);
 		}
 		rootNodes.put(slave, masterNode);
-
-		Set<Tag> masterEquals = equalTags.get(masterNode);
-		masterEquals.add(slave);
+		masterNode.addSynonym(slave);
 
 		if(slaveNode != null){
 			// Update the master-node with the now obsolete slave-node equality references
-			Set<Tag> rightEquals = equalTags.get(slaveNode);
+			Set<Tag> rightEquals = slaveNode.getSynonyms();
 			if(rightEquals != null){
-				masterEquals.addAll(rightEquals);
-				// we can now remove the obsolete slave node
-				equalTags.remove(slaveNode);
+				masterNode.addSynonyms(rightEquals);
 			}
 		}
 	}
@@ -185,10 +182,6 @@ public class TagRelationIndex {
 		if(node == null){
 			node = new TagNode(tag);
 			rootNodes.put(tag, node);
-
-			Set<Tag> equals = new HashSet<Tag>();
-			equals.add(tag);
-			equalTags.put(node, equals);
 		}
 		return node;
 	}
@@ -218,9 +211,15 @@ public class TagRelationIndex {
 	private class TagNode {
 		private final Tag tag;
 		private final Set<TagNode> children = new HashSet<TagNode>();
+		private final Set<Tag> synonyms = new HashSet<Tag>();
 
 		public TagNode(Tag tag){
 			this.tag = tag;
+			this.addSynonym(tag);
+		}
+
+		public Set<Tag> getSynonyms() {
+			return synonyms;
 		}
 
 		public Tag getTag(){
@@ -229,6 +228,14 @@ public class TagRelationIndex {
 
 		public Set<TagNode> getChildren() {
 			return children;
+		}
+		
+		public void addSynonym(Tag tag){
+			synonyms.add(tag);
+		}
+		
+		public void addSynonyms(Collection<Tag> synonyms) {
+			synonyms.addAll(synonyms);
 		}
 
 		public void print() {
@@ -256,10 +263,13 @@ public class TagRelationIndex {
 
 		private String equalTags(Tag tag){
 			String str = "";
-			for (Tag t : getAllEqualTags(tag)) {
-				if(!t.equals(tag))
-					str += " = " + t;
-			};
+			Set<Tag> equals = getAllEqualTags(tag);
+			if(equals != null){
+				for (Tag t : equals) {
+					if(!t.equals(tag))
+						str += " = " + t;
+				};
+			}
 			return str;
 		}
 	}

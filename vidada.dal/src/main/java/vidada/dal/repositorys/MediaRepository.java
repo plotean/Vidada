@@ -109,7 +109,10 @@ public class MediaRepository extends JPARepository implements IMediaRepository{
 			where += "(m.type = :type) AND ";
 		}
 
-		where += qry.getTagsExpression().code() + " ";
+		String tagExpr =  qry.getTagsExpression().code();
+		if(!tagExpr.trim().isEmpty()){
+			where += tagExpr + " AND ";
+		}
 
 		where += "1=1";
 
