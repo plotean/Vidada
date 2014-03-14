@@ -2,7 +2,6 @@ package vidada.server.services;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
@@ -39,25 +38,6 @@ public class TagService extends VidadaServerService implements ITagService {
 		return relationDefinition.getAllRelatedTags(tag);
 	}
 
-	/**{@inheritDoc}*/
-	@Override
-	public Set<Tag> getAllRelatedTags(Collection<Tag> tags) {
-		Set<Tag> allrelated = new HashSet<Tag>();
-
-		System.out.println("Expanding the given Tags: " + tags);
-
-		if(!tags.isEmpty()){
-			relationDefinition.print();
-
-			for (Tag tag : tags) {
-				allrelated.addAll(getAllRelatedTags(tag));
-			}
-
-			System.out.println("Expanded to: " + tags);
-		}
-
-		return allrelated;
-	}
 
 	/**{@inheritDoc}*/
 	@Override

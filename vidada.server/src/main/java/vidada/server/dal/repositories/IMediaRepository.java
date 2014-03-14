@@ -5,9 +5,9 @@ import java.util.List;
 
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaLibrary;
-import vidada.model.media.MediaQuery;
 import vidada.model.pagination.ListPage;
 import vidada.model.tags.Tag;
+import vidada.server.queries.MediaExpressionQuery;
 import archimedesJ.io.locations.ResourceLocation;
 
 public interface IMediaRepository extends IRepository {
@@ -26,7 +26,7 @@ public interface IMediaRepository extends IRepository {
 	 * @param dontOrder Skip ordering
 	 * @return
 	 */
-	public abstract ListPage<MediaItem> query(MediaQuery qry, int pageIndex, final int maxPageSize);
+	public abstract ListPage<MediaItem> query(MediaExpressionQuery qry, int pageIndex, final int maxPageSize);
 
 	/**
 	 * Returns all media items which are in the given libraries

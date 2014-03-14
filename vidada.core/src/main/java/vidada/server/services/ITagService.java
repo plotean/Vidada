@@ -22,14 +22,6 @@ public interface ITagService  {
 	public Set<Tag> getAllRelatedTags(Tag tag);
 
 	/**
-	 * Gets all related tags for the given one.
-	 * @param tag
-	 * @return
-	 */
-	public Set<Tag> getAllRelatedTags(Collection<Tag> tag);
-
-
-	/**
 	 * Returns all tags which are used by medias.
 	 * @return
 	 */

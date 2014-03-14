@@ -11,11 +11,11 @@ import vidada.aop.IUnitOfWorkService;
 import vidada.dal.JPARepository;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaLibrary;
-import vidada.model.media.MediaQuery;
 import vidada.model.media.OrderProperty;
 import vidada.model.pagination.ListPage;
 import vidada.model.tags.Tag;
 import vidada.server.dal.repositories.IMediaRepository;
+import vidada.server.queries.MediaExpressionQuery;
 import archimedesJ.exceptions.NotImplementedException;
 import archimedesJ.io.locations.ResourceLocation;
 
@@ -28,7 +28,7 @@ public class MediaRepository extends JPARepository implements IMediaRepository{
 
 
 	@Override
-	public ListPage<MediaItem> query(MediaQuery qry, int pageIndex, int maxPageSize) {
+	public ListPage<MediaItem> query(MediaExpressionQuery qry, int pageIndex, int maxPageSize) {
 		long totalCount = queryCount(qry);
 
 		TypedQuery<MediaItem> query = buildQuery(qry);		
@@ -39,7 +39,7 @@ public class MediaRepository extends JPARepository implements IMediaRepository{
 		return new ListPage<MediaItem>(pageItems, totalCount, maxPageSize, pageIndex);
 	}
 
-	public long queryCount(MediaQuery qry){
+	public long queryCount(MediaExpressionQuery qry){
 		Query cQuery = getEntityManager().createQuery("SELECT count(m) from MediaItem m WHERE " + buildMediaWhereQuery(qry));
 		setQueryParams(cQuery, qry);
 		Number result = (Number) cQuery.getSingleResult();
@@ -47,9 +47,9 @@ public class MediaRepository extends JPARepository implements IMediaRepository{
 	}
 
 
-	private TypedQuery<MediaItem> buildQuery(MediaQuery qry){
+	private TypedQuery<MediaItem> buildQuery(MediaExpressionQuery qry){
 
-		String sQry = "SELECT m from MediaItem m WHERE " + buildMediaWhereQuery(qry) + buildMediaOrderByQuery(qry);
+		String sQry = "SELECT m from MediaItem m WHERE " + buildMediaWhereQuery(qry) + " " + buildMediaOrderByQuery(qry);
 
 		System.out.println(sQry);
 
@@ -61,12 +61,12 @@ public class MediaRepository extends JPARepository implements IMediaRepository{
 		return q;
 	}
 
-	private void setQueryParams(Query q, MediaQuery qry){
+	private void setQueryParams(Query q, MediaExpressionQuery qry){
 		if(qry.hasKeyword()) q.setParameter("keywords", "%" + qry.getKeywords() + "%");
 		if(qry.hasMediaType()) q.setParameter("type", qry.getMediaType());
 	}
 
-	private String buildMediaOrderByQuery(MediaQuery qry){
+	private String buildMediaOrderByQuery(MediaExpressionQuery qry){
 		String orderBy = ""; 
 
 		OrderProperty order = qry.getOrder();
@@ -98,7 +98,7 @@ public class MediaRepository extends JPARepository implements IMediaRepository{
 		return orderBy;
 	}
 
-	private String buildMediaWhereQuery(MediaQuery qry){
+	private String buildMediaWhereQuery(MediaExpressionQuery qry){
 
 		String where = ""; 
 
@@ -110,15 +110,18 @@ public class MediaRepository extends JPARepository implements IMediaRepository{
 			where += "(m.type = :type) AND ";
 		}
 
+		where += qry.getTagsExpression().code() + " ";
+		/*
 		for (Tag requiredTag : qry.getRequiredTags()) {
 			where += "('" + requiredTag + "'" + " MEMBER OF m.tags) AND ";
 		}
 
 		for (Tag requiredTag : qry.getBlockedTags()) {
 			where += "('" + requiredTag + "'" + " NOT MEMBER OF m.tags) AND ";
-		}
+		}*/
 
-		where += "1=1 ";
+		if(where.trim().isEmpty())
+			where += "1=1";
 
 		return where;
 	}
@@ -199,11 +202,7 @@ public class MediaRepository extends JPARepository implements IMediaRepository{
 
 	@Override
 	public MediaItem queryByHash(String hash) {
-
 		return getEntityManager().find(MediaItem.class, hash);
-
-		//TypedQuery<MediaItem> query = getEntityManager().createQuery("SELECT m from MediaItem m WHERE m.fileHash = '" + hash + "'", MediaItem.class);
-		//return firstOrDefault(query);
 	}
 
 	@Override

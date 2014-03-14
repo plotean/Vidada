@@ -2,6 +2,7 @@ package vidada.server.services;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Callable;
 
 import vidada.model.media.MediaHashUtil;
@@ -10,8 +11,15 @@ import vidada.model.media.MediaItemFactory;
 import vidada.model.media.MediaLibrary;
 import vidada.model.media.MediaQuery;
 import vidada.model.pagination.ListPage;
+import vidada.model.queries.Expression;
+import vidada.model.queries.Expressions;
+import vidada.model.queries.ListExpression;
+import vidada.model.queries.LiteralValueExpression;
+import vidada.model.queries.VariableReferenceExpression;
+import vidada.model.tags.Tag;
 import vidada.server.VidadaServer;
 import vidada.server.dal.repositories.IMediaRepository;
+import vidada.server.queries.MediaExpressionQuery;
 import archimedesJ.exceptions.NotSupportedException;
 import archimedesJ.io.locations.ResourceLocation;
 
@@ -74,14 +82,51 @@ public class MediaService extends VidadaServerService implements IMediaService {
 				// Add additional related tags to the users request
 				// This is what vidada makes intelligent
 
-				ITagService tagService = getServer().getTagService();
-				qry.setRequiredTags(tagService.getAllRelatedTags(qry.getRequiredTags()));
-				qry.setBlockedTags(tagService.getAllRelatedTags(qry.getBlockedTags()));
+				Expression<Tag> required = createTagExpression(qry.getRequiredTags(), false);
+				Expression<Tag> blocked = createTagExpression(qry.getBlockedTags(), true);
 
-				return repository.query(qry, pageIndex, maxPageSize);
+				Expression<Tag> tagExpression = Expressions.and(required, blocked);
+
+				System.out.println("created tag expression: " + tagExpression.code());
+
+				// TODO build expr query
+				MediaExpressionQuery exprQuery = new MediaExpressionQuery(
+						tagExpression,
+						qry.getMediaType(),
+						qry.getKeywords(),
+						qry.getOrder(),
+						qry.isOnlyAvailable(),
+						qry.isReverseOrder());
+
+				return repository.query(exprQuery, pageIndex, maxPageSize);
 			}
 		});
 	}
+
+	private Expression<Tag> createTagExpression(Collection<Tag> conjunction, boolean not){
+
+		if(conjunction.isEmpty()) return null;
+
+		ITagService tagService = getServer().getTagService();
+
+		final VariableReferenceExpression<Tag> mediaTags = Expressions.varReference("m.tags");
+
+		ListExpression<Tag> tagConjunction = ListExpression.createConjunction();
+
+		for (Tag t : conjunction) {
+			ListExpression<Tag> tagDisjunction =  ListExpression.createDisjunction();
+			Set<Tag> relatedTags = tagService.getAllRelatedTags(t);
+			for (LiteralValueExpression<String> relatedTag : Expressions.literalStrings(relatedTags)) {
+				tagDisjunction.add( not 
+						? Expressions.notMemberOf(relatedTag, mediaTags) 
+								: Expressions.memberOf(relatedTag, mediaTags));
+			}
+			tagConjunction.add(tagDisjunction);
+		}
+
+		return tagConjunction;
+	}
+
 
 	@Override
 	public List<MediaItem> getAllMedias(){
