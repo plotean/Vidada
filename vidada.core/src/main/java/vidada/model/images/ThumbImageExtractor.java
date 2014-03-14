@@ -99,7 +99,8 @@ public class ThumbImageExtractor implements IThumbImageCreator {
 
 	private IMemoryImage extractImageThumb(ImageMediaItem media, Size size){
 		IMemoryImage nativeImage = readNativeImage(media);
-		nativeImage = nativeImage.rescale(size.width, size.height);
+		if(nativeImage != null)
+			nativeImage = nativeImage.rescale(size.width, size.height);
 		return nativeImage;
 	}
 
