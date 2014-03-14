@@ -1,6 +1,7 @@
 package vidada;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -28,10 +29,14 @@ import vidada.dal.DAL;
 import vidada.data.DatabaseConnectionException;
 import vidada.handlers.ExternalVideoProgramHandler;
 import vidada.images.RawImageFactoryFx;
+import vidada.model.media.MediaLibrary;
 import vidada.model.settings.VidadaClientSettings;
 import vidada.model.settings.VidadaDatabase;
 import vidada.model.settings.VidadaInstance;
 import vidada.model.system.ISystemService;
+import vidada.model.tags.relations.TagRelationDefinition;
+import vidada.model.tags.relations.TagRelationDefinitionParser;
+import vidada.model.tags.relations.TagRelationDefinitionParser.ParseException;
 import vidada.selfupdate.SelfUpdateService;
 import vidada.server.VidadaServer;
 import vidada.server.dal.IVidadaDALService;
@@ -154,6 +159,38 @@ public class Application extends  javafx.application.Application {
 			mediaPresenterService.chainMediaHandler(new ExternalVideoProgramHandler(externalVideoPlayer));
 		}
 
+
+		// read user tag definitions
+		if(getLocalServer() != null){
+			for (MediaLibrary library : getLocalServer().getLibraryService().getAllLibraries()) {
+				File def = library.getUserTagRelationDef();
+				if(def.exists()){
+
+					// parse and merge it
+					TagRelationDefinitionParser parser = new TagRelationDefinitionParser();
+					try {
+						TagRelationDefinition relationDef = parser.parse(def);
+						System.out.println("TagRelationDefinition: " + relationDef);
+						relationDef.print();
+						getLocalServer().getTagService().mergeRelation(relationDef);
+					} catch (IOException e) {
+						e.printStackTrace();
+					} catch (ParseException e) {
+						e.printStackTrace();
+					}
+				}else{
+					try {
+						def.getParentFile().mkdirs();
+						def.createNewFile();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+
+
+
 	}
 
 	private VidadaInstance configInstance(){
@@ -270,7 +307,7 @@ public class Application extends  javafx.application.Application {
 		IVidadaClient vidadaClient = null;
 
 		configLocalServerDatabase();
-		
+
 		VidadaDatabase dbconfig = VidadaServerSettings.instance().getCurrentDBConfig();
 
 		if(dbconfig == null){
@@ -280,7 +317,7 @@ public class Application extends  javafx.application.Application {
 
 		try{
 			System.out.println("Settings up Vidada DAL...");
-			
+
 			IVidadaDALService vidadaDALService = DAL.build(new File(dbconfig.getDataBasePath()));
 			System.out.println("DAL Layer loaded successfull.");
 

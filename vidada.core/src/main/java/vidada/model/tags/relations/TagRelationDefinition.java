@@ -59,7 +59,10 @@ public class TagRelationDefinition {
 	public void addNamedGroupTags(String name, Set<Tag> tags){
 		if(name == null) name = "ANONYMOUS";
 		Set<Tag> group = namedGroups.get(name);
-		if(group == null) group = new HashSet<Tag>();
+		if(group == null){
+			group = new HashSet<Tag>();
+			namedGroups.put(name, group);
+		}
 		group.addAll(tags);
 	}
 
@@ -118,6 +121,19 @@ public class TagRelationDefinition {
 		return allTags;
 	}
 
+	public void print(){
+		getIndex().print();
+	}
+
+	@Override
+	public String toString(){
+		String str = "";
+		for (Tag t : getAllTags()) {
+			str += t + ", ";
+		}
+		return str;
+	}
+
 
 	/***************************************************************************
 	 *                                                                         *
@@ -135,6 +151,7 @@ public class TagRelationDefinition {
 	}
 
 	private TagRelationIndex buildTagRelationIndex(){
+		System.out.println("building tag relation index...");
 		TagRelationIndex index = new TagRelationIndex();
 
 		Set<TagRelation> equalRelations = getOperatorRelations(TagRelationOperator.Equal);

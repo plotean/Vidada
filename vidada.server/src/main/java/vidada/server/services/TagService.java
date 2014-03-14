@@ -43,9 +43,19 @@ public class TagService extends VidadaServerService implements ITagService {
 	@Override
 	public Set<Tag> getAllRelatedTags(Collection<Tag> tags) {
 		Set<Tag> allrelated = new HashSet<Tag>();
-		for (Tag tag : tags) {
-			allrelated.addAll(getAllRelatedTags(tag));
+
+		System.out.println("Expanding the given Tags: " + tags);
+
+		if(!tags.isEmpty()){
+			relationDefinition.print();
+
+			for (Tag tag : tags) {
+				allrelated.addAll(getAllRelatedTags(tag));
+			}
+
+			System.out.println("Expanded to: " + tags);
 		}
+
 		return allrelated;
 	}
 

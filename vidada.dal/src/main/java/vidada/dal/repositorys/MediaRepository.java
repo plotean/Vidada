@@ -51,6 +51,8 @@ public class MediaRepository extends JPARepository implements IMediaRepository{
 
 		String sQry = "SELECT m from MediaItem m WHERE " + buildMediaWhereQuery(qry) + buildMediaOrderByQuery(qry);
 
+		System.out.println(sQry);
+
 		TypedQuery<MediaItem> q = getEntityManager()
 				.createQuery(sQry, MediaItem.class);
 

@@ -17,6 +17,10 @@ public class TagRelation {
 
 	public TagRelation(Tag left, TagRelationOperator operator, Tag right) {
 		super();
+
+		if(left == null) throw new IllegalArgumentException("left must not be null!");
+		if(right == null) throw new IllegalArgumentException("right must not be null!");
+
 		this.left = left;
 		this.operator = operator;
 		this.right = right;

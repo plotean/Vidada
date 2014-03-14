@@ -31,6 +31,7 @@ public class MediaLibrary extends IdEntity {
 	public static final String VidataCacheFolder = "vidada.db";
 	public static final String VidataThumbsFolder = VidataCacheFolder + "/thumbs";
 	public static final String VidataInfoFolder = VidataCacheFolder + "/info";
+	public static final String VidataTagRelations = VidataCacheFolder + "/tags.txt";
 
 
 	private String libraryRootURI;
@@ -103,6 +104,10 @@ public class MediaLibrary extends IdEntity {
 			}
 		}
 		return libraryDirectoryLocation;
+	}
+
+	public File getUserTagRelationDef(){
+		return new File(new File(getLibraryRoot().getPath()), VidataTagRelations);
 	}
 
 	/**

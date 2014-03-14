@@ -2,11 +2,13 @@ package vidada.model.tags.relations;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import vidada.model.tags.Tag;
 import archimedesJ.exceptions.NotSupportedException;
+import archimedesJ.util.Lists;
 
 /**
  * Implementation of a Tag Relation Index.
@@ -80,9 +82,9 @@ public class TagRelationIndex {
 	 * @param tag
 	 * @return
 	 */
-	public Set<Tag> getAllEqualTags(Tag tag){
-		TagNode node = getNode(tag);
-		return equalTags.get(node);
+	private Set<Tag> getAllEqualTags(Tag tag){
+		TagNode node = findNode(tag);
+		return node != null ? equalTags.get(node) : new HashSet<Tag>();
 	}
 
 	/**
@@ -90,21 +92,36 @@ public class TagRelationIndex {
 	 * @param tag
 	 * @return
 	 */
-	public Set<Tag> getSpecialisations(Tag tag){
+	private Set<Tag> getSpecialisations(Tag tag){
 
 		Set<Tag> hirarchical = new HashSet<Tag>();
 
-		TagNode node = getNode(tag);
+		TagNode node = findNode(tag);
 
-		for (TagNode child : node.getChildren()) {
-			hirarchical.add(child.getTag());
-			hirarchical.addAll(getSpecialisations(child.getTag()));
+		if(node != null){
+			for (TagNode child : node.getChildren()) {
+				hirarchical.add(child.getTag());
+				hirarchical.addAll(getSpecialisations(child.getTag()));
+			}
 		}
+
 		return hirarchical;
 	}
 
+
+
 	public Tag getMasterTag(Tag tag){
-		return getNode(tag).getTag();
+		TagNode node = findNode(tag);
+		return node != null ? node.getTag() : tag;
+	}
+
+	public void print(){
+		System.out.println("-------------- "+ rootNodes.size() +" ------------- ");
+		for (Tag tag : rootNodes.keySet()) {
+			System.out.print(tag + " ");
+			findNode(tag).print();
+		} 
+		System.out.println("------------------------------");
 	}
 
 	/***************************************************************************
@@ -131,13 +148,14 @@ public class TagRelationIndex {
 		Set<Tag> masterEquals = equalTags.get(masterNode);
 		masterEquals.add(slave);
 
-		// Update the master-node with the now obsolete slave-node equality references
-		Set<Tag> rightEquals = equalTags.get(slaveNode);
-		if(rightEquals != null){
-			masterEquals.addAll(rightEquals);
-
-			// we can now remove the obsolete slave node
-			equalTags.remove(slaveNode);
+		if(slaveNode != null){
+			// Update the master-node with the now obsolete slave-node equality references
+			Set<Tag> rightEquals = equalTags.get(slaveNode);
+			if(rightEquals != null){
+				masterEquals.addAll(rightEquals);
+				// we can now remove the obsolete slave node
+				equalTags.remove(slaveNode);
+			}
 		}
 	}
 
@@ -212,6 +230,38 @@ public class TagRelationIndex {
 
 		public Set<TagNode> getChildren() {
 			return children;
+		}
+
+		public void print() {
+			print("", true);
+		}
+
+		@Override
+		public String toString(){
+			return "<" + tag.getName() + " " + hashCode() + ">";
+		}
+
+		private void print(String prefix, boolean isTail) {
+			System.out.println(prefix + (isTail ? "└── " : "├── ") + toString() + equalTags(tag));
+
+			List<TagNode> chr = Lists.toList(children);
+
+			for (int i = 0; i < children.size() - 1; i++) {
+				chr.get(i).print(prefix + (isTail ? "    " : "│   "), false);
+			}
+
+			if (chr.size() >= 1) {
+				chr.get(children.size() - 1).print(prefix + (isTail ?"    " : "│   "), true);
+			}
+		}
+
+		private String equalTags(Tag tag){
+			String str = "";
+			for (Tag t : getAllEqualTags(tag)) {
+				if(!t.equals(tag))
+					str += " = " + t;
+			};
+			return str;
 		}
 	}
 }

@@ -17,8 +17,6 @@ import vidada.model.tags.TagFactory;
 
 public class TagRelationDefinitionParser {
 
-	private static final int NEW_STATEMENT = 0;
-
 
 	/***************************************************************************
 	 *                                                                         *
@@ -36,7 +34,6 @@ public class TagRelationDefinitionParser {
 		TagRelationDefinition definition = new TagRelationDefinition();
 		List<Token> tokens = tokenize(strdefinition);
 
-		int state = NEW_STATEMENT;
 
 		boolean indeclList = false;
 		Tag leftTag = null;
@@ -47,12 +44,14 @@ public class TagRelationDefinitionParser {
 
 		for (Token token : tokens) {
 
+			if(token.type == TokenType.NEWLINE) continue;
+
 			if(token.type == TokenType.DECL_LIST){
 				// new declaration starts
 
 				// end the old one
 				if(currentGroup != null){
-					definition.addNamedGroupTags(currentGroupName, currentGroup);;
+					definition.addNamedGroupTags(currentGroupName, currentGroup);
 				}
 
 				// init the new one
@@ -67,24 +66,32 @@ public class TagRelationDefinitionParser {
 			if(indeclList){
 				if(token.type == TokenType.LITERAL_STRING){
 					Tag rightTag = createTag(token.value);
-					if(leftTag != null){
-						// Create relation
-						if(relation != null){
-							definition.addRelation( new TagRelation(leftTag, relation, rightTag));
-						}else{
-							// we have a tag list without relations, add it to the current group.
-							currentGroup = currentGroup != null ? currentGroup : new HashSet<Tag>();
-							currentGroup.add(leftTag);
-							currentGroup.add(rightTag);
+					if(rightTag != null){
+						if(leftTag != null){
+							// Create relation
+							if(relation != null){
+								definition.addRelation( new TagRelation(leftTag, relation, rightTag));
+							}else{
+
+								// we have a tag list without relations, add it to the current group.
+								currentGroup = currentGroup != null ? currentGroup : new HashSet<Tag>();
+								if(leftTag!=null) currentGroup.add(leftTag);
+								if(rightTag!=null) currentGroup.add(rightTag);
+
+							}
 						}
+						leftTag = rightTag;
 					}
-					leftTag = rightTag;
 				}else if (token.type == TokenType.OPERATOR_PARENTOF) {
 					relation = TagRelationOperator.IsParentOf;
 				}else if (token.type == TokenType.OPERATOR_EQUALITY) {
 					relation = TagRelationOperator.Equal;
 				}
 			}
+		}
+
+		if(currentGroup != null){
+			definition.addNamedGroupTags(currentGroupName, currentGroup);;
 		}
 
 		return definition;
@@ -124,7 +131,7 @@ public class TagRelationDefinitionParser {
 					if(isLiteralString(word))
 						tokenType = TokenType.LITERAL_STRING;
 					else {
-						throw new ParseException("Illegal charachter in token " + word);
+						throw new ParseException("Illegal charachter in token '" + word + "'");
 					}
 				}
 				tokens.add(new Token(tokenType, word));
@@ -134,7 +141,7 @@ public class TagRelationDefinitionParser {
 		return tokens;
 	}
 
-	static private Pattern literalStringPattern = Pattern.compile("[^a-zA-Z0-9]");
+	static private Pattern literalStringPattern = Pattern.compile("[a-zA-Z0-9\\.]");
 	private boolean isLiteralString(String word) {
 		return literalStringPattern.matcher(word).find();
 	}
@@ -187,6 +194,11 @@ public class TagRelationDefinitionParser {
 		}
 		public String getValue() {
 			return value;
+		}
+
+		@Override
+		public String toString(){
+			return "["+type+": '"+getValue()+"']";
 		}
 	}
 
