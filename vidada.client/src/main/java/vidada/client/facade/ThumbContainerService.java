@@ -34,7 +34,7 @@ public class ThumbContainerService implements IThumbConatinerService {
 	/**
 	 * Defines how many thumbnails can be fetched at the same time.
 	 */
-	transient private static int MAX_PARALLEL_THUMBFETCHER = 1;
+	transient private static int MAX_PARALLEL_THUMBFETCHER = 3;
 
 	transient private final ExecutorService executorService = Executors.newFixedThreadPool(MAX_PARALLEL_THUMBFETCHER);
 	/**
