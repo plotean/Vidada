@@ -110,17 +110,8 @@ public class MediaRepository extends JPARepository implements IMediaRepository{
 		}
 
 		where += qry.getTagsExpression().code() + " ";
-		/*
-		for (Tag requiredTag : qry.getRequiredTags()) {
-			where += "('" + requiredTag + "'" + " MEMBER OF m.tags) AND ";
-		}
 
-		for (Tag requiredTag : qry.getBlockedTags()) {
-			where += "('" + requiredTag + "'" + " NOT MEMBER OF m.tags) AND ";
-		}*/
-
-		if(where.trim().isEmpty())
-			where += "1=1";
+		where += "1=1";
 
 		return where;
 	}
