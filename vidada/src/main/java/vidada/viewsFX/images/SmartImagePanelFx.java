@@ -9,13 +9,13 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
-import vidada.model.images.ImageContainerBase;
 import vidada.viewsFX.mediabrowsers.ImagePane;
 import vidada.viewsFX.util.AsyncImageProperty;
 import archimedesJ.events.EventArgs;
 import archimedesJ.events.EventListenerEx;
 import archimedesJ.images.IMemoryImage;
 import archimedesJ.images.ImageContainer;
+import archimedesJ.images.ImageContainerBase;
 import archimedesJ.images.viewer.IImageProvider;
 import archimedesJ.images.viewer.ISmartImage;
 

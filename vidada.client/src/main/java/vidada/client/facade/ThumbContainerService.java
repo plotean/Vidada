@@ -8,13 +8,13 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import vidada.client.services.IThumbnailClientService;
-import vidada.model.images.ImageContainerBase;
 import vidada.model.images.cache.MemoryImageCache;
 import vidada.model.media.MediaItem;
 import archimedesJ.data.caching.LRUCache;
 import archimedesJ.geometry.Size;
 import archimedesJ.images.IMemoryImage;
 import archimedesJ.images.ImageContainer;
+import archimedesJ.images.ImageContainerBase;
 
 /**
  * Wraps a {@link IThumbnailClientService} in an simpler to use facade.
