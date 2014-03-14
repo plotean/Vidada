@@ -116,9 +116,20 @@ public class TagRelationIndex {
 		return node != null ? node.getTag() : tag;
 	}
 
+	/**
+	 * Checks if the given tag is a slave tag
+	 * @param tag
+	 * @return
+	 */
+	public boolean isSlaveTag(Tag tag){
+		TagNode node = findNode(tag);
+		return node != null ? !node.getTag().equals(tag) : false;
+	}
+
+
 	public void print(){
 		Set<TagNode> addedNodes = new HashSet<TagNode>();
-		
+
 		System.out.println("-------------- "+ rootNodes.size() +" ------------- ");
 		for (Tag tag : rootNodes.keySet()) {
 			TagNode node = findNode(tag);
@@ -234,11 +245,11 @@ public class TagRelationIndex {
 		public Set<TagNode> getChildren() {
 			return children;
 		}
-		
+
 		public void addSynonym(Tag tag){
 			synonyms.add(tag);
 		}
-		
+
 		public void addSynonyms(Collection<Tag> synonyms) {
 			synonyms.addAll(synonyms);
 		}

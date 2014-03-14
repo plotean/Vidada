@@ -2,6 +2,8 @@ package vidada.server.services;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
@@ -9,6 +11,7 @@ import java.util.concurrent.Callable;
 import vidada.model.tags.Tag;
 import vidada.model.tags.TagFactory;
 import vidada.model.tags.relations.TagRelationDefinition;
+import vidada.model.tags.relations.TagRelationIndex;
 import vidada.server.VidadaServer;
 import vidada.server.dal.repositories.ITagRepository;
 import archimedesJ.util.Lists;
@@ -56,7 +59,18 @@ public class TagService extends VidadaServerService implements ITagService {
 		return runUnitOfWork(new Callable<Collection<Tag>>() {
 			@Override
 			public Collection<Tag> call() throws Exception {
-				return repository.getAllTags();
+
+				TagRelationIndex index = relationDefinition.getIndex();
+				List<Tag> allTags = repository.getAllTags();
+
+				Iterator<Tag> allTagsIt = allTags.iterator();
+				while (allTagsIt.hasNext()) {
+					Tag tag = allTagsIt.next();
+					if(index.isSlaveTag(tag)){
+						allTagsIt.remove();
+					}
+				} 
+				return allTags;
 			}
 		});
 	}
