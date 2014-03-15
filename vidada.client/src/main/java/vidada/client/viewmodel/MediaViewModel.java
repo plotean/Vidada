@@ -143,7 +143,8 @@ public class MediaViewModel extends BrowserItemVM {
 	 */
 	public void openContainingFolder(){
 		MediaItem media = getModel().getData();
-		systemService.showResourceHome(media.getSource().getResourceLocation());
+		if(media != null && media.getSource() != null)
+			systemService.showResourceHome(media.getSource().getResourceLocation());
 	}
 
 
