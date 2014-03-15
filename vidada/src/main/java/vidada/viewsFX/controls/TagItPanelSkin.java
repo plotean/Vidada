@@ -176,12 +176,12 @@ public class TagItPanelSkin<T> extends BehaviorSkinBase<TagItPanel<T>, BehaviorB
 		}
 
 		if(getSkinnable().getSuggestionProvider() != null){
-
 			autoCompletionBinding = TextFields.bindAutoCompletion(tagEdit, getSkinnable().getSuggestionProvider());
 
 			autoCompletionBinding.setOnAutoCompleted(new EventHandler<AutoCompletionEvent<T>>() {
 				@Override
 				public void handle(AutoCompletionEvent<T> completionArgs) {
+					System.out.println("OnAutoCompleted: " + completionArgs.getCompletion());
 					if(completionArgs.getCompletion() != null)
 						appendTag(completionArgs.getCompletion());
 					tagEdit.setText("");
