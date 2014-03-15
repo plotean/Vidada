@@ -37,6 +37,8 @@ public class LocalMediaClientService implements IMediaClientService {
 		MediaSource source = media.getSource();
 		if(source != null){
 			resource = source.getResourceLocation();
+		}else{
+			System.err.println("Media " + media + " has no available source. Total sources: " + media.getSources());
 		}
 		return resource;
 

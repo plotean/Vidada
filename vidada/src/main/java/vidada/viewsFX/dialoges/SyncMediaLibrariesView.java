@@ -59,7 +59,7 @@ public class SyncMediaLibrariesView extends GridPane {
 			@Override
 			public void currentProgress(final ProgressEventArgs progressInfo) {
 
-				System.out.println("SyncMediaLibrariesView::Progress: " + progressInfo.getCurrentTask());
+				//System.out.println("Importer: " + progressInfo.getCurrentTask());
 
 				Platform.runLater(new Runnable() {
 					@Override

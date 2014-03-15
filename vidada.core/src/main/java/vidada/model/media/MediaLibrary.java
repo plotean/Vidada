@@ -160,7 +160,7 @@ public class MediaLibrary extends IdEntity {
 	@Override
 	public String toString(){
 		DirectoryLocation root = getLibraryRoot();
-		return root != null ? root.toString() : "MediaLibrary:: DirectoiryLocation=NULL";
+		return (root != null ? root.toString() : "MediaLibrary:: DirectoiryLocation=NULL") + " id: " + getId();
 	}
 
 }

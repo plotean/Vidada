@@ -45,7 +45,6 @@ public class UnitOfWorkService<T> implements IUnitOfWorkService<T> {
 			code.run();
 		}catch(Exception e){
 			e.printStackTrace();
-			// TODO rollback??
 		}finally{
 			endUnitOfWork();
 		}
@@ -63,7 +62,6 @@ public class UnitOfWorkService<T> implements IUnitOfWorkService<T> {
 			ret = code.call();
 		}catch(Exception e){
 			e.printStackTrace();
-			// TODO rollback??
 		}finally{
 			endUnitOfWork();
 		}
