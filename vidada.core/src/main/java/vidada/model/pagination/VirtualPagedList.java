@@ -128,11 +128,11 @@ public class VirtualPagedList<T> implements IDataProvider<IDeferLoaded<T>>{
 	}
 
 	private int getPageIndexForAbsoluteIndex(int index){
-		return Math.floorDiv(index, maxPageSize);
+		return (int)Math.floor((float)index / (float)maxPageSize);
 	}
 
 	private int getPageCount(){
-		return Math.floorDiv(totalListSize, maxPageSize) + 1;
+		return (int)Math.floor((float)totalListSize / (float)maxPageSize) + 1;
 	}
 
 	/***************************************************************************

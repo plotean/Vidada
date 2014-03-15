@@ -18,7 +18,6 @@ import archimedesJ.events.IEvent;
  */
 public class DataProviderTransformer<T, ST> implements IDataProvider<T> {
 
-	@FunctionalInterface
 	public static interface ITransform<T,ST> { T transform(ST source); }
 
 	private final IDataProvider<ST> source;

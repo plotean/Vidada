@@ -1,7 +1,6 @@
 package vidada.server.rest;
 
 import java.io.IOException;
-import java.util.Base64;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.container.ContainerRequestContext;
@@ -9,6 +8,7 @@ import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import javax.xml.bind.DatatypeConverter;
 
 import org.glassfish.jersey.server.ContainerRequest;
 
@@ -33,7 +33,7 @@ public class AuthFilter implements ContainerRequestFilter {
 				throw unauthorized;
 
 			auth = auth.replaceFirst("[Bb]asic ", "");
-			String userColonPass = new String(Base64.getDecoder().decode(auth));
+			String userColonPass = new String(DatatypeConverter.parseBase64Binary(auth));
 
 			// TODO replace with auth handler
 			if (!userColonPass.equals("admin:1337"))

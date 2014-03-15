@@ -1,6 +1,5 @@
 package vidada.model.pagination;
 
-@FunctionalInterface
 public interface IPageLoader<T> {
 	/**
 	 * Load the page for the given pageIndex
