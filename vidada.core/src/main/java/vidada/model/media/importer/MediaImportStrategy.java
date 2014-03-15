@@ -304,7 +304,7 @@ public class MediaImportStrategy implements IMediaImportStrategy {
 		boolean hasChanges = false;
 
 
-		updateExistingMediaSources(library, existingMeida, entry.getKey());
+		hasChanges = updateExistingMediaSources(library, existingMeida, entry.getKey());
 
 		// Update Tags From file path
 		if(tagguesser != null && AutoTagSupport.updateTags(tagguesser, existingMeida)){
@@ -337,10 +337,13 @@ public class MediaImportStrategy implements IMediaImportStrategy {
 				hasChanges = true;
 			}else if(source.getParentLibrary().equals(library))
 			{
+				System.out.println("checking sources.. ");
+
 				// we only care about the current library-
 				source.setIsAvailableDirty();
 
 				if(!source.isAvailable()){
+					System.out.println("removing old source: " + source);
 					existingMeida.removeSource(source);
 					hasChanges = true;
 				}else{
@@ -356,6 +359,7 @@ public class MediaImportStrategy implements IMediaImportStrategy {
 		if(!currentPathExisits)
 		{
 			URI relativePath = library.getMediaDirectory().getRelativePath(currentPath);
+			System.out.println("trying to add new source: " + relativePath);
 			if(relativePath != null){
 				MediaSourceLocal source = new MediaSourceLocal(library, relativePath);
 				existingMeida.addSource(source);
