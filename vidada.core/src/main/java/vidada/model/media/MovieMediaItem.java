@@ -198,4 +198,10 @@ public class MovieMediaItem extends MediaItem implements Cloneable {
 	public void setDuration(int duration) {
 		this.duration = duration;
 	}
+
+
+	@Override
+	public MovieMediaItem clone() {
+		return new MovieMediaItem(this);
+	}
 }

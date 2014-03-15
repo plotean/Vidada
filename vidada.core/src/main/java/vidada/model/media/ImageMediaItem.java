@@ -38,4 +38,9 @@ public class ImageMediaItem extends MediaItem {
 		classinfo = "image";
 	}
 
+	@Override
+	public ImageMediaItem clone() {
+		return new ImageMediaItem(this);
+	}
+
 }

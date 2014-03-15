@@ -132,11 +132,10 @@ public abstract class MediaItem extends BaseEntity {
 		setFilehash(prototype.getFilehash());
 		setType(prototype.getType());
 
-		setSources(new HashSet<MediaSource>(getSources()));
-
+		setSources(prototype.getSources());
 		getTags().clear(); getTags().addAll(prototype.getTags());
 		setRating(prototype.getRating());
-		setOpened(getOpened());
+		setOpened(prototype.getOpened());
 		setAddedDate(prototype.getAddedDate());
 
 		//super.prototype(prototype);
@@ -184,7 +183,7 @@ public abstract class MediaItem extends BaseEntity {
 	 * @return
 	 */
 	@Transient
-	public MediaSource getSource(){
+	public MediaSource getSource(){		
 		if(source == null || !source.isAvailable())
 		{
 			Set<MediaSource> sources = getSources();
@@ -418,6 +417,8 @@ public abstract class MediaItem extends BaseEntity {
 		return this.getFilename() + "hash: " + this.getFilehash() + " src: " + getSource();
 	}
 
+	@Override
+	public abstract MediaItem clone();
 
 	/***************************************************************************
 	 *                                                                         *
