@@ -1,5 +1,6 @@
 package vidada.dal.repositorys;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -12,6 +13,7 @@ import vidada.dal.JPARepository;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaLibrary;
 import vidada.model.media.OrderProperty;
+import vidada.model.media.source.MediaSource;
 import vidada.model.pagination.ListPage;
 import vidada.model.tags.Tag;
 import vidada.server.dal.repositories.IMediaRepository;
@@ -170,11 +172,18 @@ public class MediaRepository extends JPARepository implements IMediaRepository{
 
 		MediaItem managedMedia = getEntityManager().find(MediaItem.class, media.getFilehash());
 
-		for (Tag t : media.getTags()) {
-			Tag tag = getEntityManager().find(Tag.class, t.getName());
-			if(tag == null){
-				getEntityManager().persist(t);
-			}
+		media = media.clone();
+
+		for (Tag t : new ArrayList<Tag>(media.getTags())) {
+			media.getTags().remove(t);
+			Tag tm = getEntityManager().merge(t);
+			media.getTags().add(tm);
+		}
+
+		for (MediaSource s : media.getSources()) {
+			media.removeSource(s);
+			MediaSource sm = getEntityManager().merge(s);
+			media.addSource(sm);
 		}
 
 		managedMedia.prototype(media);
