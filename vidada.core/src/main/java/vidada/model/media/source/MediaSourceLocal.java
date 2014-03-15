@@ -23,7 +23,6 @@ import archimedesJ.io.locations.ResourceLocation;
 @Access(AccessType.FIELD)
 public class MediaSourceLocal extends MediaSource {
 
-	transient private boolean isFileAvaiableDirty = true;
 	transient private boolean isFileAvaiable;
 
 	@ManyToOne
@@ -56,17 +55,14 @@ public class MediaSourceLocal extends MediaSource {
 	 * upon next property access
 	 */
 	public void setIsAvailableDirty(){
-		isFileAvaiableDirty = true;
+		//isFileAvaiableDirty = true;
 	}
 
 
 	@Override
 	public boolean isAvailable() {
-		if (isFileAvaiableDirty) {
-			ResourceLocation absolutePath = getResourceLocation();
-			isFileAvaiable = absolutePath != null && absolutePath.exists();
-			isFileAvaiableDirty = false;
-		}
+		ResourceLocation absolutePath = getResourceLocation();
+		isFileAvaiable = absolutePath != null && absolutePath.exists();
 		return isFileAvaiable;
 	}
 
@@ -119,7 +115,7 @@ public class MediaSourceLocal extends MediaSource {
 
 	protected void setParentLibrary(MediaLibrary parentLibrary) {
 		this.parentLibrary = parentLibrary;
-		isFileAvaiableDirty = true;
+		//isFileAvaiableDirty = true;
 	}
 
 
