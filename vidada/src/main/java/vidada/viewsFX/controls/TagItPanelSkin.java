@@ -123,7 +123,6 @@ public class TagItPanelSkin<T> extends BehaviorSkinBase<TagItPanel<T>, BehaviorB
 
 		for (T tagModel : tags) {
 			Node tview = getTagView(tagModel);
-			//FlowPane.setMargin(tview, tagMargrin);
 			tagNodes.add(tview);
 		}
 
