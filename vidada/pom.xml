@@ -2,7 +2,7 @@
  	<modelVersion>4.0.0</modelVersion>
  	<groupId>Vidada</groupId>
 	<artifactId>Vidada</artifactId>
-	<version>0.1.2-BETA</version>
+	<version>0.1.3-BETA</version>
 	
 	<!-- PLatform specific profiles  -->
 	<!-- We set the os specific variables -->
@@ -133,45 +133,6 @@
 				</executions>
 			</plugin>
 			
-			<!-- Configures a jar 
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-			 	<artifactId>maven-jar-plugin</artifactId>
-				<version>2.4</version>
-				<configuration>
-					<archive>
-				    	<manifest>
-				    		<addClasspath>true</addClasspath>
-				      		<mainClass>vidada.Application</mainClass>
-				     		<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                			<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-				    	</manifest>
-					</archive>
-				</configuration>
-			</plugin>
-			-->
-					
-			<!-- OSX App bundle generator Plugin 
-			<plugin>
-			     <groupId>org.codehaus.mojo</groupId>
-			     <artifactId>osxappbundle-maven-plugin</artifactId>
-			     <version>1.0-alpha-2</version>
-			     <configuration>
-			         <mainClass>vidada.Application</mainClass>
-			         <jvmVersion>1.8+</jvmVersion>
-			         <iconFile>${basedir}/src/main/resources/images/logo.icns</iconFile>
-			         <javaApplicationStub>JavaApplicationStub</javaApplicationStub>
-			     </configuration>
-			     <executions>
-			         <execution>
-			             <phase>package</phase>
-			             <goals>
-			                 <goal>bundle</goal>
-			             </goals>
-			         </execution>
-			    </executions>
-			</plugin>
-			 -->
 			<plugin>
 			  <groupId>org.codehaus.mojo</groupId>
 			  <artifactId>exec-maven-plugin</artifactId>
@@ -358,7 +319,7 @@
 		<dependency>
 		    <groupId>org.controlsfx</groupId>
 		    <artifactId>controlsfx</artifactId>
-		    <version>8.0.5</version>
+		    <version>8.0.6-SNAPSHOT</version>
 		</dependency>
 		
 	</dependencies>
