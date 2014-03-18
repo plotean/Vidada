@@ -57,7 +57,7 @@ public abstract class FFmpegInterop {
 		File ffmpeg = null;
 
 		try {
-			URI jar = PackageUtil.getJarURI(FFmpegInteropWindows.class);
+			URI jar = PackageUtil.getJarURI(FFmpegInterop.class);
 			URI ffmpegURI = PackageUtil.extractFile(jar, ffmpegPackagePath);
 
 			ffmpeg = new File(ffmpegURI);
