@@ -16,8 +16,6 @@ Copyright P.Buettiker  2012-2014
 
 
 
-
-
 ### MAC OS X Hack for Retina Support
 
 Since Vidada switched to JavaFX, HDPI rendering is supported natively. Hell yeah!
