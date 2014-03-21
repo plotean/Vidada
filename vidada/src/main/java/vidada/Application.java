@@ -44,14 +44,12 @@ import vidada.server.settings.VidadaServerSettings;
 import vidada.services.IMediaPresenterService;
 import vidada.services.ISelfUpdateService;
 import vidada.services.ServiceProvider;
-import vidada.services.ServiceProvider.IServiceRegisterer;
 import vidada.viewsFX.MainViewFx;
 import vidada.viewsFX.dialoges.ChooseMediaDatabaseView;
 import vidada.viewsFX.dialoges.ChooseVidadaInstanceView;
 import vidada.viewsFX.images.ImageViewerServiceFx;
 import archimedesJ.images.IRawImageFactory;
 import archimedesJ.images.viewer.IImageViewerService;
-import archimedesJ.services.ServiceLocator;
 import archimedesJ.util.OSValidator;
 
 
@@ -258,20 +256,17 @@ public class Application extends  javafx.application.Application {
 	private boolean initialize() {
 
 		// Register global services
-		ServiceProvider.getInstance().startup(new IServiceRegisterer(){
-			@Override
-			public void registerServices(ServiceLocator locator) {
-				locator.registerSingleton(ISystemService.class, SystemService.class);
-				locator.registerSingleton(IRawImageFactory.class, RawImageFactoryFx.class);
-				locator.registerSingleton(IImageViewerService.class, ImageViewerServiceFx.class);
-				locator.registerSingleton(ISelfUpdateService.class, SelfUpdateService.class); 
+		ServiceProvider.getInstance().startup(locator -> {
+            locator.registerSingleton(ISystemService.class, SystemService.class);
+            locator.registerSingleton(IRawImageFactory.class, RawImageFactoryFx.class);
+            locator.registerSingleton(IImageViewerService.class, ImageViewerServiceFx.class);
+            locator.registerSingleton(ISelfUpdateService.class, SelfUpdateService.class);
 
-				locator.registerSingleton(IVidadaClientManager.class, VidadaClientManager.class);
-			}
-		});
+            locator.registerSingleton(IVidadaClientManager.class, VidadaClientManager.class);
+        });
 		System.out.println("Loaded settings v" + VidadaClientSettings.instance().getSettingsVersion());
 
-		// now we have to choose either to connect to a client or the local embeded vidada instance
+		// now we have to choose either to connect to a client or the local embedded vidada instance
 
 		VidadaInstance instance = configInstance();
 
@@ -311,7 +306,7 @@ public class Application extends  javafx.application.Application {
 		VidadaDatabase dbconfig = VidadaServerSettings.instance().getCurrentDBConfig();
 
 		if(dbconfig == null){
-			System.err.println("No Database has been choosen - exiting now");
+			System.err.println("No Database has been chosen - exiting now");
 			return null;
 		}
 
@@ -319,7 +314,7 @@ public class Application extends  javafx.application.Application {
 			System.out.println("Settings up Vidada DAL...");
 
 			IVidadaDALService vidadaDALService = DAL.build(new File(dbconfig.getDataBasePath()));
-			System.out.println("DAL Layer loaded successfull.");
+			System.out.println("DAL Layer loaded successfully.");
 
 			System.out.println("Creating Vidada Server...");
 			localserver = new VidadaServer(vidadaDALService);
