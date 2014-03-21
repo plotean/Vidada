@@ -15,5 +15,8 @@ Thumbs.db
 Vidada.ini
 *.log
 
+.idea
+data
+
 vidada-client.json
 vidada-server.json
