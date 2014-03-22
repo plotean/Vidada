@@ -4,9 +4,9 @@ import javafx.animation.FadeTransition;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.BorderPane;
 import javafx.util.Duration;
 
 
@@ -19,7 +19,7 @@ import javafx.util.Duration;
  * @author IsNull
  * @see https://gist.github.com/jewelsea/1680197
  */
-public class ImagePane extends ScrollPane {
+public class ImagePane extends BorderPane {
 
 	private final FadeTransition fadeTransition;
 	private final ImageView imageView; 
@@ -29,10 +29,6 @@ public class ImagePane extends ScrollPane {
 	 * @param imageProperty
 	 */
 	public ImagePane(ObjectProperty<Image> imageProperty){
-		setHbarPolicy(ScrollBarPolicy.NEVER);
-		setVbarPolicy(ScrollBarPolicy.NEVER);
-		setPannable(false);
-
 
 		imageView = new ImageView();
 		imageView.imageProperty().bind(imageProperty);
@@ -49,9 +45,7 @@ public class ImagePane extends ScrollPane {
 		fadeTransition.setAutoReverse(false);
 		fadeTransition.setCycleCount(1);
 
-
-		setContent(imageView);
-
+        setCenter(imageView);
 
 		imageProperty.addListener(imageChangeListener);
 	}
