@@ -1,14 +1,11 @@
 package vidada.viewsFX.libraries;
 
-import archimedesJ.exceptions.NotImplementedException;
 import archimedesJ.io.locations.DirectoryLocation;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.ListView;
-import javafx.scene.control.SelectionModel;
 import javafx.stage.DirectoryChooser;
-import javafx.stage.FileChooser;
 import vidada.IVidadaServer;
 import vidada.client.viewmodel.MediaLibraryVM;
 import vidada.model.media.MediaLibrary;

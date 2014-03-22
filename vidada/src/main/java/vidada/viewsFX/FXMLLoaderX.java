@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.net.URL;
 
 /**
- * Advanced FXML loader
+ * Advanced FXML loader.
  */
 public final class FXMLLoaderX {
 
@@ -18,7 +18,10 @@ public final class FXMLLoaderX {
      * @return
      */
     public static Node load(String path){
-        return load(FXMLLoaderX.class.getResource(path));
+        URL resource = FXMLLoaderX.class.getResource(path);
+        if(resource == null)
+            System.err.println("Can not find relative path: " + path);
+        return load(resource);
     }
 
     /**
@@ -29,12 +32,14 @@ public final class FXMLLoaderX {
      */
     public static Node load(URL resource){
         Node node = null;
-        try {
-            FXMLLoader loader = new FXMLLoader();
-            node = loader.load(resource.openStream());
-            node.setUserData(loader.getController());
-        } catch (IOException e) {
-            e.printStackTrace();
+        if(resource != null) {
+            try {
+                FXMLLoader loader = new FXMLLoader();
+                node = loader.load(resource.openStream());
+                node.setUserData(loader.getController());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         return node;
     }
