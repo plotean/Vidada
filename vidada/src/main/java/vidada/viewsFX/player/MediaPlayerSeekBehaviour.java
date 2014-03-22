@@ -27,18 +27,15 @@ public class MediaPlayerSeekBehaviour implements IMediaPlayerBehavior {
 
 
 
-	private EventHandler<MouseEvent> eventListener = new EventHandler<MouseEvent>() {
-		@Override
-		public void handle(MouseEvent me) {
+	private EventHandler<MouseEvent> eventListener = me -> {
 
-			MediaPlayerFx mediaPlayer = (MediaPlayerFx) me.getSource();
-			double width = mediaPlayer.getRealWidth();
-			double relativePos = me.getX() / width;
-			System.out.println(me.getX() + " " + width);
-			System.out.println("MediaPlayerSeekBehaviour: pos " + relativePos);
-			mediaPlayer.getMediaController().setPosition((float)relativePos);
-		}
-	};
+        MediaPlayerFx mediaPlayer = (MediaPlayerFx) me.getSource();
+        double width = mediaPlayer.getRealWidth();
+        double relativePos = me.getX() / width;
+        System.out.println(me.getX() + " " + width);
+        System.out.println("MediaPlayerSeekBehaviour: pos " + relativePos);
+        mediaPlayer.getMediaController().setPosition((float)relativePos);
+    };
 
 
 }

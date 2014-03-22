@@ -1,16 +1,12 @@
 package vidada.viewsFX.medias;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
-
 import org.controlsfx.control.Rating;
-
 import vidada.client.viewmodel.media.IMediaViewModel;
 import vidada.viewsFX.tags.MediaDetailTagPane;
 
@@ -65,13 +61,9 @@ public class MediaDetailViewFx extends BorderPane {
 		this.setBottom(mediaDetailTagPane);
 
 
-		rating.ratingProperty().addListener(new ChangeListener<Number>() {
-			@Override
-			public void changed(ObservableValue<? extends Number> arg0,
-					Number arg1, Number arg2) {
-				mediaVM.setRating((int)rating.getRating());
-			}
-		});
+		rating.ratingProperty().addListener((observableValue, oldValue, newValue) -> {
+            mediaVM.setRating((int)rating.getRating());
+        });
 
 		setDataContext(null);
 	}

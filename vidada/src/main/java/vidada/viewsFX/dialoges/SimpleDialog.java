@@ -1,10 +1,7 @@
 package vidada.viewsFX.dialoges;
 
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import org.controlsfx.dialog.Dialog;
-
-import java.io.IOException;
 
 public final class SimpleDialog extends Dialog {
 

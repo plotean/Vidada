@@ -18,7 +18,7 @@ public class MediaPlayerService implements IMediaPlayerService {
 	 */
 	static class MediaPlayerComponent implements IMediaPlayerComponent {
 
-		private EventHandlerEx<EventArgs> requestReleaseEvent = new EventHandlerEx<EventArgs>();
+		private EventHandlerEx<EventArgs> requestReleaseEvent = new EventHandlerEx<>();
 
 		/**
 		 * Raised when this shared MediaPlayer component should be released by its current user

@@ -1,9 +1,9 @@
 package vidada.viewsFX.images;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
+import archimedesJ.images.ImageContainer;
+import archimedesJ.images.ImageContainerBase;
+import archimedesJ.images.viewer.IImageProvider;
+import archimedesJ.images.viewer.ISmartImage;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -11,13 +11,9 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import vidada.viewsFX.mediabrowsers.ImagePane;
 import vidada.viewsFX.util.AsyncImageProperty;
-import archimedesJ.events.EventArgs;
-import archimedesJ.events.EventListenerEx;
-import archimedesJ.images.IMemoryImage;
-import archimedesJ.images.ImageContainer;
-import archimedesJ.images.ImageContainerBase;
-import archimedesJ.images.viewer.IImageProvider;
-import archimedesJ.images.viewer.ISmartImage;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class SmartImagePanelFx extends BorderPane {
 
@@ -44,26 +40,11 @@ public class SmartImagePanelFx extends BorderPane {
 		this.setLeft(btnLeft);
 		this.setRight(btnRight);
 
-		imageProvider.getCurrentImageChanged().add(new EventListenerEx<EventArgs>() {
-			@Override
-			public void eventOccured(Object sender, EventArgs eventArgs) {
-				updateCurrentImage();	
-			}
-		});
+		imageProvider.getCurrentImageChanged().add((sender, eventArgs) -> updateCurrentImage());
 
-		btnLeft.addEventHandler(MouseEvent.MOUSE_CLICKED, new javafx.event.EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent me) {
-				imageProvider.navigatePrevious();
-			}
-		});
+		btnLeft.addEventHandler(MouseEvent.MOUSE_CLICKED, me -> imageProvider.navigatePrevious());
 
-		btnRight.addEventHandler(MouseEvent.MOUSE_CLICKED, new javafx.event.EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent me) {
-				imageProvider.navigateNext();
-			}
-		});
+		btnRight.addEventHandler(MouseEvent.MOUSE_CLICKED, me -> imageProvider.navigateNext());
 
 		updateCurrentImage();
 	}
@@ -77,12 +58,7 @@ public class SmartImagePanelFx extends BorderPane {
 	}
 
 	private ImageContainer getContainer(final ISmartImage image){
-		ImageContainerBase container = new ImageContainerBase(pool, new Callable<IMemoryImage>() {
-			@Override
-			public IMemoryImage call() throws Exception {
-				return image.getImage();
-			}
-		});
+		ImageContainerBase container = new ImageContainerBase(pool, () -> image.getImage());
 
 		return container;
 	}

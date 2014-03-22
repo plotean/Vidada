@@ -1,8 +1,15 @@
 package vidada.viewsFX.mediabrowsers;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.event.ActionEvent;
+import archimedesJ.events.EventArgs;
+import archimedesJ.events.EventListenerEx;
+import archimedesJ.exceptions.NotSupportedException;
+import archimedesJ.images.IRawImageFactory;
+import archimedesJ.images.ImageContainer;
+import archimedesJ.images.viewer.IImageViewerService;
+import archimedesJ.images.viewer.ISmartImage;
+import archimedesJ.images.viewer.SmartImageLazy;
+import archimedesJ.io.locations.ResourceLocation;
+import archimedesJ.util.FileSupport;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -14,14 +21,11 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
-
 import org.controlsfx.control.Rating;
 import org.controlsfx.dialog.Dialogs;
-
 import vidada.client.viewmodel.MediaViewModel;
 import vidada.client.viewmodel.browser.BrowserItemVM;
 import vidada.model.media.MediaType;
-import vidada.model.system.ISystemService;
 import vidada.services.ServiceProvider;
 import vidada.viewsFX.player.IMediaPlayerBehavior;
 import vidada.viewsFX.player.IMediaPlayerService;
@@ -29,16 +33,6 @@ import vidada.viewsFX.player.IMediaPlayerService.IMediaPlayerComponent;
 import vidada.viewsFX.player.MediaPlayerFx;
 import vidada.viewsFX.player.MediaPlayerSeekBehaviour;
 import vidada.viewsFX.util.AsyncImageProperty;
-import archimedesJ.events.EventArgs;
-import archimedesJ.events.EventListenerEx;
-import archimedesJ.exceptions.NotSupportedException;
-import archimedesJ.images.IRawImageFactory;
-import archimedesJ.images.ImageContainer;
-import archimedesJ.images.viewer.IImageViewerService;
-import archimedesJ.images.viewer.ISmartImage;
-import archimedesJ.images.viewer.SmartImageLazy;
-import archimedesJ.io.locations.ResourceLocation;
-import archimedesJ.util.FileSupport;
 
 /**
  * View of a single media item in the MediaBrowser
@@ -48,7 +42,6 @@ import archimedesJ.util.FileSupport;
 public class MediaItemView extends BrowserCellView {
 
 	private final IMediaPlayerService mediaPlayerService;
-	private final ISystemService systemService = ServiceProvider.Resolve(ISystemService.class);
 
 	private final StackPane primaryContent = new StackPane();
 	private final AsyncImageProperty imageProperty = new AsyncImageProperty();
@@ -104,20 +97,8 @@ public class MediaItemView extends BrowserCellView {
 		openButton.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseOpenHandler);
 
 
-		imagePane.widthProperty().addListener(new ChangeListener<Number>() {
-			@Override
-			public void changed(ObservableValue<? extends Number> arg0,
-					Number old, Number newWidth) {
-				onItemImageChanged(false);
-			}
-		});
-		imagePane.heightProperty().addListener(new ChangeListener<Number>() {
-			@Override
-			public void changed(ObservableValue<? extends Number> arg0,
-					Number old, Number newHeight) {
-				onItemImageChanged(false);
-			}
-		});
+		imagePane.widthProperty().addListener((arg0, old, newWidth) -> onItemImageChanged(false));
+		imagePane.heightProperty().addListener((arg0, old, newHeight) -> onItemImageChanged(false));
 	}
 
 	@Override
@@ -127,24 +108,18 @@ public class MediaItemView extends BrowserCellView {
 
 		if(mediaViewModel.canOpenFolder()){
 			MenuItem openContainingFolder = new MenuItem("Open Folder");
-			openContainingFolder.setOnAction(new EventHandler<ActionEvent>() {
-				@Override
-				public void handle(ActionEvent e) {
-					mediaViewModel.openContainingFolder();
-				}
-			});
+			openContainingFolder.setOnAction(e -> {
+                mediaViewModel.openContainingFolder();
+            });
 			cm.getItems().add(openContainingFolder);
 		}
 
 
 		if(mediaViewModel.canNewRandomThumb()){
 			MenuItem newRandomThumb = new MenuItem("Renew Thumb");
-			newRandomThumb.setOnAction(new EventHandler<ActionEvent>() {
-				@Override
-				public void handle(ActionEvent e) {
-					mediaViewModel.newRandomThumb();
-				}
-			});
+			newRandomThumb.setOnAction(e -> {
+                mediaViewModel.newRandomThumb();
+            });
 			cm.getItems().add(newRandomThumb);
 		}
 
@@ -154,41 +129,32 @@ public class MediaItemView extends BrowserCellView {
 	/**
 	 * Occurs when the user clicks on the media
 	 */
-	transient private final EventHandler<MouseEvent> mouseOpenHandler = new EventHandler<MouseEvent>(){
-		@Override
-		public void handle(MouseEvent me) {
-			if(me.getButton().equals(MouseButton.PRIMARY)){
-				onMediaOpenAction();
-			}
-		}
-	};
+	transient private final EventHandler<MouseEvent> mouseOpenHandler = me -> {
+        if(me.getButton().equals(MouseButton.PRIMARY)){
+            onMediaOpenAction();
+        }
+    };
 
 	/**
 	 * Occurs when the user clicks on the media
 	 */
-	transient private final EventHandler<MouseEvent> mousePrevClickedHandler = new EventHandler<MouseEvent>(){
-		@Override
-		public void handle(MouseEvent me) {
-			if(me.getButton().equals(MouseButton.PRIMARY)){
-				if(me.getClickCount() > 1){
-					onMediaOpenAction();
-				}
-			}
-		}
-	};
+	transient private final EventHandler<MouseEvent> mousePrevClickedHandler = me -> {
+        if(me.getButton().equals(MouseButton.PRIMARY)){
+            if(me.getClickCount() > 1){
+                onMediaOpenAction();
+            }
+        }
+    };
 
 
 
 	/**
 	 * Occurs when the user clicks on the media
 	 */
-	transient private final EventHandler<MouseEvent> mouseInspectHandler = new EventHandler<MouseEvent>(){
-		@Override
-		public void handle(MouseEvent me) {
-			if(me.isPrimaryButtonDown() && !me.isSecondaryButtonDown())
-				onMediaInspectAction((float)(me.getX() / MediaItemView.this.getWidth()));
-		}
-	};
+	transient private final EventHandler<MouseEvent> mouseInspectHandler = me -> {
+        if(me.isPrimaryButtonDown() && !me.isSecondaryButtonDown())
+            onMediaInspectAction((float)(me.getX() / MediaItemView.this.getWidth()));
+    };
 
 
 	transient private final IImageViewerService imageViewer = ServiceProvider.Resolve(IImageViewerService.class);
@@ -264,26 +230,17 @@ public class MediaItemView extends BrowserCellView {
 		}
 	}
 
-	private final EventListenerEx<EventArgs> playerReleaseListener = new EventListenerEx<EventArgs>() {
-		@Override
-		public void eventOccured(Object sender, EventArgs eventArgs) {
-			removeMediaPlayer();
-		}
-	};
+	private final EventListenerEx<EventArgs> playerReleaseListener = (sender, eventArgs) -> {
+        removeMediaPlayer();
+    };
 
-	private final EventHandler<MouseEvent> mouseExitedListener = new EventHandler<MouseEvent>() {
-		@Override
-		public void handle(MouseEvent me) {
-			removeMediaPlayer();
-		}
-	};
+	private final EventHandler<MouseEvent> mouseExitedListener = me -> {
+        removeMediaPlayer();
+    };
 
-	private final EventHandler<KeyEvent> playerKeyPressListener = new EventHandler<KeyEvent>() {
-		@Override
-		public void handle(KeyEvent ke) {
-			System.out.println("keeeyy on player :D");
-		}
-	};
+	private final EventHandler<KeyEvent> playerKeyPressListener = ke -> {
+        System.out.println("keeeyy on player :D");
+    };
 
 
 	/**

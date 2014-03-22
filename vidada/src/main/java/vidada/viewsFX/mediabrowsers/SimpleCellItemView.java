@@ -54,16 +54,13 @@ public class SimpleCellItemView extends BrowserCellView {
 	/**
 	 * Occurs when the user clicks on the media
 	 */
-	transient private final EventHandler<MouseEvent> mouseOpenHandler = new EventHandler<MouseEvent>(){
-		@Override
-		public void handle(MouseEvent me) {
-			if(me.getButton().equals(MouseButton.PRIMARY)){
-				if(getDataContext() != null){
-					getDataContext().open();
-				}
-			}
-		}
-	};
+	transient private final EventHandler<MouseEvent> mouseOpenHandler = me -> {
+        if(me.getButton().equals(MouseButton.PRIMARY)){
+            if(getDataContext() != null){
+                getDataContext().open();
+            }
+        }
+    };
 
 
 }

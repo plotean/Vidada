@@ -1,11 +1,7 @@
 package vidada.viewsFX.filters;
 
+import archimedesJ.util.Lists;
 import impl.org.controlsfx.autocompletion.SuggestionProvider;
-
-import java.util.Collection;
-
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -15,10 +11,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
-import javafx.util.Callback;
-
 import org.controlsfx.control.textfield.TextFields;
-
 import vidada.client.IVidadaClientManager;
 import vidada.client.services.ITagClientService;
 import vidada.client.viewmodel.FilterModel;
@@ -28,7 +21,8 @@ import vidada.model.tags.Tag;
 import vidada.model.tags.TagFactory;
 import vidada.services.ServiceProvider;
 import vidada.viewsFX.controls.TagItPanel;
-import archimedesJ.util.Lists;
+
+import java.util.Collection;
 
 public class FilterViewFx extends BorderPane {
 
@@ -48,12 +42,7 @@ public class FilterViewFx extends BorderPane {
 		this.filtermodel = filtermodel;	
 		tagPane = new TagItPanel<>();
 
-		tagPane.setTagModelFactory(new Callback<String, Tag>() {
-			@Override
-			public Tag call(String text) {
-				return TagFactory.instance().createTag(text);
-			}
-		});
+		tagPane.setTagModelFactory(text -> TagFactory.instance().createTag(text));
 
 		updateTagSuggestionProvider();
 
@@ -101,50 +90,31 @@ public class FilterViewFx extends BorderPane {
 	}
 
 	private void registerEventHandler(){
-		chkreverse.selectedProperty().addListener(new ChangeListener<Boolean>() {
+		chkreverse.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            filtermodel.setReverse(chkreverse.isSelected());
+        });
 
-			@Override
-			public void changed(ObservableValue<? extends Boolean> arg0,
-					Boolean arg1, Boolean arg2) {
-				filtermodel.setReverse(chkreverse.isSelected());
-			}
-		});
+		cboOrder.valueProperty().addListener((observable, oldValue, newValue) -> {
+            filtermodel.setOrder(cboOrder.getValue());
+        });
 
-		cboOrder.valueProperty().addListener(new ChangeListener<OrderProperty>() {
-			@Override 
-			public void changed(ObservableValue ov, OrderProperty t, OrderProperty t1) {                
-				filtermodel.setOrder(cboOrder.getValue());               
-			}    
-		});
+		searchText.textProperty().addListener((observable, oldValue, newValue) -> {
+            filtermodel.setQueryString(searchText.getText());
+        });
 
-		searchText.textProperty().addListener(new ChangeListener<String>() {
-			@Override
-			public void changed(ObservableValue<? extends String> arg0,
-					String arg1, String arg2) {
-				filtermodel.setQueryString(searchText.getText());
-			}
-		});
+		cboMediaType.valueProperty().addListener((observable, oldValue, newValue) -> {
+            filtermodel.setMediaType(cboMediaType.getValue() != null ? cboMediaType.getValue() : MediaType.ANY);
+        });
 
-		cboMediaType.valueProperty().addListener(new ChangeListener<MediaType>() {
-			@Override 
-			public void changed(ObservableValue ov, MediaType t, MediaType t1) {                
-				filtermodel.setMediaType(cboMediaType.getValue() != null ? cboMediaType.getValue() : MediaType.ANY);       
-			}    
-		});
-
-		tagPane.getTags().addListener(new ListChangeListener<Tag>(){
-			@Override
-			public void onChanged(
-					javafx.collections.ListChangeListener.Change<? extends Tag> changeEvent) {
-				if(changeEvent.next()){
-					if(changeEvent.wasAdded()){
-						filtermodel.getRequiredTags().addAll(changeEvent.getAddedSubList());
-					}
-					if(changeEvent.wasRemoved()){
-						filtermodel.getRequiredTags().removeAll(changeEvent.getRemoved());
-					}
-				}
-			}
-		});
+		tagPane.getTags().addListener((ListChangeListener.Change<? extends Tag> changeEvent) -> {
+            if(changeEvent.next()){
+                if(changeEvent.wasAdded()){
+                    filtermodel.getRequiredTags().addAll(changeEvent.getAddedSubList());
+                }
+                if(changeEvent.wasRemoved()){
+                    filtermodel.getRequiredTags().removeAll(changeEvent.getRemoved());
+                }
+            }
+        });
 	}
 }

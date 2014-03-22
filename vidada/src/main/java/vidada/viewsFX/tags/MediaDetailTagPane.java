@@ -1,15 +1,13 @@
 package vidada.viewsFX.tags;
 
 import impl.org.controlsfx.autocompletion.SuggestionProvider;
-
-import java.util.Collection;
-
 import javafx.scene.layout.BorderPane;
-import javafx.util.Callback;
 import vidada.client.viewmodel.media.IMediaViewModel;
 import vidada.model.tags.Tag;
 import vidada.viewsFX.bindings.ObservableListBindingFX;
 import vidada.viewsFX.controls.TagItPanel;
+
+import java.util.Collection;
 
 
 public class MediaDetailTagPane extends BorderPane {
@@ -27,17 +25,14 @@ public class MediaDetailTagPane extends BorderPane {
 		currentTagsPanel = new TagItPanel<>();
 		avaiableTagsPanel = new TagItPanel<>();
 
-		currentTagsPanel.setTagModelFactory(new Callback<String, Tag>() {
-			@Override
-			public Tag call(String tagName) {
-				if(mediaViewModel != null){
-					return mediaViewModel.createTag(tagName);
-				}else {
-					System.err.println("Can not create tag since mediaViewModel = NULL!");
-					return null;
-				}
-			}
-		});
+		currentTagsPanel.setTagModelFactory(tagName -> {
+            if(mediaViewModel != null){
+                return mediaViewModel.createTag(tagName);
+            }else {
+                System.err.println("Can not create tag since mediaViewModel = NULL!");
+                return null;
+            }
+        });
 
 		this.setCenter(currentTagsPanel);
 	}
