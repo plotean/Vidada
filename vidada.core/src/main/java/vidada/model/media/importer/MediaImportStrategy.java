@@ -180,7 +180,7 @@ public class MediaImportStrategy implements IMediaImportStrategy {
 		Map<MediaItem, Boolean> realExistingMediaDatas = new HashMap<MediaItem, Boolean>();
 		Map<String, MediaItem> existingMediaData = fetchCurrentMedias();
 
-		progressListener.currentProgress(new ProgressEventArgs(true, "Retriving ObjectContainer..."));
+		progressListener.currentProgress(new ProgressEventArgs(true, "Retrieving ObjectContainer..."));
 
 		try{
 			progressListener.currentProgress(new ProgressEventArgs(true, "Checking " + existingMediaData.size() + " medias..."));
@@ -189,7 +189,7 @@ public class MediaImportStrategy implements IMediaImportStrategy {
 
 			for (MediaItem mediaData : medias) {
 				// check if the parent library is still correct
-				if(isMemberofLibrary(mediaData, library))
+				if(isMemberOfLibrary(mediaData, library))
 				{
 					// add the media data to the probably existing, but default the exists to false
 					realExistingMediaDatas.put(mediaData, false);
@@ -247,7 +247,6 @@ public class MediaImportStrategy implements IMediaImportStrategy {
 
 	/**
 	 * Remove the no longer existing media source
-	 * @param em
 	 * @param media
 	 */
 	private boolean canMediaBeDeleted(MediaLibrary library, MediaItem media) {
@@ -273,7 +272,7 @@ public class MediaImportStrategy implements IMediaImportStrategy {
 	 * @param library
 	 * @return
 	 */
-	private boolean isMemberofLibrary(MediaItem media, MediaLibrary library) {
+	private boolean isMemberOfLibrary(MediaItem media, MediaLibrary library) {
 		if(library == null) throw new IllegalArgumentException("library must not be NULL!");
 
 		for (MediaSource s : media.getSources()) {

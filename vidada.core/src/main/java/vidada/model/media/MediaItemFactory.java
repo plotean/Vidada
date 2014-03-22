@@ -1,6 +1,14 @@
 package vidada.model.media;
 
 import archimedesJ.io.locations.ResourceLocation;
+import org.joda.time.DateTime;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.FileTime;
 
 public class MediaItemFactory {
 
@@ -58,7 +66,16 @@ public class MediaItemFactory {
 			System.err.println("MediaService: Can not handle " + mediaLocation.toString());
 		}
 
-		return newMedia;
+        Path mediaFile = new File(mediaLocation.getPath()).toPath();
+        try {
+            BasicFileAttributes attr = Files.readAttributes(mediaFile, BasicFileAttributes.class);
+            FileTime time = attr.creationTime();
+            newMedia.setAddedDate(new DateTime(time.toMillis()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return newMedia;
 	}
 
 }
