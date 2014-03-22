@@ -1,82 +1,63 @@
 package vidada.server.rest;
 
-import java.net.URI;
-import java.util.Set;
-
-import javax.ws.rs.core.UriBuilder;
-
-import org.glassfish.grizzly.http.CompressionConfig;
 import org.glassfish.grizzly.http.server.HttpServer;
-import org.glassfish.grizzly.http.server.StaticHttpHandler;
-import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
-import org.glassfish.jersey.server.ResourceConfig;
-
+import org.glassfish.grizzly.servlet.FilterRegistration;
+import org.glassfish.grizzly.servlet.ServletRegistration;
+import org.glassfish.grizzly.servlet.WebappContext;
 import vidada.IVidadaServer;
 import vidada.server.rest.streaming.MediaStreamHttpHandler;
 
+import javax.servlet.DispatcherType;
+import java.io.IOException;
+import java.util.EnumSet;
 
 
-public class VidadaRestServer extends ResourceConfig{
+public class VidadaRestServer {
+
+    private static final String SERVLET_JERSEY = "jersey-servlet";
+
 
 	public static IVidadaServer VIDADA_SERVER;
 	private final IVidadaServer vidadaServer;
 
-	public VidadaRestServer(IVidadaServer server){
-		packages("vidada.server.rest.resource");
-	
 
-		
+
+	public VidadaRestServer(IVidadaServer server){
 		this.vidadaServer = server;
 		VIDADA_SERVER = server;
 	}
 
 
+    public HttpServer start() {
 
-	public HttpServer start(){
+        WebappContext webappContext = new WebappContext("Grizzly Web Context", "");
 
-		System.out.println("Configuration of REST Server...");
+        ServletRegistration servletRegistration = webappContext.addServlet(SERVLET_JERSEY, org.glassfish.jersey.servlet.ServletContainer.class);
+        servletRegistration.addMapping("/api/*");
+        servletRegistration.setInitParameter("jersey.config.server.provider.packages", "vidada.server.rest.resource");
 
+        // Add filters
 
-		//rc.property("com.sun.jersey.api.json.POJOMappingFeature", true);
-
-		
-		//rc.getProperties().put("com.sun.jersey.spi.container.ContainerRequestFilters", "vidada.server.rest.AuthFilter");
-
-		HttpServer server = null;
-		try {
-			URI baseUri = UriBuilder.fromUri("http://0.0.0.0/api").port(5555).build();
-
-			System.out.println("Starting REST Server @ "  + baseUri.toString());
-
-			server = GrizzlyHttpServerFactory.createHttpServer(baseUri, this);
-
-			//server = GrizzlyServerFactory.createHttpServer(serverLocation, rc);
-			server.getServerConfiguration().addHttpHandler(new StaticHttpHandler("/Users/IsNull/Movies/"), "/xyz");
-			server.getServerConfiguration().addHttpHandler(new MediaStreamHttpHandler(vidadaServer.getMediaService()), "/stream");
-			server.getServerConfiguration().getMonitoringConfig().getWebServerConfig().addProbes(new AuthProbe());
+        // Basic Http Authentication filter
+        FilterRegistration filter = webappContext.addFilter("Auth filter", new BasicHttpAuthFilter("admin", "1337"));
+        filter.addMappingForServletNames(EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD), true, SERVLET_JERSEY);
 
 
-			
-			// The following line is to enable GZIP when client accepts it
-			
-			CompressionConfig compressionConfig =
-					server.getListener("grizzly").getCompressionConfig();
-			compressionConfig.setCompressionMode(CompressionConfig.CompressionMode.ON); // the mode
-			compressionConfig.setCompressionMinSize(1); // the min amount of bytes to compress
-			compressionConfig.setCompressableMimeTypes((Set<String>)null); // the mime types to compress
+        // Create the Web server
 
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} finally {
+        HttpServer server = HttpServer.createSimpleServer("http://0.0.0.0/", 5555);
 
-		}
+        webappContext.deploy(server);
+        //server.getServerConfiguration().addHttpHandler(new StaticHttpHandler("/var/www/webpage/"), "/xyz");
+        server.getServerConfiguration().addHttpHandler(new MediaStreamHttpHandler(vidadaServer.getMediaService()), "/stream");
 
-		return server;
-	}
+        try {
+            server.start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-	public static void main(String[] args) {
-		System.out.println("Server: Starting...");
-		//VidadaRestServer server = new VidadaRestServer();
-		//server.start();
-	}
+        return server;
+    }
+
 }

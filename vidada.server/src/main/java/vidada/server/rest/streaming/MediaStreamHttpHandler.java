@@ -42,7 +42,7 @@ public class MediaStreamHttpHandler extends SeekableHttpHandler {
 
 	@Override
 	protected boolean isStreamCompressionEnabled() {
-		return true;
+		return false;
 	}
 
 }
