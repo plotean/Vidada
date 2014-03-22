@@ -35,7 +35,7 @@ public class VidadaToolBar extends ToolBar{
 
                     LibraryManagerVM vm  = (LibraryManagerVM)libManager.getUserData();
 
-                    if(vm.hasChanges()) {
+                    if(vm != null && vm.hasChanges()) {
                         Action response = Dialogs.create()
                                 .title("Vidada - Libraries have changed")
                                 .masthead("Do you want to synchronize your media library?")
