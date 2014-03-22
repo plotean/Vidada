@@ -317,7 +317,6 @@ public class MediaImportStrategy implements IMediaImportStrategy {
 	/**
 	 * Update the media sources of the given media library
 	 * (That means that current paths will be updated)
-	 * @param em
 	 * @param library
 	 * @param existingMeida
 	 * @param currentPath
@@ -337,8 +336,6 @@ public class MediaImportStrategy implements IMediaImportStrategy {
 				hasChanges = true;
 			}else if(source.getParentLibrary().equals(library))
 			{
-				System.out.println("checking sources.. ");
-
 				// we only care about the current library-
 				source.setIsAvailableDirty();
 
