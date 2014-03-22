@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.*?>
+
+<?import org.controlsfx.control.SegmentedButton?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="vidada.viewsFX.libraries.LibraryManagerVM">
+
+    <padding>
+        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+    </padding>
+
+    <left>
+        <VBox>
+            <padding>
+                <Insets bottom="20.0" left="5.0" right="5.0" top="20.0"/>
+            </padding>
+
+            <SegmentedButton>
+                <buttons>
+                    <ToggleButton text="+" onAction="#addNewLibrary"/>
+                    <ToggleButton text="-" onAction="#removeSelectedLibrary"/>
+                </buttons>
+            </SegmentedButton>
+            <ListView prefHeight="250" fx:id="libraryView" items="${controller.libraries}" />
+        </VBox>
+    </left>
+
+</BorderPane>
+
