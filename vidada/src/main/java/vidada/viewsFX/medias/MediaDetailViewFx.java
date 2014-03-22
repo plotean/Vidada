@@ -17,6 +17,7 @@ public class MediaDetailViewFx extends BorderPane {
 
 	private final TextField txtname;
 	private final Label lblResolution;
+    private final Label lblDate;
 	private final Rating rating;
 
 
@@ -28,6 +29,7 @@ public class MediaDetailViewFx extends BorderPane {
 		mediaDetailTagPane = new MediaDetailTagPane();
 
 		//gridpane.setPadding(new Insets(10));
+        gridpane.setHgap(10);
 
 		Label name = new Label("Name:");
 		GridPane.setConstraints(name, 1, 1);
@@ -51,9 +53,13 @@ public class MediaDetailViewFx extends BorderPane {
 
 		// Second Row:
 
-		lblResolution = new Label("Resolution");
+		lblResolution = new Label("Resolution:");
 		GridPane.setConstraints(lblResolution, 1, 2);
 		gridpane.getChildren().add(lblResolution);
+
+        lblDate = new Label("Date:");
+        GridPane.setConstraints(lblDate, 2, 2);
+        gridpane.getChildren().add(lblDate);
 
 
 		this.setCenter(gridpane);
@@ -89,7 +95,8 @@ public class MediaDetailViewFx extends BorderPane {
 		if(mediaVM != null){
 			this.setDisable(false);
 			txtname.setText(mediaVM.getFilename());
-			lblResolution.setText(mediaVM.getResolution());
+			lblResolution.setText("Resolution: " + mediaVM.getResolution());
+            lblDate.setText("Date: " + mediaVM.getAddedDate());
 			rating.setRating(mediaVM.getRating());
 		}else{
 			this.setDisable(true);

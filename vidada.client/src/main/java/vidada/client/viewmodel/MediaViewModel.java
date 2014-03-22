@@ -1,6 +1,7 @@
 package vidada.client.viewmodel;
 
 import java.lang.ref.WeakReference;
+import java.util.Locale;
 
 import org.joda.time.format.DateTimeFormat;
 
@@ -10,6 +11,7 @@ import vidada.client.model.browser.BrowserMediaItem;
 import vidada.client.model.browser.IBrowserItem;
 import vidada.client.services.IMediaClientService;
 import vidada.client.viewmodel.browser.BrowserItemVM;
+import vidada.client.viewmodel.media.IMediaViewModel;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaType;
 import vidada.model.media.MovieMediaItem;
@@ -29,7 +31,7 @@ import archimedesJ.io.locations.ResourceLocation;
  * @author IsNull
  *
  */
-public class MediaViewModel extends BrowserItemVM {
+public class MediaViewModel extends BrowserItemVM  {
 
 	private final ISystemService systemService = ServiceProvider.Resolve(ISystemService.class);
 	private final IMediaPresenterService mediaPresenter = ServiceProvider.Resolve(IMediaPresenterService.class);
@@ -101,7 +103,10 @@ public class MediaViewModel extends BrowserItemVM {
 
 	public String getAddedDate() {
 		if(mediaData != null)
-			return mediaData.getAddedDate().toString(DateTimeFormat.shortDateTime());
+			return mediaData.getAddedDate().toString(
+                    DateTimeFormat
+                            .shortDate()
+                            .withLocale(Locale.GERMANY)); // TODO Localize
 		return "";
 	}
 
@@ -120,7 +125,7 @@ public class MediaViewModel extends BrowserItemVM {
 
 	public static String getResolutionString(MediaItem media){
 		Size res = media.getResolution();
-		return res != null ? res.width + "x" + res.height : "unknown"; 
+		return (res != null && !res.isEmpty()) ? res.width + "x" + res.height : "unknown";
 	}
 
 
