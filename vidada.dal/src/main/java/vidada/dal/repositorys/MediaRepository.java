@@ -148,8 +148,9 @@ public class MediaRepository extends JPARepository implements IMediaRepository{
 	}
 
 	@Override
-	public void delete(MediaItem mediadata) {
-		getEntityManager().remove(mediadata);
+	public void delete(MediaItem media) {
+		MediaItem managedMedia = getEntityManager().find(MediaItem.class, media.getFilehash());
+		getEntityManager().remove(managedMedia);
 	}
 
 	@Override
