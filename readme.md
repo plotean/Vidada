@@ -8,7 +8,7 @@ Also, Vidada does not dictate you any folder structure. Instead, the file conten
 Vidada also supports a feature called DirectPlay - if you select a video clip in the Thumb viewer, it will start playing. Move your mouse over the movie, and it will automatically seek to the relative position. Preview a video was never easier.
 
 
-Source Code is freely avaiable at http://github.com/IsNull/Vidada under the MIT license.
+Source Code is freely available at http://github.com/IsNull/Vidada under the MIT license.
 
 Copyright P.Buettiker  2012-2014
 
