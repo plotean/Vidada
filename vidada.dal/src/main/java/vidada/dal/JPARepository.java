@@ -1,11 +1,11 @@
 package vidada.dal;
 
-import java.util.List;
+import archimedesJ.aop.IUnitOfWorkService;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
+import java.util.List;
 
-import vidada.aop.IUnitOfWorkService;
 
 public abstract class JPARepository {
 

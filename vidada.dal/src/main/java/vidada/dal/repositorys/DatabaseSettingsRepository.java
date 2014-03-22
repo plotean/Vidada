@@ -1,12 +1,12 @@
 package vidada.dal.repositorys;
 
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
-
-import vidada.aop.IUnitOfWorkService;
+import archimedesJ.aop.IUnitOfWorkService;
 import vidada.dal.JPARepository;
 import vidada.server.dal.repositories.IDatabaseSettingsRepository;
 import vidada.server.settings.DatabaseSettings;
+
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 
 public class DatabaseSettingsRepository extends JPARepository implements IDatabaseSettingsRepository {
 

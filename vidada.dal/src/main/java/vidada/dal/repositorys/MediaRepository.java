@@ -1,14 +1,8 @@
 package vidada.dal.repositorys;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-import javax.persistence.TypedQuery;
-
-import vidada.aop.IUnitOfWorkService;
+import archimedesJ.aop.IUnitOfWorkService;
+import archimedesJ.exceptions.NotImplementedException;
+import archimedesJ.io.locations.ResourceLocation;
 import vidada.dal.JPARepository;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaLibrary;
@@ -18,8 +12,13 @@ import vidada.model.pagination.ListPage;
 import vidada.model.tags.Tag;
 import vidada.server.dal.repositories.IMediaRepository;
 import vidada.server.queries.MediaExpressionQuery;
-import archimedesJ.exceptions.NotImplementedException;
-import archimedesJ.io.locations.ResourceLocation;
+
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
+import javax.persistence.TypedQuery;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class MediaRepository extends JPARepository implements IMediaRepository{
 

@@ -1,14 +1,13 @@
 package vidada.dal.repositorys;
 
-import java.util.List;
-
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
-
-import vidada.aop.IUnitOfWorkService;
+import archimedesJ.aop.IUnitOfWorkService;
 import vidada.dal.JPARepository;
 import vidada.model.security.StoredCredentials;
 import vidada.server.dal.repositories.ICredentialRepository;
+
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
+import java.util.List;
 
 public class CredentialRepository extends JPARepository implements ICredentialRepository {
 

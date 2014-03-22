@@ -1,15 +1,14 @@
 package vidada.dal.repositorys;
 
-import java.util.Collection;
-import java.util.List;
-
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
-
-import vidada.aop.IUnitOfWorkService;
+import archimedesJ.aop.IUnitOfWorkService;
 import vidada.dal.JPARepository;
 import vidada.model.tags.Tag;
 import vidada.server.dal.repositories.ITagRepository;
+
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
+import java.util.Collection;
+import java.util.List;
 
 public class TagRepository extends JPARepository implements ITagRepository {
 

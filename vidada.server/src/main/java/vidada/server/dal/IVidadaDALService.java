@@ -1,6 +1,6 @@
 package vidada.server.dal;
 
-import vidada.aop.IUnitOfWorkRunner;
+import archimedesJ.aop.IUnitOfWorkRunner;
 import vidada.server.dal.repositories.IRepository;
 
 /**

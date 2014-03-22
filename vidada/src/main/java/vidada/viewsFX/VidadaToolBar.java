@@ -27,9 +27,7 @@ public class VidadaToolBar extends ToolBar{
         getItems().add(
                 createToolBarButton(IconType.FOLDER_ICON_32, () -> {
 
-
                     Node libManager = FXMLLoaderX.load("libraries/LibraryManagerView.fxml");
-
 
                     SimpleDialog libraryDialog = new SimpleDialog(null, "Vidada Library Manager", libManager);
                     libraryDialog.setMasthead("Here you can add or remove media libraries.");

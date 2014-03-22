@@ -1,25 +1,15 @@
 package vidada.dal;
 
+import archimedesJ.aop.IUnitOfWorkRunner;
+import archimedesJ.aop.IUnitOfWorkService;
+import archimedesJ.aop.UnitOfWorkService;
+import vidada.dal.repositorys.*;
+import vidada.server.dal.IVidadaDALService;
+import vidada.server.dal.repositories.*;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.FlushModeType;
-
-import vidada.aop.IUnitOfWorkRunner;
-import vidada.aop.IUnitOfWorkService;
-import vidada.aop.UnitOfWorkService;
-import vidada.aop.UnitOfWorkService.IUnitOfWorkIntercepter;
-import vidada.dal.repositorys.CredentialRepository;
-import vidada.dal.repositorys.DatabaseSettingsRepository;
-import vidada.dal.repositorys.MediaLibraryRepository;
-import vidada.dal.repositorys.MediaRepository;
-import vidada.dal.repositorys.TagRepository;
-import vidada.server.dal.IVidadaDALService;
-import vidada.server.dal.repositories.ICredentialRepository;
-import vidada.server.dal.repositories.IDatabaseSettingsRepository;
-import vidada.server.dal.repositories.IMediaLibraryRepository;
-import vidada.server.dal.repositories.IMediaRepository;
-import vidada.server.dal.repositories.IRepository;
-import vidada.server.dal.repositories.ITagRepository;
 
 /**
  * Implementation of the Vidada DAL service for JPA 
@@ -35,7 +25,7 @@ class VidadaDALServiceJPA implements IVidadaDALService {
 
 		registerRepos();
 
-		unitOfWorkService.setIntercepter(new IUnitOfWorkIntercepter<EntityManager>() {
+		unitOfWorkService.setIntercepter(new UnitOfWorkService.IUnitOfWorkIntercepter<EntityManager>() {
 			@Override
 			public EntityManager initUnitOfWork() {
 				EntityManager em;
