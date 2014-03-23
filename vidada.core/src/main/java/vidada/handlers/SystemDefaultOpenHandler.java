@@ -17,11 +17,16 @@ import archimedesJ.io.locations.ResourceLocation;
 public class SystemDefaultOpenHandler implements IMediaHandler {
 
 	private final ISystemService systemService = ServiceProvider.Resolve(ISystemService.class);
-
+    private final String name = "System Default";
 
 	@Override
 	public boolean handle(MediaItem media, ResourceLocation mediaResource) {
 		systemService.open(mediaResource);
 		return true;
 	}
+
+    @Override
+    public String getName() {
+        return name;
+    }
 }

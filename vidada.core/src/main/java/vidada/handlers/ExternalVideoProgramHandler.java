@@ -20,11 +20,12 @@ public class ExternalVideoProgramHandler extends ExternalMediaProgramHandler {
 	 * C:\vlc.exe $media
 	 * 
 	 * /applications/vlc $media
-	 * 
+	 *
+     * @param name Name of this media handler
 	 * @param command 
 	 */
-	public ExternalVideoProgramHandler(String command) {
-		super(command);
+	public ExternalVideoProgramHandler(String name, String command) {
+		super(name, command);
 	}
 
 	@Override

@@ -26,12 +26,12 @@ public interface IMediaPresenterService extends IService{
 
 
 	/**
-	 * Adds the given handler as specailisation to the current successor.
+	 * Adds the given handler as specialisation to the current successor.
 	 * Note that the order in which you register handlers is important.
 	 * 
 	 * Usually, you will register generic handlers first followed by specialized ones.
 	 * 
-	 * @param media
+	 * @param handler
 	 */
 	void chainMediaHandler(IMediaHandler handler);
 

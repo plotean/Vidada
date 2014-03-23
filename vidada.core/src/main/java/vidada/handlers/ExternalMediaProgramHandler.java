@@ -13,14 +13,15 @@ import archimedesJ.io.locations.ResourceLocation;
 public abstract class ExternalMediaProgramHandler implements IMediaHandler {
 
 	private final CommandTemplate template;
-
+    private final  String name;
 	/**
 	 * Runs a dynamic command in the shell. 
 	 * 
 	 * 
 	 * @param command 
 	 */
-	public ExternalMediaProgramHandler(String command){
+	public ExternalMediaProgramHandler(String name, String command){
+        this.name = name;
 		this.template = new CommandTemplate(ShellExec.parseCommand(command, true));
 	}
 
@@ -34,6 +35,12 @@ public abstract class ExternalMediaProgramHandler implements IMediaHandler {
 		}
 		return process != null;
 	}
+
+    @Override
+    public String getName(){
+        return name;
+    }
+
 
 	/**
 	 * Is this media supported by this external program?
