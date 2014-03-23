@@ -68,15 +68,17 @@ public class ThumbnailResource extends AbstractResource {
 
 		try {
 			final IMemoryImage image = thumbnailService.getThumbImage(media, thumbSize);
-
-			StreamingOutput imageStream = new StreamingOutput() {
-				@Override
-				public void write(OutputStream output) throws IOException, WebApplicationException 
-				{
-					image.writePNG(output);
-				}
-			};
-			return Response.ok(imageStream).build();
+            if(image != null) {
+                StreamingOutput imageStream = new StreamingOutput() {
+                    @Override
+                    public void write(OutputStream output) throws IOException, WebApplicationException {
+                        image.writePNG(output);
+                    }
+                };
+                return Response.ok(imageStream).build();
+            }else{
+                return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+            }
 		} catch (Exception e) {
 			e.printStackTrace();
 			return Response.status(Status.NOT_FOUND).build();
