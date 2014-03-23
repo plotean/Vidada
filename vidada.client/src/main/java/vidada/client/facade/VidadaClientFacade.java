@@ -15,7 +15,7 @@ import vidada.client.services.IThumbnailClientService;
 public class VidadaClientFacade implements IVidadaClientFacade{
 
 	private final IVidadaClient vidadaClient;
-	private final IThumbConatinerService thumbContainerService;
+	private final IThumbContainerService thumbContainerService;
 
 	/**
 	 * Creates a new VidadaClientFacade
@@ -47,7 +47,7 @@ public class VidadaClientFacade implements IVidadaClientFacade{
 
 	/**{@inheritDoc}*/
 	@Override
-	public IThumbConatinerService getThumbConatinerService(){
+	public IThumbContainerService getThumbConatinerService(){
 		return thumbContainerService;
 	}
 

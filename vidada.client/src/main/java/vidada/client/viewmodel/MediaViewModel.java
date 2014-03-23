@@ -7,7 +7,7 @@ import archimedesJ.images.LoadPriority;
 import archimedesJ.io.locations.ResourceLocation;
 import org.joda.time.format.DateTimeFormat;
 import vidada.client.IVidadaClientManager;
-import vidada.client.facade.IThumbConatinerService;
+import vidada.client.facade.IThumbContainerService;
 import vidada.client.model.browser.BrowserMediaItem;
 import vidada.client.model.browser.IBrowserItem;
 import vidada.client.services.IMediaClientService;
@@ -35,7 +35,7 @@ public class MediaViewModel extends BrowserItemVM  {
 	private final IMediaPresenterService mediaPresenter = ServiceProvider.Resolve(IMediaPresenterService.class);
 
 	private final IVidadaClientManager clientManager = ServiceProvider.Resolve(IVidadaClientManager.class);
-	private final IThumbConatinerService thumbService = clientManager.getActive().getThumbConatinerService();
+	private final IThumbContainerService thumbService = clientManager.getActive().getThumbConatinerService();
 	private final IMediaClientService mediaClientService = clientManager.getActive().getMediaClientService();
 
 	private WeakReference<ImageContainer> imageContainerRef;
@@ -104,7 +104,8 @@ public class MediaViewModel extends BrowserItemVM  {
 			return mediaData.getAddedDate().toString(
                     DateTimeFormat
                             .longDate()
-                            .withLocale(Locale.GERMANY)); // TODO Localize
+                            .withLocale(Locale.GERMANY)
+            ); // TODO Localize
 		return "";
 	}
 

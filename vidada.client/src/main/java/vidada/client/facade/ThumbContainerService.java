@@ -29,7 +29,7 @@ import archimedesJ.images.ImageContainerBase;
  * @author IsNull
  *
  */
-public class ThumbContainerService implements IThumbConatinerService {
+public class ThumbContainerService implements IThumbContainerService {
 
 	/**
 	 * Defines how many thumbnails can be fetched at the same time.

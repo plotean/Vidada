@@ -4,7 +4,7 @@ import vidada.model.media.MediaItem;
 import archimedesJ.geometry.Size;
 import archimedesJ.images.ImageContainer;
 
-public interface IThumbConatinerService {
+public interface IThumbContainerService {
 
 	/**
 	 * Retrieves a {@link ImageContainer} which links to the desired thumbnail.

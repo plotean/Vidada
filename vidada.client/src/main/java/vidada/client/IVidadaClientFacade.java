@@ -1,6 +1,6 @@
 package vidada.client;
 
-import vidada.client.facade.IThumbConatinerService;
+import vidada.client.facade.IThumbContainerService;
 
 /**
  * The Vidada client facade aims to make usage of Vidada Client as easy as possible.
@@ -12,8 +12,8 @@ import vidada.client.facade.IThumbConatinerService;
 public interface IVidadaClientFacade extends IVidadaClient {
 
 	/**
-	 * Gets the IThumbConatinerService which provides an easy way to retrieve thumbs
+	 * Gets the IThumbContainerService which provides an easy way to retrieve thumbs
 	 * @return
 	 */
-	public abstract IThumbConatinerService getThumbConatinerService();
+	public abstract IThumbContainerService getThumbConatinerService();
 }
