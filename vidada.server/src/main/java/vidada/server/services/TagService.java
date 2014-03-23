@@ -1,20 +1,15 @@
 package vidada.server.services;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.Callable;
-
+import archimedesJ.util.Lists;
 import vidada.model.tags.Tag;
 import vidada.model.tags.TagFactory;
 import vidada.model.tags.relations.TagRelationDefinition;
 import vidada.model.tags.relations.TagRelationIndex;
 import vidada.server.VidadaServer;
 import vidada.server.dal.repositories.ITagRepository;
-import archimedesJ.util.Lists;
+
+import java.util.*;
+import java.util.concurrent.Callable;
 
 /**
  * Implements a {@link ITagService}
@@ -75,7 +70,17 @@ public class TagService extends VidadaServerService implements ITagService {
 		});
 	}
 
-	/**{@inheritDoc}*/
+    @Override
+    public Collection<Tag> getAllTags() {
+        return runUnitOfWork(new Callable<Collection<Tag>>() {
+            @Override
+            public Collection<Tag> call() throws Exception {
+                return repository.getAllTags();
+            }
+        });
+    }
+
+    /**{@inheritDoc}*/
 	@Override
 	public Tag getTag(String tagName) {
 		tagName = Tag.toTagString(tagName);

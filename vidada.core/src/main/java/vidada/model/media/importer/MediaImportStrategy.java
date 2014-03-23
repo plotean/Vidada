@@ -57,7 +57,7 @@ public class MediaImportStrategy implements IMediaImportStrategy {
 
 		mediaHashUtil =  MediaHashUtil.getDefaultMediaHashUtil();
 
-		tagguesser = new KeywordBasedTagGuesser(tagService.getUsedTags()); 
+		tagguesser = new KeywordBasedTagGuesser(tagService.getAllTags());
 
 		List<MediaLibrary> libraries = libraryManager.getAllLibraries();
 
