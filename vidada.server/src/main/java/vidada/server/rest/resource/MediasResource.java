@@ -70,7 +70,7 @@ public class MediasResource extends AbstractResource {
 
 
 	/**
-	 * Retuns the number of medias
+	 * Returns the number of medias
 	 * Use vidada/api/medias/count
 	 * to get the total number of medias
 	 * @return
