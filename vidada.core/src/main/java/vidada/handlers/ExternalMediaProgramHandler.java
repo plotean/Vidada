@@ -10,10 +10,9 @@ import archimedesJ.io.locations.ResourceLocation;
  * @author IsNull
  *
  */
-public abstract class ExternalMediaProgramHandler implements IMediaHandler {
+public abstract class ExternalMediaProgramHandler extends AbstractMediaHandler {
 
 	private final CommandTemplate template;
-    private final  String name;
 	/**
 	 * Runs a dynamic command in the shell. 
 	 * 
@@ -21,7 +20,7 @@ public abstract class ExternalMediaProgramHandler implements IMediaHandler {
 	 * @param command 
 	 */
 	public ExternalMediaProgramHandler(String name, String command){
-        this.name = name;
+        super(name);
 		this.template = new CommandTemplate(ShellExec.parseCommand(command, true));
 	}
 
@@ -35,12 +34,6 @@ public abstract class ExternalMediaProgramHandler implements IMediaHandler {
 		}
 		return process != null;
 	}
-
-    @Override
-    public String getName(){
-        return name;
-    }
-
 
 	/**
 	 * Is this media supported by this external program?

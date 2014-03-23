@@ -1,9 +1,11 @@
 package vidada.services;
 
-import vidada.handlers.IMediaHandler;
-import vidada.model.media.MediaItem;
 import archimedesJ.io.locations.ResourceLocation;
 import archimedesJ.services.IService;
+import vidada.handlers.IMediaHandler;
+import vidada.model.media.MediaItem;
+
+import java.util.List;
 
 /**
  * This service is responsible to present (open/play) a {@link MediaItem} to the user.
@@ -34,5 +36,12 @@ public interface IMediaPresenterService extends IService{
 	 * @param handler
 	 */
 	void chainMediaHandler(IMediaHandler handler);
+
+
+    /**
+     * Returns all registered media handlers
+     * @return
+     */
+    List<IMediaHandler> getAllMediaHandlers();
 
 }

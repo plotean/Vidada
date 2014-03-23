@@ -12,6 +12,7 @@ import vidada.client.model.browser.BrowserMediaItem;
 import vidada.client.model.browser.IBrowserItem;
 import vidada.client.services.IMediaClientService;
 import vidada.client.viewmodel.browser.BrowserItemVM;
+import vidada.handlers.IMediaHandler;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaType;
 import vidada.model.media.MovieMediaItem;
@@ -20,6 +21,8 @@ import vidada.services.IMediaPresenterService;
 import vidada.services.ServiceProvider;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -126,6 +129,38 @@ public class MediaViewModel extends BrowserItemVM  {
 		Size res = media.getResolution();
 		return (res != null && !res.isEmpty()) ? res.width + "x" + res.height : "unknown";
 	}
+
+
+    public List<Runnable> getActions(){
+        List<Runnable> actions = new ArrayList<Runnable>();
+        for(IMediaHandler handler : mediaPresenter.getAllMediaHandlers()){
+            actions.add(new SimpleAction(this, handler));
+        }
+        return actions;
+    }
+
+    private static class SimpleAction implements Runnable{
+
+        private final MediaViewModel vm;
+        private final IMediaHandler handler;
+
+        public SimpleAction(MediaViewModel vm, IMediaHandler handler){
+            this.vm = vm;
+            this.handler = handler;
+        }
+
+        @Override
+        public void run() {
+            ResourceLocation resourceLocation = vm.getMediaResource();
+            if(resourceLocation != null)
+                handler.handle(vm.mediaData, resourceLocation);
+        }
+
+        @Override
+        public String toString(){
+            return "Open with " + handler.getName();
+        }
+    }
 
 
 	@Override

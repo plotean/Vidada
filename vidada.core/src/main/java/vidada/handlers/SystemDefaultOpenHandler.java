@@ -14,19 +14,15 @@ import archimedesJ.io.locations.ResourceLocation;
  * @author IsNull
  *
  */
-public class SystemDefaultOpenHandler implements IMediaHandler {
+public class SystemDefaultOpenHandler extends AbstractMediaHandler {
 
 	private final ISystemService systemService = ServiceProvider.Resolve(ISystemService.class);
-    private final String name = "System Default";
+
+    public SystemDefaultOpenHandler(){super("System Default");}
 
 	@Override
 	public boolean handle(MediaItem media, ResourceLocation mediaResource) {
 		systemService.open(mediaResource);
 		return true;
 	}
-
-    @Override
-    public String getName() {
-        return name;
-    }
 }
