@@ -40,19 +40,18 @@ public class MediasResource extends AbstractResource {
 	@GET
 	@Produces({MediaType.APPLICATION_JSON})
 	public String getMedias(
-			@QueryParam("page") int page,
-			@QueryParam("pageSize") int pageSize,
+			@QueryParam("page") @DefaultValue("0") int page,
+			@QueryParam("pageSize") @DefaultValue("6") int pageSize,
 			@QueryParam("query") String queryStr,
-			@QueryParam("tags") String alltags,
+			@QueryParam("tags") String requiredTags,
 			@QueryParam("type") vidada.model.media.MediaType type,
-			@QueryParam("orderby") OrderProperty order) {
-
-		pageSize = pageSize == 0 ? 6 : pageSize;
+			@QueryParam("orderBy") OrderProperty order,
+            @QueryParam("reverse") @DefaultValue("0") boolean reverse) {
 
 		MediaQuery query = new MediaQuery();
 		query.setKeywords(queryStr);
 
-		String[] tags = parseMultiValueParam(alltags);
+		String[] tags = parseMultiValueParam(requiredTags);
 		if(tags != null && tags.length > 0){
 			for (String tagStr : tags) {
 				Tag tag = tagService.getTag(tagStr);
@@ -60,12 +59,11 @@ public class MediasResource extends AbstractResource {
 			}
 		}
 
-		System.out.println("tags as objects:" + query.getRequiredTags());
-
 		query.setSelectedtype((type != null) ? type : vidada.model.media.MediaType.ANY);
 		query.setOrder((order != null) ? order : OrderProperty.FILENAME);
+        query.setReverseOrder(reverse);
 
-		System.out.println("delivering medias page: " + page + " pageSize: " + pageSize);
+		System.out.println("Delivering medias page: " + page + " pageSize: " + pageSize);
 
 		return serializeJson(mediaService.query(query, page, pageSize)); 
 	}

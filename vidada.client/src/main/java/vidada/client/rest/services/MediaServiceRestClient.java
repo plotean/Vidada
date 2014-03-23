@@ -1,24 +1,22 @@
 package vidada.client.rest.services;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
+import archimedesJ.io.locations.ResourceLocation;
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import vidada.client.services.IMediaClientService;
+import vidada.model.media.MediaItem;
+import vidada.model.media.MediaQuery;
+import vidada.model.pagination.ListPage;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
-
-import vidada.client.services.IMediaClientService;
-import vidada.model.media.MediaItem;
-import vidada.model.media.MediaQuery;
-import vidada.model.pagination.ListPage;
-import archimedesJ.io.locations.ResourceLocation;
-
-import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 
 public class MediaServiceRestClient extends AbstractRestService implements IMediaClientService {
@@ -49,7 +47,8 @@ public class MediaServiceRestClient extends AbstractRestService implements IMedi
 		WebTarget resource = mediasResource()
 				.queryParam("page", pageIndex+"")
 				.queryParam("pageSize", maxPageSize+"")
-				.queryParam("orderby", qry.getOrder().name());
+				.queryParam("orderBy", qry.getOrder().name())
+                .queryParam("reverse", qry.isReverseOrder());
 
 		if(qry.getKeywords() != null && !qry.getKeywords().isEmpty()){
 			resource = resource.queryParam("query", qry.getKeywords());
@@ -78,10 +77,13 @@ public class MediaServiceRestClient extends AbstractRestService implements IMedi
 	@Override
 	public ResourceLocation openResource(MediaItem media) {
 		ResourceLocation mediaResource = null;
+
 		// Request that a media stream server is started for this media
 
-		String mediaStreamUri =  apiResource().path("stream").path(media.getFilehash())
-				.queryParam("mode", "link").request(MediaType.TEXT_PLAIN_TYPE).get(String.class);
+		String mediaStreamUri =  apiResource()
+                .path("stream").path(media.getFilehash())
+				.queryParam("redirect", false)
+                .request(MediaType.TEXT_PLAIN_TYPE).get(String.class);
 
 		try {
 			mediaResource = ResourceLocation.Factory.create(mediaStreamUri);
