@@ -1,28 +1,26 @@
 package vidada.client.viewmodel;
 
-import java.lang.ref.WeakReference;
-import java.util.Locale;
-
+import archimedesJ.exceptions.NotSupportedException;
+import archimedesJ.geometry.Size;
+import archimedesJ.images.ImageContainer;
+import archimedesJ.images.LoadPriority;
+import archimedesJ.io.locations.ResourceLocation;
 import org.joda.time.format.DateTimeFormat;
-
 import vidada.client.IVidadaClientManager;
 import vidada.client.facade.IThumbConatinerService;
 import vidada.client.model.browser.BrowserMediaItem;
 import vidada.client.model.browser.IBrowserItem;
 import vidada.client.services.IMediaClientService;
 import vidada.client.viewmodel.browser.BrowserItemVM;
-import vidada.client.viewmodel.media.IMediaViewModel;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaType;
 import vidada.model.media.MovieMediaItem;
 import vidada.model.system.ISystemService;
 import vidada.services.IMediaPresenterService;
 import vidada.services.ServiceProvider;
-import archimedesJ.exceptions.NotSupportedException;
-import archimedesJ.geometry.Size;
-import archimedesJ.images.ImageContainer;
-import archimedesJ.images.LoadPriority;
-import archimedesJ.io.locations.ResourceLocation;
+
+import java.lang.ref.WeakReference;
+import java.util.Locale;
 
 /**
  * A simple view-model for a media item.
@@ -105,7 +103,7 @@ public class MediaViewModel extends BrowserItemVM  {
 		if(mediaData != null)
 			return mediaData.getAddedDate().toString(
                     DateTimeFormat
-                            .shortDate()
+                            .longDate()
                             .withLocale(Locale.GERMANY)); // TODO Localize
 		return "";
 	}
