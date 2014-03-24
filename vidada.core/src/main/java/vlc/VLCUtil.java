@@ -1,12 +1,12 @@
 package vlc;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
 import archimedesJ.util.Lists;
 import archimedesJ.util.OSValidator;
 import archimedesJ.util.RegistryUtil;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * VLCUtil - Thread safe
@@ -39,8 +39,7 @@ public class VLCUtil {
 			}
 		}else if(OSValidator.isOSX()){
 			return "/Applications/VLC.app/Contents/MacOS/VLC";
-		}else{
-			// Linux / UNIX
+        }else if(OSValidator.isLinux() || OSValidator.isUnix()){
 			return "/usr/bin/vlc";
 		}
 		return null;

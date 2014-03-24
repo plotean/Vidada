@@ -85,14 +85,17 @@ public class VidadaClientSettings extends JsonSettings {
 	}
 
     private VidadaClientSettings(){
-        // empty serialisation constructor
+        // Empty serialisation constructor
     }
 
     private void loadDefaults(){
         // Set defaults
         vidadaInstances.add(VidadaInstance.LOCAL);
         vidadaInstances.add(new VidadaInstance("REST Localhost", "http://localhost:5555/api"));
-        externalMediaPlayers.add(new MediaPlayerCommand("VLC", "\"" + VLCUtil.getVLCBinaryPath() + "\" $media"));
+
+        String vlcBin = VLCUtil.getVLCBinaryPath();
+        if(vlcBin != null)
+            externalMediaPlayers.add(new MediaPlayerCommand("VLC", "\"" + vlcBin + "\" $media"));
     }
 
 

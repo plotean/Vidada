@@ -66,7 +66,7 @@ public abstract class MediaItem extends BaseEntity {
 	private int rating = 0;
 	private MediaType type = MediaType.NONE;
 
-	@javax.persistence.Transient
+	@javax.persistence.Transient // Only used for JSON serialisation
 	protected String classinfo;
 
 	/***************************************************************************
