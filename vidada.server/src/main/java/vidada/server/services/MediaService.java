@@ -1,27 +1,19 @@
 package vidada.server.services;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.Callable;
-
-import vidada.model.media.MediaHashUtil;
-import vidada.model.media.MediaItem;
-import vidada.model.media.MediaItemFactory;
-import vidada.model.media.MediaLibrary;
-import vidada.model.media.MediaQuery;
+import archimedesJ.exceptions.NotSupportedException;
+import archimedesJ.io.locations.ResourceLocation;
+import vidada.model.media.*;
 import vidada.model.pagination.ListPage;
-import vidada.model.queries.Expression;
-import vidada.model.queries.Expressions;
-import vidada.model.queries.ListExpression;
-import vidada.model.queries.LiteralValueExpression;
-import vidada.model.queries.VariableReferenceExpression;
+import vidada.model.queries.*;
 import vidada.model.tags.Tag;
 import vidada.server.VidadaServer;
 import vidada.server.dal.repositories.IMediaRepository;
 import vidada.server.queries.MediaExpressionQuery;
-import archimedesJ.exceptions.NotSupportedException;
-import archimedesJ.io.locations.ResourceLocation;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.Callable;
 
 public class MediaService extends VidadaServerService implements IMediaService {
 
@@ -114,14 +106,18 @@ public class MediaService extends VidadaServerService implements IMediaService {
 		ListExpression<Tag> tagConjunction = ListExpression.createConjunction();
 
 		for (Tag t : conjunction) {
-			ListExpression<Tag> tagDisjunction =  ListExpression.createDisjunction();
-			Set<Tag> relatedTags = tagService.getAllRelatedTags(t);
+
+            ListExpression<Tag> tagDisjunction =  ListExpression.createDisjunction();
+
+            Set<Tag> relatedTags = tagService.getAllRelatedTags(t);
 			for (LiteralValueExpression<String> relatedTag : Expressions.literalStrings(relatedTags)) {
-				tagDisjunction.add( not 
-						? Expressions.notMemberOf(relatedTag, mediaTags) 
-								: Expressions.memberOf(relatedTag, mediaTags));
+				tagDisjunction.add(Expressions.memberOf(relatedTag, mediaTags));
 			}
-			tagConjunction.add(tagDisjunction);
+            if(!not) {
+                tagConjunction.add(tagDisjunction);
+            }else{
+                tagConjunction.add(Expressions.not(tagDisjunction));
+            }
 		}
 
 		return tagConjunction;

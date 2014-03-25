@@ -1,9 +1,9 @@
 package vidada.model.queries;
 
+import archimedesJ.util.Lists;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import archimedesJ.util.Lists;
 
 
 public class Expressions {
@@ -42,7 +42,7 @@ public class Expressions {
 
 	/**
 	 * Creates an 'item MEMBER OF collection' expression
-	 * @param item
+	 * @param literal
 	 * @param collectionReference
 	 * @return
 	 */
@@ -52,12 +52,22 @@ public class Expressions {
 
 	/**
 	 * Creates an 'item NOT MEMBER OF collection' expression
-	 * @param item 
+	 * @param literal
 	 * @param collectionReference
 	 * @return
 	 */
 	public static <T> Expression<T> notMemberOf(LiteralValueExpression<?> literal, VariableReferenceExpression<T> collectionReference){
 		return new MemberOfExpression<T>(literal, collectionReference, true);
 	}
+
+    /**
+     * Negates an expression
+     * @param expression The expression to negate
+     * @param <T>
+     * @return
+     */
+    public static <T> Expression<T> not(Expression<T> expression){
+        return  new NotExpression<T>(expression);
+    }
 
 }

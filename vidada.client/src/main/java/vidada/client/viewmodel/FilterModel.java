@@ -1,13 +1,5 @@
 package vidada.client.viewmodel;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import vidada.client.services.IMediaClientService;
-import vidada.model.media.MediaLibrary;
-import vidada.model.media.MediaType;
-import vidada.model.media.OrderProperty;
-import vidada.model.tags.Tag;
 import archimedesJ.data.events.CollectionEventArg;
 import archimedesJ.data.observable.IObservableList;
 import archimedesJ.data.observable.ObservableArrayList;
@@ -15,8 +7,21 @@ import archimedesJ.events.EventArgs;
 import archimedesJ.events.EventHandlerEx;
 import archimedesJ.events.EventListenerEx;
 import archimedesJ.events.IEvent;
+import vidada.client.services.IMediaClientService;
+import vidada.model.media.MediaLibrary;
+import vidada.model.media.MediaType;
+import vidada.model.media.OrderProperty;
+import vidada.model.tags.Tag;
 
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Model for all query filter options.
+ */
 public class FilterModel {
+
+    private boolean autoFireEnabled = true;
 
 	// filter state
 
@@ -135,8 +140,38 @@ public class FilterModel {
 		onFilterChanged();
 	}
 
+    // Filter behaviour
+
+    public boolean isAutoFireEnabled() {
+        return autoFireEnabled;
+    }
+
+    /**
+     * Auto-fire will cause a change event (and implicitly a requery of the data)
+     * This can improve user experience at cost of higher bandwidth and processing costs.
+     *
+     * @param autoFireEnabled
+     */
+    public void setAutoFireEnabled(boolean autoFireEnabled) {
+        this.autoFireEnabled = autoFireEnabled;
+    }
+
+    /**
+     * Fires the filter changed event
+     */
+    public void fireFilterChanged(){
+        filterChangedEvent.fireEvent(this, EventArgs.Empty);
+    }
+
+
+    /**
+     * Occurs when the filter settings have been changed.
+     */
 	private void onFilterChanged(){
-		filterChangedEvent.fireEvent(this, EventArgs.Empty);
+		if(isAutoFireEnabled())
+            fireFilterChanged();
 	}
+
+
 
 }

@@ -86,7 +86,8 @@ public class FilterViewFx extends BorderPane {
 		cboMediaType.setPromptText("Define mediatype...");
 		cboMediaType.setItems(mediaTypes);
 
-		//AquaFx.createTextFieldStyler().setType(TextFieldType.SEARCH).style(searchText); //.createButtonStyler().setSizeVariant(ControlSizeVariant.REGULAR).style(buttonInstance);
+		//AquaFx.createTextFieldStyler().setType(TextFieldType.SEARCH).style(searchText);
+		// .createButtonStyler().setSizeVariant(ControlSizeVariant.REGULAR).style(buttonInstance);
 
 		// register change events
 		registerEventHandler();
@@ -100,45 +101,58 @@ public class FilterViewFx extends BorderPane {
         tagPane.setSuggestionProvider(tagSuggestionProvider);
     }
 
-	private void registerEventHandler(){
-		chkReverse.selectedProperty().addListener((observable, oldValue, newValue) -> {
+	private void registerEventHandler() {
+        chkReverse.selectedProperty().addListener((observable, oldValue, newValue) -> {
             filtermodel.setReverse(chkReverse.isSelected());
         });
 
-		cboOrder.valueProperty().addListener((observable, oldValue, newValue) -> {
+        cboOrder.valueProperty().addListener((observable, oldValue, newValue) -> {
             filtermodel.setOrder(cboOrder.getValue());
         });
 
-		searchText.textProperty().addListener((observable, oldValue, newValue) -> {
+        searchText.textProperty().addListener((observable, oldValue, newValue) -> {
             filtermodel.setQueryString(searchText.getText());
         });
 
-		cboMediaType.valueProperty().addListener((observable, oldValue, newValue) -> {
+        cboMediaType.valueProperty().addListener((observable, oldValue, newValue) -> {
             filtermodel.setMediaType(cboMediaType.getValue() != null ? cboMediaType.getValue() : MediaType.ANY);
         });
 
-		tagPane.getTags().addListener((ListChangeListener.Change<? extends TagViewModel> changeEvent) -> {
-            if(changeEvent.next()){
-                if(changeEvent.wasAdded()) {
-                    filtermodel.getRequiredTags().addAll(
-                            changeEvent.getAddedSubList().stream()
-                                    .map(x -> x.getModel())
-                                    .collect(Collectors.toList())
-                    );
-                }
-                if(changeEvent.wasRemoved()) {
-                    filtermodel.getRequiredTags().removeAll(
-                            changeEvent.getRemoved().stream()
-                                    .map(x -> x.getModel())
-                                    .collect(Collectors.toList())
-                    );
-                }
-            }
-        });
-	}
+        tagPane.getTags().addListener(
+                (ListChangeListener.Change<? extends TagViewModel> changeEvent) -> updateModelTags());
+    }
+
+    /**
+     * Updates the filtermodel tags according to the view state.
+     */
+    private void updateModelTags(){
+        filtermodel.setAutoFireEnabled(false); // prevent unnecessary change events being fired
+
+        // Update required tags
+        filtermodel.getRequiredTags().clear();
+        filtermodel.getRequiredTags().addAll(
+                tagPane.getTags().stream()
+                        .filter(x -> !x.getState().equals(TagState.Blocked))
+                        .map(x -> x.getModel())
+                        .collect(Collectors.toList()));
+
+        // Update blocked tags
+        filtermodel.getBlockedTags().clear();
+        filtermodel.getBlockedTags().addAll(
+                tagPane.getTags().stream()
+                        .filter(x -> x.getState().equals(TagState.Blocked))
+                        .map(x -> x.getModel())
+                        .collect(Collectors.toList()));
+
+
+        filtermodel.setAutoFireEnabled(true); // Re-Enable auto-fire and fire the change event
+        filtermodel.fireFilterChanged();
+    }
 
     private TagViewModel createVM(Tag tag){
-        return new TagViewModel(tag, TagState.Allowed, TagState.Blocked);
+        TagViewModel vm = new TagViewModel(tag, TagState.Allowed, TagState.Blocked);
+        vm.getTagStateChangedEvent().add((s,e) -> updateModelTags());
+        return vm;
     }
 
 }
