@@ -10,17 +10,17 @@ import archimedesJ.io.locations.ResourceLocation;
  * @author IsNull
  *
  */
-public abstract class ExternalMediaProgramHandler implements IMediaHandler {
+public abstract class ExternalMediaProgramHandler extends AbstractMediaHandler {
 
 	private final CommandTemplate template;
-
 	/**
 	 * Runs a dynamic command in the shell. 
 	 * 
 	 * 
 	 * @param command 
 	 */
-	public ExternalMediaProgramHandler(String command){
+	public ExternalMediaProgramHandler(String name, String command){
+        super(name);
 		this.template = new CommandTemplate(ShellExec.parseCommand(command, true));
 	}
 

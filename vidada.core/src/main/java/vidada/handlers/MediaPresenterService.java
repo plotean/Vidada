@@ -1,11 +1,12 @@
 package vidada.handlers;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import archimedesJ.io.locations.ResourceLocation;
+import archimedesJ.util.Lists;
 import vidada.model.media.MediaItem;
 import vidada.services.IMediaPresenterService;
-import archimedesJ.io.locations.ResourceLocation;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class MediaPresenterService implements IMediaPresenterService {
@@ -32,8 +33,13 @@ public class MediaPresenterService implements IMediaPresenterService {
 		handlerChain.add(mediaHandler);
 	}
 
+    @Override
+    public List<IMediaHandler> getAllMediaHandlers() {
+        return Lists.newList(handlerChain);
+    }
 
-	private void configKnownHandlers() {
+
+    private void configKnownHandlers() {
 		chainMediaHandler(new SystemDefaultOpenHandler());
 	}
 

@@ -108,20 +108,23 @@ public class MediaItemView extends BrowserCellView {
 
 		if(mediaViewModel.canOpenFolder()){
 			MenuItem openContainingFolder = new MenuItem("Open Folder");
-			openContainingFolder.setOnAction(e -> {
-                mediaViewModel.openContainingFolder();
-            });
+			openContainingFolder.setOnAction(e -> mediaViewModel.openContainingFolder());
 			cm.getItems().add(openContainingFolder);
 		}
 
 
 		if(mediaViewModel.canNewRandomThumb()){
 			MenuItem newRandomThumb = new MenuItem("Renew Thumb");
-			newRandomThumb.setOnAction(e -> {
-                mediaViewModel.newRandomThumb();
-            });
+			newRandomThumb.setOnAction(e -> mediaViewModel.newRandomThumb());
 			cm.getItems().add(newRandomThumb);
 		}
+
+        // Register the dynamic actions
+        for(Runnable action : mediaViewModel.getActions()){
+            MenuItem actionMenu = new MenuItem(action.toString());
+            actionMenu.setOnAction(e -> action.run());
+            cm.getItems().add(actionMenu);
+        }
 
 		return cm;
 	}

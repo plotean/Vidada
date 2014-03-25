@@ -1,25 +1,20 @@
 package vidada;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-
+import archimedesJ.images.IRawImageFactory;
+import archimedesJ.images.viewer.IImageViewerService;
+import archimedesJ.util.OSValidator;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-
-import javax.imageio.ImageIO;
-
+import jersey.repackaged.com.google.common.collect.Lists;
 import org.controlsfx.control.ButtonBar;
 import org.controlsfx.control.ButtonBar.ButtonType;
 import org.controlsfx.control.action.AbstractAction;
 import org.controlsfx.dialog.Dialog;
 import org.controlsfx.dialog.Dialogs;
-
 import vidada.client.IVidadaClient;
 import vidada.client.IVidadaClientManager;
 import vidada.client.VidadaClientManager;
@@ -28,8 +23,10 @@ import vidada.client.rest.RestVidadaClient;
 import vidada.dal.DAL;
 import vidada.data.DatabaseConnectionException;
 import vidada.handlers.ExternalVideoProgramHandler;
+import vidada.handlers.IMediaHandler;
 import vidada.images.RawImageFactoryFx;
 import vidada.model.media.MediaLibrary;
+import vidada.model.settings.MediaPlayerCommand;
 import vidada.model.settings.VidadaClientSettings;
 import vidada.model.settings.VidadaDatabase;
 import vidada.model.settings.VidadaInstance;
@@ -48,9 +45,14 @@ import vidada.viewsFX.MainViewFx;
 import vidada.viewsFX.dialoges.ChooseMediaDatabaseView;
 import vidada.viewsFX.dialoges.ChooseVidadaInstanceView;
 import vidada.viewsFX.images.ImageViewerServiceFx;
-import archimedesJ.images.IRawImageFactory;
-import archimedesJ.images.viewer.IImageViewerService;
-import archimedesJ.util.OSValidator;
+
+import javax.imageio.ImageIO;
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Collections;
+import java.util.List;
 
 
 public class Application extends  javafx.application.Application {
@@ -144,50 +146,18 @@ public class Application extends  javafx.application.Application {
 	}
 
 
+
+
 	/**
 	 * Occurs after the application has started up and is ready
 	 */
 	private void afterStartup() {
 
-		// register media play handlers
-		IMediaPresenterService mediaPresenterService = ServiceProvider.Resolve(IMediaPresenterService.class);
+        registerExternalMediaHandlers();
 
-		String externalVideoPlayer = VidadaClientSettings.instance().getVideoPlayer();
-		if(externalVideoPlayer != null && !externalVideoPlayer.isEmpty()){
-			mediaPresenterService.chainMediaHandler(new ExternalVideoProgramHandler(externalVideoPlayer));
-		}
-
-
-		// read user tag definitions
-		if(getLocalServer() != null){
-			for (MediaLibrary library : getLocalServer().getLibraryService().getAllLibraries()) {
-				File def = library.getUserTagRelationDef();
-				if(def.exists()){
-
-					// parse and merge it
-					TagRelationDefinitionParser parser = new TagRelationDefinitionParser();
-					try {
-						TagRelationDefinition relationDef = parser.parse(def);
-						System.out.println("TagRelationDefinition: " + relationDef);
-						relationDef.print();
-						getLocalServer().getTagService().mergeRelation(relationDef);
-					} catch (IOException e) {
-						e.printStackTrace();
-					} catch (ParseException e) {
-						e.printStackTrace();
-					}
-				}else{
-					try {
-						def.getParentFile().mkdirs();
-						def.createNewFile();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
-			}
-		}
-
-
+        if(getLocalServer() != null) {
+            loadUserTagRelations(getLocalServer());
+        }
 
 	}
 
@@ -334,6 +304,51 @@ public class Application extends  javafx.application.Application {
 
 		return vidadaClient;
 	}
+
+    private void loadUserTagRelations(IVidadaServer localserver) {
+
+        for (MediaLibrary library : localserver.getLibraryService().getAllLibraries()) {
+            File def = library.getUserTagRelationDef();
+            if (def.exists()) {
+
+                // parse and merge it
+                TagRelationDefinitionParser parser = new TagRelationDefinitionParser();
+                try {
+                    TagRelationDefinition relationDef = parser.parse(def);
+                    System.out.println("TagRelationDefinition: " + relationDef);
+                    relationDef.print();
+                    getLocalServer().getTagService().mergeRelation(relationDef);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                try {
+                    def.getParentFile().mkdirs();
+                    def.createNewFile();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+    }
+
+    private void registerExternalMediaHandlers(){
+        // register media play handlers
+        IMediaPresenterService mediaPresenterService = ServiceProvider.Resolve(IMediaPresenterService.class);
+
+        List<MediaPlayerCommand> externalPlayers =  Lists.newArrayList(VidadaClientSettings.instance().getExternalMediaPlayers());;
+        Collections.reverse(externalPlayers);
+
+        for(MediaPlayerCommand playerCommand : externalPlayers){
+            IMediaHandler mediaHandler = new ExternalVideoProgramHandler(
+                    playerCommand.getPlayerName(),
+                    playerCommand.getCommand());
+            mediaPresenterService.chainMediaHandler(mediaHandler);
+        }
+    }
 
 	/*
 	private final CredentialsProvider authProvider = new CredentialsProvider() {

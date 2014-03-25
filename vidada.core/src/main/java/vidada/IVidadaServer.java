@@ -40,19 +40,19 @@ public interface IVidadaServer {
 	ITagService getTagService();
 
 	/**
-	 * 
+	 * Get the thumbnail service for this server
 	 * @return
 	 */
 	IThumbnailService getThumbnailService();
 
 	/**
-	 * 
+	 * Get the import service for this server
 	 * @return
 	 */
 	IMediaImportService getImportService();
 
 	/**
-	 * 
+	 * Get the job service for this server
 	 * @return
 	 */
 	IJobService getJobService();

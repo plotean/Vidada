@@ -10,6 +10,14 @@ import archimedesJ.io.locations.ResourceLocation;
  * @param <T>
  */
 public interface IMediaHandler {
+
+    /**
+     * Returns the name of this media handler
+     * @return
+     */
+    String getName();
+
+
 	/**
 	 * Try to handle the given media.
 	 * If this handler was able to deal with the request it must return true.
