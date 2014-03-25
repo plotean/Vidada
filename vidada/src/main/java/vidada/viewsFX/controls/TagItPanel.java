@@ -17,9 +17,8 @@ import org.controlsfx.control.textfield.AutoCompletionBinding.ISuggestionRequest
 import vidada.viewsFX.controls.TagControl.RemovedActionEvent;
 
 /**
- * A TagItPanel displays a collection of Tags.
- * 
- * It has special features such as the ability to allow the user to add / create new Tags.
+ * A TagItPanel displays a collection of Tags and is optionally editable by the user.
+ *
  *
  * @param <T>
  */
@@ -44,23 +43,17 @@ public class TagItPanel<T> extends Control{
 
 
 	/**
-	 * Default tag node factory. This factory is used when no custom factory is specified by the user.
-	 */
-	private final Callback<T, Node> defaultTagNodeFactory = new Callback<T, Node>(){
-		@Override
-		public Node call(final T tagModel) {
-			TagControl tagView = new TagControl(tagModel != null ? tagModel.toString() : "<null>");
-			tagView.setRemovable(isEditable());
+     * Default tag node factory. This factory is used when no custom factory is specified by the user.
+     */
+    private final Callback<T, Node> defaultTagNodeFactory = tagModel -> {
+        TagControl tagView = new TagControl(tagModel != null ? tagModel.toString() : "<null>");
+        tagView.setRemovable(isEditable());
 
-			tagView.setOnRemoveAction(new EventHandler<TagControl.RemovedActionEvent>() {
-				@Override
-				public void handle(RemovedActionEvent removeArgs) {
-					getTags().remove(tagModel);
-				}
-			});
-			return tagView;
-		}
-	};
+        tagView.setOnRemoveAction(removeArgs -> {
+            getTags().remove(tagModel);
+        });
+        return tagView;
+    };
 
 
 	/***************************************************************************

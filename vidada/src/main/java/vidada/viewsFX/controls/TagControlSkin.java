@@ -61,19 +61,9 @@ public class TagControlSkin extends BehaviorSkinBase<TagControl, BehaviorBase<Ta
 		registerChangeListener(control.textProperty(), "TEXT");
 		registerChangeListener(control.removableProperty(), "REMOVABLE");
 
-		tagRemoveButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent me) {
-				control.fireEvent(new RemovedActionEvent());
-			}
-		});
+		tagRemoveButton.setOnMouseClicked(me -> control.fireEvent(new RemovedActionEvent()));
 
-		layout.setOnMouseClicked(new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent me) {
-				control.fireEvent(new ActionEvent());
-			}
-		});
+		layout.setOnMouseClicked(me -> control.fireEvent(new ActionEvent()));
 
 		updateRemoveButton();
 		updateView();

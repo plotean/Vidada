@@ -13,7 +13,7 @@ import javafx.scene.control.Skin;
  * Represents a single tag.
  * 
  * Optionally, this control can show a remove button to remove this tag
- * using the {@link setRemovable} method.
+ * using the {@link #setRemovable} method.
  * 
  * @author IsNull
  *
@@ -34,7 +34,7 @@ public class TagControl extends Control {
 	 */
 	@SuppressWarnings("serial")
 	public static class RemovedActionEvent extends Event {
-		public static final EventType<RemovedActionEvent> REMOVE_ACTION = new EventType<RemovedActionEvent>("REMOVE_ACTION");
+		public static final EventType<RemovedActionEvent> REMOVE_ACTION = new EventType<>("REMOVE_ACTION");
 
 		public RemovedActionEvent() {
 			super(REMOVE_ACTION);
@@ -63,15 +63,15 @@ public class TagControl extends Control {
 	 **************************************************************************/
 
 	/**
-	 * 
+	 * Creates an empty TagControl
 	 */
 	public TagControl(){
 		this("");
 	}
 
 	/**
-	 * 
-	 * @param text
+	 * Creates a new TagControl with the given name
+	 * @param text The Tag name to be displayed
 	 */
 	public TagControl(String text){
 		setText(text);
@@ -88,7 +88,7 @@ public class TagControl extends Control {
 
 	/**
 	 * Event which is fired when the remove button was clicked.
-	 * @param ae
+	 * @param actionListener
 	 */
 	public void setOnAction(EventHandler<ActionEvent> actionListener){
 		addEventHandler(ActionEvent.ACTION, actionListener);
@@ -96,10 +96,10 @@ public class TagControl extends Control {
 
 	/**
 	 * Event which is fired when the remove button was clicked.
-	 * @param ae
+	 * @param actionListener
 	 */
-	public void setOnRemoveAction(EventHandler<RemovedActionEvent> removeListener){
-		addEventHandler(RemovedActionEvent.REMOVE_ACTION, removeListener);
+	public void setOnRemoveAction(EventHandler<RemovedActionEvent> actionListener){
+		addEventHandler(RemovedActionEvent.REMOVE_ACTION, actionListener);
 	}
 
 

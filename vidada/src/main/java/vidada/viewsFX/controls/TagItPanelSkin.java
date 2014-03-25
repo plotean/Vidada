@@ -12,6 +12,7 @@ import javafx.geometry.HPos;
 import javafx.geometry.VPos;
 import javafx.scene.Node;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.FlowPane;
 
@@ -90,14 +91,10 @@ public class TagItPanelSkin<T> extends BehaviorSkinBase<TagItPanel<T>, BehaviorB
 	 *                                                                         *
 	 **************************************************************************/
 
-	private final ListChangeListener<T> tagsChangedListener = new ListChangeListener<T>(){
-		@Override
-		public void onChanged(
-				javafx.collections.ListChangeListener.Change<? extends T> changeEvent) {
-			// Occurs when the Tags-Collection has been changed
-			layoutTags();
-		}
-	};
+	private final ListChangeListener<T> tagsChangedListener = changeEvent -> {
+        // Occurs when the Tags-Collection has been changed
+        layoutTags();
+    };
 
 
 	/***************************************************************************
@@ -148,21 +145,18 @@ public class TagItPanelSkin<T> extends BehaviorSkinBase<TagItPanel<T>, BehaviorB
 
 			updateSuggestionProvider();
 
-			tagEdit.setOnKeyPressed(new EventHandler<KeyEvent>() {
-				@Override
-				public void handle(KeyEvent ke) {
-					switch (ke.getCode()) {
-					case SPACE:
-					case ENTER:
-					case TAB:
-						onAddNewTag(tagEdit.getText());
-						tagEdit.setText("");
-						break;
-					default:
-						break;
-					}
-				}
-			});
+			tagEdit.setOnKeyPressed((KeyEvent ke) -> {
+                switch (ke.getCode()) {
+                    case SPACE:
+                    case ENTER:
+                    case TAB:
+                        onAddNewTag(tagEdit.getText());
+                        tagEdit.setText("");
+                        break;
+                    default:
+                        break;
+                }
+            });
 		}
 		return tagEdit;
 	}
@@ -177,15 +171,11 @@ public class TagItPanelSkin<T> extends BehaviorSkinBase<TagItPanel<T>, BehaviorB
 		if(getSkinnable().getSuggestionProvider() != null){
 			autoCompletionBinding = TextFields.bindAutoCompletion(tagEdit, getSkinnable().getSuggestionProvider());
 
-			autoCompletionBinding.setOnAutoCompleted(new EventHandler<AutoCompletionEvent<T>>() {
-				@Override
-				public void handle(AutoCompletionEvent<T> completionArgs) {
-					System.out.println("OnAutoCompleted: " + completionArgs.getCompletion());
-					if(completionArgs.getCompletion() != null)
-						appendTag(completionArgs.getCompletion());
-					tagEdit.setText("");
-				}
-			});
+			autoCompletionBinding.setOnAutoCompleted(completionArgs -> {
+                if(completionArgs.getCompletion() != null)
+                    appendTag(completionArgs.getCompletion());
+                tagEdit.setText("");
+            });
 		}
 	}
 
