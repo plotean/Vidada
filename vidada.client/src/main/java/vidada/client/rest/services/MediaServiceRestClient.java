@@ -58,6 +58,10 @@ public class MediaServiceRestClient extends AbstractRestService implements IMedi
 			resource = resource.queryParam("tags", multiValueQueryParam(qry.getRequiredTags()));
 		}
 
+        if(!qry.getBlockedTags().isEmpty()){
+            resource = resource.queryParam("tagsNot", multiValueQueryParam(qry.getBlockedTags()));
+        }
+
 		if(qry.getMediaType() != null){
 			resource = resource.queryParam("type", qry.getMediaType().name());
 		}
