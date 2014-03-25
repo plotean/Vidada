@@ -10,6 +10,8 @@ import vidada.server.services.ITagService;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Path("/medias")
 public class MediasResource extends AbstractResource {
@@ -44,6 +46,7 @@ public class MediasResource extends AbstractResource {
 			@QueryParam("pageSize") @DefaultValue("6") int pageSize,
 			@QueryParam("query") String queryStr,
 			@QueryParam("tags") String requiredTags,
+            @QueryParam("tagsNot") String blockedTags,
 			@QueryParam("type") vidada.model.media.MediaType type,
 			@QueryParam("orderBy") OrderProperty order,
             @QueryParam("reverse") @DefaultValue("0") boolean reverse) {
@@ -51,13 +54,8 @@ public class MediasResource extends AbstractResource {
 		MediaQuery query = new MediaQuery();
 		query.setKeywords(queryStr);
 
-		String[] tags = parseMultiValueParam(requiredTags);
-		if(tags != null && tags.length > 0){
-			for (String tagStr : tags) {
-				Tag tag = tagService.getTag(tagStr);
-				query.getRequiredTags().add(tag);
-			}
-		}
+        query.getRequiredTags().addAll(parseTags(requiredTags));
+        query.getBlockedTags().addAll(parseTags(blockedTags));
 
 		query.setSelectedtype((type != null) ? type : vidada.model.media.MediaType.ANY);
 		query.setOrder((order != null) ? order : OrderProperty.FILENAME);
@@ -81,4 +79,26 @@ public class MediasResource extends AbstractResource {
 	public String getCount() {		
 		return String.valueOf(mediaService.count());
 	}
+
+
+    /**
+     * Parses the tags query param string into Tag objects
+     * @param tagsParam
+     * @return
+     */
+    private List<Tag> parseTags(String tagsParam){
+
+        List<Tag> tags = new ArrayList<Tag>();
+
+        if(tagsParam != null) {
+            String[] tagTokens = parseMultiValueParam(tagsParam);
+            if (tagTokens != null && tagTokens.length > 0) {
+                for (String tagStr : tagTokens) {
+                    Tag tag = tagService.getTag(tagStr);
+                    tags.add(tag);
+                }
+            }
+        }
+        return tags;
+    }
 }
