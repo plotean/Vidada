@@ -7,7 +7,11 @@
     -fx-padding: 1 2 1 2;
 }
 
-.tag-control .label { 
+.tag-control:hover {
+    -fx-background-color: #E6E6E6;
+}
+
+.tag-control > .label {
 	-fx-text-fill: black;
     -fx-font: 12px "Verdana";
 }
@@ -33,23 +37,39 @@
 }
 
 #tag-dot {
+    -fx-fill: white;
+    -fx-stroke: #707070;
+}
+
+/*
+#tag-dot {
     -fx-fill: LIGHTGREY;
     -fx-stroke: #707070;
 }
 
-
 .tag-control:hover #tag-dot {
     -fx-fill: white;
-}
+}*/
 
 /* ----- required state -------- */
 
-.required {
+.tag-control.required {
     -fx-background-color: #339966;
 }
 
 /* ----- blocked state -------- */
 
-.blocked {
-    -fx-background-color: #993333;
+.tag-control.blocked {
+    -fx-background-color: #F78181;
 }
+
+/*
+.tag-control.blocked .label  {
+    -fx-text-fill: white;
+}*/
+
+.tag-control.blocked .remove-button {
+    -fx-border-color: #424242;
+}
+
+/* ----- ^^^^^^^^^^^^ -------- */

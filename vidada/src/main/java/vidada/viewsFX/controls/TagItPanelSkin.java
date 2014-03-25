@@ -1,30 +1,24 @@
 package vidada.viewsFX.controls;
 
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
+import archimedesJ.exceptions.NotSupportedException;
+import com.sun.javafx.scene.control.behavior.BehaviorBase;
+import com.sun.javafx.scene.control.behavior.KeyBinding;
+import com.sun.javafx.scene.control.skin.BehaviorSkinBase;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.VPos;
 import javafx.scene.Node;
 import javafx.scene.control.TextField;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.FlowPane;
-
 import org.controlsfx.control.textfield.AutoCompletionBinding;
-import org.controlsfx.control.textfield.AutoCompletionBinding.AutoCompletionEvent;
 import org.controlsfx.control.textfield.TextFields;
 
-import archimedesJ.exceptions.NotSupportedException;
-
-import com.sun.javafx.scene.control.behavior.BehaviorBase;
-import com.sun.javafx.scene.control.behavior.KeyBinding;
-import com.sun.javafx.scene.control.skin.BehaviorSkinBase;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Skin for tag-it control
@@ -127,13 +121,31 @@ public class TagItPanelSkin<T> extends BehaviorSkinBase<TagItPanel<T>, BehaviorB
 
 		if(control.isEditable()){
 			// Last control is the editable TextField
-			// which enables the user to add tags easily
+			// which enables the user to add new tags easily
 			layout.getChildren().add(getDynamicTagEdit());
 		}
 	}
 
 	private Node getTagView(final T tagModel){
-		return getSkinnable().getTagNodeFactory().call(tagModel);
+
+        TagItPanel<T> tagIt = getSkinnable();
+        Node tagView = tagIt.getTagNodeFactory().call(tagModel);
+
+        // In case the default TagControl is used ...
+        if(tagView instanceof TagControl<?>){
+
+            // ... we support automated handling of removing a Tag
+            // from this tagIt-panel.
+
+            TagControl<?> tagControl = (TagControl<?>)tagView;
+            tagControl.setRemovable(tagIt.isEditable());
+            tagControl.setOnRemoveAction(removeArgs -> {
+                tagIt.getTags().remove(tagModel);
+            });
+
+        }
+
+        return tagView;
 	}
 
 	private TextField getDynamicTagEdit(){
@@ -181,9 +193,8 @@ public class TagItPanelSkin<T> extends BehaviorSkinBase<TagItPanel<T>, BehaviorB
 
 
 	private void onAddNewTag(String text) {
-		T newTag = null;
 		if(getSkinnable().getTagModelFactory() != null){
-			newTag = getSkinnable().getTagModelFactory().call(text);
+			T newTag = getSkinnable().getTagModelFactory().call(text);
 			if(newTag != null)
 				appendTag(newTag);
 			else {

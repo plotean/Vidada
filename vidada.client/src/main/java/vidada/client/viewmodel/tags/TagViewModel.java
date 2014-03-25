@@ -1,26 +1,17 @@
 package vidada.client.viewmodel.tags;
 
-import vidada.client.viewmodel.IVMFactory;
-import vidada.client.viewmodel.IViewModel;
-import vidada.model.tags.Tag;
-import vidada.model.tags.TagState;
 import archimedesJ.data.Toggler;
 import archimedesJ.events.EventArgsG;
 import archimedesJ.events.EventHandlerEx;
 import archimedesJ.events.IEvent;
+import vidada.client.viewmodel.IViewModel;
+import vidada.model.tags.Tag;
+import vidada.model.tags.TagState;
 
 public class TagViewModel implements IViewModel<Tag>, Comparable<TagViewModel>{
 
-	public static final IVMFactory<Tag, TagViewModel> VMFactory = new IVMFactory<Tag, TagViewModel>() {
-		@Override
-		public TagViewModel create(Tag model) {
-			return new TagViewModel(model);
-		}
-	};
-
-
 	private Tag tag;
-	private final Toggler<TagState> avaiableStates;
+	private final Toggler<TagState> availableStates;
 
 	private final EventHandlerEx<EventArgsG<TagViewModel>> tagStateChangedEvent = new EventHandlerEx<EventArgsG<TagViewModel>>();
 	public IEvent<EventArgsG<TagViewModel>> getTagStateChangedEvent() { return tagStateChangedEvent; }
@@ -31,19 +22,19 @@ public class TagViewModel implements IViewModel<Tag>, Comparable<TagViewModel>{
 	}
 
 	/**
-	 * 
+	 * Creates a new TagViewModel
 	 * @param tag
 	 * @param availableStates All available tag states
 	 */
 	public TagViewModel(Tag tag, TagState... availableStates){
 		this.tag = tag;
-		this.avaiableStates = new Toggler<TagState>(availableStates);
+		this.availableStates = new Toggler<TagState>(availableStates);
 	}
 
-	public TagState getState() { return avaiableStates.currentValue(); }
+	public TagState getState() { return availableStates.currentValue(); }
 
 	public void setState(TagState state){
-		avaiableStates.setCurrent(state);
+		availableStates.setCurrent(state);
 		tagStateChangedEvent.fireEvent(this, EventArgsG.build(this));
 	}
 
@@ -59,14 +50,14 @@ public class TagViewModel implements IViewModel<Tag>, Comparable<TagViewModel>{
 
 	@Override
 	public void setModel(Tag model) {
-		this.tag = model;
+		this.tag = model; throw new IllegalStateException();
 	}
 
 	@Override
 	public String toString(){ return getName(); }
 
 	public void toggleState() {
-		setState(avaiableStates.next());
+		setState(availableStates.next());
 	}
 
 	@Override

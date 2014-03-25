@@ -1,8 +1,8 @@
 package vidada.client;
 
-import java.util.List;
-
 import archimedesJ.services.IService;
+
+import java.util.List;
 
 /**
  * Primary Vidada-Client Service which manages all Vidada clients.
@@ -20,7 +20,7 @@ public interface IVidadaClientManager extends IService {
 
 	/**
 	 * Add the given client.
-	 * @param server
+	 * @param client
 	 */
 	void addClient(IVidadaClient client);
 

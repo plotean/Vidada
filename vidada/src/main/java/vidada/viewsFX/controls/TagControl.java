@@ -28,7 +28,6 @@ public class TagControl<T> extends Control {
 	 *                                                                         *
 	 **************************************************************************/
 
-
 	/**
 	 * Event which is fired when the remove button was pressed by the user
 	 *
@@ -43,7 +42,6 @@ public class TagControl<T> extends Control {
 	}
 
 
-
 	/***************************************************************************
 	 *                                                                         *
 	 * Private fields                                                          *
@@ -56,8 +54,8 @@ public class TagControl<T> extends Control {
 
     private final ObjectProperty<Callback<T, String>> converter =  new SimpleObjectProperty<>(this, "converter");
 
-
     private final Callback<T, String> defaultConverter = x -> x.toString();
+
 
 	/***************************************************************************
 	 *                                                                         *
@@ -115,11 +113,13 @@ public class TagControl<T> extends Control {
         return getConverter().call(getTag());
     }
 
+
 	/***************************************************************************
 	 *                                                                         *
 	 * Properties                                                              *
 	 *                                                                         *
 	 **************************************************************************/
+
     /**
      * Gets the tag property
      * @return
@@ -191,6 +191,7 @@ public class TagControl<T> extends Control {
             this.converter.setValue(defaultConverter);
         }
     }
+
 
 	/***************************************************************************
 	 *                                                                         *

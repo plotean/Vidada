@@ -18,6 +18,9 @@ import vidada.client.viewmodel.FilterModel;
 import vidada.client.viewmodel.tags.TagViewModel;
 import vidada.model.media.MediaType;
 import vidada.model.media.OrderProperty;
+import vidada.model.tags.Tag;
+import vidada.model.tags.TagFactory;
+import vidada.model.tags.TagState;
 import vidada.services.ServiceProvider;
 import vidada.viewsFX.controls.TagItPanel;
 
@@ -30,7 +33,7 @@ public class FilterViewFx extends BorderPane {
 
 	private final TagItPanel<TagViewModel> tagPane;
 	private final TextField searchText = TextFields.createSearchField();
-	private final CheckBox chkreverse = new CheckBox("Reverse");
+	private final CheckBox chkReverse = new CheckBox("Reverse");
 	private final ComboBox<MediaType> cboMediaType= new ComboBox<>();
 	private final ComboBox<OrderProperty> cboOrder= new ComboBox<>();
 
@@ -39,8 +42,16 @@ public class FilterViewFx extends BorderPane {
 
 	public FilterViewFx(final FilterModel filtermodel){
 
-		this.filtermodel = filtermodel;	
-		tagPane = new AdvancedTagItPanel();
+		this.filtermodel = filtermodel;
+
+        // Setup the TagItPanel
+        tagPane = new TagItPanel<>();
+        tagPane.setTagModelFactory(text -> {
+            Tag tag = TagFactory.instance().createTag(text);
+            return createVM(tag);
+        });
+        tagPane.setTagNodeFactory(model -> new StateTagControl(model));
+
 
 		updateTagSuggestionProvider();
 
@@ -54,13 +65,13 @@ public class FilterViewFx extends BorderPane {
 		box.getChildren().add(cboMediaType);
 		box.getChildren().add(searchText);
 		box.getChildren().add(cboOrder);
-		box.getChildren().add(chkreverse);
+		box.getChildren().add(chkReverse);
 
 
 		Insets margin = new Insets(5,5,10,0);
 		HBox.setMargin(searchText, margin);
 		HBox.setMargin(cboOrder, margin);
-		HBox.setMargin(chkreverse, margin);
+		HBox.setMargin(chkReverse, margin);
 		HBox.setMargin(cboMediaType, margin);
 
 		setTop(box);
@@ -83,15 +94,15 @@ public class FilterViewFx extends BorderPane {
 
 	private void updateTagSuggestionProvider() {
         Collection<TagViewModel> availableTags = tagClientService.getUsedTags().stream()
-                .map(x -> new TagViewModel(x))
+                .map(x -> createVM(x))
                 .collect(Collectors.toList());
         SuggestionProvider<TagViewModel> tagSuggestionProvider = SuggestionProvider.create(availableTags);
         tagPane.setSuggestionProvider(tagSuggestionProvider);
     }
 
 	private void registerEventHandler(){
-		chkreverse.selectedProperty().addListener((observable, oldValue, newValue) -> {
-            filtermodel.setReverse(chkreverse.isSelected());
+		chkReverse.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            filtermodel.setReverse(chkReverse.isSelected());
         });
 
 		cboOrder.valueProperty().addListener((observable, oldValue, newValue) -> {
@@ -126,5 +137,8 @@ public class FilterViewFx extends BorderPane {
         });
 	}
 
+    private TagViewModel createVM(Tag tag){
+        return new TagViewModel(tag, TagState.Allowed, TagState.Blocked);
+    }
 
 }

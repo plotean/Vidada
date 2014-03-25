@@ -41,16 +41,7 @@ public class TagItPanel<T> extends Control{
 	/**
      * Default tag node factory. This factory is used when no custom factory is specified by the user.
      */
-    private final Callback<T, Node> defaultTagNodeFactory = tagModel -> {
-        TagControl<T> tagView = new TagControl(tagModel);
-        tagView.setRemovable(isEditable());
-
-        tagView.setOnRemoveAction(removeArgs -> {
-            getTags().remove(tagModel);
-        });
-        return tagView;
-    };
-
+    private final Callback<T, Node> defaultTagNodeFactory = tagModel -> new TagControl(tagModel);
 
 	/***************************************************************************
 	 *                                                                         *
