@@ -15,20 +15,20 @@ import org.controlsfx.control.textfield.TextFields;
 import vidada.client.IVidadaClientManager;
 import vidada.client.services.ITagClientService;
 import vidada.client.viewmodel.FilterModel;
+import vidada.client.viewmodel.tags.TagViewModel;
 import vidada.model.media.MediaType;
 import vidada.model.media.OrderProperty;
-import vidada.model.tags.Tag;
-import vidada.model.tags.TagFactory;
 import vidada.services.ServiceProvider;
 import vidada.viewsFX.controls.TagItPanel;
 
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 public class FilterViewFx extends BorderPane {
 
 	private final FilterModel filtermodel;
 
-	private final TagItPanel<Tag> tagPane;
+	private final TagItPanel<TagViewModel> tagPane;
 	private final TextField searchText = TextFields.createSearchField();
 	private final CheckBox chkreverse = new CheckBox("Reverse");
 	private final ComboBox<MediaType> cboMediaType= new ComboBox<>();
@@ -40,9 +40,7 @@ public class FilterViewFx extends BorderPane {
 	public FilterViewFx(final FilterModel filtermodel){
 
 		this.filtermodel = filtermodel;	
-		tagPane = new TagItPanel<>();
-
-		tagPane.setTagModelFactory(text -> TagFactory.instance().createTag(text));
+		tagPane = new AdvancedTagItPanel();
 
 		updateTagSuggestionProvider();
 
@@ -59,11 +57,11 @@ public class FilterViewFx extends BorderPane {
 		box.getChildren().add(chkreverse);
 
 
-		Insets margrin = new Insets(5,5,10,0);
-		HBox.setMargin(searchText, margrin);
-		HBox.setMargin(cboOrder, margrin);
-		HBox.setMargin(chkreverse, margrin);
-		HBox.setMargin(cboMediaType, margrin);
+		Insets margin = new Insets(5,5,10,0);
+		HBox.setMargin(searchText, margin);
+		HBox.setMargin(cboOrder, margin);
+		HBox.setMargin(chkreverse, margin);
+		HBox.setMargin(cboMediaType, margin);
 
 		setTop(box);
 		setCenter(tagPane);
@@ -83,11 +81,13 @@ public class FilterViewFx extends BorderPane {
 		registerEventHandler();
 	}
 
-	private void updateTagSuggestionProvider(){
-		Collection<Tag> availableTags = tagClientService.getUsedTags();
-		SuggestionProvider<Tag> tagSuggestionProvider = SuggestionProvider.create(availableTags);
-		tagPane.setSuggestionProvider(tagSuggestionProvider);
-	}
+	private void updateTagSuggestionProvider() {
+        Collection<TagViewModel> availableTags = tagClientService.getUsedTags().stream()
+                .map(x -> new TagViewModel(x))
+                .collect(Collectors.toList());
+        SuggestionProvider<TagViewModel> tagSuggestionProvider = SuggestionProvider.create(availableTags);
+        tagPane.setSuggestionProvider(tagSuggestionProvider);
+    }
 
 	private void registerEventHandler(){
 		chkreverse.selectedProperty().addListener((observable, oldValue, newValue) -> {
@@ -106,15 +106,25 @@ public class FilterViewFx extends BorderPane {
             filtermodel.setMediaType(cboMediaType.getValue() != null ? cboMediaType.getValue() : MediaType.ANY);
         });
 
-		tagPane.getTags().addListener((ListChangeListener.Change<? extends Tag> changeEvent) -> {
+		tagPane.getTags().addListener((ListChangeListener.Change<? extends TagViewModel> changeEvent) -> {
             if(changeEvent.next()){
-                if(changeEvent.wasAdded()){
-                    filtermodel.getRequiredTags().addAll(changeEvent.getAddedSubList());
+                if(changeEvent.wasAdded()) {
+                    filtermodel.getRequiredTags().addAll(
+                            changeEvent.getAddedSubList().stream()
+                                    .map(x -> x.getModel())
+                                    .collect(Collectors.toList())
+                    );
                 }
-                if(changeEvent.wasRemoved()){
-                    filtermodel.getRequiredTags().removeAll(changeEvent.getRemoved());
+                if(changeEvent.wasRemoved()) {
+                    filtermodel.getRequiredTags().removeAll(
+                            changeEvent.getRemoved().stream()
+                                    .map(x -> x.getModel())
+                                    .collect(Collectors.toList())
+                    );
                 }
             }
         });
 	}
+
+
 }
