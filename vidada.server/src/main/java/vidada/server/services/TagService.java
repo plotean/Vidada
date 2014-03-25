@@ -2,7 +2,6 @@ package vidada.server.services;
 
 import archimedesJ.util.Lists;
 import vidada.model.tags.Tag;
-import vidada.model.tags.TagFactory;
 import vidada.model.tags.relations.TagRelationDefinition;
 import vidada.model.tags.relations.TagRelationIndex;
 import vidada.server.VidadaServer;
@@ -83,10 +82,10 @@ public class TagService extends VidadaServerService implements ITagService {
     /**{@inheritDoc}*/
 	@Override
 	public Tag getTag(String tagName) {
-		tagName = Tag.toTagString(tagName);
+		tagName = Tag.FACTORY.toTagString(tagName);
 		Tag tag = tagCache.get(tagName);
 		if(tag == null){
-			final Tag newTag = tag = TagFactory.instance().createTag(tagName);
+			final Tag newTag = tag = Tag.FACTORY.createTag(tagName);
 			ensureTagIsInDB(Lists.asList(newTag));
 			tagCache.put(tagName, tag);
 		}

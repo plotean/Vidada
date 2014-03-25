@@ -55,9 +55,9 @@ public class RelationTest {
 		/* */
 		System.out.println();
 		System.out.println("Tests:");
-		System.out.println(definition.getAllRelatedTags(Tag.create("fruit")));
+		System.out.println(definition.getAllRelatedTags(TagFactory.instance().createTag("fruit")));
 		rootDef.merge(definition);
-		System.out.println(rootDef.getAllRelatedTags(Tag.create("fruit")));
+		System.out.println(rootDef.getAllRelatedTags(TagFactory.instance().createTag("fruit")));
 
 	}
 }

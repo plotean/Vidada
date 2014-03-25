@@ -4,6 +4,7 @@ import vidada.model.media.MediaItem;
 import vidada.model.media.MediaQuery;
 import vidada.model.media.OrderProperty;
 import vidada.model.tags.Tag;
+import vidada.model.tags.TagFactory;
 import vidada.server.rest.VidadaRestServer;
 import vidada.server.services.IMediaService;
 import vidada.server.services.ITagService;
@@ -94,7 +95,7 @@ public class MediasResource extends AbstractResource {
             String[] tagTokens = parseMultiValueParam(tagsParam);
             if (tagTokens != null && tagTokens.length > 0) {
                 for (String tagStr : tagTokens) {
-                    Tag tag = tagService.getTag(tagStr);
+                    Tag tag =  TagFactory.instance().createTag(tagStr);
                     tags.add(tag);
                 }
             }

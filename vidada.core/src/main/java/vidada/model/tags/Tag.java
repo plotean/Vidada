@@ -11,7 +11,9 @@ import javax.xml.bind.annotation.XmlAccessorType;
 
 
 /**
- * Represents a simple tag
+ * Represents a simple tag.
+ *
+ * Use the {@link #FACTORY}({@link TagFactory}) to create new instances.
  * @author IsNull
  *
  */
@@ -20,21 +22,10 @@ import javax.xml.bind.annotation.XmlAccessorType;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Tag  implements Comparable<Tag> {
 
-
-	/***************************************************************************
-	 *                                                                         *
-	 * Public creator API                                                      *
-	 *                                                                         *
-	 **************************************************************************/
-
-	public static Tag create(String tag){
-		return new Tag(toTagString(tag));
-	}
-
-	public static String toTagString(String tag){
-		// TODO Maybe replace special chars here as well
-		return tag.trim().toLowerCase();
-	}
+    /**
+     * Tag-Factory to create tags
+     */
+    transient public static final TagFactory FACTORY = TagFactory.instance();
 
 	/***************************************************************************
 	 *                                                                         *
@@ -57,7 +48,7 @@ public class Tag  implements Comparable<Tag> {
 
 	protected Tag() { }
 
-	protected Tag(String name){
+	Tag(String name){
 		this.setName(name);
 	}
 

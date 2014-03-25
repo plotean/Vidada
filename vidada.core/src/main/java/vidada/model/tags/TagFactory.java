@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Provides helper methods to create Tag instances.
+ * Provides helper methods to create Tag instances including a simple cache.
  * 
  * @author IsNull
  *
@@ -48,7 +48,7 @@ public class TagFactory {
 	}
 
 	public Tag createTag(String tagName){
-		tagName = Tag.toTagString(tagName);
+		tagName = toTagString(tagName);
 		Tag tag = tagNameCache.get(tagName);
 		if(tag == null){
 			if(isValidTag(tagName)){
@@ -58,6 +58,11 @@ public class TagFactory {
 		return tag;
 	}
 
+    public String toTagString(String text){
+        // TODO maybe replace special chars here as well?
+        return text.trim().toLowerCase();
+    }
+
 	public boolean isValidTag(String tagName){
 		if(tagName == null || tagName.isEmpty())
 			return false;
@@ -65,7 +70,7 @@ public class TagFactory {
 	}
 
 	private Tag createTagInternal(String name){
-		Tag tag = Tag.create(name);
+		Tag tag = new Tag(name);
 		tagNameCache.put(name, tag);
 		return tag;
 	}
