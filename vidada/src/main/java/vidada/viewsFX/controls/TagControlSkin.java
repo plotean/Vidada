@@ -1,24 +1,21 @@
 package vidada.viewsFX.controls;
 
-import java.util.Collections;
-
+import com.sun.javafx.scene.control.behavior.BehaviorBase;
+import com.sun.javafx.scene.control.behavior.KeyBinding;
+import com.sun.javafx.scene.control.skin.BehaviorSkinBase;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.shape.Circle;
 import vidada.viewsFX.controls.TagControl.RemovedActionEvent;
 
-import com.sun.javafx.scene.control.behavior.BehaviorBase;
-import com.sun.javafx.scene.control.behavior.KeyBinding;
-import com.sun.javafx.scene.control.skin.BehaviorSkinBase;
+import java.util.Collections;
 
-public class TagControlSkin extends BehaviorSkinBase<TagControl, BehaviorBase<TagControl>>{
+public class TagControlSkin<T> extends BehaviorSkinBase<TagControl<T>, BehaviorBase<TagControl<T>>>{
 
 	/***************************************************************************
 	 *                                                                         *
@@ -58,7 +55,7 @@ public class TagControlSkin extends BehaviorSkinBase<TagControl, BehaviorBase<Ta
 
 		// register listeners
 
-		registerChangeListener(control.textProperty(), "TEXT");
+		registerChangeListener(control.tagProperty(), "TAG");
 		registerChangeListener(control.removableProperty(), "REMOVABLE");
 
 		tagRemoveButton.setOnMouseClicked(me -> control.fireEvent(new RemovedActionEvent()));
@@ -79,7 +76,7 @@ public class TagControlSkin extends BehaviorSkinBase<TagControl, BehaviorBase<Ta
 	@Override protected void handleControlPropertyChanged(String p) {
 		super.handleControlPropertyChanged(p);
 
-		if ("TEXT".equals(p)) {
+		if ("TAG".equals(p)) {
 			updateView();
 		}else if("REMOVABLE".equals(p)) {
 			updateRemoveButton();
@@ -115,7 +112,7 @@ public class TagControlSkin extends BehaviorSkinBase<TagControl, BehaviorBase<Ta
 	 **************************************************************************/
 
 	private void updateView(){
-		TagControl control = getSkinnable();
+		TagControl<T> control = getSkinnable();
 		if(control != null){
 			tagname.setText(control.getText());
 		}else {

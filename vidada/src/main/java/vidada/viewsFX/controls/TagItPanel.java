@@ -1,26 +1,22 @@
 package vidada.viewsFX.controls;
 
-import java.util.Collection;
-
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.Control;
 import javafx.scene.control.Skin;
 import javafx.util.Callback;
-
 import org.controlsfx.control.textfield.AutoCompletionBinding.ISuggestionRequest;
 
-import vidada.viewsFX.controls.TagControl.RemovedActionEvent;
+import java.util.Collection;
 
 /**
  * A TagItPanel displays a collection of Tags and is optionally editable by the user.
  *
  *
- * @param <T>
+ * @param <T> Type of Tag-Model
  */
 public class TagItPanel<T> extends Control{
 
@@ -46,7 +42,7 @@ public class TagItPanel<T> extends Control{
      * Default tag node factory. This factory is used when no custom factory is specified by the user.
      */
     private final Callback<T, Node> defaultTagNodeFactory = tagModel -> {
-        TagControl tagView = new TagControl(tagModel != null ? tagModel.toString() : "<null>");
+        TagControl<T> tagView = new TagControl(tagModel);
         tagView.setRemovable(isEditable());
 
         tagView.setOnRemoveAction(removeArgs -> {
@@ -78,7 +74,6 @@ public class TagItPanel<T> extends Control{
 	 * Public API                                                              *
 	 *                                                                         *
 	 **************************************************************************/
-
 
 
 	/***************************************************************************
@@ -151,14 +146,14 @@ public class TagItPanel<T> extends Control{
 	}
 
 	/**
-	 * Sets the tag-model factory to create Tags
+	 * Sets the tag-model factory to create Tags.
 	 */
 	public final void setTagModelFactory(Callback<String, T> value) {
 		tagModelFactoryProperty().set(value);
 	}
 
 	/**
-	 * Returns the tag-model factory that is used to create tags dynamically
+	 * Returns the tag-model factory that is used to create tags dynamically.
 	 */
 	public final Callback<String, T> getTagModelFactory() {
 		return tagModelFactory.get();
