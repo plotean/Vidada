@@ -1,10 +1,9 @@
 package vidada.dal;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import java.util.HashMap;
+import java.util.Map;
 
 public class SessionManager
 {
@@ -34,7 +33,7 @@ public class SessionManager
 			
 			System.out.println("SessionManager: Creating EntityManagerFactory for db: " + dbpath);
 			
-			Map<String, String> config = new HashMap<String, String>();
+			Map<String, String> config = new HashMap<>();
 			config.put("hibernate.connection.url", "jdbc:h2:" + dbpath);
 			config.put("hibernate.connection.username", "sa");
 			config.put("hibernate.connection.password", "");
