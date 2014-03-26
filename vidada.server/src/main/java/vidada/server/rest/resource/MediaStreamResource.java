@@ -14,42 +14,50 @@ import java.net.URLEncoder;
 @Path("/stream")
 public class MediaStreamResource extends AbstractResource {
 
-
+    private static final boolean APPEND_ORIGINAL_NAME = false;
     private final IMediaService mediaService = VidadaRestServer.VIDADA_SERVER.getMediaService();
-	@GET
-	@Path("{hash}")
-	public Response getMedia(
-			@Context UriInfo uriInfo,
-			@PathParam("hash") String hash,
-			@QueryParam("redirect") @DefaultValue("true") boolean redirect) {
 
-		// Streams are handled by a special module outside the REST API
+    @GET
+    @Path("{hash}")
+    public Response getMedia(
+            @Context UriInfo uriInfo,
+            @PathParam("hash") String hash,
+            @QueryParam("redirect") @DefaultValue("true") boolean redirect) {
 
-        MediaItem media = mediaService.queryByHash(hash);
+        // Streams are handled by a special module outside the REST API
 
-        if(media != null) {
+        String originalName = null;
 
-            MediaSource source = media.getSource();
-            String originalName = source.getResourceLocation().getName();
-            try {
-                originalName =  URLEncoder.encode(originalName, "UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
+        if(APPEND_ORIGINAL_NAME) {
+            MediaItem media = mediaService.queryByHash(hash);
+            if (media != null) {
+
+                MediaSource source = media.getSource();
+                originalName = source.getResourceLocation().getName();
+                try {
+                    originalName = URLEncoder.encode(originalName, "UTF-8");
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
             }
-
-            URI streamLocation = UriBuilder.fromUri(getParent(uriInfo.getBaseUri()))
-                    .path("stream").path(hash).path(originalName)
-                    .build();
-
-            if (redirect) {
-                // REDIRECT (default)
-                return Response.seeOther(streamLocation).build();
-            } else {
-                // Just return a link
-                return Response.ok(streamLocation.toString()).type(MediaType.TEXT_PLAIN_TYPE).build();
-            }
-        }else{
-            return Response.status(Response.Status.NOT_FOUND).build();
         }
-	} 
+
+        UriBuilder streamLocationBuilder = UriBuilder.fromUri(getParent(uriInfo.getBaseUri()))
+                .path("stream").path(hash);
+
+        if (originalName != null)
+            streamLocationBuilder.path(originalName);
+
+
+        URI streamLocation = streamLocationBuilder.build();
+
+        if (redirect) {
+            // REDIRECT (default)
+            return Response.seeOther(streamLocation).build();
+        } else {
+            // Just return a link
+            return Response.ok(streamLocation.toString()).type(MediaType.TEXT_PLAIN_TYPE).build();
+        }
+
+    }
 }
