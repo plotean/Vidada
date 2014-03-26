@@ -21,22 +21,22 @@ public class MediaStreamHttpHandler extends SeekableHttpHandler {
 	protected ResourceLocation getStreamResource(Request request, Response response, String relativeUri) {
 
 		ResourceLocation resource = null;
-		relativeUri = relativeUri.replaceAll("/", "");
+		String[] parts = relativeUri.split("/");
+        if(parts.length != 0) {
+            String hash = parts[0];
+            MediaItem media = mediaService.queryByHash(hash);
 
-		MediaItem media = mediaService.queryByHash(relativeUri);
-
-		if(media != null){
-			MediaSource localSource = media.getSource();
-			if(localSource != null){
-				resource = localSource.getResourceLocation();
-			}else{
-				System.err.println("Server: Stream - Media has no source!");
-			}
-		}else{
-			System.out.println("Requested media '" + relativeUri + "' could not be found.");
-		}
-
-
+            if (media != null) {
+                MediaSource localSource = media.getSource();
+                if (localSource != null) {
+                    resource = localSource.getResourceLocation();
+                } else {
+                    System.err.println("Server: Stream - Media has no source!");
+                }
+            } else {
+                System.out.println("Requested media '" + relativeUri + "' could not be found. Hash = " + hash);
+            }
+        }
 		return resource;
 	}
 
