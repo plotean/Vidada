@@ -22,8 +22,8 @@ public class MediaStreamHttpHandler extends SeekableHttpHandler {
 
 		ResourceLocation resource = null;
 		String[] parts = relativeUri.split("/");
-        if(parts.length != 0) {
-            String hash = parts[0];
+        if(parts.length > 1) {
+            String hash = parts[1];
             MediaItem media = mediaService.queryByHash(hash);
 
             if (media != null) {

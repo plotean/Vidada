@@ -14,7 +14,7 @@ import java.net.URLEncoder;
 @Path("/stream")
 public class MediaStreamResource extends AbstractResource {
 
-    private static final boolean APPEND_ORIGINAL_NAME = false;
+    private static final boolean APPEND_ORIGINAL_NAME = true;
     private final IMediaService mediaService = VidadaRestServer.VIDADA_SERVER.getMediaService();
 
     @GET
@@ -34,11 +34,7 @@ public class MediaStreamResource extends AbstractResource {
 
                 MediaSource source = media.getSource();
                 originalName = source.getResourceLocation().getName();
-                try {
-                    originalName = URLEncoder.encode(originalName, "UTF-8");
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }
+                originalName = simplifyName(originalName);
             }
         }
 
@@ -59,5 +55,9 @@ public class MediaStreamResource extends AbstractResource {
             return Response.ok(streamLocation.toString()).type(MediaType.TEXT_PLAIN_TYPE).build();
         }
 
+    }
+
+    private String simplifyName(String name){
+        return name.replaceAll("\\W|_","");
     }
 }
