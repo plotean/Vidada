@@ -19,7 +19,7 @@ import javax.persistence.FlushModeType;
 class VidadaDALServiceJPA implements IVidadaDALService {
 
 	private final RepositoryManager repositoryManager = new RepositoryManager();
-	private final IUnitOfWorkService<EntityManager> unitOfWorkService = new UnitOfWorkService<EntityManager>();
+	private final IUnitOfWorkService<EntityManager> unitOfWorkService = new UnitOfWorkService<>();
 
 	public VidadaDALServiceJPA(final EntityManagerFactory entityManagerFactory){
 
