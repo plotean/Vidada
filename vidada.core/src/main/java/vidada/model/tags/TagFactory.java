@@ -64,9 +64,7 @@ public class TagFactory {
     }
 
 	public boolean isValidTag(String tagName){
-		if(tagName == null || tagName.isEmpty())
-			return false;
-		return true;
+        return(tagName != null && !tagName.isEmpty());
 	}
 
 	private Tag createTagInternal(String name){

@@ -150,8 +150,11 @@ public class FilterViewFx extends BorderPane {
     }
 
     private TagViewModel createVM(Tag tag){
-        TagViewModel vm = new TagViewModel(tag, TagState.Allowed, TagState.Blocked);
-        vm.getTagStateChangedEvent().add((s,e) -> updateModelTags());
+        TagViewModel vm = null;
+        if(tag != null) {
+            vm = new TagViewModel(tag, TagState.Allowed, TagState.Blocked);
+            vm.getTagStateChangedEvent().add((s, e) -> updateModelTags());
+        }
         return vm;
     }
 
