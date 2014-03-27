@@ -1,24 +1,24 @@
 package ffmpeg.Interop;
 
+import archimedesJ.geometry.Size;
+import archimedesJ.io.ShellExec;
+import archimedesJ.util.OSValidator;
+import archimedesJ.util.PackageUtil;
+import ffmpeg.FFmpegException;
+import org.apache.commons.io.FileUtils;
+import org.joda.time.Duration;
+import vidada.model.video.VideoInfo;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipException;
-
-import org.apache.commons.io.FileUtils;
-import org.joda.time.Duration;
-
-import vidada.model.video.VideoInfo;
-import archimedesJ.geometry.Size;
-import archimedesJ.io.ShellExec;
-import archimedesJ.util.OSValidator;
-import archimedesJ.util.PackageUtil;
-import ffmpeg.FFmpegException;
 
 /**
  * Platform independent ffmpeg access
@@ -215,10 +215,9 @@ public abstract class FFmpegInterop {
 
 			int exitVal = ShellExec.executeAndWait(command, output, true, timeout);
 
-		} catch( InterruptedException e){
-			e.printStackTrace();
-		} catch(Exception e) {
-			System.out.println(e.toString());
+		} catch( TimeoutException e){
+            System.err.println(e.getMessage());
+        } catch(Exception e) {
 			e.printStackTrace();
 		}
 
@@ -248,8 +247,5 @@ public abstract class FFmpegInterop {
 	public abstract File getFFmpegBinaryFile();
 
 	protected abstract String getFFmpegCMD();
-
-
-
 
 }
