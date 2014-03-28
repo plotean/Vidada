@@ -41,7 +41,7 @@ public class MediaRepository extends JPARepository implements IMediaRepository{
 	}
 
 	public long queryCount(MediaExpressionQuery qry){
-		Query cQuery = getEntityManager().createQuery("SELECT count(m) from MediaItem m WHERE " + buildMediaWhereQuery(qry));
+		Query cQuery = getEntityManager().createQuery("SELECT COUNT(m) from MediaItem m WHERE " + buildMediaWhereQuery(qry));
 		setQueryParams(cQuery, qry);
 		Number result = (Number) cQuery.getSingleResult();
 		return result.longValue();
@@ -103,7 +103,7 @@ public class MediaRepository extends JPARepository implements IMediaRepository{
 		String where = ""; 
 
 		if(qry.hasKeyword()){
-			where += "(m.filename LIKE :keywords) AND ";
+			where += "( LOWER(m.filename) LIKE LOWER(:keywords) ) AND ";
 		}
 
 		if(qry.hasMediaType()){
