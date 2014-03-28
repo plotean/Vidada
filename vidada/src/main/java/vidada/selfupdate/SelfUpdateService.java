@@ -1,27 +1,27 @@
 package vidada.selfupdate;
 
-import java.io.File;
-import java.net.URI;
-import java.net.URISyntaxException;
-
-import maven.client.autoupdate.MavenAutoUpdateClient;
-import maven.client.autoupdate.MavenVersion;
-import maven.client.autoupdate.MavenVersion.VersionFormatException;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-import vidada.Application;
-import vidada.model.update.SelfUpdateState;
-import vidada.model.update.UpdateInformation;
-import vidada.services.ISelfUpdateService;
 import archimedesJ.events.EventArgs;
 import archimedesJ.events.EventArgsG;
 import archimedesJ.events.EventHandlerEx;
 import archimedesJ.events.IEvent;
+import archimedesJ.exceptions.NotImplementedException;
 import archimedesJ.threading.CancelableTask;
 import archimedesJ.threading.CancellationTokenSource.CancellationToken;
 import archimedesJ.threading.CancellationTokenSource.OperationCanceledException;
 import archimedesJ.threading.IAsyncTask;
 import archimedesJ.threading.TaskState;
 import archimedesJ.util.OSValidator;
+import maven.client.autoupdate.MavenAutoUpdateClient;
+import maven.client.autoupdate.MavenVersion;
+import maven.client.autoupdate.MavenVersion.VersionFormatException;
+import vidada.Application;
+import vidada.model.update.SelfUpdateState;
+import vidada.model.update.UpdateInformation;
+import vidada.services.ISelfUpdateService;
+
+import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 public class SelfUpdateService implements ISelfUpdateService {
 

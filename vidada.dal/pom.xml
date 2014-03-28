@@ -3,8 +3,8 @@
   <groupId>org.securityvision</groupId>
   <artifactId>vidada.dal</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-  <name>Vidada Server</name>
-  <description>Vidada data access layer implementation</description>
+  <name>Vidada Hibernate DAL</name>
+  <description>Vidada data access layer using hibernate and SQL Server</description>
   
   
   <build>
@@ -33,12 +33,6 @@
   
   
   	<dependencies>
-  	    
-		<dependency>
-			<groupId>archimedesJ</groupId>
-			<artifactId>archimedesJ</artifactId>
-			<version>0.1.1</version>
-		</dependency>
 		
 		<dependency>
 		    <groupId>org.securityvision</groupId>

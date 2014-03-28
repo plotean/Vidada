@@ -23,32 +23,33 @@
   
   
   	<repositories>
-	   <repository>
-		    <id>java.net</id>
-		    <url>http://download.java.net/maven/2/</url>
-		</repository>
-		
-		<!-- -->
-		<repository>
-	    	<id>glg2d-repo</id>
-	    	<url>http://brandonborkholder.github.com/glg2d/maven2/</url>
-	    </repository>
-	    
-	    <repository>
-      		<id>source.db4o</id>
-      		<url>http://source.db4o.com/maven</url>
-    	</repository>
+
+        <repository>
+            <id>securityvision.ch</id>
+            <url>http://dl.securityvision.ch/maven</url>
+        </repository>
+
+        <repository>
+            <id>java.net</id>
+            <url>http://download.java.net/maven/2/</url>
+        </repository>
+
+        <!-- -->
+        <repository>
+           <id>glg2d-repo</id>
+            <url>http://brandonborkholder.github.com/glg2d/maven2/</url>
+        </repository>
 	     
 	 </repositories>
   
   
   	<dependencies>
-  	    
-  	   <dependency>
-		  <groupId>archimedesJ</groupId>
-		  <artifactId>archimedesJ</artifactId>
-		  <version>0.1.1</version>
-		</dependency>
+
+        <dependency>
+            <groupId>ch.securityvision.archimedes</groupId>
+            <artifactId>archimedes.core</artifactId>
+            <version>0.2.0</version>
+        </dependency>
 		
   	    <dependency>
 	        <groupId>org.securityvision</groupId>

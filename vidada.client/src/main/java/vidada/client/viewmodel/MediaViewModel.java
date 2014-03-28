@@ -5,6 +5,8 @@ import archimedesJ.geometry.Size;
 import archimedesJ.images.ImageContainer;
 import archimedesJ.images.LoadPriority;
 import archimedesJ.io.locations.ResourceLocation;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import org.joda.time.format.DateTimeFormat;
 import vidada.client.IVidadaClientManager;
 import vidada.client.facade.IThumbContainerService;
@@ -134,32 +136,21 @@ public class MediaViewModel extends BrowserItemVM  {
     public List<Runnable> getActions(){
         List<Runnable> actions = new ArrayList<Runnable>();
         for(IMediaHandler handler : mediaPresenter.getAllMediaHandlers()){
-            actions.add(new SimpleAction(this, handler));
+            actions.add(new MediaHandlerAction(this, handler));
         }
+
+        actions.add(new NamedAction("Copy Link",new Runnable() {
+            @Override
+            public void run() {
+                ResourceLocation mediaResource = getMediaResource();
+                final Clipboard clipboard = Clipboard.getSystemClipboard();
+                final ClipboardContent content = new ClipboardContent();
+                content.putString(mediaResource.getPath());
+                clipboard.setContent(content);
+            }
+        }));
+
         return actions;
-    }
-
-    private static class SimpleAction implements Runnable{
-
-        private final MediaViewModel vm;
-        private final IMediaHandler handler;
-
-        public SimpleAction(MediaViewModel vm, IMediaHandler handler){
-            this.vm = vm;
-            this.handler = handler;
-        }
-
-        @Override
-        public void run() {
-            ResourceLocation resourceLocation = vm.getMediaResource();
-            if(resourceLocation != null)
-                handler.handle(vm.mediaData, resourceLocation);
-        }
-
-        @Override
-        public String toString(){
-            return "Open with " + handler.getName();
-        }
     }
 
 
@@ -262,6 +253,54 @@ public class MediaViewModel extends BrowserItemVM  {
 		if(mediaData != null)
 			mediaClientService.update(mediaData);
 	}
+
+
+
+
+    private static class NamedAction implements Runnable{
+
+        private final String name;
+        private final Runnable action;
+
+        protected NamedAction(String name, Runnable action) {
+            this.action = action;
+            this.name = name;
+        }
+
+        @Override
+        public String toString(){
+            return name;
+        }
+
+        @Override
+        public void run() {
+            action.run();
+        }
+    }
+
+
+    private static class MediaHandlerAction implements Runnable{
+
+        private final MediaViewModel vm;
+        private final IMediaHandler handler;
+
+        public MediaHandlerAction(MediaViewModel vm, IMediaHandler handler){
+            this.vm = vm;
+            this.handler = handler;
+        }
+
+        @Override
+        public void run() {
+            ResourceLocation resourceLocation = vm.getMediaResource();
+            if(resourceLocation != null)
+                handler.handle(vm.mediaData, resourceLocation);
+        }
+
+        @Override
+        public String toString(){
+            return "Open with " + handler.getName();
+        }
+    }
 
 
 }

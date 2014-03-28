@@ -33,13 +33,7 @@
   
   
   	<dependencies>
-  	    
-		<dependency>
-			<groupId>archimedesJ</groupId>
-			<artifactId>archimedesJ</artifactId>
-			<version>0.1.1</version>
-		</dependency>
-		
+
 		<dependency>
 		    <groupId>org.securityvision</groupId>
   			<artifactId>vidada.core</artifactId>
