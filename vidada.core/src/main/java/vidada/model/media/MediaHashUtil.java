@@ -1,16 +1,15 @@
 package vidada.model.media;
 
-import java.io.IOException;
-import java.io.InputStream;
-
+import archimedes.core.data.hashing.FileHashAlgorythms;
+import archimedes.core.data.hashing.IFileHashAlgorythm;
+import archimedes.core.io.locations.ResourceLocation;
 import org.securityvision.metadata.MetaDataNotSupportedException;
-
 import vidada.model.metadata.MediaMetaAttribute;
 import vidada.model.metadata.MetaDataSupport;
 import vidada.model.settings.VidadaClientSettings;
-import archimedesJ.data.hashing.FileHashAlgorythms;
-import archimedesJ.data.hashing.IFileHashAlgorythm;
-import archimedesJ.io.locations.ResourceLocation;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Provides file-hash utility functions

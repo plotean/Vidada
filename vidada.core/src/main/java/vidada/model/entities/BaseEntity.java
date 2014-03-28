@@ -1,12 +1,12 @@
 package vidada.model.entities;
 
 
+import archimedes.core.data.observable.ObservableBean;
+
 import javax.persistence.Access;
 import javax.persistence.AccessType;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-
-import archimedesJ.data.observable.ObservableBean;
 
 /**
  * Base class for all DB Entities. 

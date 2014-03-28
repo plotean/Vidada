@@ -1,7 +1,7 @@
 package vidada.model.pagination;
 
-import archimedesJ.events.EventArgs;
-import archimedesJ.events.IEvent;
+import archimedes.core.events.EventArgs;
+import archimedes.core.events.IEvent;
 
 /**
  * Represents an object T which can be loaded later.

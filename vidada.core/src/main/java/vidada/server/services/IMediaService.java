@@ -1,13 +1,13 @@
 package vidada.server.services;
 
-import java.util.Collection;
-import java.util.List;
-
+import archimedes.core.io.locations.ResourceLocation;
 import vidada.IVidadaServer;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaQuery;
 import vidada.model.pagination.ListPage;
-import archimedesJ.io.locations.ResourceLocation;
+
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Manages all medias on a {@link IVidadaServer}

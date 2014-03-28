@@ -1,19 +1,15 @@
 package vidada.model.media;
 
+
+import archimedes.core.io.locations.*;
+import archimedes.core.util.FileSupport;
+import archimedes.core.util.Lists;
+
 import java.beans.Transient;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
-
-import archimedesJ.io.locations.DirectoryLocation;
-import archimedesJ.io.locations.IDirectoryFilter;
-import archimedesJ.io.locations.ILocationFilter;
-import archimedesJ.io.locations.LocationFilters;
-import archimedesJ.io.locations.ResourceLocation;
-import archimedesJ.io.locations.UniformLocation;
-import archimedesJ.util.FileSupport;
-import archimedesJ.util.Lists;
 
 /**
  * Represents an abstract directory containing media files.
@@ -79,8 +75,8 @@ public final class MediaDirectory {
 	public URI getRelativePath(ResourceLocation absoluteLibraryFile){
 
 		URI relativeFile = FileSupport.getRelativePath(
-				absoluteLibraryFile.getUri(),
-				directory.getUri());
+                absoluteLibraryFile.getUri(),
+                directory.getUri());
 
 		if(absoluteLibraryFile.getUri().getPath().equals(relativeFile.getPath()))
 			relativeFile = null;
@@ -128,8 +124,8 @@ public final class MediaDirectory {
 		if(directory != null){
 
 			ILocationFilter filter = LocationFilters.or(
-					LocationFilters.AcceptAllDirs,
-					buildFilter());
+                    LocationFilters.AcceptAllDirs,
+                    buildFilter());
 
 			return Lists.asTypedList(directory.listAll(filter));
 		}

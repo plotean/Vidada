@@ -1,8 +1,8 @@
 package vlc;
 
-import archimedesJ.util.Lists;
-import archimedesJ.util.OSValidator;
-import archimedesJ.util.RegistryUtil;
+import archimedes.core.util.Lists;
+import archimedes.core.util.OSValidator;
+import archimedes.core.util.RegistryUtil;
 
 import java.io.File;
 import java.util.ArrayList;

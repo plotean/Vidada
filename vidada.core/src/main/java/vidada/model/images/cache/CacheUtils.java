@@ -1,14 +1,14 @@
 package vidada.model.images.cache;
 
+import archimedes.core.geometry.Size;
+import archimedes.core.images.IMemoryImage;
+import archimedes.core.util.Debug;
+import archimedes.core.util.Lists;
+
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
-
-import archimedesJ.geometry.Size;
-import archimedesJ.images.IMemoryImage;
-import archimedesJ.util.Debug;
-import archimedesJ.util.Lists;
 
 /**
  * Provides some image cache extension methods

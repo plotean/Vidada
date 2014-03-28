@@ -1,12 +1,12 @@
 package vidada.model.pagination;
 
+import archimedes.core.data.events.CollectionEventArg;
+import archimedes.core.events.EventHandlerEx;
+import archimedes.core.events.EventListenerEx;
+import archimedes.core.events.IEvent;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import archimedesJ.data.events.CollectionEventArg;
-import archimedesJ.events.EventHandlerEx;
-import archimedesJ.events.EventListenerEx;
-import archimedesJ.events.IEvent;
 
 /**
  * Virtual data source adapter

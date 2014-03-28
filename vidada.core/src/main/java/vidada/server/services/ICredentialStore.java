@@ -1,10 +1,10 @@
 package vidada.server.services;
 
-import java.util.List;
-
+import archimedes.core.security.Credentials;
 import vidada.model.security.AuthenticationRequieredException;
 import vidada.model.security.StoredCredentials;
-import archimedesJ.security.Credentials;
+
+import java.util.List;
 
 public interface ICredentialStore {
 

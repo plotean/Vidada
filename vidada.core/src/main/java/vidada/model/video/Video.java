@@ -1,11 +1,11 @@
 package vidada.model.video;
 
-import java.io.IOException;
+import archimedes.core.geometry.Size;
+import archimedes.core.images.IMemoryImage;
+import archimedes.core.io.locations.IResourceAccessContext;
+import archimedes.core.io.locations.ResourceLocation;
 
-import archimedesJ.geometry.Size;
-import archimedesJ.images.IMemoryImage;
-import archimedesJ.io.locations.IResourceAccessContext;
-import archimedesJ.io.locations.ResourceLocation;
+import java.io.IOException;
 
 /**
  * Represents a Video-File

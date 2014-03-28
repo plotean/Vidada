@@ -1,7 +1,8 @@
 package vidada.services;
 
-import archimedesJ.io.locations.ResourceLocation;
-import archimedesJ.services.IService;
+
+import archimedes.core.io.locations.ResourceLocation;
+import archimedes.core.services.IService;
 import vidada.handlers.IMediaHandler;
 import vidada.model.media.MediaItem;
 
@@ -13,7 +14,7 @@ import java.util.List;
  * @author IsNull
  *
  */
-public interface IMediaPresenterService extends IService{
+public interface IMediaPresenterService extends IService {
 
 	/**
 	 * Show the given Media to the user.

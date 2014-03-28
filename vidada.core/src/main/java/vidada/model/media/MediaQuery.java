@@ -1,11 +1,11 @@
 package vidada.model.media;
 
+import vidada.model.queries.AbstractQuery;
+import vidada.model.tags.Tag;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-import vidada.model.queries.AbstractQuery;
-import vidada.model.tags.Tag;
 
 /**
  * Represents an abstract media query.

@@ -1,15 +1,9 @@
 package vidada.model.media.importer;
 
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
+import archimedes.core.io.locations.ResourceLocation;
+import archimedes.core.threading.IProgressListener;
+import archimedes.core.threading.ProgressEventArgs;
+import archimedes.core.util.Lists;
 import vidada.model.media.MediaHashUtil;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaItemFactory;
@@ -24,10 +18,10 @@ import vidada.model.tags.autoTag.KeywordBasedTagGuesser;
 import vidada.server.services.IMediaLibraryService;
 import vidada.server.services.IMediaService;
 import vidada.server.services.ITagService;
-import archimedesJ.io.locations.ResourceLocation;
-import archimedesJ.threading.IProgressListener;
-import archimedesJ.threading.ProgressEventArgs;
-import archimedesJ.util.Lists;
+
+import java.net.URI;
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * This class implements basic media import functionality

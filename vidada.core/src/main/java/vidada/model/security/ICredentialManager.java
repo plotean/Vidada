@@ -1,10 +1,11 @@
 package vidada.model.security;
 
-import archimedesJ.security.CredentialType;
-import archimedesJ.security.Credentials;
-import archimedesJ.services.IService;
 
-public interface ICredentialManager extends IService{
+import archimedes.core.security.CredentialType;
+import archimedes.core.security.Credentials;
+import archimedes.core.services.IService;
+
+public interface ICredentialManager extends IService {
 
 	/**
 	 * Delegate to check credentials

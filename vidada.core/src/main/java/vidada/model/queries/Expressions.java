@@ -1,6 +1,6 @@
 package vidada.model.queries;
 
-import archimedesJ.util.Lists;
+import archimedes.core.util.Lists;
 
 import java.util.ArrayList;
 import java.util.List;

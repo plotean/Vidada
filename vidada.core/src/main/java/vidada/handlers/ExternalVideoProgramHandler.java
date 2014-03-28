@@ -1,8 +1,8 @@
 package vidada.handlers;
 
+import archimedes.core.io.locations.ResourceLocation;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaType;
-import archimedesJ.io.locations.ResourceLocation;
 
 
 public class ExternalVideoProgramHandler extends ExternalMediaProgramHandler {

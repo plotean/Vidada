@@ -1,7 +1,7 @@
 package vidada.model.media.importer;
 
+import archimedes.core.threading.IProgressListener;
 import vidada.model.media.MediaLibrary;
-import archimedesJ.threading.IProgressListener;
 
 
 public interface IMediaImportStrategy {

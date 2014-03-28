@@ -1,19 +1,18 @@
 package vidada.model.media;
 
-import java.beans.Transient;
-import java.io.File;
-import java.net.URISyntaxException;
-
-import javax.persistence.Access;
-import javax.persistence.AccessType;
-import javax.persistence.Entity;
-
+import archimedes.core.io.locations.DirectoryLocation;
 import vidada.model.entities.IdEntity;
 import vidada.model.images.cache.IImageCache;
 import vidada.model.images.cache.crypto.ImageCacheFactory;
 import vidada.model.media.extracted.IMediaPropertyStore;
 import vidada.model.media.extracted.MediaPropertyStore;
-import archimedesJ.io.locations.DirectoryLocation;
+
+import javax.persistence.Access;
+import javax.persistence.AccessType;
+import javax.persistence.Entity;
+import java.beans.Transient;
+import java.io.File;
+import java.net.URISyntaxException;
 
 /**
  * Represents an local user MediaLibrary folder.

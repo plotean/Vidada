@@ -1,9 +1,9 @@
 package vidada.model.video;
 
-import java.net.URI;
+import archimedes.core.geometry.Size;
+import archimedes.core.images.IMemoryImage;
 
-import archimedesJ.geometry.Size;
-import archimedesJ.images.IMemoryImage;
+import java.net.URI;
 
 /**
  * Provides access to a video, such as extracting metadata and creating snapshots

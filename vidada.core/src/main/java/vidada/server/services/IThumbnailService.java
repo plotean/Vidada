@@ -1,10 +1,10 @@
 package vidada.server.services;
 
+import archimedes.core.geometry.Size;
+import archimedes.core.images.IMemoryImage;
 import vidada.IVidadaServer;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MovieMediaItem;
-import archimedesJ.geometry.Size;
-import archimedesJ.images.IMemoryImage;
 
 /**
  * Manages all of a {@link IVidadaServer}
@@ -24,7 +24,6 @@ public interface IThumbnailService {
 	/**
 	 * For movie medias, creates a new thumb at the specific position
 	 * @param media
-	 * @param size
 	 * @param pos
 	 * @return
 	 */

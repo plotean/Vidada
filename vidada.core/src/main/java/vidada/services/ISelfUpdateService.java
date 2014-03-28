@@ -1,12 +1,12 @@
 package vidada.services;
 
+import archimedes.core.events.EventArgs;
+import archimedes.core.events.EventArgsG;
+import archimedes.core.events.IEvent;
+import archimedes.core.services.IService;
+import archimedes.core.threading.IAsyncTask;
 import vidada.model.update.SelfUpdateState;
 import vidada.model.update.UpdateInformation;
-import archimedesJ.events.EventArgs;
-import archimedesJ.events.EventArgsG;
-import archimedesJ.events.IEvent;
-import archimedesJ.services.IService;
-import archimedesJ.threading.IAsyncTask;
 
 /**
  * This service handles the self-update capabilities.

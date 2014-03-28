@@ -1,7 +1,7 @@
 package vidada.handlers;
 
+import archimedes.core.io.locations.ResourceLocation;
 import vidada.model.media.MediaItem;
-import archimedesJ.io.locations.ResourceLocation;
 
 /**
  * Generic Handler to construct a chain of responsibility

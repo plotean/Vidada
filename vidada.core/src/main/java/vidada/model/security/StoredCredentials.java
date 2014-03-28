@@ -1,15 +1,15 @@
 package vidada.model.security;
 
-import java.io.UnsupportedEncodingException;
+
+import archimedes.core.crypto.IByteBufferEncryption;
+import archimedes.core.crypto.XORByteCrypter;
+import archimedes.core.security.Credentials;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-
-import archimedesJ.crypto.IByteBufferEncryption;
-import archimedesJ.crypto.XORByteCrypter;
-import archimedesJ.security.Credentials;
+import java.io.UnsupportedEncodingException;
 
 /**
  * Represents a encrypted Credential-Set which can be safely persisted

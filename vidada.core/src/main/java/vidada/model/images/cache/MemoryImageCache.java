@@ -1,14 +1,14 @@
 package vidada.model.images.cache;
 
+import archimedes.core.data.caching.LRUCache;
+import archimedes.core.geometry.Size;
+import archimedes.core.images.IMemoryImage;
+
 import java.lang.ref.SoftReference;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
-import archimedesJ.data.caching.LRUCache;
-import archimedesJ.geometry.Size;
-import archimedesJ.images.IMemoryImage;
 
 /**
  * Implements a basic memory image cache for super fast 

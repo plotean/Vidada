@@ -1,8 +1,9 @@
 package vidada.handlers;
 
+import archimedes.core.io.locations.ResourceLocation;
+import archimedes.core.shell.ShellExec;
+import archimedes.core.shell.ShellParser;
 import vidada.model.media.MediaItem;
-import archimedesJ.io.ShellExec;
-import archimedesJ.io.locations.ResourceLocation;
 
 /**
  * This handler invokes an external program and passes the media URI and other parameters
@@ -21,7 +22,7 @@ public abstract class ExternalMediaProgramHandler extends AbstractMediaHandler {
 	 */
 	public ExternalMediaProgramHandler(String name, String command){
         super(name);
-		this.template = new CommandTemplate(ShellExec.parseCommand(command, true));
+		this.template = new CommandTemplate(ShellParser.parseCommand(command, true));
 	}
 
 

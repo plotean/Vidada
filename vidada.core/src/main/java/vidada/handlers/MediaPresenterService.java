@@ -1,7 +1,7 @@
 package vidada.handlers;
 
-import archimedesJ.io.locations.ResourceLocation;
-import archimedesJ.util.Lists;
+import archimedes.core.io.locations.ResourceLocation;
+import archimedes.core.util.Lists;
 import vidada.model.media.MediaItem;
 import vidada.services.IMediaPresenterService;
 

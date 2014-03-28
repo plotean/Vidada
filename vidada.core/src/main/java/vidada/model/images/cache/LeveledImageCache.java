@@ -1,9 +1,9 @@
 package vidada.model.images.cache;
 
-import java.util.Set;
+import archimedes.core.geometry.Size;
+import archimedes.core.images.IMemoryImage;
 
-import archimedesJ.geometry.Size;
-import archimedesJ.images.IMemoryImage;
+import java.util.Set;
 
 /**
  * Combines two caches 

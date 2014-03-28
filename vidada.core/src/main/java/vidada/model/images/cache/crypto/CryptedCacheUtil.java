@@ -1,21 +1,21 @@
 package vidada.model.images.cache.crypto;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-
+import archimedes.core.crypto.IByteBufferEncryption;
+import archimedes.core.crypto.KeyCurruptedException;
+import archimedes.core.crypto.KeyPad;
+import archimedes.core.crypto.XORByteCrypter;
+import archimedes.core.exceptions.NotSupportedException;
+import archimedes.core.io.locations.DirectoryLocation;
+import archimedes.core.io.locations.ResourceLocation;
+import archimedes.core.security.CredentialType;
+import archimedes.core.security.Credentials;
+import archimedes.core.util.Debug;
 import vidada.model.security.CredentialUtil;
 import vidada.model.security.ICredentialManager;
 import vidada.model.security.ICredentialManager.CredentialsChecker;
-import archimedesJ.crypto.IByteBufferEncryption;
-import archimedesJ.crypto.KeyCurruptedException;
-import archimedesJ.crypto.KeyPad;
-import archimedesJ.crypto.XORByteCrypter;
-import archimedesJ.exceptions.NotSupportedException;
-import archimedesJ.io.locations.DirectoryLocation;
-import archimedesJ.io.locations.ResourceLocation;
-import archimedesJ.security.CredentialType;
-import archimedesJ.security.Credentials;
-import archimedesJ.util.Debug;
+
+import java.io.IOException;
+import java.net.URISyntaxException;
 
 public class CryptedCacheUtil {
 

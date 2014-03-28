@@ -1,11 +1,11 @@
 package vidada.model.images.cache.crypto;
 
+import archimedes.core.io.locations.DirectoryLocation;
 import vidada.model.images.cache.IImageCache;
 import vidada.model.images.cache.ImageFileCache;
 import vidada.model.images.cache.LeveledImageCache;
 import vidada.model.security.AuthenticationException;
 import vidada.model.security.ICredentialManager;
-import archimedesJ.io.locations.DirectoryLocation;
 
 public class ImageCacheFactory {
 

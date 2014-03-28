@@ -1,11 +1,11 @@
 package vidada.server.services;
 
-import java.util.List;
-
+import archimedes.core.events.EventArgsG;
+import archimedes.core.events.IEvent;
+import archimedes.core.io.locations.ResourceLocation;
 import vidada.model.media.MediaLibrary;
-import archimedesJ.events.EventArgsG;
-import archimedesJ.events.IEvent;
-import archimedesJ.io.locations.ResourceLocation;
+
+import java.util.List;
 
 public interface IMediaLibraryService {
 

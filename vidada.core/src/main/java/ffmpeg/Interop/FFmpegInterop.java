@@ -1,9 +1,10 @@
 package ffmpeg.Interop;
 
-import archimedesJ.geometry.Size;
-import archimedesJ.io.ShellExec;
-import archimedesJ.util.OSValidator;
-import archimedesJ.util.PackageUtil;
+
+import archimedes.core.geometry.Size;
+import archimedes.core.shell.ShellExec;
+import archimedes.core.util.OSValidator;
+import archimedes.core.util.PackageUtil;
 import ffmpeg.FFmpegException;
 import org.apache.commons.io.FileUtils;
 import org.joda.time.Duration;

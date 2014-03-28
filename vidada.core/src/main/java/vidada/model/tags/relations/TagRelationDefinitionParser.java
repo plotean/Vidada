@@ -1,19 +1,13 @@
 package vidada.model.tags.relations;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Pattern;
-
 import org.apache.commons.io.FileUtils;
-
 import vidada.model.tags.Tag;
 import vidada.model.tags.TagFactory;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
+import java.util.regex.Pattern;
 
 public class TagRelationDefinitionParser {
 

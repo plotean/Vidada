@@ -1,7 +1,7 @@
 package vidada.model.media;
 
-import archimedesJ.enums.EnumConverter;
-import archimedesJ.enums.ReverseEnumMap;
+import archimedes.core.enums.EnumConverter;
+import archimedes.core.enums.ReverseEnumMap;
 
 /**
  * Lists all available media types

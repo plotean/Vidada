@@ -1,9 +1,9 @@
 package vidada.model.security;
 
-import archimedesJ.exceptions.NotImplementedException;
-import archimedesJ.exceptions.NotSupportedException;
-import archimedesJ.security.CredentialType;
-import archimedesJ.security.Credentials;
+import archimedes.core.exceptions.NotImplementedException;
+import archimedes.core.exceptions.NotSupportedException;
+import archimedes.core.security.CredentialType;
+import archimedes.core.security.Credentials;
 
 public class CredentialManager implements ICredentialManager {
 

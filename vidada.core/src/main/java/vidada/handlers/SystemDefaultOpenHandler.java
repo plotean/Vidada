@@ -1,9 +1,9 @@
 package vidada.handlers;
 
+import archimedes.core.io.locations.ResourceLocation;
 import vidada.model.media.MediaItem;
 import vidada.model.system.ISystemService;
 import vidada.services.ServiceProvider;
-import archimedesJ.io.locations.ResourceLocation;
 
 /**
  * Opens the media with the operating systems default registered

@@ -1,32 +1,24 @@
 package vidada.model.media;
 
-import java.beans.Transient;
-import java.net.URI;
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
-import javax.xml.bind.annotation.XmlRootElement;
-
+import archimedes.core.data.observable.IObservableCollection;
+import archimedes.core.data.observable.ObservableCollection;
+import archimedes.core.geometry.Size;
+import archimedes.core.util.Lists;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.joda.time.DateTime;
-
 import vidada.model.entities.BaseEntity;
 import vidada.model.media.source.MediaSource;
 import vidada.model.media.source.MediaSourceLocal;
 import vidada.model.tags.Tag;
-import archimedesJ.data.observable.IObservableCollection;
-import archimedesJ.data.observable.ObservableCollection;
-import archimedesJ.geometry.Size;
-import archimedesJ.util.Lists;
 
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import javax.persistence.*;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.beans.Transient;
+import java.net.URI;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Represents a single media item
@@ -105,8 +97,7 @@ public abstract class MediaItem extends BaseEntity {
 	 * Creates a new MediaData item assigned to the given MediaLibrary and with
 	 * the relative file path
 	 * 
-	 * @param parentLibrary
-	 * @param relativeFilePath
+	 * @param mediaSource
 	 */
 	protected MediaItem(MediaSourceLocal mediaSource) {
 		addSource(mediaSource);
@@ -214,7 +205,7 @@ public abstract class MediaItem extends BaseEntity {
 	/**
 	 * Internal access to set the sources
 	 * 
-	 * @param tags
+	 * @param sources
 	 */
 	protected void setSources(Set<MediaSource> sources) {
 		this.sources = sources;
@@ -224,7 +215,7 @@ public abstract class MediaItem extends BaseEntity {
 	/**
 	 * Add the given source to this media item
 	 * 
-	 * @param tag
+	 * @param source
 	 */
 	public void addSource(MediaSource source) {
 		if (!getSources().contains(source)) {
@@ -236,7 +227,7 @@ public abstract class MediaItem extends BaseEntity {
 	/**
 	 * Remove the given source from this media item
 	 * 
-	 * @param tag
+	 * @param source
 	 */
 	public void removeSource(MediaSource source) {
 		if (getSources().contains(source)) {

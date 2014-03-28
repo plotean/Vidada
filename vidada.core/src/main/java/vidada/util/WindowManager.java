@@ -1,9 +1,9 @@
 package vidada.util;
 
+import archimedes.core.util.OSValidator;
+
 import java.io.File;
 import java.io.IOException;
-
-import archimedesJ.util.OSValidator;
 
 public abstract class WindowManager {
 

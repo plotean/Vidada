@@ -1,11 +1,11 @@
 package vidada.model.tags.autoTag;
 
+import vidada.model.media.MediaItem;
+import vidada.model.tags.Tag;
+
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-
-import vidada.model.media.MediaItem;
-import vidada.model.tags.Tag;
 
 public class AutoTagSupport {
 

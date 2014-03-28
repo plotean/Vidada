@@ -1,11 +1,6 @@
 package vidada;
 
-import vidada.server.services.IJobService;
-import vidada.server.services.IMediaImportService;
-import vidada.server.services.IMediaLibraryService;
-import vidada.server.services.IMediaService;
-import vidada.server.services.ITagService;
-import vidada.server.services.IThumbnailService;
+import vidada.server.services.*;
 
 /**
  * Represents a Vidada server

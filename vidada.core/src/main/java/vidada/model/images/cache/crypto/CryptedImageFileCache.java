@@ -1,16 +1,17 @@
 package vidada.model.images.cache.crypto;
 
+
+import archimedes.core.crypto.IByteBufferEncryption;
+import archimedes.core.crypto.XORByteCrypter;
+import archimedes.core.images.IMemoryImage;
+import archimedes.core.io.locations.DirectoryLocation;
+import archimedes.core.io.locations.ResourceLocation;
+import vidada.model.images.cache.ImageFileCache;
+import vidada.model.security.AuthenticationException;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-
-import vidada.model.images.cache.ImageFileCache;
-import vidada.model.security.AuthenticationException;
-import archimedesJ.crypto.IByteBufferEncryption;
-import archimedesJ.crypto.XORByteCrypter;
-import archimedesJ.images.IMemoryImage;
-import archimedesJ.io.locations.DirectoryLocation;
-import archimedesJ.io.locations.ResourceLocation;
 
 /**
  * Represents a encrypted image cache

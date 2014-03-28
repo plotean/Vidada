@@ -1,6 +1,7 @@
 package ffmpeg;
 
-import archimedesJ.util.FileSupport;
+
+import archimedes.core.util.FileSupport;
 
 /**
  * Indicates a problem related in the native ffmpeg system

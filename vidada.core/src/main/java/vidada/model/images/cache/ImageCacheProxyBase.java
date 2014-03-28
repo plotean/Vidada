@@ -1,10 +1,10 @@
 package vidada.model.images.cache;
 
+import archimedes.core.geometry.Size;
+import archimedes.core.images.IMemoryImage;
+
 import java.util.HashSet;
 import java.util.Set;
-
-import archimedesJ.geometry.Size;
-import archimedesJ.images.IMemoryImage;
 
 /**
  * Base class for image cache proxy. 

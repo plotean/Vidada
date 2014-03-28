@@ -1,11 +1,11 @@
 package vidada.model.metadata;
 
-import java.io.File;
-import java.net.URI;
-
 import org.securityvision.metadata.FileMetaDataSupportFactory;
 import org.securityvision.metadata.IFileMetaDataSupport;
 import org.securityvision.metadata.MetaDataNotSupportedException;
+
+import java.io.File;
+import java.net.URI;
 
 /**
  * MetaData Support

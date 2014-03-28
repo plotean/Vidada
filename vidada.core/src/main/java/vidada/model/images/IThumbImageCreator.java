@@ -1,8 +1,8 @@
 package vidada.model.images;
 
+import archimedes.core.geometry.Size;
+import archimedes.core.images.IMemoryImage;
 import vidada.model.media.MediaItem;
-import archimedesJ.geometry.Size;
-import archimedesJ.images.IMemoryImage;
 
 public interface IThumbImageCreator {
 

@@ -1,14 +1,10 @@
 package vidada.services;
 
 
+import archimedes.core.services.*;
 import vidada.handlers.MediaPresenterService;
 import vidada.model.security.CredentialManager;
 import vidada.model.security.ICredentialManager;
-import archimedesJ.services.ILocator;
-import archimedesJ.services.ISelectionService;
-import archimedesJ.services.IService;
-import archimedesJ.services.SelectionService;
-import archimedesJ.services.ServiceLocator;
 
 
 /**

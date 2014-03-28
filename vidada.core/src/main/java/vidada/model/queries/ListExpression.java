@@ -1,9 +1,9 @@
 package vidada.model.queries;
 
-import java.util.List;
+import archimedes.core.expressions.BinaryCombination;
+import archimedes.core.util.Lists;
 
-import archimedesJ.expressions.BinaryCombination;
-import archimedesJ.util.Lists;
+import java.util.List;
 
 /**
  * Conjunction and Disjunction helper class

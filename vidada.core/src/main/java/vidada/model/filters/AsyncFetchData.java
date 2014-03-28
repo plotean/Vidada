@@ -1,11 +1,11 @@
 package vidada.model.filters;
 
-import archimedesJ.events.EventArgsG;
-import archimedesJ.events.EventHandlerEx;
-import archimedesJ.events.IEvent;
-import archimedesJ.threading.CancelableTask;
-import archimedesJ.threading.CancellationTokenSource.CancellationToken;
-import archimedesJ.threading.CancellationTokenSource.OperationCanceledException;
+import archimedes.core.events.EventArgsG;
+import archimedes.core.events.EventHandlerEx;
+import archimedes.core.events.IEvent;
+import archimedes.core.threading.CancelableTask;
+import archimedes.core.threading.CancellationTokenSource.CancellationToken;
+import archimedes.core.threading.CancellationTokenSource.OperationCanceledException;
 
 /**
  * Represents a cancelable task which executes a query

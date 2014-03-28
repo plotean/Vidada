@@ -1,16 +1,15 @@
 package vidada.model.media.source;
 
-import java.beans.Transient;
-import java.net.URI;
-import java.net.URISyntaxException;
+import archimedes.core.io.locations.ResourceLocation;
+import vidada.model.media.MediaLibrary;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
-
-import vidada.model.media.MediaLibrary;
-import archimedesJ.io.locations.ResourceLocation;
+import java.beans.Transient;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  * Represents a media source. This can be a local file, a web resource, smb shared resource

@@ -1,9 +1,8 @@
 package vidada.model.media;
 
-import java.net.URI;
-
 import javax.persistence.Entity;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.net.URI;
 
 /**
  * Represents a playable MoviePart. A full Movie can be composed of multiple

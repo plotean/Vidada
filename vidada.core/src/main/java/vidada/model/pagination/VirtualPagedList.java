@@ -1,13 +1,13 @@
 package vidada.model.pagination;
 
+import archimedes.core.data.events.CollectionEventArg;
+import archimedes.core.events.EventArgs;
+import archimedes.core.events.EventHandlerEx;
+import archimedes.core.events.EventListenerEx;
+import archimedes.core.events.IEvent;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import archimedesJ.data.events.CollectionEventArg;
-import archimedesJ.events.EventArgs;
-import archimedesJ.events.EventHandlerEx;
-import archimedesJ.events.EventListenerEx;
-import archimedesJ.events.IEvent;
 
 /**
  * Represents a List-Datasource which supports asynchronous loading of data.

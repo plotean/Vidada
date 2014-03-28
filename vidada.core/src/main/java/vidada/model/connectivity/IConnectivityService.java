@@ -1,8 +1,8 @@
 package vidada.model.connectivity;
 
-import java.io.File;
+import archimedes.core.services.IService;
 
-import archimedesJ.services.IService;
+import java.io.File;
 
 public interface IConnectivityService extends IService{
 

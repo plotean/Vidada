@@ -1,7 +1,7 @@
 package vidada.model.pagination;
 
-import archimedesJ.data.events.CollectionEventArg;
-import archimedesJ.events.IEvent;
+import archimedes.core.data.events.CollectionEventArg;
+import archimedes.core.events.IEvent;
 
 /**
  * Generic read-only observable data provider

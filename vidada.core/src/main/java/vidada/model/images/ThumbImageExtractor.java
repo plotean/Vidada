@@ -1,8 +1,10 @@
 package vidada.model.images;
 
-import java.io.IOException;
-import java.io.InputStream;
-
+import archimedes.core.exceptions.NotSupportedException;
+import archimedes.core.geometry.Size;
+import archimedes.core.images.IMemoryImage;
+import archimedes.core.images.IRawImageFactory;
+import archimedes.core.io.locations.ResourceLocation;
 import vidada.model.media.ImageMediaItem;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaType;
@@ -10,11 +12,9 @@ import vidada.model.media.MovieMediaItem;
 import vidada.model.media.source.MediaSource;
 import vidada.model.video.Video;
 import vidada.services.ServiceProvider;
-import archimedesJ.exceptions.NotSupportedException;
-import archimedesJ.geometry.Size;
-import archimedesJ.images.IMemoryImage;
-import archimedesJ.images.IRawImageFactory;
-import archimedesJ.io.locations.ResourceLocation;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 public class ThumbImageExtractor implements IThumbImageCreator {
 

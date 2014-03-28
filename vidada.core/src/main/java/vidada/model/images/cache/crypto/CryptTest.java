@@ -1,9 +1,9 @@
 package vidada.model.images.cache.crypto;
 
-import archimedesJ.crypto.KeyCurruptedException;
-import archimedesJ.crypto.KeyPad;
-import archimedesJ.security.Credentials;
-import archimedesJ.util.Debug;
+import archimedes.core.crypto.KeyCurruptedException;
+import archimedes.core.crypto.KeyPad;
+import archimedes.core.security.Credentials;
+import archimedes.core.util.Debug;
 
 public class CryptTest {
 

@@ -1,9 +1,9 @@
 package vidada.model.tags.autoTag;
 
-import java.util.Set;
-
 import vidada.model.media.MediaItem;
 import vidada.model.tags.Tag;
+
+import java.util.Set;
 
 /**
  * Implements the AutoTag feature, so that for each media item

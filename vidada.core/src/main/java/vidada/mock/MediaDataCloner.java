@@ -1,12 +1,12 @@
 package vidada.mock;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
 import vidada.model.media.ImageMediaItem;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MovieMediaItem;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 public class MediaDataCloner {
 

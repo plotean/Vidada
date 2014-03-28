@@ -1,12 +1,12 @@
 package vidada.model.media;
 
+import archimedes.core.io.locations.ILocationFilter;
+import archimedes.core.io.locations.LocationFilters;
+import archimedes.core.io.locations.ResourceLocation;
+import archimedes.core.util.Lists;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import archimedesJ.io.locations.ILocationFilter;
-import archimedesJ.io.locations.LocationFilters;
-import archimedesJ.io.locations.ResourceLocation;
-import archimedesJ.util.Lists;
 
 public class MediaFileInfo {
 	private MediaType type;

@@ -1,6 +1,6 @@
 package vidada.model.media;
 
-import archimedesJ.io.locations.ResourceLocation;
+import archimedes.core.io.locations.ResourceLocation;
 import org.joda.time.DateTime;
 
 import java.io.File;

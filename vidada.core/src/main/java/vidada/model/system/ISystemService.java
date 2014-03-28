@@ -1,7 +1,7 @@
 package vidada.model.system;
 
-import archimedesJ.io.locations.ResourceLocation;
-import archimedesJ.services.IService;
+import archimedes.core.io.locations.ResourceLocation;
+import archimedes.core.services.IService;
 
 /**
  * Provides platform specific general file explorer methods

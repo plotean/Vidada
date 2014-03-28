@@ -1,9 +1,6 @@
 package vidada.model.images;
 
-import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
-
+import archimedes.core.io.locations.DirectoryLocation;
 import vidada.model.images.cache.IImageCache;
 import vidada.model.images.cache.ImageCacheProxyBase;
 import vidada.model.images.cache.MemoryImageCache;
@@ -14,7 +11,10 @@ import vidada.model.media.source.MediaSource;
 import vidada.model.media.source.MediaSourceLocal;
 import vidada.model.security.ICredentialManager;
 import vidada.services.ServiceProvider;
-import archimedesJ.io.locations.DirectoryLocation;
+
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Manages the local image caches
@@ -70,7 +70,7 @@ public class LocalImageCacheManager {
 		IImageCache cache = null;
 
 		File absCacheLocation = new File(cacheLocation.getAbsolutePath());
-		DirectoryLocation localCacheLocation = 
+		DirectoryLocation localCacheLocation =
 				DirectoryLocation.Factory.create(absCacheLocation);
 
 		cache = cacheFactory.openEncryptedCache(localCacheLocation, credentialManager);

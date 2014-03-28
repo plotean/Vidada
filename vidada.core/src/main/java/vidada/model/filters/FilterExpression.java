@@ -1,8 +1,8 @@
 package vidada.model.filters;
 
-import java.io.File;
-
 import org.apache.commons.io.filefilter.IOFileFilter;
+
+import java.io.File;
 
 /**
  * Provides filter expression building methods

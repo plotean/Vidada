@@ -1,12 +1,12 @@
 package vidada.model.tags.relations;
 
+import vidada.model.tags.Tag;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-
-import vidada.model.tags.Tag;
 
 /**
  * Represents all tag-relations in memory

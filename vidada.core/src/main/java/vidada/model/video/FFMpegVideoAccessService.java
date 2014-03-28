@@ -1,19 +1,18 @@
 package vidada.model.video;
 
+import archimedes.core.geometry.Size;
+import archimedes.core.images.IMemoryImage;
+import archimedes.core.images.IRawImageFactory;
+import ffmpeg.FFmpegException;
+import ffmpeg.Interop.FFmpegInterop;
+import org.apache.commons.io.FileUtils;
+import vidada.services.ServiceProvider;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.apache.commons.io.FileUtils;
-
-import vidada.services.ServiceProvider;
-import archimedesJ.geometry.Size;
-import archimedesJ.images.IMemoryImage;
-import archimedesJ.images.IRawImageFactory;
-import ffmpeg.FFmpegException;
-import ffmpeg.Interop.FFmpegInterop;
 
 public class FFMpegVideoAccessService implements IVideoAccessService {
 

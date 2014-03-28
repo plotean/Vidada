@@ -1,10 +1,10 @@
 package vidada.model.jobs;
 
 
+import archimedes.core.exceptions.NotSupportedException;
+import archimedes.core.threading.IProgressListener;
+import archimedes.core.threading.ProgressEventArgs;
 import vidada.server.services.IJobService;
-import archimedesJ.exceptions.NotSupportedException;
-import archimedesJ.threading.IProgressListener;
-import archimedesJ.threading.ProgressEventArgs;
 
 public class JobServiceProgressListener implements IProgressListener {
 

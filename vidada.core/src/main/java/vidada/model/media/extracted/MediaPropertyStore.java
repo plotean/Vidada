@@ -1,19 +1,18 @@
 package vidada.model.media.extracted;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-import vidada.model.media.MediaItem;
-
+import archimedes.core.exceptions.NotImplementedException;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import vidada.model.media.MediaItem;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MediaPropertyStore implements IMediaPropertyStore {
 

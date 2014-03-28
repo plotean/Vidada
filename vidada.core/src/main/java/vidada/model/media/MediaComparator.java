@@ -1,8 +1,8 @@
 package vidada.model.media;
 
-import java.util.Comparator;
+import archimedes.core.exceptions.NotSupportedException;
 
-import archimedesJ.exceptions.NotSupportedException;
+import java.util.Comparator;
 
 public class MediaComparator implements Comparator<MediaItem>{
 

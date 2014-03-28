@@ -1,23 +1,19 @@
 package vidada.model.media.info;
 
-import java.io.IOException;
-import java.io.InputStream;
-
-import vidada.model.media.ImageMediaItem;
-import vidada.model.media.MediaItem;
-import vidada.model.media.MediaLibrary;
-import vidada.model.media.MediaType;
-import vidada.model.media.MovieMediaItem;
+import archimedes.core.exceptions.NotSupportedException;
+import archimedes.core.geometry.Size;
+import archimedes.core.io.locations.ResourceLocation;
+import archimedes.core.swing.images.ImageInfo;
+import archimedes.core.swing.images.SimpleImageInfo;
+import vidada.model.media.*;
 import vidada.model.media.extracted.IMediaPropertyStore;
 import vidada.model.media.source.MediaSource;
 import vidada.model.media.source.MediaSourceLocal;
 import vidada.model.video.Video;
 import vidada.model.video.VideoInfo;
-import archimedesJ.exceptions.NotSupportedException;
-import archimedesJ.geometry.Size;
-import archimedesJ.io.locations.ResourceLocation;
-import archimedesJ.swing.images.ImageInfo;
-import archimedesJ.swing.images.SimpleImageInfo;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 public class MediaInfoUpdateService implements IMediaInfoUpdateService {
 

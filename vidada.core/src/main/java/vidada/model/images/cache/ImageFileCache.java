@@ -1,25 +1,21 @@
 package vidada.model.images.cache;
 
+
+import archimedes.core.data.BiTuple;
+import archimedes.core.geometry.Size;
+import archimedes.core.images.IMemoryImage;
+import archimedes.core.images.IRawImageFactory;
+import archimedes.core.io.locations.DirectoryLocation;
+import archimedes.core.io.locations.ResourceLocation;
+import org.apache.commons.io.output.ByteArrayOutputStream;
+import vidada.services.ServiceProvider;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.apache.commons.io.output.ByteArrayOutputStream;
-
-import vidada.services.ServiceProvider;
-import archimedesJ.data.BiTuple;
-import archimedesJ.geometry.Size;
-import archimedesJ.images.IMemoryImage;
-import archimedesJ.images.IRawImageFactory;
-import archimedesJ.io.locations.DirectoryLocation;
-import archimedesJ.io.locations.ResourceLocation;
+import java.util.*;
 
 
 /**

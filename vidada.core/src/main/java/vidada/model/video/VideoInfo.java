@@ -1,6 +1,7 @@
 package vidada.model.video;
 
-import archimedesJ.geometry.Size;
+
+import archimedes.core.geometry.Size;
 
 public class VideoInfo {
 
