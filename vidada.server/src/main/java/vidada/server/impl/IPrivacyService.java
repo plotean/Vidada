@@ -2,10 +2,10 @@ package vidada.server.impl;
 
 import vidada.model.security.AuthenticationException;
 import vidada.model.security.AuthenticationRequieredException;
-import archimedesJ.events.EventArgs;
-import archimedesJ.events.IEvent;
-import archimedesJ.security.Credentials;
-import archimedesJ.services.IService;
+import archimedes.core.events.EventArgs;
+import archimedes.core.events.IEvent;
+import archimedes.core.security.Credentials;
+import archimedes.core.services.IService;
 
 /**
  * Manages privacy settings

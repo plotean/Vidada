@@ -10,7 +10,7 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 import vidada.viewsFX.controls.TagControl;
 import vidada.viewsFX.controls.TagItPanel;
-import archimedesJ.util.Lists;
+import archimedes.core.util.Lists;
 
 public class FxApp extends  javafx.application.Application {
 

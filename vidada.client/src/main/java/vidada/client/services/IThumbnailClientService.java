@@ -1,8 +1,8 @@
 package vidada.client.services;
 
 import vidada.model.media.MediaItem;
-import archimedesJ.geometry.Size;
-import archimedesJ.images.IMemoryImage;
+import archimedes.core.geometry.Size;
+import archimedes.core.images.IMemoryImage;
 
 public interface IThumbnailClientService {
 

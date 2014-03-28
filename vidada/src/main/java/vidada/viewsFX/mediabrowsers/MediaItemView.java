@@ -1,15 +1,15 @@
 package vidada.viewsFX.mediabrowsers;
 
-import archimedesJ.events.EventArgs;
-import archimedesJ.events.EventListenerEx;
-import archimedesJ.exceptions.NotSupportedException;
-import archimedesJ.images.IRawImageFactory;
-import archimedesJ.images.ImageContainer;
-import archimedesJ.images.viewer.IImageViewerService;
-import archimedesJ.images.viewer.ISmartImage;
-import archimedesJ.images.viewer.SmartImageLazy;
-import archimedesJ.io.locations.ResourceLocation;
-import archimedesJ.util.FileSupport;
+import archimedes.core.events.EventArgs;
+import archimedes.core.events.EventListenerEx;
+import archimedes.core.exceptions.NotSupportedException;
+import archimedes.core.images.IRawImageFactory;
+import archimedes.core.images.ImageContainer;
+import archimedes.core.images.viewer.IImageViewerService;
+import archimedes.core.images.viewer.ISmartImage;
+import archimedes.core.images.viewer.SmartImageLazy;
+import archimedes.core.io.locations.ResourceLocation;
+import archimedes.core.util.FileSupport;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;

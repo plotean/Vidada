@@ -13,11 +13,11 @@ import vidada.model.media.OrderProperty;
 import vidada.model.pagination.IPageLoader;
 import vidada.model.pagination.ListPage;
 import vidada.model.pagination.VirtualPagedList;
-import archimedesJ.events.EventArgs;
-import archimedesJ.events.EventListenerEx;
-import archimedesJ.threading.CancellationTokenSource;
-import archimedesJ.threading.CancellationTokenSource.CancellationToken;
-import archimedesJ.threading.CancellationTokenSource.OperationCanceledException;
+import archimedes.core.events.EventArgs;
+import archimedes.core.events.EventListenerEx;
+import archimedes.core.threading.CancellationTokenSource;
+import archimedes.core.threading.CancellationTokenSource.CancellationToken;
+import archimedes.core.threading.CancellationTokenSource.OperationCanceledException;
 
 /**
  * Represents a binding between a mediabrowser model an filter settings.

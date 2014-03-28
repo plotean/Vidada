@@ -5,9 +5,9 @@ import java.util.List;
 import vidada.client.viewmodel.tags.TagViewModel;
 import vidada.model.tags.Tag;
 import vidada.model.tags.TagState;
-import archimedesJ.data.events.CollectionEventArg;
-import archimedesJ.events.EventArgsG;
-import archimedesJ.events.IEvent;
+import archimedes.core.data.events.CollectionEventArg;
+import archimedes.core.events.EventArgsG;
+import archimedes.core.events.IEvent;
 
 /**
  * This view model provides tag-states (only read is supported)

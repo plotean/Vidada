@@ -12,9 +12,9 @@ import vidada.IVidadaServer;
 import vidada.model.media.MediaLibrary;
 import vidada.model.settings.VidadaClientSettings;
 import vidada.views.ImageResources;
-import archimedesJ.expressions.Predicate;
-import archimedesJ.io.locations.DirectoryLocation;
-import archimedesJ.swing.components.ChooseFileDialog;
+import archimedes.core.expressions.Predicate;
+import archimedes.core.io.locations.DirectoryLocation;
+import archimedes.core.swing.components.ChooseFileDialog;
 
 
 

@@ -1,6 +1,6 @@
 package vidada.server.dal.repositories;
 
-import archimedesJ.services.IService;
+import archimedes.core.services.IService;
 
 public interface IRepository extends IService {
 

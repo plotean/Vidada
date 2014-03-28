@@ -1,9 +1,9 @@
 package vidada.viewsFX.images;
 
-import archimedesJ.images.ImageContainer;
-import archimedesJ.images.ImageContainerBase;
-import archimedesJ.images.viewer.IImageProvider;
-import archimedesJ.images.viewer.ISmartImage;
+import archimedes.core.images.ImageContainer;
+import archimedes.core.images.ImageContainerBase;
+import archimedes.core.images.viewer.IImageProvider;
+import archimedes.core.images.viewer.ISmartImage;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;

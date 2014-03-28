@@ -3,10 +3,10 @@ package vidada.viewsFX.images;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import archimedesJ.images.viewer.IImageProvider;
-import archimedesJ.images.viewer.IImageViewerService;
-import archimedesJ.images.viewer.ISmartImage;
-import archimedesJ.images.viewer.StaticImageProvider;
+import archimedes.core.images.viewer.IImageProvider;
+import archimedes.core.images.viewer.IImageViewerService;
+import archimedes.core.images.viewer.ISmartImage;
+import archimedes.core.images.viewer.StaticImageProvider;
 
 public class ImageViewerServiceFx implements IImageViewerService {
 

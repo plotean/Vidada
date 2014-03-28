@@ -1,12 +1,12 @@
 package vidada;
 
-import java.awt.Desktop;
-import java.io.File;
-import java.io.IOException;
-
+import archimedes.core.io.locations.ResourceLocation;
 import vidada.model.system.ISystemService;
 import vidada.util.WindowManager;
-import archimedesJ.io.locations.ResourceLocation;
+
+import java.awt.*;
+import java.io.File;
+import java.io.IOException;
 
 public class SystemService implements ISystemService{
 

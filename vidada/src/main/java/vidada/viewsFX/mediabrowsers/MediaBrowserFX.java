@@ -1,9 +1,9 @@
 package vidada.viewsFX.mediabrowsers;
 
 
-import archimedesJ.events.EventArgs;
-import archimedesJ.events.EventListenerEx;
-import archimedesJ.services.ISelectionManager;
+import archimedes.core.events.EventArgs;
+import archimedes.core.events.EventListenerEx;
+import archimedes.core.services.ISelectionManager;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;

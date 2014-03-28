@@ -1,6 +1,6 @@
 package vidada.client;
 
-import archimedesJ.services.IService;
+import archimedes.core.services.IService;
 
 import java.util.List;
 

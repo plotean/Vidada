@@ -1,8 +1,8 @@
 package vidada;
 
-import archimedesJ.images.IRawImageFactory;
-import archimedesJ.images.viewer.IImageViewerService;
-import archimedesJ.util.OSValidator;
+import archimedes.core.images.IRawImageFactory;
+import archimedes.core.images.viewer.IImageViewerService;
+import archimedes.core.util.OSValidator;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;

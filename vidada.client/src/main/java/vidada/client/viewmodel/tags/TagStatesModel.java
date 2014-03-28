@@ -9,12 +9,12 @@ import vidada.client.viewmodel.IVMFactory;
 import vidada.client.viewmodel.ViewModelPool;
 import vidada.model.tags.Tag;
 import vidada.model.tags.TagState;
-import archimedesJ.data.events.CollectionChangeType;
-import archimedesJ.data.events.CollectionEventArg;
-import archimedesJ.events.EventArgsG;
-import archimedesJ.events.EventHandlerEx;
-import archimedesJ.events.EventListenerEx;
-import archimedesJ.events.IEvent;
+import archimedes.core.data.events.CollectionChangeType;
+import archimedes.core.data.events.CollectionEventArg;
+import archimedes.core.events.EventArgsG;
+import archimedes.core.events.EventHandlerEx;
+import archimedes.core.events.EventListenerEx;
+import archimedes.core.events.IEvent;
 
 /**
  * Maps Tags to TagViewModels, additionally supports direct access for tag state

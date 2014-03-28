@@ -1,6 +1,6 @@
 package vidada.viewsFX.mediaexplorer;
 
-import archimedesJ.io.locations.DirectoryLocation;
+import archimedes.core.io.locations.DirectoryLocation;
 
 public class LocationBreadCrumb extends  SimpleBreadCrumbModel{
 	private final DirectoryLocation location;

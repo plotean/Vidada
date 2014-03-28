@@ -14,9 +14,9 @@ import vidada.IVidadaServer;
 import vidada.client.viewmodel.explorer.MediaExplorerVM;
 import vidada.model.media.MediaLibrary;
 import vidada.server.services.IMediaLibraryService;
-import archimedesJ.events.EventArgsG;
-import archimedesJ.events.EventListenerEx;
-import archimedesJ.io.locations.DirectoryLocation;
+import archimedes.core.events.EventArgsG;
+import archimedes.core.events.EventListenerEx;
+import archimedes.core.io.locations.DirectoryLocation;
 
 public class ExplorerFilterFX extends BorderPane {
 

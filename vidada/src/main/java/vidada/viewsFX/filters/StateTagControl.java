@@ -1,7 +1,7 @@
 package vidada.viewsFX.filters;
 
-import archimedesJ.events.EventArgsG;
-import archimedesJ.events.EventListenerEx;
+import archimedes.core.events.EventArgsG;
+import archimedes.core.events.EventListenerEx;
 import javafx.scene.input.MouseEvent;
 import vidada.client.viewmodel.tags.TagViewModel;
 import vidada.viewsFX.controls.TagControl;

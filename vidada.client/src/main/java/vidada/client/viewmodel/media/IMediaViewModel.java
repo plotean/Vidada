@@ -1,9 +1,9 @@
 package vidada.client.viewmodel.media;
 
-import java.util.Collection;
-
+import archimedes.core.data.observable.IObservableCollection;
 import vidada.model.tags.Tag;
-import archimedesJ.data.observable.IObservableCollection;
+
+import java.util.Collection;
 
 
 /**

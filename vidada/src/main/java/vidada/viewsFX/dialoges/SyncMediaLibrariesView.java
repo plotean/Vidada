@@ -11,10 +11,10 @@ import javafx.scene.layout.Priority;
 import vidada.IVidadaServer;
 import vidada.model.media.importer.IMediaImportStrategy;
 import vidada.model.media.importer.MediaImportStrategy;
-import archimedesJ.events.EventArgs;
-import archimedesJ.events.EventHandlerEx;
-import archimedesJ.threading.IProgressListener;
-import archimedesJ.threading.ProgressEventArgs;
+import archimedes.core.events.EventArgs;
+import archimedes.core.events.EventHandlerEx;
+import archimedes.core.threading.IProgressListener;
+import archimedes.core.threading.ProgressEventArgs;
 
 public class SyncMediaLibrariesView extends GridPane {
 

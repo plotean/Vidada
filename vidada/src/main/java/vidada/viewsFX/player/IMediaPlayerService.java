@@ -1,7 +1,7 @@
 package vidada.viewsFX.player;
 
-import archimedesJ.events.EventArgs;
-import archimedesJ.events.IEvent;
+import archimedes.core.events.EventArgs;
+import archimedes.core.events.IEvent;
 
 public interface IMediaPlayerService {
 

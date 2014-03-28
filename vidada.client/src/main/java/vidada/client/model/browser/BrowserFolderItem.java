@@ -1,15 +1,15 @@
 package vidada.client.model.browser;
 
-import java.util.List;
-
+import archimedes.core.data.events.CollectionEventArg;
+import archimedes.core.events.EventArgs;
+import archimedes.core.events.EventHandlerEx;
+import archimedes.core.events.IEvent;
 import vidada.model.media.MediaItem;
 import vidada.model.pagination.IDataProvider;
-import archimedesJ.data.events.CollectionEventArg;
-import archimedesJ.events.EventArgs;
-import archimedesJ.events.EventHandlerEx;
-import archimedesJ.events.IEvent;
 
-/**
+import java.util.List;
+
+/**å
  * Represents a folder-node of IBrowserItems
  * @author IsNull
  *

@@ -1,16 +1,16 @@
 package vidada.server.settings;
 
 
+import archimedes.core.crypto.KeyPad;
+import archimedes.core.events.EventArgs;
+import archimedes.core.events.EventHandlerEx;
+import archimedes.core.events.IEvent;
+import vidada.model.entities.BaseEntity;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Transient;
-
-import vidada.model.entities.BaseEntity;
-import archimedesJ.crypto.KeyPad;
-import archimedesJ.events.EventArgs;
-import archimedesJ.events.EventHandlerEx;
-import archimedesJ.events.IEvent;
 
 /**
  * Holds database specific settings. 

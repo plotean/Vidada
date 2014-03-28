@@ -1,14 +1,14 @@
 package vidada.server.services;
 
-import java.util.List;
-
+import archimedes.core.exceptions.NotImplementedException;
+import archimedes.core.security.Credentials;
+import archimedes.core.util.Lists;
 import vidada.model.security.AuthenticationRequieredException;
 import vidada.model.security.StoredCredentials;
 import vidada.server.VidadaServer;
 import vidada.server.dal.repositories.ICredentialRepository;
-import archimedesJ.exceptions.NotImplementedException;
-import archimedesJ.security.Credentials;
-import archimedesJ.util.Lists;
+
+import java.util.List;
 
 public class CredentialStore extends VidadaServerService implements ICredentialStore {
 

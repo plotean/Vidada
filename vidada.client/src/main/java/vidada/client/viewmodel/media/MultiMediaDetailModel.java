@@ -1,14 +1,14 @@
 package vidada.client.viewmodel.media;
 
-import java.util.List;
-
+import archimedes.core.data.observable.IObservableList;
+import archimedes.core.util.Lists;
 import vidada.client.IVidadaClientManager;
 import vidada.client.services.IMediaClientService;
 import vidada.model.media.MediaItem;
 import vidada.model.tags.Tag;
 import vidada.services.ServiceProvider;
-import archimedesJ.data.observable.IObservableList;
-import archimedesJ.util.Lists;
+
+import java.util.List;
 
 /**
  * Media Detail Adapter for multiple medias

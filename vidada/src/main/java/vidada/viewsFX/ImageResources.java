@@ -1,12 +1,12 @@
 package vidada.viewsFX;
 
+import archimedes.core.util.OSValidator;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+
 import java.io.InputStream;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import archimedesJ.util.OSValidator;
 
 public class ImageResources {
 

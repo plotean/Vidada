@@ -1,9 +1,9 @@
 package vidada.server.dal.repositories;
 
-import java.util.List;
-
+import archimedes.core.io.locations.ResourceLocation;
 import vidada.model.media.MediaLibrary;
-import archimedesJ.io.locations.ResourceLocation;
+
+import java.util.List;
 
 
 public interface IMediaLibraryRepository extends IRepository {

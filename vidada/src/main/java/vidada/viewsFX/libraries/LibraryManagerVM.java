@@ -1,6 +1,6 @@
 package vidada.viewsFX.libraries;
 
-import archimedesJ.io.locations.DirectoryLocation;
+import archimedes.core.io.locations.DirectoryLocation;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;

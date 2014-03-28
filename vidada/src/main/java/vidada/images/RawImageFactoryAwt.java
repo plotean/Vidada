@@ -1,21 +1,17 @@
 package vidada.images;
 
-import java.awt.Graphics;
-import java.awt.GraphicsConfiguration;
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
+import archimedes.core.images.IMemoryImage;
+import archimedes.core.images.IRawImageFactory;
+import archimedes.core.swing.images.MemoryImageAwt;
+
+import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
-
-import javax.imageio.ImageIO;
-
-import archimedesJ.images.IMemoryImage;
-import archimedesJ.images.IRawImageFactory;
-import archimedesJ.swing.images.MemoryImageAwt;
 
 public class RawImageFactoryAwt implements IRawImageFactory {
 

@@ -1,26 +1,21 @@
 package vidada.viewsFX.util;
 
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Spliterator;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
-import java.util.function.UnaryOperator;
-import java.util.stream.Stream;
-
+import archimedes.core.data.events.CollectionEventArg;
+import archimedes.core.events.EventHandlerEx;
+import archimedes.core.events.IEvent;
+import archimedes.core.exceptions.NotSupportedException;
 import javafx.beans.InvalidationListener;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import vidada.model.pagination.IDataProvider;
-import archimedesJ.data.events.CollectionEventArg;
-import archimedesJ.events.EventHandlerEx;
-import archimedesJ.events.IEvent;
-import archimedesJ.exceptions.NotSupportedException;
+
+import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.function.UnaryOperator;
+import java.util.stream.Stream;
 
 /**
  * Simple adapter to make {@link IDataProvider<T>} compatible with the {@link ObservableList<T>}.

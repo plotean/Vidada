@@ -1,16 +1,16 @@
 package vidada.selfupdate;
 
-import archimedesJ.events.EventArgs;
-import archimedesJ.events.EventArgsG;
-import archimedesJ.events.EventHandlerEx;
-import archimedesJ.events.IEvent;
-import archimedesJ.exceptions.NotImplementedException;
-import archimedesJ.threading.CancelableTask;
-import archimedesJ.threading.CancellationTokenSource.CancellationToken;
-import archimedesJ.threading.CancellationTokenSource.OperationCanceledException;
-import archimedesJ.threading.IAsyncTask;
-import archimedesJ.threading.TaskState;
-import archimedesJ.util.OSValidator;
+import archimedes.core.events.EventArgs;
+import archimedes.core.events.EventArgsG;
+import archimedes.core.events.EventHandlerEx;
+import archimedes.core.events.IEvent;
+import archimedes.core.exceptions.NotImplementedException;
+import archimedes.core.threading.CancelableTask;
+import archimedes.core.threading.CancellationTokenSource.CancellationToken;
+import archimedes.core.threading.CancellationTokenSource.OperationCanceledException;
+import archimedes.core.threading.IAsyncTask;
+import archimedes.core.threading.TaskState;
+import archimedes.core.util.OSValidator;
 import maven.client.autoupdate.MavenAutoUpdateClient;
 import maven.client.autoupdate.MavenVersion;
 import maven.client.autoupdate.MavenVersion.VersionFormatException;

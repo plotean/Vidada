@@ -6,7 +6,7 @@ import org.glassfish.grizzly.http.server.Response;
 import vidada.model.media.MediaItem;
 import vidada.model.media.source.MediaSource;
 import vidada.server.services.IMediaService;
-import archimedesJ.io.locations.ResourceLocation;
+import archimedes.core.io.locations.ResourceLocation;
 
 public class MediaStreamHttpHandler extends SeekableHttpHandler {
 

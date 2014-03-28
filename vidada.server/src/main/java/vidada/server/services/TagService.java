@@ -1,6 +1,6 @@
 package vidada.server.services;
 
-import archimedesJ.util.Lists;
+import archimedes.core.util.Lists;
 import vidada.model.tags.Tag;
 import vidada.model.tags.relations.TagRelationDefinition;
 import vidada.model.tags.relations.TagRelationIndex;

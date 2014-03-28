@@ -1,8 +1,8 @@
 package vidada.dal.repositorys;
 
-import archimedesJ.aop.IUnitOfWorkService;
-import archimedesJ.exceptions.NotImplementedException;
-import archimedesJ.io.locations.ResourceLocation;
+import archimedes.core.aop.IUnitOfWorkService;
+import archimedes.core.exceptions.NotImplementedException;
+import archimedes.core.io.locations.ResourceLocation;
 import vidada.dal.JPARepository;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaLibrary;

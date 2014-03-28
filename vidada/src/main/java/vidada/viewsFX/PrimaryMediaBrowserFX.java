@@ -15,10 +15,10 @@ import vidada.controller.filters.MediaFilterDatabaseBinding;
 import vidada.viewsFX.filters.FilterViewFx;
 import vidada.viewsFX.mediabrowsers.MediaBrowserFX;
 import vidada.viewsFX.medias.MediaDetailViewFx;
-import archimedesJ.events.EventArgs;
-import archimedesJ.events.EventListenerEx;
-import archimedesJ.exceptions.NotImplementedException;
-import archimedesJ.services.ISelectionManager;
+import archimedes.core.events.EventArgs;
+import archimedes.core.events.EventListenerEx;
+import archimedes.core.exceptions.NotImplementedException;
+import archimedes.core.services.ISelectionManager;
 
 /**
  * Represents the main media browser

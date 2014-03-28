@@ -1,6 +1,6 @@
 package vidada.dal.repositorys;
 
-import archimedesJ.aop.IUnitOfWorkService;
+import archimedes.core.aop.IUnitOfWorkService;
 import vidada.dal.JPARepository;
 import vidada.server.dal.repositories.IDatabaseSettingsRepository;
 import vidada.server.settings.DatabaseSettings;

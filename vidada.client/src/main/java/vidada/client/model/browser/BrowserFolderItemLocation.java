@@ -1,14 +1,14 @@
 package vidada.client.model.browser;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import archimedes.core.io.locations.DirectoryLocation;
+import archimedes.core.io.locations.ResourceLocation;
+import archimedes.core.io.locations.UniformLocation;
 import vidada.model.media.MediaDirectory;
 import vidada.model.media.MediaItem;
 import vidada.server.services.IMediaService;
-import archimedesJ.io.locations.DirectoryLocation;
-import archimedesJ.io.locations.ResourceLocation;
-import archimedesJ.io.locations.UniformLocation;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class BrowserFolderItemLocation extends BrowserFolderItem {
 	private final DirectoryLocation directory;

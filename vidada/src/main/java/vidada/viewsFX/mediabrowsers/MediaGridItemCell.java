@@ -1,20 +1,18 @@
 package vidada.viewsFX.mediabrowsers;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-
+import archimedes.core.events.EventArgs;
+import archimedes.core.events.EventListenerEx;
 import javafx.beans.property.DoubleProperty;
 import javafx.scene.layout.BorderPane;
-
 import org.controlsfx.control.GridCell;
-
 import vidada.client.viewmodel.MediaViewModel;
 import vidada.client.viewmodel.browser.BrowserFolderItemVM;
 import vidada.client.viewmodel.browser.BrowserItemVM;
 import vidada.model.pagination.IDeferLoaded;
 import vidada.viewsFX.player.IMediaPlayerService;
-import archimedesJ.events.EventArgs;
-import archimedesJ.events.EventListenerEx;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 class MediaGridItemCell extends GridCell<IDeferLoaded<BrowserItemVM>> {
 

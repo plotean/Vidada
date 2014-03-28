@@ -9,10 +9,10 @@ import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.concurrent.Worker.State;
 import javafx.scene.image.Image;
-import archimedesJ.events.EventArgs;
-import archimedesJ.events.EventListenerEx;
-import archimedesJ.images.IMemoryImage;
-import archimedesJ.images.ImageContainer;
+import archimedes.core.events.EventArgs;
+import archimedes.core.events.EventListenerEx;
+import archimedes.core.images.IMemoryImage;
+import archimedes.core.images.ImageContainer;
 
 public class AsyncImageProperty extends SimpleObjectProperty<Image> {
 	private final ImageLoadService imageLoadService = new ImageLoadService();

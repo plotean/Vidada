@@ -24,12 +24,12 @@ import vidada.server.settings.DataBaseSettingsManager;
 import vidada.server.settings.IDatabaseSettingsService;
 import vidada.server.settings.VidadaServerSettings;
 import vidada.services.ServiceProvider;
-import archimedesJ.events.EventArgs;
-import archimedesJ.events.EventListenerEx;
-import archimedesJ.exceptions.NotImplementedException;
-import archimedesJ.io.locations.DirectoryLocation;
-import archimedesJ.security.CredentialType;
-import archimedesJ.security.Credentials;
+import archimedes.core.events.EventArgs;
+import archimedes.core.events.EventListenerEx;
+import archimedes.core.exceptions.NotImplementedException;
+import archimedes.core.io.locations.DirectoryLocation;
+import archimedes.core.security.CredentialType;
+import archimedes.core.security.Credentials;
 
 /**
  * Implements a Vidada Server

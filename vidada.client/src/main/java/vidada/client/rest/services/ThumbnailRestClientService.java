@@ -1,22 +1,20 @@
 package vidada.client.rest.services;
 
-import java.io.InputStream;
-import java.net.URI;
+import archimedes.core.geometry.Size;
+import archimedes.core.images.IMemoryImage;
+import archimedes.core.images.IRawImageFactory;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import vidada.client.services.IThumbnailClientService;
+import vidada.model.media.MediaItem;
+import vidada.services.ServiceProvider;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
-import vidada.client.services.IThumbnailClientService;
-import vidada.model.media.MediaItem;
-import vidada.services.ServiceProvider;
-import archimedesJ.geometry.Size;
-import archimedesJ.images.IMemoryImage;
-import archimedesJ.images.IRawImageFactory;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.InputStream;
+import java.net.URI;
 
 public class ThumbnailRestClientService extends AbstractRestService implements IThumbnailClientService {
 

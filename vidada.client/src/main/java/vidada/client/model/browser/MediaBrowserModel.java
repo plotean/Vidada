@@ -8,12 +8,12 @@ import vidada.model.pagination.DataProviderTransformer;
 import vidada.model.pagination.DataProviderTransformer.ITransform;
 import vidada.model.pagination.IDataProvider;
 import vidada.model.pagination.IDeferLoaded;
-import archimedesJ.events.EventArgs;
-import archimedesJ.events.EventHandlerEx;
-import archimedesJ.events.EventListenerEx;
-import archimedesJ.events.IEvent;
-import archimedesJ.services.ISelectionManager;
-import archimedesJ.services.SelectionManager;
+import archimedes.core.events.EventArgs;
+import archimedes.core.events.EventHandlerEx;
+import archimedes.core.events.EventListenerEx;
+import archimedes.core.events.IEvent;
+import archimedes.core.services.ISelectionManager;
+import archimedes.core.services.SelectionManager;
 
 
 /**

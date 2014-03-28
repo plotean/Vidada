@@ -1,6 +1,6 @@
 package vidada.dal;
 
-import archimedesJ.aop.IUnitOfWorkService;
+import archimedes.core.aop.IUnitOfWorkService;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;

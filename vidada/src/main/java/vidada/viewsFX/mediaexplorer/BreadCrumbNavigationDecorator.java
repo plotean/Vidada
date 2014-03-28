@@ -4,7 +4,7 @@ import javafx.scene.control.TreeItem;
 
 import org.controlsfx.control.BreadCrumbBar;
 
-import archimedesJ.io.locations.DirectoryLocation;
+import archimedes.core.io.locations.DirectoryLocation;
 
 public class BreadCrumbNavigationDecorator {
 

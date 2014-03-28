@@ -1,18 +1,17 @@
 package vidada.server.rest.streaming;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.zip.GZIPOutputStream;
-
+import archimedes.core.io.locations.ResourceLocation;
+import archimedes.core.io.streaming.ISeekableInputStream;
 import org.apache.commons.io.IOUtils;
 import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Response;
 import org.glassfish.grizzly.http.server.StaticHttpHandler;
 import org.glassfish.grizzly.http.util.Header;
 
-import archimedesJ.io.locations.ResourceLocation;
-import archimedesJ.io.streaming.ISeekableInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.zip.GZIPOutputStream;
 
 public abstract class SeekableHttpHandler extends StaticHttpHandler {
 

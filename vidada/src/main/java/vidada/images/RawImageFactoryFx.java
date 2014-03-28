@@ -1,17 +1,15 @@
 package vidada.images;
 
-import java.io.File;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URI;
-
+import archimedes.core.images.IMemoryImage;
+import archimedes.core.images.IRawImageFactory;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 
 import javax.imageio.ImageIO;
-
-import archimedesJ.images.IMemoryImage;
-import archimedesJ.images.IRawImageFactory;
+import java.io.File;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URI;
 
 public class RawImageFactoryFx implements IRawImageFactory {
 

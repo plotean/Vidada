@@ -1,7 +1,7 @@
 package vidada.server.services;
 
-import archimedesJ.exceptions.NotSupportedException;
-import archimedesJ.io.locations.ResourceLocation;
+import archimedes.core.exceptions.NotSupportedException;
+import archimedes.core.io.locations.ResourceLocation;
 import vidada.model.media.*;
 import vidada.model.pagination.ListPage;
 import vidada.model.queries.*;

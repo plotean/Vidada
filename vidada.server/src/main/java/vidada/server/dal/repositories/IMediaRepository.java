@@ -1,14 +1,14 @@
 package vidada.server.dal.repositories;
 
-import java.util.Collection;
-import java.util.List;
-
+import archimedes.core.io.locations.ResourceLocation;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaLibrary;
 import vidada.model.pagination.ListPage;
 import vidada.model.tags.Tag;
 import vidada.server.queries.MediaExpressionQuery;
-import archimedesJ.io.locations.ResourceLocation;
+
+import java.util.Collection;
+import java.util.List;
 
 public interface IMediaRepository extends IRepository {
 
@@ -23,7 +23,8 @@ public interface IMediaRepository extends IRepository {
 	/**
 	 * Query for all medias which match the given media-query
 	 * @param qry
-	 * @param dontOrder Skip ordering
+	 * @param pageIndex Page Index
+     * @param maxPageSize
 	 * @return
 	 */
 	public abstract ListPage<MediaItem> query(MediaExpressionQuery qry, int pageIndex, final int maxPageSize);

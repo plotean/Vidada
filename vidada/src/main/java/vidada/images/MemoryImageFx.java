@@ -1,17 +1,15 @@
 package vidada.images;
 
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.OutputStream;
-
+import archimedes.core.images.IMemoryImage;
+import archimedes.core.swing.images.ScalrEx;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
 
 import javax.imageio.ImageIO;
-
-import archimedesJ.images.IMemoryImage;
-import archimedesJ.swing.images.ScalrEx;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.OutputStream;
 
 
 public class MemoryImageFx implements IMemoryImage {

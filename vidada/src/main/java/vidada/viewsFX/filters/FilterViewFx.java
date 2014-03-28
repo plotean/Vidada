@@ -1,6 +1,6 @@
 package vidada.viewsFX.filters;
 
-import archimedesJ.util.Lists;
+import archimedes.core.util.Lists;
 import impl.org.controlsfx.autocompletion.SuggestionProvider;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;

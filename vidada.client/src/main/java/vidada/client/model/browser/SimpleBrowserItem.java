@@ -1,9 +1,9 @@
 package vidada.client.model.browser;
 
-import java.util.List;
-
+import archimedes.core.io.locations.ResourceLocation;
 import vidada.model.media.MediaItem;
-import archimedesJ.io.locations.ResourceLocation;
+
+import java.util.List;
 
 public class SimpleBrowserItem implements IBrowserItem {
 

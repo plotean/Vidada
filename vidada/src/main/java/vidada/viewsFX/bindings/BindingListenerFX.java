@@ -1,8 +1,8 @@
 package vidada.viewsFX.bindings;
 
-import java.util.Collection;
+import archimedes.core.data.observable.binding.IBindingContext;
 
-import archimedesJ.data.observable.binding.IBindingContext;
+import java.util.Collection;
 
 class BindingListenerFX<T> implements javafx.collections.ListChangeListener<T>{
 

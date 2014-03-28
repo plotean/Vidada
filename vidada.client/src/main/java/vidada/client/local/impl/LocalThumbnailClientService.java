@@ -4,8 +4,8 @@ import vidada.client.services.IThumbnailClientService;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MovieMediaItem;
 import vidada.server.services.IThumbnailService;
-import archimedesJ.geometry.Size;
-import archimedesJ.images.IMemoryImage;
+import archimedes.core.geometry.Size;
+import archimedes.core.images.IMemoryImage;
 
 public class LocalThumbnailClientService implements IThumbnailClientService {
 

@@ -1,9 +1,9 @@
 package vidada.client.viewmodel.tags;
 
-import archimedesJ.data.Toggler;
-import archimedesJ.events.EventArgsG;
-import archimedesJ.events.EventHandlerEx;
-import archimedesJ.events.IEvent;
+import archimedes.core.data.Toggler;
+import archimedes.core.events.EventArgsG;
+import archimedes.core.events.EventHandlerEx;
+import archimedes.core.events.IEvent;
 import vidada.client.viewmodel.IViewModel;
 import vidada.model.tags.Tag;
 import vidada.model.tags.TagState;

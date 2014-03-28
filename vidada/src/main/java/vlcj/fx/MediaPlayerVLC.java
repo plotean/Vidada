@@ -1,16 +1,12 @@
 package vlcj.fx;
 
-import java.nio.ByteBuffer;
-
+import archimedes.core.util.Lists;
+import com.sun.jna.Memory;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.image.ImageView;
-import javafx.scene.image.PixelFormat;
-import javafx.scene.image.PixelWriter;
-import javafx.scene.image.WritableImage;
-import javafx.scene.image.WritablePixelFormat;
+import javafx.scene.image.*;
 import javafx.util.Duration;
 import uk.co.caprica.vlcj.player.MediaPlayer;
 import uk.co.caprica.vlcj.player.MediaPlayerEventAdapter;
@@ -25,9 +21,8 @@ import vidada.model.settings.VidadaClientSettings;
 import vidada.viewsFX.player.IMediaController;
 import vidada.viewsFX.player.MediaPlayerFx;
 import vlcj.VLCMediaController;
-import archimedesJ.util.Lists;
 
-import com.sun.jna.Memory;
+import java.nio.ByteBuffer;
 
 /**
  * Represents the VLC MediaPlayer

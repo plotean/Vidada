@@ -3,8 +3,8 @@ package vidada.viewsFX.bindings;
 import java.util.Collection;
 
 import javafx.collections.ObservableList;
-import archimedesJ.data.observable.binding.BindingContext;
-import archimedesJ.data.observable.binding.IBindingContext;
+import archimedes.core.data.observable.binding.BindingContext;
+import archimedes.core.data.observable.binding.IBindingContext;
 
 /**
  * Represents a one way binding between a observable list and a other collection

@@ -1,10 +1,10 @@
 package vidada.client.viewmodel;
 
-import archimedesJ.exceptions.NotSupportedException;
-import archimedesJ.geometry.Size;
-import archimedesJ.images.ImageContainer;
-import archimedesJ.images.LoadPriority;
-import archimedesJ.io.locations.ResourceLocation;
+import archimedes.core.exceptions.NotSupportedException;
+import archimedes.core.geometry.Size;
+import archimedes.core.images.ImageContainer;
+import archimedes.core.images.LoadPriority;
+import archimedes.core.io.locations.ResourceLocation;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import org.joda.time.format.DateTimeFormat;

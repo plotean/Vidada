@@ -9,12 +9,12 @@ import vidada.client.viewmodel.MediaViewModel;
 import vidada.model.media.MediaItem;
 import vidada.model.tags.Tag;
 import vidada.model.tags.TagFactory;
-import archimedesJ.data.events.CollectionEventArg;
-import archimedesJ.data.observable.IObservableCollection;
-import archimedesJ.data.observable.IObservableList;
-import archimedesJ.data.observable.ObservableArrayList;
-import archimedesJ.events.EventListenerEx;
-import archimedesJ.exceptions.NotSupportedException;
+import archimedes.core.data.events.CollectionEventArg;
+import archimedes.core.data.observable.IObservableCollection;
+import archimedes.core.data.observable.IObservableList;
+import archimedes.core.data.observable.ObservableArrayList;
+import archimedes.core.events.EventListenerEx;
+import archimedes.core.exceptions.NotSupportedException;
 
 /**
  * Represents a single media item
@@ -29,7 +29,7 @@ public class MediaDetailViewModel extends MediaViewModel implements IMediaViewMo
 
 	/**
 	 * Creates a new media detail model form the given MediaData
-	 * @param mediaData
+	 * @param tagService
 	 */
 	public MediaDetailViewModel(ITagClientService tagService){
 		// Do not call any virtual methods here such as setModel!

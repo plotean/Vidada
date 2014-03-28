@@ -1,7 +1,7 @@
 package vidada.viewsFX.controls;
 
 
-import archimedesJ.exceptions.NotSupportedException;
+import archimedes.core.exceptions.NotSupportedException;
 import com.sun.javafx.scene.control.behavior.BehaviorBase;
 import com.sun.javafx.scene.control.behavior.KeyBinding;
 import com.sun.javafx.scene.control.skin.BehaviorSkinBase;

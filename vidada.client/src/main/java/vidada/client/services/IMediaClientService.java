@@ -3,7 +3,7 @@ package vidada.client.services;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaQuery;
 import vidada.model.pagination.ListPage;
-import archimedesJ.io.locations.ResourceLocation;
+import archimedes.core.io.locations.ResourceLocation;
 
 /**
  * Provides an API to control media items.
@@ -16,8 +16,8 @@ public interface IMediaClientService {
 	 * Query for all medias which match the {@link MediaQuery}
 	 * 
 	 * @param qry
-	 * @param page
-	 * @param pageSize
+	 * @param pageIndex
+	 * @param maxPageSize
 	 * @return
 	 */
 	public abstract ListPage<MediaItem> query(MediaQuery qry, int pageIndex, int maxPageSize);

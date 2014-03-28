@@ -20,9 +20,9 @@ import org.controlsfx.glyphfont.GlyphFontRegistry;
 
 import vidada.client.viewmodel.explorer.MediaExplorerVM;
 import vidada.viewsFX.mediabrowsers.MediaBrowserFX;
-import archimedesJ.events.EventArgs;
-import archimedesJ.events.EventListenerEx;
-import archimedesJ.io.locations.DirectoryLocation;
+import archimedes.core.events.EventArgs;
+import archimedes.core.events.EventListenerEx;
+import archimedes.core.io.locations.DirectoryLocation;
 
 public class PrimaryMediaExplorerFX extends BorderPane {
 	private final MediaBrowserFX mediaBrowserFX;

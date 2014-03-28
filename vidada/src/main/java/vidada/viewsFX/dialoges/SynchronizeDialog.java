@@ -4,8 +4,8 @@ import javafx.application.Platform;
 
 import org.controlsfx.dialog.Dialog;
 
-import archimedesJ.events.EventArgs;
-import archimedesJ.events.EventListenerEx;
+import archimedes.core.events.EventArgs;
+import archimedes.core.events.EventListenerEx;
 
 public class SynchronizeDialog extends Dialog {
 

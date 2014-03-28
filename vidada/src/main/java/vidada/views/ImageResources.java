@@ -1,10 +1,9 @@
 package vidada.views;
 
+import archimedes.core.swing.images.IconFactory;
+
+import javax.swing.*;
 import java.net.URL;
-
-import javax.swing.Icon;
-
-import archimedesJ.swing.images.IconFactory;
 
 /**
  * Holds all image resources, this way images are loaded just once and easily accessible

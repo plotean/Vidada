@@ -1,5 +1,11 @@
 package maven.client.autoupdate;
 
+import archimedes.core.util.OSValidator;
+import maven.client.autoupdate.MavenVersion.VersionFormatException;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
+
+import javax.ws.rs.core.UriBuilder;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,15 +15,6 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import javax.ws.rs.core.UriBuilder;
-
-import maven.client.autoupdate.MavenVersion.VersionFormatException;
-
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
-
-import archimedesJ.util.OSValidator;
 
 
 public class MavenAutoUpdateClient {

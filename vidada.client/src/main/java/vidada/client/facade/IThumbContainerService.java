@@ -1,8 +1,8 @@
 package vidada.client.facade;
 
 import vidada.model.media.MediaItem;
-import archimedesJ.geometry.Size;
-import archimedesJ.images.ImageContainer;
+import archimedes.core.geometry.Size;
+import archimedes.core.images.ImageContainer;
 
 public interface IThumbContainerService {
 

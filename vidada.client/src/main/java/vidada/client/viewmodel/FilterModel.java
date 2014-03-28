@@ -1,12 +1,12 @@
 package vidada.client.viewmodel;
 
-import archimedesJ.data.events.CollectionEventArg;
-import archimedesJ.data.observable.IObservableList;
-import archimedesJ.data.observable.ObservableArrayList;
-import archimedesJ.events.EventArgs;
-import archimedesJ.events.EventHandlerEx;
-import archimedesJ.events.EventListenerEx;
-import archimedesJ.events.IEvent;
+import archimedes.core.data.events.CollectionEventArg;
+import archimedes.core.data.observable.IObservableList;
+import archimedes.core.data.observable.ObservableArrayList;
+import archimedes.core.events.EventArgs;
+import archimedes.core.events.EventHandlerEx;
+import archimedes.core.events.EventListenerEx;
+import archimedes.core.events.IEvent;
 import vidada.client.services.IMediaClientService;
 import vidada.model.media.MediaLibrary;
 import vidada.model.media.MediaType;

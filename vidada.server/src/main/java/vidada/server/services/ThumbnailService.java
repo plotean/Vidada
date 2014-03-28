@@ -9,8 +9,8 @@ import vidada.model.media.MediaItem;
 import vidada.model.media.MovieMediaItem;
 import vidada.server.VidadaServer;
 import vidada.server.settings.VidadaServerSettings;
-import archimedesJ.geometry.Size;
-import archimedesJ.images.IMemoryImage;
+import archimedes.core.geometry.Size;
+import archimedes.core.images.IMemoryImage;
 
 public class ThumbnailService extends VidadaServerService implements IThumbnailService {
 

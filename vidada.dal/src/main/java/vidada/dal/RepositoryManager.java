@@ -1,7 +1,7 @@
 package vidada.dal;
 
 import vidada.server.dal.repositories.IRepository;
-import archimedesJ.services.ServiceLocator;
+import archimedes.core.services.ServiceLocator;
 
 class RepositoryManager {
 

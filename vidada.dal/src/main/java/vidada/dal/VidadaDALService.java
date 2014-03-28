@@ -1,8 +1,8 @@
 package vidada.dal;
 
-import archimedesJ.aop.IUnitOfWorkRunner;
-import archimedesJ.aop.IUnitOfWorkService;
-import archimedesJ.aop.UnitOfWorkService;
+import archimedes.core.aop.IUnitOfWorkRunner;
+import archimedes.core.aop.IUnitOfWorkService;
+import archimedes.core.aop.UnitOfWorkService;
 import vidada.dal.repositorys.*;
 import vidada.server.dal.IVidadaDALService;
 import vidada.server.dal.repositories.*;
