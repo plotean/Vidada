@@ -1,6 +1,17 @@
 package vidada.model.media.extracted;
 
+<<<<<<< HEAD
 import archimedes.core.exceptions.NotImplementedException;
+=======
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+import archimedesJ.exceptions.NotImplementedException;
+import vidada.model.media.MediaItem;
+
+>>>>>>> FETCH_HEAD
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonParseException;
