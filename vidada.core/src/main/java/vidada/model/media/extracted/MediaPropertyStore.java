@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import archimedesJ.exceptions.NotImplementedException;
 import vidada.model.media.MediaItem;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
