@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 /**
  * Created by IsNull on 21.03.14.
  */
-public class LibraryManagerVM {
+public class LibraryManagerController {
 
     private final IVidadaServer localServer = vidada.Application.getLocalServer();
     private final IMediaLibraryService libraryService = localServer.getLibraryService();
@@ -31,7 +31,7 @@ public class LibraryManagerVM {
     private boolean hasChanges = false;
 
 
-    public LibraryManagerVM(){
+    public LibraryManagerController(){
         libraryService.getLibraryAddedEvent().add((s,e) -> libraries.add(new MediaLibraryVM(e.getValue())));
         libraryService.getLibraryRemovedEvent().add((s,e) -> libraries.remove(new MediaLibraryVM(e.getValue())));
 

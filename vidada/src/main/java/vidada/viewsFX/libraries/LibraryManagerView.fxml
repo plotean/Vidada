@@ -7,7 +7,7 @@
 <?import org.controlsfx.control.SegmentedButton?>
 
 <BorderPane xmlns:fx="http://javafx.com/fxml"
-            fx:controller="vidada.viewsFX.libraries.LibraryManagerVM">
+            fx:controller="vidada.viewsFX.libraries.LibraryManagerController">
 
     <padding>
         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
@@ -24,10 +24,8 @@
                     <Insets bottom="5.0" left="0.0" right="0.0" top="5.0"/>
                 </padding>
 
-                <buttons>
-                    <ToggleButton text="+" onAction="#addNewLibrary"/>
-                    <ToggleButton text="-" onAction="#removeSelectedLibrary"/>
-                </buttons>
+                <ToggleButton text="+" onAction="#addNewLibrary"/>
+                <ToggleButton text="-" onAction="#removeSelectedLibrary"/>
             </SegmentedButton>
             <ListView prefHeight="250" fx:id="libraryView" items="${controller.libraries}" />
         </VBox>
