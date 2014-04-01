@@ -23,7 +23,6 @@ public class LocalMediaClientService implements IMediaClientService {
 
 	public LocalMediaClientService(IMediaService mediaService){
 		this.mediaService = mediaService;
-        mediaService.get
 	}
 
     @Override

@@ -1,5 +1,7 @@
 package vidada.client.rest.services;
 
+import archimedes.core.events.EventArgs;
+import archimedes.core.events.IEvent;
 import archimedes.core.io.locations.ResourceLocation;
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -21,6 +23,13 @@ import java.net.URISyntaxException;
 
 public class MediaServiceRestClient extends AbstractRestService implements IMediaClientService {
 
+
+    @Override
+    public IEvent<EventArgs> getMediasChanged() {
+        return null; // TODO
+    }
+
+
 	public MediaServiceRestClient(Client client, URI api, ObjectMapper mapper) {
 		super(client, api, mapper);
 	}
@@ -41,7 +50,7 @@ public class MediaServiceRestClient extends AbstractRestService implements IMedi
 		}
 	}
 
-	@Override
+    @Override
 	public ListPage<MediaItem> query(MediaQuery qry, int pageIndex, int maxPageSize) {
 
 		WebTarget resource = mediasResource()
