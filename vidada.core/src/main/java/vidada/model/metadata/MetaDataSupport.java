@@ -24,7 +24,7 @@ public class MetaDataSupport {
 
 	/**
 	 * Does the given file (file-system where the file resides) support meta-data?
-	 * @param file
+	 * @param uri
 	 * @return
 	 */
 	public boolean isMetaDataSupported(URI uri){
@@ -41,7 +41,7 @@ public class MetaDataSupport {
 
 	/**
 	 * Write the given attribute value to the given file
-	 * @param file
+	 * @param uri
 	 * @param attribute
 	 * @param value
 	 */
@@ -51,7 +51,7 @@ public class MetaDataSupport {
 
 	/**
 	 * Read the given attribute from the given files meta data
-	 * @param file
+	 * @param uri
 	 * @param attribute
 	 * @return
 	 */

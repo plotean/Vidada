@@ -1,5 +1,8 @@
 package vidada.client.local.impl;
 
+import archimedes.core.events.EventArgs;
+import archimedes.core.events.EventHandlerEx;
+import archimedes.core.events.IEvent;
 import vidada.client.services.IMediaClientService;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaQuery;
@@ -12,11 +15,18 @@ public class LocalMediaClientService implements IMediaClientService {
 
 	private IMediaService mediaService;
 
+    private final EventHandlerEx<EventArgs> mediasChangedEvent = new EventHandlerEx<EventArgs>();
+
+    @Override
+    public IEvent<EventArgs> getMediasChanged() { return mediasChangedEvent; }
+
+
 	public LocalMediaClientService(IMediaService mediaService){
 		this.mediaService = mediaService;
+        mediaService.get
 	}
 
-	@Override
+    @Override
 	public ListPage<MediaItem> query(MediaQuery qry, int pageIndex, int maxPageSize) {
 		return mediaService.query(qry, pageIndex, maxPageSize);
 	}

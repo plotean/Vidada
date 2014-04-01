@@ -19,13 +19,13 @@ public interface IDeferLoaded<T> {
 	IEvent<EventArgs> getLoadedEvent();
 
 	/**
-	 * Returns the loaded object
+	 * Returns the loaded object or <code>null</code> if it has not been loaded.
 	 * @return
 	 */
 	T getLoadedItem();
 
 	/**
-	 * Is the object loaded?
+	 * Returns true if the object has been loaded, false otherwise
 	 * @return
 	 */
 	boolean isLoaded();

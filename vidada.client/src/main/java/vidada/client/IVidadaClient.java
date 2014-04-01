@@ -5,7 +5,7 @@ import vidada.client.services.ITagClientService;
 import vidada.client.services.IThumbnailClientService;
 
 /**
- * Represents Vidada a client, and holds all available services of it.
+ * Represents a Vidada client, which offers all available services.
  * @author IsNull
  *
  */

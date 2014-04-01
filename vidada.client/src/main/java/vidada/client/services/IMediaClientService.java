@@ -1,16 +1,29 @@
 package vidada.client.services;
 
+import archimedes.core.events.EventArgs;
+import archimedes.core.events.IEvent;
+import archimedes.core.io.locations.ResourceLocation;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaQuery;
 import vidada.model.pagination.ListPage;
-import archimedes.core.io.locations.ResourceLocation;
 
 /**
- * Provides an API to control media items.
+ * Provides an API to access media items.
  * @author IsNull
  *
  */
 public interface IMediaClientService {
+
+    /**
+     * Event which is fired when there are changes in the available medias.
+     * (I.e when new medias are added or medias where removed)
+     *
+     * Warning: Not all vidada client connections support events.
+     *
+     * @return
+     */
+    public IEvent<EventArgs> getMediasChanged();
+
 
 	/**
 	 * Query for all medias which match the {@link MediaQuery}
@@ -34,8 +47,10 @@ public interface IMediaClientService {
 	public abstract void update(MediaItem media);
 
 	/**
-	 * Gets the resource location for this media
-	 * @param mediaData
+	 * Gets the resource location for this media.
+     * This is a path / URL which links directly to the raw media data.
+     *
+	 * @param media
 	 * @return
 	 */
 	public abstract ResourceLocation openResource(MediaItem media);

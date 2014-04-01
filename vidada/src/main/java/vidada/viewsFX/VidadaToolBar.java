@@ -14,7 +14,7 @@ import vidada.viewsFX.ImageResources.IconType;
 import vidada.viewsFX.dialoges.SettingsDialog;
 import vidada.viewsFX.dialoges.SimpleDialog;
 import vidada.viewsFX.dialoges.SynchronizeDialog;
-import vidada.viewsFX.libraries.LibraryManagerVM;
+import vidada.viewsFX.libraries.LibraryManagerController;
 
 public class VidadaToolBar extends ToolBar{
 
@@ -33,7 +33,7 @@ public class VidadaToolBar extends ToolBar{
                     libraryDialog.setMasthead("Here you can add or remove media libraries.");
                     libraryDialog.show();
 
-                    LibraryManagerVM vm  = (LibraryManagerVM)libManager.getUserData();
+                    LibraryManagerController vm  = (LibraryManagerController)libManager.getUserData();
 
                     if(vm != null && vm.hasChanges()) {
                         Action response = Dialogs.create()

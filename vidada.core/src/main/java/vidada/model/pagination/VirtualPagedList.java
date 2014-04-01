@@ -10,9 +10,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Represents a List-Datasource which supports asynchronous loading of data.
- * The data is loaded in page-chunks depending on the required items.
- * 
+ * Represents a List-Datasource which supports asynchronous loading of data in chunks (pages).
+ *
  * 
  * @author IsNull
  *
