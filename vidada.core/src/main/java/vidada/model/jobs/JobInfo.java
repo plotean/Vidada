@@ -1,28 +1,94 @@
 package vidada.model.jobs;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class JobInfo {
+public class JobInfo implements Cloneable {
 
-	private final JobState state;
-	private final int progress;
-	private final String[] subJobs;
+    private final int id;
+    private final String name;
+    private final List<String> subTasks = new ArrayList<String>();
+	private JobState state = JobState.Idle;
+	private float progress = 0;
 
-	public JobInfo(JobState state, int progress, List<String> subJobs){
+    /**
+     * Creates a new Job
+     * @param id
+     * @param name
+     * @param state
+     */
+	public JobInfo(int id, String name, JobState state){
+        this.id = id;
+        this.name = name;
 		this.state = state;
-		this.progress = progress;
-		this.subJobs = subJobs.toArray(new String[0]);
 	}
 
-	public JobState getState(){
-		return state;
-	}
+    /**
+     * Prototype constructor
+     * @param prototype
+     */
+    protected JobInfo(JobInfo prototype){
+        this.id = prototype.getId();
+        this.name = prototype.getName();
+        this.subTasks.addAll(prototype.getSubTasks());
+        this.state = prototype.getState();
+        this.progress = prototype.getProgress();
+    }
 
-	public int getProgress(){
-		return progress;
-	}
+    public int getId() {
+        return id;
+    }
 
-	public String[] getSubJobs(){
-		return subJobs;
-	}
+    public String getName() {
+        return name;
+    }
+
+    public JobState getState() {
+        return state;
+    }
+
+    public void setState(JobState state) {
+        this.state = state;
+    }
+
+    public float getProgress() {
+        return progress;
+    }
+
+    public void setProgress(float progress) {
+        this.progress = progress;
+    }
+
+    public List<String> getSubTasks() {
+        return subTasks;
+    }
+
+    @Override
+    public JobInfo clone(){
+        return new JobInfo(this);
+    }
+
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + id;
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        JobId other = (JobId) obj;
+        if (id != other.getId())
+            return false;
+        return true;
+    }
+
 }

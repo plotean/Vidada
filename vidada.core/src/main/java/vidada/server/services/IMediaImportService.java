@@ -1,7 +1,7 @@
 package vidada.server.services;
 
 import archimedes.core.threading.IProgressListener;
-import vidada.model.jobs.Job;
+import vidada.model.jobs.JobId;
 
 public interface IMediaImportService {
 
@@ -10,7 +10,7 @@ public interface IMediaImportService {
      *
      * @return Returns the current import job.
      */
-	Job synchronizeAll();
+	JobId synchronizeAll();
 
     /**
      * Synchronizes / imports all local media libraries.
@@ -18,6 +18,6 @@ public interface IMediaImportService {
      *
      * @return Returns the current import job.
      */
-    Job synchronizeAll(IProgressListener progressListener);
+    JobId synchronizeAll(IProgressListener progressListener);
 
 }

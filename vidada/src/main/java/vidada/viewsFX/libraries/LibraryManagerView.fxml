@@ -24,8 +24,10 @@
                     <Insets bottom="5.0" left="0.0" right="0.0" top="5.0"/>
                 </padding>
 
-                <ToggleButton text="+" onAction="#addNewLibrary"/>
-                <ToggleButton text="-" onAction="#removeSelectedLibrary"/>
+                <items>
+                    <ToggleButton text="+" onAction="#addNewLibrary"/>
+                    <ToggleButton text="-" onAction="#removeSelectedLibrary"/>
+                </items>
             </SegmentedButton>
             <ListView prefHeight="250" fx:id="libraryView" items="${controller.libraries}" />
         </VBox>

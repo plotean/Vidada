@@ -8,12 +8,12 @@ import vidada.server.services.IJobService;
 
 public class JobServiceProgressListener implements IProgressListener {
 
-	private final Job job;
+	private final JobId jobId;
 	private final IJobService jobService;
 
 
-	public JobServiceProgressListener(IJobService jobService, Job job){
-		this.job = job;
+	public JobServiceProgressListener(IJobService jobService, JobId jobId){
+		this.jobId = jobId;
 		this.jobService = jobService;
 	}
 
@@ -21,12 +21,15 @@ public class JobServiceProgressListener implements IProgressListener {
 	@Override
 	public void currentProgress(ProgressEventArgs progressInfo) {
 		if(progressInfo.isRunning()){
-			jobService.notifiyProgress(job, progressInfo.getCurrentTask(), progressInfo.getProgressInPercent());
+			jobService.notifyProgress(
+                    jobId,
+                    progressInfo.getCurrentTask(),
+                    progressInfo.getProgressInPercent());
 		}else {
 			if(progressInfo.hasFailed()){
-				jobService.notifyState(job, JobState.Failed);
+				jobService.notifyState(jobId, JobState.Failed);
 			}else if(progressInfo.isCompleted()){
-				jobService.notifyState(job, JobState.Completed);
+				jobService.notifyState(jobId, JobState.Completed);
 			}else {
 				throw new NotSupportedException();
 			}

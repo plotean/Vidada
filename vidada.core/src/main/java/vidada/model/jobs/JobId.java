@@ -1,26 +1,23 @@
 package vidada.model.jobs;
 
 /**
- * A job represents an asynchronous running task.
+ * A job id.
+ * A Job represents an asynchronous running task.
  * @author IsNull
  *
  */
-public class Job {
+public class JobId {
 
-	private int id;
+	private final int id;
 
 
-	public Job(int id){
+	public JobId(int id){
 		this.id = id;
 	}
 
 
 	public int getId(){
 		return id;
-	}
-
-	protected void setId(int id){
-		this.id = id;
 	}
 
 	@Override
@@ -39,7 +36,7 @@ public class Job {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Job other = (Job) obj;
+		JobId other = (JobId) obj;
 		if (id != other.id)
 			return false;
 		return true;

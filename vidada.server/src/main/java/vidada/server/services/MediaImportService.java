@@ -1,19 +1,20 @@
 package vidada.server.services;
 
 
-import vidada.model.jobs.Job;
+import archimedes.core.threading.IProgressListener;
+import archimedes.core.threading.ProgressEventArgs;
+import vidada.model.jobs.JobId;
 import vidada.model.jobs.JobServiceProgressListener;
+import vidada.model.jobs.JobState;
 import vidada.model.media.importer.IMediaImportStrategy;
 import vidada.model.media.importer.MediaImportStrategy;
 import vidada.server.VidadaServer;
-import archimedes.core.threading.IProgressListener;
-import archimedes.core.threading.ProgressEventArgs;
 
 public class MediaImportService extends VidadaServerService implements IMediaImportService {
 
 	private final Object importLock = new Object();
 	private Thread importThread = null;
-	private volatile Job currentImportJob;
+	private volatile JobId currentImportJobId;
 
 	public MediaImportService(VidadaServer server) {
 		super(server);
@@ -21,13 +22,13 @@ public class MediaImportService extends VidadaServerService implements IMediaImp
 
     /** {@inheritDoc} */
     @Override
-    public Job synchronizeAll(final IProgressListener userListener) {
+    public JobId synchronizeAll(final IProgressListener userListener) {
         synchronized ( importLock ) {
 
-            if(currentImportJob == null){
+            if(currentImportJobId == null){
 
                 final IJobService jobService = getServer().getJobService();
-                currentImportJob = jobService.create("Synchronize and importing all libraries...");
+                currentImportJobId = jobService.create("MediaLibrary Importer");
 
                 Runnable importTask = new Runnable() {
                     @Override
@@ -40,12 +41,13 @@ public class MediaImportService extends VidadaServerService implements IMediaImp
                             @Override
                             public void run() {
 
+
                                 final IMediaImportStrategy importStrategy = new MediaImportStrategy(
                                         getServer().getMediaService(),
                                         getServer().getTagService(),
                                         getServer().getLibraryService().getAllLibraries());
 
-                                final IProgressListener progressListener = new JobServiceProgressListener(jobService, currentImportJob){
+                                final IProgressListener progressListener = new JobServiceProgressListener(jobService, currentImportJobId){
                                     public void currentProgress(ProgressEventArgs progressInfo) {
                                         super.currentProgress(progressInfo);
                                         if(userListener != null) {
@@ -60,7 +62,7 @@ public class MediaImportService extends VidadaServerService implements IMediaImp
                                 }catch(Exception e){
                                     progressListener.currentProgress(ProgressEventArgs.FAILED);
                                 }finally{
-                                    currentImportJob = null;
+                                    currentImportJobId = null;
                                 }
                             }
                         });
@@ -70,18 +72,20 @@ public class MediaImportService extends VidadaServerService implements IMediaImp
                 importThread = new Thread(importTask);
                 importThread.start();
 
-                return currentImportJob;
+                jobService.notifyState(currentImportJobId, JobState.Running);
+
+                return currentImportJobId;
 
             }else {
                 System.err.println("Import is already running, returning current job.");
-                return currentImportJob;
+                return currentImportJobId;
             }
         }
     }
 
     /** {@inheritDoc} */
 	@Override
-	public Job synchronizeAll() {
+	public JobId synchronizeAll() {
         return synchronizeAll(null);
 	}
 

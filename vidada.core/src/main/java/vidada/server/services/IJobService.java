@@ -1,6 +1,6 @@
 package vidada.server.services;
 
-import vidada.model.jobs.Job;
+import vidada.model.jobs.JobId;
 import vidada.model.jobs.JobInfo;
 import vidada.model.jobs.JobState;
 
@@ -16,23 +16,34 @@ import vidada.model.jobs.JobState;
 public interface IJobService {
 
 	/**
-	 * Creates a new Job with the given name.
+	 * Creates a new JobId with the given name.
 	 * @param name
 	 * @return
 	 */
-	Job create(String name);
+	JobId create(String name);
 
 	/**
-	 * Gets the current job information. 
+	 * Gets the current job information for the given job id.
 	 * Clients are supposed to poll this information frequently.
 	 * 
-	 * @param job
+	 * @param jobId
 	 * @return
 	 */
-	JobInfo pollProgress(Job job);
+	JobInfo pollProgress(JobId jobId);
 
 
-	void notifiyProgress(Job job, String currentTask, float progress);
+    /**
+     * Add the given progress info to the job
+     * @param jobId
+     * @param currentTask
+     * @param progress
+     */
+	void notifyProgress(JobId jobId, String currentTask, float progress);
 
-	void notifyState(Job job, JobState state);
+    /**
+     * Set the state for the given job
+     * @param jobId
+     * @param state
+     */
+	void notifyState(JobId jobId, JobState state);
 }

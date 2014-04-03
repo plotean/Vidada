@@ -1,5 +1,10 @@
 package vidada.server;
 
+import archimedes.core.events.EventArgs;
+import archimedes.core.events.EventListenerEx;
+import archimedes.core.io.locations.DirectoryLocation;
+import archimedes.core.security.CredentialType;
+import archimedes.core.security.Credentials;
 import vidada.IVidadaServer;
 import vidada.model.images.cache.crypto.CryptedCacheUtil;
 import vidada.model.security.AuthenticationRequieredException;
@@ -9,27 +14,11 @@ import vidada.server.dal.IVidadaDALService;
 import vidada.server.impl.IPrivacyService;
 import vidada.server.impl.PrivacyService;
 import vidada.server.rest.VidadaRestServer;
-import vidada.server.services.IJobService;
-import vidada.server.services.IMediaImportService;
-import vidada.server.services.IMediaLibraryService;
-import vidada.server.services.IMediaService;
-import vidada.server.services.ITagService;
-import vidada.server.services.IThumbnailService;
-import vidada.server.services.MediaImportService;
-import vidada.server.services.MediaLibraryService;
-import vidada.server.services.MediaService;
-import vidada.server.services.TagService;
-import vidada.server.services.ThumbnailService;
+import vidada.server.services.*;
 import vidada.server.settings.DataBaseSettingsManager;
 import vidada.server.settings.IDatabaseSettingsService;
 import vidada.server.settings.VidadaServerSettings;
 import vidada.services.ServiceProvider;
-import archimedes.core.events.EventArgs;
-import archimedes.core.events.EventListenerEx;
-import archimedes.core.exceptions.NotImplementedException;
-import archimedes.core.io.locations.DirectoryLocation;
-import archimedes.core.security.CredentialType;
-import archimedes.core.security.Credentials;
 
 /**
  * Implements a Vidada Server
@@ -54,10 +43,7 @@ public class VidadaServer implements IVidadaServer {
 	private final IThumbnailService thumbnailService;
 	private final IMediaImportService importService;
 	private final IPrivacyService privacyService;
-
-
-
-	private final IJobService jobService = null;// TODO
+	private final IJobService jobService;
 
 
 
@@ -84,7 +70,7 @@ public class VidadaServer implements IVidadaServer {
 		thumbnailService = new ThumbnailService(this);
 		importService = new MediaImportService(this);
 		privacyService = new PrivacyService(this);
-
+        jobService = new JobService(this);
 
 		if(connectToDB()){
 			// Create default data etc.
@@ -160,7 +146,7 @@ public class VidadaServer implements IVidadaServer {
 
 	@Override
 	public IJobService getJobService() {
-		throw new NotImplementedException();
+        return jobService;
 	}
 
 	@Override
