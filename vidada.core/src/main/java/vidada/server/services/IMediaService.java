@@ -79,13 +79,13 @@ public interface IMediaService {
 	public int count();
 
 	/**
-	 * Deletes all medias
+	 * Deletes the given media
 	 * @param media
 	 */
 	public void delete(MediaItem media);
 
 	/**
-	 * Deletes all medias
+	 * Deletes all given medias
 	 * @param media
 	 */
 	public void delete(Collection<MediaItem> media);

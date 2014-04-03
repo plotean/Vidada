@@ -16,7 +16,7 @@ import vidada.model.jobs.JobState;
 public interface IJobService {
 
 	/**
-	 * Creates a new Job
+	 * Creates a new Job with the given name.
 	 * @param name
 	 * @return
 	 */
@@ -30,6 +30,7 @@ public interface IJobService {
 	 * @return
 	 */
 	JobInfo pollProgress(Job job);
+
 
 	void notifiyProgress(Job job, String currentTask, float progress);
 

@@ -50,6 +50,5 @@ public class LocalMediaClientService implements IMediaClientService {
 			System.err.println("Media " + media + " has no available source. Total sources: " + media.getSources());
 		}
 		return resource;
-
 	}
 }

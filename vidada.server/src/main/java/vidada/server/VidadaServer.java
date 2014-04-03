@@ -175,7 +175,6 @@ public class VidadaServer implements IVidadaServer {
 	 *                                                                         *
 	 **************************************************************************/
 	VidadaRestServer restServer;
-	//Thread  restServerThread;
 
 	private synchronized void startRestServer(){
 		if(restServer == null){
@@ -184,14 +183,6 @@ public class VidadaServer implements IVidadaServer {
 			try{
 				restServer = new VidadaRestServer(this);
 				restServer.start();
-				/*
-				restServerThread = new Thread(new Runnable() {
-					@Override
-					public void run() {
-
-					}
-				});
-				restServerThread.start();*/
 			}catch(Throwable e){
 				e.printStackTrace();
 			}

@@ -1,7 +1,10 @@
 package vidada.viewsFX.dialoges;
 
+import archimedes.core.events.EventArgs;
+import archimedes.core.events.EventHandlerEx;
+import archimedes.core.threading.IProgressListener;
+import archimedes.core.threading.ProgressEventArgs;
 import javafx.application.Platform;
-import javafx.concurrent.Task;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
@@ -9,12 +12,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import vidada.IVidadaServer;
-import vidada.model.media.importer.IMediaImportStrategy;
-import vidada.model.media.importer.MediaImportStrategy;
-import archimedes.core.events.EventArgs;
-import archimedes.core.events.EventHandlerEx;
-import archimedes.core.threading.IProgressListener;
-import archimedes.core.threading.ProgressEventArgs;
 
 public class SyncMediaLibrariesView extends GridPane {
 
@@ -49,8 +46,6 @@ public class SyncMediaLibrariesView extends GridPane {
 		return isFinished;
 	}
 
-	private Task<Void> task;
-
 	private synchronized void startSync(){
 
 		System.out.println("SyncMediaLibrariesView: startSync");
@@ -59,47 +54,33 @@ public class SyncMediaLibrariesView extends GridPane {
 			@Override
 			public void currentProgress(final ProgressEventArgs progressInfo) {
 
-				//System.out.println("Importer: " + progressInfo.getCurrentTask());
-
 				Platform.runLater(new Runnable() {
 					@Override
 					public void run() {
 						bar.setProgress(progressInfo.getProgressInPercent() / 100.0);
 						currentActivity.setText(progressInfo.getCurrentTask());
+
+                        if(progressInfo.isCompleted()){
+                            isFinished = true;
+                            System.out.println("SyncMediaLibrariesView: synchronizing media libraries done.");
+                            DoneEvent.fireEvent(SyncMediaLibrariesView.this, EventArgs.Empty);
+                        }
 					}
 				});
 			}
 		};
 
-		task = new Task<Void>() {
-			@Override public Void call() {
-				System.out.println("SyncMediaLibrariesView: synchronizing media libraries...");
+        try{
+            IVidadaServer localServer = vidada.Application.getLocalServer();
+            if(localServer != null){
+                localServer.getImportService().synchronizeAll(listener);
+            }else {
+                System.err.println("SyncMediaLibrariesView: LocalServer not available");
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
 
-				try{
-					IVidadaServer localServer = vidada.Application.getLocalServer();
-					if(localServer != null){
-						IMediaImportStrategy mediaImporter = new MediaImportStrategy(
-								localServer.getMediaService(),
-								localServer.getTagService(),
-								localServer.getLibraryService());
-						mediaImporter.scanAndUpdateDatabases(listener);
-					}else {
-						System.err.println("SyncMediaLibrariesView: LocalServer not available");
-					}
-				}catch(Exception e){
-					e.printStackTrace();
-
-				}
-
-				isFinished = true;
-				DoneEvent.fireEvent(SyncMediaLibrariesView.this, EventArgs.Empty);
-				System.out.println("SyncMediaLibrariesView: synchronizing media libraries done.");
-				return null;
-			}
-		};
-		t = new Thread(task);
-		t.start();
 	}
 
-	Thread t;
 }

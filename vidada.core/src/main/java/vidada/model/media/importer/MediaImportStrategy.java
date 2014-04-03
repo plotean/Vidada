@@ -15,7 +15,6 @@ import vidada.model.media.source.MediaSourceLocal;
 import vidada.model.tags.autoTag.AutoTagSupport;
 import vidada.model.tags.autoTag.ITagGuessingStrategy;
 import vidada.model.tags.autoTag.KeywordBasedTagGuesser;
-import vidada.server.services.IMediaLibraryService;
 import vidada.server.services.IMediaService;
 import vidada.server.services.ITagService;
 
@@ -25,132 +24,164 @@ import java.util.Map.Entry;
 
 /**
  * This class implements basic media import functionality
+ * to import MediaLibraries.
+ *
+ * You should not cache instances of this class, instead
+ * create a new instance for each Import for most accurate results.
+ * (This class caches a lot of environment states when being created)
+ *
  * @author IsNull
  *
  */
 public class MediaImportStrategy implements IMediaImportStrategy {
 
+    /***************************************************************************
+     *                                                                         *
+     * Private final fields                                                    *
+     *                                                                         *
+     **************************************************************************/
+
 	private final IMediaService mediaService;
-	private final IMediaLibraryService libraryManager;
 	private final ITagService tagService;
+	private final MediaHashUtil mediaHashUtil;
+	private final ITagGuessingStrategy tagGuessingStrategy;
+	private final IMediaInfoUpdateService mediaInfoUpdateService =  new MediaInfoUpdateService();
+    private final List<MediaLibrary> libraries = new ArrayList<MediaLibrary>();
 
-	private MediaHashUtil mediaHashUtil;
-	private ITagGuessingStrategy tagguesser;
+    /***************************************************************************
+     *                                                                         *
+     * Private fields                                                          *
+     *                                                                         *
+     **************************************************************************/
 
-	private IMediaInfoUpdateService mediaInfoUpdateService =  new MediaInfoUpdateService(); 
+    private Map<String, MediaItem> existingMediaData;
 
+    /***************************************************************************
+     *                                                                         *
+     * Constructor                                                             *
+     *                                                                         *
+     **************************************************************************/
 
-	public MediaImportStrategy(IMediaService mediaService, ITagService tagService, IMediaLibraryService libraryManager){
+    /**
+     * Creates a new MediaImportStrategy to synchronize the specified libraries.
+     *
+     * @param mediaService
+     * @param tagService
+     * @param libraries
+     */
+	public MediaImportStrategy(IMediaService mediaService, ITagService tagService, List<MediaLibrary> libraries){
 		this.mediaService = mediaService;
 		this.tagService = tagService;
-		this.libraryManager = libraryManager;
+        this.mediaHashUtil =  MediaHashUtil.getDefaultMediaHashUtil();
+        this.tagGuessingStrategy = new KeywordBasedTagGuesser(tagService.getAllTags());
+
+		this.libraries.addAll(libraries);
 	}
+
+    /***************************************************************************
+     *                                                                         *
+     * Public API                                                              *
+     *                                                                         *
+     **************************************************************************/
 
 	@Override
-	public void scanAndUpdateDatabases(IProgressListener progressListener){
+	public void synchronize(IProgressListener progressListener){
+        try {
+            // Init
+            existingMediaData = fetchExistingMedias();
 
-		mediaHashUtil =  MediaHashUtil.getDefaultMediaHashUtil();
+            progressListener.currentProgress(new ProgressEventArgs(true, "Searching for all media files in your libraries (" + libraries.size() + ")"));
 
-		tagguesser = new KeywordBasedTagGuesser(tagService.getAllTags());
-
-		List<MediaLibrary> libraries = libraryManager.getAllLibraries();
-
-		progressListener.currentProgress(new ProgressEventArgs(true, "Searching for all media files in your libraries (" + libraries.size()+")"));
-
-		if(!libraries.isEmpty()){
-			for (MediaLibrary lib : libraries) {
-				if(lib.isAvailable())
-				{
-					scanAndUpdateLibrary(progressListener, lib);
-				}
-			};
-
-			progressListener.currentProgress(new ProgressEventArgs(100, "Done."));
-		}else {
-			System.out.println("Import aborted, you dont have any MediaLibraries!");
-		}
+            if (!libraries.isEmpty()) {
+                for (MediaLibrary lib : libraries) {
+                    if (lib.isAvailable()) {
+                        synchronizeLibrary(progressListener, lib);
+                    }
+                }
+                ;
+                progressListener.currentProgress(new ProgressEventArgs(100, "Done."));
+            } else {
+                System.out.println("Import aborted, you do not have specified any libraries!");
+            }
+        }finally {
+            progressListener.currentProgress(ProgressEventArgs.COMPLETED);
+        }
 	}
+
+    /***************************************************************************
+     *                                                                         *
+     * Private methods                                                         *
+     *                                                                         *
+     **************************************************************************/
 
 
 	/**
-	 * 
+	 * Synchronizes all Medias which belong to the given {@link MediaLibrary}
 	 * @param progressListener
 	 * @param library
 	 */
-	@Override
-	public void scanAndUpdateLibrary(IProgressListener progressListener, MediaLibrary library)
+	private void synchronizeLibrary(IProgressListener progressListener, MediaLibrary library)
 	{
 		progressListener.currentProgress(new ProgressEventArgs(true, "Scanning for media files in " + library + " ..."));
 
-		List<ResourceLocation> mediafiles = library.getMediaDirectory().getAllMediaFilesRecursive();
+		List<ResourceLocation> mediaLocations = library.getMediaDirectory().getAllMediaFilesRecursive();
 
 
-		if(!mediafiles.isEmpty())
-			progressListener.currentProgress(new ProgressEventArgs(true, "Media files found:\t " + mediafiles.size()));
+		if(!mediaLocations.isEmpty()) {
+            progressListener.currentProgress(new ProgressEventArgs(true, "Media files found:\t " + mediaLocations.size()));
 
-		//
-		// analyze all the existing files inside this library
-		//
-		Map<ResourceLocation, String> analyzedFiles = scanPhysicalFiles(progressListener, mediafiles);
+            Map<ResourceLocation, String> analyzedFiles = createFileHashCache(progressListener, mediaLocations);
 
-		if(analyzedFiles != null)
-		{
-			//
-			// now lets check against our db
-			//
-			Map<String, ResourceLocation> newFiles = compareWithExisting(progressListener, analyzedFiles, library);
+            //
+            // now lets check against existing medias in our database
+            //
+            Map<String, ResourceLocation> newFiles = compareWithExisting(progressListener, analyzedFiles, library);
 
-			progressListener.currentProgress(new ProgressEventArgs(true, "Starting import of new files..."));
+            // Import the new found files
+            progressListener.currentProgress(new ProgressEventArgs(true, "Starting import of new files..."));
+            importNewFiles(progressListener, library, newFiles);
 
-			importNewFiles(progressListener, library, newFiles);
-		}
-
-		else
-			progressListener.currentProgress(new ProgressEventArgs(100, "Found NO medifiles in library " + library + "!"));
+        }else{
+            progressListener.currentProgress(new ProgressEventArgs(true, "No media files found in library " + library));
+        }
 	}
 
 
 	/**
-	 * Find and analyze the content of all files in the given folder
+	 * Creates a Cache (Map) which holds the hash for each physical file.
 	 * 
 	 * @param progressListener
-	 * @param library
+	 * @param mediaLocations
 	 * @return
 	 */
-	private Map<ResourceLocation, String> scanPhysicalFiles(IProgressListener progressListener, List<ResourceLocation> mediafiles){
-		Map<ResourceLocation, String> filecontentMap = new HashMap<ResourceLocation, String>();
-
-		for (ResourceLocation file : mediafiles) {
-			filecontentMap.put(file, null);
-		}
+	private Map<ResourceLocation, String> createFileHashCache(IProgressListener progressListener, List<ResourceLocation> mediaLocations){
+		Map<ResourceLocation, String> fileContentMap = new HashMap<ResourceLocation, String>();
 
 		progressListener.currentProgress(new ProgressEventArgs(true, "Analyzing file contents..."));
 
-		ResourceLocation[] files = filecontentMap.keySet().toArray(new ResourceLocation[0]);
 		String hash;
+        int locationCount = mediaLocations.size();
+		for (int i = 0; i < locationCount; i++) {
+            ResourceLocation location = mediaLocations.get(i);
 
-		for (int i = 0; i < files.length; i++) {
-			hash = mediaHashUtil.retriveFileHash(files[i]);
-			filecontentMap.put(files[i], hash);
-
-			progressListener.currentProgress(new ProgressEventArgs(100 / files.length * i, "hash: " + hash + "\tfile: " + files[i].getName()));
+			hash = mediaHashUtil.retriveFileHash(location);
+            fileContentMap.put(location, hash);
+			progressListener.currentProgress(new ProgressEventArgs(100 / locationCount * i, "hash: " + hash + "\tfile: " + location.getName()));
 		}
 
-		return filecontentMap;
+		return fileContentMap;
 	}
 
 
-	private Map<String, MediaItem> fetchCurrentMedias(){
+	private Map<String, MediaItem> fetchExistingMedias(){
 
 		Map<String, MediaItem> existingMediaData = new HashMap<String, MediaItem>();
-
 
 		List<MediaItem> knownMedias = mediaService.getAllMedias();
 
 		for (MediaItem mediaData : knownMedias) {
 			existingMediaData.put(mediaData.getFilehash(), mediaData);
 		}
-
 		return existingMediaData;
 	}
 
@@ -172,21 +203,19 @@ public class MediaImportStrategy implements IMediaImportStrategy {
 		Set<MediaItem> updateMedias = new HashSet<MediaItem>();
 
 		Map<MediaItem, Boolean> realExistingMediaDatas = new HashMap<MediaItem, Boolean>();
-		Map<String, MediaItem> existingMediaData = fetchCurrentMedias();
 
 		progressListener.currentProgress(new ProgressEventArgs(true, "Retrieving ObjectContainer..."));
 
 		try{
 			progressListener.currentProgress(new ProgressEventArgs(true, "Checking " + existingMediaData.size() + " medias..."));
-			Collection<MediaItem>  mediashm = existingMediaData.values();
-			List<MediaItem> medias = new ArrayList<MediaItem>(mediashm);
+			Collection<MediaItem>  existingMedias = existingMediaData.values();
 
-			for (MediaItem mediaData : medias) {
+			for (MediaItem existingMedia : existingMedias) {
 				// check if the parent library is still correct
-				if(isMemberOfLibrary(mediaData, library))
+				if(isMemberOfLibrary(existingMedia, library))
 				{
 					// add the media data to the probably existing, but default the exists to false
-					realExistingMediaDatas.put(mediaData, false);
+					realExistingMediaDatas.put(existingMedia, false);
 				}
 			}
 		}catch(Exception e){
@@ -194,7 +223,6 @@ public class MediaImportStrategy implements IMediaImportStrategy {
 			return null;
 		}
 
-		//
 		progressListener.currentProgress(new ProgressEventArgs(true, "Compare the " + fileContentMap.size() + " physical existing files with the current index media items"));
 
 		int i = 0;
@@ -287,7 +315,6 @@ public class MediaImportStrategy implements IMediaImportStrategy {
 
 	/**
 	 * Update a existing media file
-	 * @param em
 	 * @param library
 	 * @param existingMeida
 	 * @param entry
@@ -300,7 +327,7 @@ public class MediaImportStrategy implements IMediaImportStrategy {
 		hasChanges = updateExistingMediaSources(library, existingMeida, entry.getKey());
 
 		// Update Tags From file path
-		if(tagguesser != null && AutoTagSupport.updateTags(tagguesser, existingMeida)){
+		if(tagGuessingStrategy != null && AutoTagSupport.updateTags(tagGuessingStrategy, existingMeida)){
 			hasChanges = true;
 		}
 
@@ -370,7 +397,7 @@ public class MediaImportStrategy implements IMediaImportStrategy {
 	private void importNewFiles(IProgressListener progressListener, MediaLibrary parentlibrary, Map<String, ResourceLocation> newfilesWithHash){
 		progressListener.currentProgress(new ProgressEventArgs(true, "Importing " + newfilesWithHash.size() + " new files..."));
 
-		List<MediaItem> newmedias = new ArrayList<MediaItem>(newfilesWithHash.size());
+		List<MediaItem> newMedias = new ArrayList<MediaItem>(newfilesWithHash.size());
 
 		double fileMapSize = newfilesWithHash.size();
 
@@ -384,24 +411,21 @@ public class MediaImportStrategy implements IMediaImportStrategy {
 			if(newMedia != null)
 			{
 				// Add tags guessed from the file structure
-				if(tagguesser != null)
-					AutoTagSupport.updateTags(tagguesser, newMedia);
+				if(tagGuessingStrategy != null)
+					AutoTagSupport.updateTags(tagGuessingStrategy, newMedia);
 
 				// Add media infos which might be present from previous caches
 				mediaInfoUpdateService.updateInfoFromCache(newMedia, parentlibrary.getPropertyStore());
 
-				newmedias.add(newMedia);
+                newMedias.add(newMedia);
 			}
 			i++;
 		}
 
-		String msg = "Adding " + newmedias.size() + " new medias to the Library...";
+		String msg = "Adding " + newMedias.size() + " new medias to the Library...";
 		progressListener.currentProgress(new ProgressEventArgs(true, msg));
-		mediaService.store(newmedias);
+		mediaService.store(newMedias);
 	}
-
-
-
 
 
 }
