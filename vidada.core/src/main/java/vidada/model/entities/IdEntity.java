@@ -1,6 +1,8 @@
 package vidada.model.entities;
 
 import javax.persistence.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 
 /**
  * Represents an entity with an auto-generated integer id.
@@ -10,6 +12,7 @@ import javax.persistence.*;
  */
 @MappedSuperclass
 @Access(AccessType.FIELD)
+@XmlAccessorType(XmlAccessType.FIELD)
 public abstract class IdEntity extends BaseEntity {
 
 	@Id
