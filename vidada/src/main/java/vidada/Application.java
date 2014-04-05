@@ -10,11 +10,14 @@ import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import jersey.repackaged.com.google.common.collect.Lists;
+import org.apache.commons.io.output.TeeOutputStream;
 import org.controlsfx.control.ButtonBar;
 import org.controlsfx.control.ButtonBar.ButtonType;
 import org.controlsfx.control.action.AbstractAction;
 import org.controlsfx.dialog.Dialog;
 import org.controlsfx.dialog.Dialogs;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
 import vidada.client.IVidadaClient;
 import vidada.client.IVidadaClientManager;
 import vidada.client.VidadaClientManager;
@@ -47,8 +50,7 @@ import vidada.viewsFX.dialoges.ChooseVidadaInstanceView;
 import vidada.viewsFX.images.ImageViewerServiceFx;
 
 import javax.imageio.ImageIO;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collections;
@@ -64,7 +66,11 @@ public class Application extends  javafx.application.Application {
 	 */
 	public static void main(String[] args) {
 
-		//
+        setupLogging();
+
+
+        System.out.println("# Welcome to Vidada " + DateTime.now().toString(DateTimeFormat.fullDate()));
+        //
 		// print some system infos
 		//
 		System.out.println(System.getProperty("java.home"));
@@ -72,11 +78,43 @@ public class Application extends  javafx.application.Application {
 		System.out.println(System.getProperty("java.vendor.url"));
 		System.out.println(System.getProperty("java.version"));
 
+        System.out.println("Platform : " + OSValidator.getPlatformName());
+
 		long maxBytes = Runtime.getRuntime().maxMemory();
 		System.out.println("Max memory: " + maxBytes / 1024 / 1024 + "MB");
 
 		launch(args);
 	}
+
+    private static void setupLogging(){
+
+        try
+        {
+            File log = new File("vidada.log");
+            if(log.exists()){
+                log.delete();
+            }
+
+            System.out.println("Logging to " + log.getAbsolutePath());
+
+            FileOutputStream logStream = new FileOutputStream(log);
+            TeeOutputStream multiOut= new TeeOutputStream(System.out, logStream);
+            TeeOutputStream multiErr= new TeeOutputStream(System.err, logStream);
+
+            PrintStream stdout= new PrintStream(multiOut);
+            PrintStream stderr= new PrintStream(multiErr);
+
+            System.setOut(stdout);
+            System.setErr(stderr);
+
+        }
+        catch (FileNotFoundException ex)
+        {
+            ex.printStackTrace();
+        }
+
+    }
+
 
 	private Stage primaryStage;
 	private static IVidadaServer localserver;
