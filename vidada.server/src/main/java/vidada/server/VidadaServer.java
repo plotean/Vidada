@@ -9,7 +9,6 @@ import vidada.IVidadaServer;
 import vidada.model.images.cache.crypto.CryptedCacheUtil;
 import vidada.model.security.AuthenticationRequieredException;
 import vidada.model.security.ICredentialManager;
-import vidada.model.security.ICredentialManager.CredentialsChecker;
 import vidada.server.dal.IVidadaDALService;
 import vidada.server.impl.IPrivacyService;
 import vidada.server.impl.PrivacyService;
@@ -260,11 +259,7 @@ public class VidadaServer implements IVidadaServer {
 				"vidada.core",
 				"Please enter the Database password:",
 				CredentialType.PasswordOnly,
-				new CredentialsChecker(){
-					@Override
-					public boolean check(Credentials credentials) {
-						return privacyService.authenticate(credentials);
-					}},
+                credentials -> privacyService.authenticate(credentials),
 					false);
 
 		return validCredentials != null;

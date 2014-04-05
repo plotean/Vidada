@@ -30,44 +30,31 @@ public class MediaImportService extends VidadaServerService implements IMediaImp
                 final IJobService jobService = getServer().getJobService();
                 currentImportJobId = jobService.create("MediaLibrary Importer");
 
-                Runnable importTask = new Runnable() {
-                    @Override
-                    public void run() {
+                Runnable importTask = () -> runUnitOfWork(() -> {
 
-                        // The asynchronous import task runs as one unit of work
+                    final IMediaImportStrategy importStrategy = new MediaImportStrategy(
+                            getServer().getMediaService(),
+                            getServer().getTagService(),
+                            getServer().getLibraryService().getAllLibraries());
 
-                        runUnitOfWork(new Runnable() {
-
-                            @Override
-                            public void run() {
-
-
-                                final IMediaImportStrategy importStrategy = new MediaImportStrategy(
-                                        getServer().getMediaService(),
-                                        getServer().getTagService(),
-                                        getServer().getLibraryService().getAllLibraries());
-
-                                final IProgressListener progressListener = new JobServiceProgressListener(jobService, currentImportJobId){
-                                    public void currentProgress(ProgressEventArgs progressInfo) {
-                                        super.currentProgress(progressInfo);
-                                        if(userListener != null) {
-                                            userListener.currentProgress(progressInfo);
-                                        }
-                                    }
-                                };
-
-                                try{
-                                    importStrategy.synchronize(progressListener);
-                                    progressListener.currentProgress(ProgressEventArgs.COMPLETED);
-                                }catch(Exception e){
-                                    progressListener.currentProgress(ProgressEventArgs.FAILED);
-                                }finally{
-                                    currentImportJobId = null;
-                                }
+                    final IProgressListener progressListener = new JobServiceProgressListener(jobService, currentImportJobId) {
+                        public void currentProgress(ProgressEventArgs progressInfo) {
+                            super.currentProgress(progressInfo);
+                            if (userListener != null) {
+                                userListener.currentProgress(progressInfo);
                             }
-                        });
+                        }
+                    };
+
+                    try {
+                        importStrategy.synchronize(progressListener);
+                        progressListener.currentProgress(ProgressEventArgs.COMPLETED);
+                    } catch (Exception e) {
+                        progressListener.currentProgress(ProgressEventArgs.FAILED);
+                    } finally {
+                        currentImportJobId = null;
                     }
-                };
+                });
 
                 importThread = new Thread(importTask);
                 importThread.start();

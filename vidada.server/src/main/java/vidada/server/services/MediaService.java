@@ -13,7 +13,6 @@ import vidada.server.queries.MediaExpressionQuery;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.Callable;
 
 public class MediaService extends VidadaServerService implements IMediaService {
 
@@ -27,72 +26,57 @@ public class MediaService extends VidadaServerService implements IMediaService {
 
 	@Override
 	public void store(final MediaItem media) {
-		runUnitOfWork(new Runnable() {
-			@Override
-			public void run() {
-				repository.store(media);
-			}
-		});
+		runUnitOfWork(() -> {
+            repository.store(media);
+        });
 	}
 
 	@Override
 	public void store(final Collection<MediaItem> medias) {
-		runUnitOfWork(new Runnable() {
-			@Override
-			public void run() {
-				repository.store(medias);
-			}
-		});
+		runUnitOfWork(() -> {
+            repository.store(medias);
+        });
 	}
 
 	@Override
 	public void update(final MediaItem media) {
-		runUnitOfWork(new Runnable() {
-			@Override
-			public void run() {
-				repository.update(media);
-			}
-		});
+		runUnitOfWork(() -> {
+            repository.update(media);
+        });
 	}
 
 	@Override
 	public void update(final Collection<MediaItem> medias) {
-		runUnitOfWork(new Runnable() {
-			@Override
-			public void run() {
-				repository.update(medias);
-			}
-		});
+		runUnitOfWork(() -> {
+            repository.update(medias);
+        });
 	}
 
 	@Override
 	public ListPage<MediaItem> query(final MediaQuery qry, final int pageIndex, final int maxPageSize) {
-		return runUnitOfWork(new Callable<ListPage<MediaItem>>() {
-			@Override
-			public ListPage<MediaItem> call() throws Exception {
+		return runUnitOfWork(() -> {
 
-				// Add additional related tags to the users request
-				// This is what vidada makes intelligent
+            // Add additional related tags to the users request
+            // This is what vidada makes intelligent
 
-				Expression<Tag> required = createTagExpression(qry.getRequiredTags(), false);
-				Expression<Tag> blocked = createTagExpression(qry.getBlockedTags(), true);
+            Expression<Tag> required = createTagExpression(qry.getRequiredTags(), false);
+            Expression<Tag> blocked = createTagExpression(qry.getBlockedTags(), true);
 
-				Expression<Tag> tagExpression = Expressions.and(required, blocked);
+            Expression<Tag> tagExpression = Expressions.and(required, blocked);
 
-				System.out.println("created tag expression: " + tagExpression.code());
+            System.out.println("created tag expression: " + tagExpression.code());
 
-				// TODO build expr query
-				MediaExpressionQuery exprQuery = new MediaExpressionQuery(
-						tagExpression,
-						qry.getMediaType(),
-						qry.getKeywords(),
-						qry.getOrder(),
-						qry.isOnlyAvailable(),
-						qry.isReverseOrder());
+            // TODO build expr query
+            MediaExpressionQuery exprQuery = new MediaExpressionQuery(
+                    tagExpression,
+                    qry.getMediaType(),
+                    qry.getKeywords(),
+                    qry.getOrder(),
+                    qry.isOnlyAvailable(),
+                    qry.isReverseOrder());
 
-				return repository.query(exprQuery, pageIndex, maxPageSize);
-			}
-		});
+            return repository.query(exprQuery, pageIndex, maxPageSize);
+        });
 	}
 
 	private Expression<Tag> createTagExpression(Collection<Tag> conjunction, boolean not){
@@ -126,33 +110,22 @@ public class MediaService extends VidadaServerService implements IMediaService {
 
 	@Override
 	public List<MediaItem> getAllMedias(){
-		return runUnitOfWork(new Callable<List<MediaItem>>() {
-			@Override
-			public List<MediaItem> call() throws Exception {
-				return repository.getAllMedias();
-			}
-		});
+		return runUnitOfWork(() -> repository.getAllMedias());
 	}
 
 	@Override
 	public void delete(final MediaItem media) {
-		runUnitOfWork(new Runnable() {
-			@Override
-			public void run() {
-				repository.delete(media);
-			}
-		});
+		runUnitOfWork(() -> {
+            repository.delete(media);
+        });
 
 	}
 
 	@Override
 	public void delete(final Collection<MediaItem> media) {
-		runUnitOfWork(new Runnable() {
-			@Override
-			public void run() {
-				repository.delete(media);
-			}
-		});
+		runUnitOfWork(() -> {
+            repository.delete(media);
+        });
 	}
 
 
@@ -181,43 +154,40 @@ public class MediaService extends VidadaServerService implements IMediaService {
 		// We assume the given file is an absolute file path so we search for
 		// a matching media library to substitute the library path
 
-		return runUnitOfWork(new Callable<MediaItem>() {
-			@Override
-			public MediaItem call() throws Exception {
-				MediaItem mediaData;
+		return runUnitOfWork(() -> {
+            MediaItem mediaData;
 
-				IMediaLibraryService mediaLibraryService = getServer().getLibraryService();
+            IMediaLibraryService mediaLibraryService = getServer().getLibraryService();
 
-				final MediaLibrary library = mediaLibraryService.findLibrary(resource);
-				if(library != null){
+            final MediaLibrary library = mediaLibraryService.findLibrary(resource);
+            if(library != null){
 
-					String hash = null;
+                String hash = null;
 
-					// first we search for the media
+                // first we search for the media
 
-					mediaData = repository.queryByPath(resource, library);
-					if(mediaData == null)
-					{
-						hash = retriveMediaHash(resource);
-						if(hash != null)
-							mediaData = repository.queryByHash(hash);
-					}
+                mediaData = repository.queryByPath(resource, library);
+                if(mediaData == null)
+                {
+                    hash = retriveMediaHash(resource);
+                    if(hash != null)
+                        mediaData = repository.queryByHash(hash);
+                }
 
-					if(canCreate && mediaData == null){
+                if(canCreate && mediaData == null){
 
-						// we could not find a matching media so we create a new one
+                    // we could not find a matching media so we create a new one
 
-						mediaData = MediaItemFactory.instance().buildMedia(resource, library, hash);
-						if(persist && mediaData != null){
-							repository.store(mediaData);
-						}
-					}
-				}else
-					throw new NotSupportedException("resource is not part of any media library");
+                    mediaData = MediaItemFactory.instance().buildMedia(resource, library, hash);
+                    if(persist && mediaData != null){
+                        repository.store(mediaData);
+                    }
+                }
+            }else
+                throw new NotSupportedException("resource is not part of any media library");
 
-				return mediaData;
-			}
-		});
+            return mediaData;
+        });
 
 	}
 
@@ -233,22 +203,12 @@ public class MediaService extends VidadaServerService implements IMediaService {
 
 	@Override
 	public int count() {
-		return runUnitOfWork(new Callable<Integer>() {
-			@Override
-			public Integer call() throws Exception {
-				return repository.countAll();
-			}
-		}) ;
+		return runUnitOfWork(() -> repository.countAll()) ;
 	}
 
 
 	@Override
 	public MediaItem queryByHash(final String hash) {
-		return runUnitOfWork(new Callable<MediaItem>() {
-			@Override
-			public MediaItem call() throws Exception {
-				return repository.queryByHash(hash);
-			}
-		}) ;
+		return runUnitOfWork(() -> repository.queryByHash(hash)) ;
 	}
 }

@@ -10,7 +10,6 @@ import vidada.server.dal.repositories.IMediaLibraryRepository;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
 
 /**
  * Manages all MediaLibraries
@@ -41,12 +40,7 @@ public class MediaLibraryService extends VidadaServerService implements IMediaLi
 	 */
 	@Override
 	public List<MediaLibrary> getAllLibraries(){
-		return runUnitOfWork(new Callable<List<MediaLibrary>>() {
-			@Override
-			public List<MediaLibrary> call() throws Exception {
-				return repository.getAllLibraries();
-			}
-		});
+		return runUnitOfWork(() -> repository.getAllLibraries());
 	}
 
 	/* (non-Javadoc)
@@ -65,49 +59,33 @@ public class MediaLibraryService extends VidadaServerService implements IMediaLi
 
 	@Override
 	public void removeLibrary(final MediaLibrary lib) {
-		runUnitOfWork(new Runnable() {
-			@Override
-			public void run() {
+		runUnitOfWork(() -> {
 				MediaLibrary libToDelete = repository.queryById(lib.getId());
 				repository.delete(libToDelete);
 				libraryRemovedEvent.fireEvent(this, EventArgsG.build(lib));
-			}
 		});
 	}
 
 	@Override
 	public void update(final MediaLibrary lib) {
-		runUnitOfWork(new Runnable() {
-			@Override
-			public void run() {
-				repository.update(lib);
-			}
-		});
+		runUnitOfWork(() -> {
+            repository.update(lib);
+        });
 	}
 
 	@Override
 	public MediaLibrary findLibrary(final ResourceLocation file) {
-		return runUnitOfWork(new Callable<MediaLibrary>() {
-			@Override
-			public MediaLibrary call() throws Exception {
-				return repository.queryByLocation(file);
-			}
-		});
+		return runUnitOfWork(() -> repository.queryByLocation(file));
 	}
 
 	@Override
 	public MediaLibrary getById(final long id) {
-		return runUnitOfWork(new Callable<MediaLibrary>() {
-			@Override
-			public MediaLibrary call() throws Exception {
-				return repository.queryById(id);
-			}
-		});
+		return runUnitOfWork(() -> repository.queryById(id));
 	}
 
 	@Override
 	public List<MediaLibrary> getAvailableLibraries() {
-		List<MediaLibrary> available = new ArrayList<MediaLibrary>();
+		List<MediaLibrary> available = new ArrayList<>();
 		for (MediaLibrary library : getAllLibraries()) {
 			if(library.isAvailable()){
 				available.add(library);
