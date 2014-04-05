@@ -40,7 +40,7 @@ public class MediaViewModel extends BrowserItemVM  {
 	private final IMediaPresenterService mediaPresenter = ServiceProvider.Resolve(IMediaPresenterService.class);
 
 	private final IVidadaClientManager clientManager = ServiceProvider.Resolve(IVidadaClientManager.class);
-	private final IThumbContainerService thumbService = clientManager.getActive().getThumbConatinerService();
+	private final IThumbContainerService thumbService = clientManager.getActive().getThumbContainerService();
 	private final IMediaClientService mediaClientService = clientManager.getActive().getMediaClientService();
 
 	private WeakReference<ImageContainer> imageContainerRef;

@@ -15,5 +15,5 @@ public interface IVidadaClientFacade extends IVidadaClient {
 	 * Gets the IThumbContainerService which provides an easy way to retrieve thumbs
 	 * @return
 	 */
-	public abstract IThumbContainerService getThumbConatinerService();
+	public abstract IThumbContainerService getThumbContainerService();
 }

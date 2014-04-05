@@ -1,6 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
  	<modelVersion>4.0.0</modelVersion>
- 	<groupId>Vidada</groupId>
+ 	<groupId>ch.securityvision.vidada</groupId>
 	<artifactId>Vidada</artifactId>
 	<version>0.1.3-BETA</version>
 	
@@ -50,7 +50,7 @@
 	    <repository>
 	      <id>securityvision-repository</id>
 	      <!--<url>sftp://securityvision.ch/~/dl.securityvision.ch/Vidada</url>-->
-	      <url>sftp://securityvision.ch//var/www/vhosts/lvps83-169-20-121.dedicated.hosteurope.de/dl.securityvision.ch</url>
+	      <url>sftp://securityvision.ch//var/www/vhosts/lvps83-169-20-121.dedicated.hosteurope.de/dl.securityvision.ch/maven</url>
 	      <!-- Credentials are specified in private /.m2/settings.xml  -->
 	    </repository>
 	</distributionManagement>
@@ -229,7 +229,7 @@
 		</plugins>
 		
 		<extensions>
-		     <!-- Enabling the use of SSH / SFTP -->
+		  <!-- Enabling the use of SSH / SFTP -->
 		  <extension>
 		    <groupId>org.apache.maven.wagon</groupId>
 		     <artifactId>wagon-ssh</artifactId>
@@ -250,25 +250,25 @@
 	    </dependency>
 	    
   		<dependency>
-		    <groupId>org.securityvision</groupId>
+		    <groupId>ch.securityvision.vidada</groupId>
   			<artifactId>vidada.core</artifactId>
   			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
-		    <groupId>org.securityvision</groupId>
+		    <groupId>ch.securityvision.vidada</groupId>
   			<artifactId>vidada.server</artifactId>
   			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		
 		<dependency>
-		    <groupId>org.securityvision</groupId>
+		    <groupId>ch.securityvision.vidada</groupId>
 			<artifactId>vidada.client</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		
 		<dependency>
-		    <groupId>org.securityvision</groupId>
+		    <groupId>ch.securityvision.vidada</groupId>
 			<artifactId>vidada.dal</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>

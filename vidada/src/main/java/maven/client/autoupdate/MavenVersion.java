@@ -79,6 +79,16 @@ public final class MavenVersion implements Comparable<MavenVersion> {
 		return qualifier;
 	}
 
+
+    /**
+     * Returns true if this version is valid.
+     * A version must not contain any negative numbers.
+     * @return
+     */
+    public boolean isValid(){
+        return getMajor() >= 0 && getMinor() >= 0 && getPatch() >= 0;
+    }
+
 	/**
 	 * Is this version newer than the given one?
 	 * @param o

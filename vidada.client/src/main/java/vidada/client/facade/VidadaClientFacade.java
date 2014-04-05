@@ -47,7 +47,7 @@ public class VidadaClientFacade implements IVidadaClientFacade{
 
 	/**{@inheritDoc}*/
 	@Override
-	public IThumbContainerService getThumbConatinerService(){
+	public IThumbContainerService getThumbContainerService(){
 		return thumbContainerService;
 	}
 

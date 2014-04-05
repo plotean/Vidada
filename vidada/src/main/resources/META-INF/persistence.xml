@@ -38,7 +38,8 @@
          <property name="hibernate.connection.password" value=""/>
          <property name="hibernate.connection.url" value="jdbc:h2:data/vidada_h2"/>
           -->
-          
+
+         <!-- Hibernate support for Joda Time -->
          <property name="jadira.usertype.autoRegisterUserTypes" value="true" />
          <property name="jadira.usertype.databaseZone" value="UTC"/>
     	 <property name="jadira.usertype.javaZone" value="UTC"/>

@@ -19,26 +19,6 @@ import java.util.List;
 
 public class MavenAutoUpdateClient {
 
-
-	public static void main(String[] args) {
-		try {
-			MavenAutoUpdateClient client = new MavenAutoUpdateClient(
-					new URI("http://dl.securityvision.ch"),
-					"Vidada",
-					"Vidada",
-					new File("./mavenCache"));
-			System.out.println("fetching latest version...");
-			MavenVersion version = client.fetchLatestVersion();
-
-			System.out.println("version: " + version);
-
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
-		}
-	}
-
-
-
 	private static String MetaDataFile = "maven-metadata.xml";
 	private static String Api = "RepositoryClient.php";
 
@@ -69,11 +49,7 @@ public class MavenAutoUpdateClient {
 		this.groupId = groupId;
 		this.artifactId = artifactId;
 		this.mavenCache = mavenCache;
-		try {
-			projectRepository = new URI(mavenRepository.toString() + "/" + groupId + "/" + artifactId);
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
-		}
+        this.projectRepository = getProjectReposiotry(mavenRepository, groupId, artifactId);
 	}
 
 	/**
@@ -173,8 +149,15 @@ public class MavenAutoUpdateClient {
 		return !cachedUpdates.isEmpty() ? cachedUpdates.get(0) : null;
 	}
 
-
-
+    private URI getProjectReposiotry(URI mavenRepository, String groupId, String artifactId){
+        URI repository = null;
+        try {
+            repository = new URI(mavenRepository.toString() + "/" + groupId.replace(".","/") + "/" + artifactId);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+        return repository;
+    }
 
 	private File getUpdateFile(MavenVersion version){
 		File updatesCache = getUpdateCache();
@@ -215,11 +198,12 @@ public class MavenAutoUpdateClient {
 		InputStream in = null;
 		try {
 			URI path = getURI(Action_Version_Latest);
-			in = path.toURL().openStream();
+            System.out.println("Maven Client: fetching " + path.toString());
+            in = path.toURL().openStream();
 			string = IOUtils.toString( in );
-		} catch (IOException e) { 
-			e.printStackTrace();
-		} finally {
+		} catch (IOException e) {
+            System.err.println(e.getMessage());
+        } finally {
 			IOUtils.closeQuietly(in);
 		}
 		return string;
