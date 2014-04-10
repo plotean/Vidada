@@ -1,16 +1,15 @@
 package vidada.client.rest.services;
 
-import java.io.IOException;
-import java.net.URI;
-import java.util.Collection;
-
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.WebTarget;
-
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.WebTarget;
+import java.io.IOException;
+import java.net.URI;
+import java.util.Collection;
 
 
 /**
@@ -88,7 +87,7 @@ public abstract class AbstractRestService {
 		if(!values.isEmpty()){
 			for (Object object : values) {
 				builder.append(object.toString());
-				builder.append("+");
+				builder.append(" ");
 			}
 			return builder.substring(0, builder.length()-1);
 		}
