@@ -49,7 +49,7 @@ public class MavenAutoUpdateClient {
 		this.groupId = groupId;
 		this.artifactId = artifactId;
 		this.mavenCache = mavenCache;
-        this.projectRepository = getProjectReposiotry(mavenRepository, groupId, artifactId);
+        this.projectRepository = getProjectRepository(mavenRepository, groupId, artifactId);
 	}
 
 	/**
@@ -63,17 +63,17 @@ public class MavenAutoUpdateClient {
 		URI path = getURI(Action_Version_Latest);
 		String versionString = uriDownloadString(path);
 		if(versionString != null){
-			try {
-				version = MavenVersion.parse(versionString);
-			} catch (VersionFormatException e) {
-				e.printStackTrace();
-			}
-		}
+            try {
+                version = MavenVersion.parse(versionString);
+            } catch (VersionFormatException e) {
+                e.printStackTrace();
+            }
+        }
 		return version;
 	}
 
 	/**
-	 * Fetches the update for the given version.
+	 * Fetches the given version.
 	 * This method call blocks!
 	 * 
 	 * @param version
@@ -110,10 +110,6 @@ public class MavenAutoUpdateClient {
 		return null;
 	}
 
-
-
-
-
 	/**
 	 * Returns all current cached update versions
 	 * @return
@@ -149,7 +145,10 @@ public class MavenAutoUpdateClient {
 		return !cachedUpdates.isEmpty() ? cachedUpdates.get(0) : null;
 	}
 
-    private URI getProjectReposiotry(URI mavenRepository, String groupId, String artifactId){
+
+
+
+    private URI getProjectRepository(URI mavenRepository, String groupId, String artifactId){
         URI repository = null;
         try {
             repository = new URI(mavenRepository.toString() + "/" + groupId.replace(".","/") + "/" + artifactId);

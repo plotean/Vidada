@@ -23,7 +23,18 @@ import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+/**
+ * This service manages the self update of Vidada
+ *
+ */
 public class SelfUpdateService implements ISelfUpdateService {
+
+    private File localUpdateCache;
+    private MavenAutoUpdateClient mavenUpdateClient;
+
+    private MavenVersion runningVersion = null;
+    private MavenVersion latestVersion = null;
+
 
 	private EventHandlerEx<EventArgsG<UpdateInformation>> updateAvailableEvent = new EventHandlerEx<EventArgsG<UpdateInformation>>();
 	@Override
@@ -34,17 +45,6 @@ public class SelfUpdateService implements ISelfUpdateService {
 	public IEvent<EventArgs> getUpdateInstallAvailableEvent() { return updateInstallAvailableEvent; }
 
 
-
-
-	private File localUpdateCache;
-	private MavenAutoUpdateClient mavenUpdateClient;
-
-
-	private MavenVersion runningVersion = null;
-	private MavenVersion latestVersion = null;
-
-
-
 	public SelfUpdateService(){
 
 		File appData = OSValidator.defaultAppData();
@@ -52,8 +52,8 @@ public class SelfUpdateService implements ISelfUpdateService {
 
 		try {
 			mavenUpdateClient = new MavenAutoUpdateClient(
-					new URI("http://dl.securityvision.ch"),
-					"Vidada",
+					new URI("http://dl.securityvision.ch/maven"),
+					"ch.securityvision.vidada",
 					"Vidada",
 					localUpdateCache);
 		} catch (URISyntaxException e) {
