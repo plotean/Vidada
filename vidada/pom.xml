@@ -43,6 +43,12 @@
 	    	<url>http://brandonborkholder.github.com/glg2d/maven2/</url>
 	    </repository>
 
+        <repository>
+            <id>sonatype snapshots</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </repository>
+
+
 	</repositories>
 
 	<!-- Deployment info  -->
