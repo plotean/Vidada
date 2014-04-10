@@ -28,7 +28,7 @@ class RepositoryManager {
 	/**
 	 * Registers the given repository instance
 	 * @param inter
-	 * @param implType
+	 * @param instance
 	 */
 	public <I extends IRepository, T extends I> void register(Class<I> inter, T instance) {
 		serviceLocator.registerInstance(inter, instance);

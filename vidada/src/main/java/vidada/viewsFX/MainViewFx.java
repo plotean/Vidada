@@ -1,5 +1,7 @@
 package vidada.viewsFX;
 
+import com.aquafx_project.AquaFx;
+import com.aquafx_project.controls.skin.styles.TabPaneType;
 import javafx.scene.Node;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
@@ -11,9 +13,6 @@ import vidada.client.services.ITagClientService;
 import vidada.client.viewmodel.explorer.MediaExplorerVM;
 import vidada.services.ServiceProvider;
 import vidada.viewsFX.mediaexplorer.PrimaryMediaExplorerFX;
-
-import com.aquafx_project.AquaFx;
-import com.aquafx_project.controls.skin.styles.TabPaneType;
 
 /**
  * Represents the main view
@@ -27,6 +26,7 @@ public class MainViewFx extends BorderPane {
 	private final IMediaClientService mediaService = clientManager.getActive().getMediaClientService();
 	private final MediaBrowserModel browserModel;
 	private final MediaExplorerVM mediaExplorerVM;
+
 
 
 	public MainViewFx(){
