@@ -21,7 +21,7 @@ public interface ISelfUpdateService extends IService{
 	 * 
 	 * @return
 	 */
-	IEvent<EventArgsG<UpdateInformation>> getUpdateAvailableEvent();
+	IEvent<EventArgsG<UpdateInformation>> getUpdateDownloadAvailableEvent();
 
 	/**
 	 * Event raised when a new update is ready to be installed.

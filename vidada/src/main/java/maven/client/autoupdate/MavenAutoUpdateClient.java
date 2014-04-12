@@ -92,7 +92,8 @@ public class MavenAutoUpdateClient {
 				updateUri = new URI(updateLocation);
 
 				File tmpDownloadFile = getTempDownloadUpdateFile(version);
-				if(uriDownloadToFile(updateUri, tmpDownloadFile)){
+                System.out.println("Downloading " + updateUri + " to " + tmpDownloadFile);
+                if(uriDownloadToFile(updateUri, tmpDownloadFile)){
 					tmpDownloadFile.renameTo(updateFile);
 				}
 				return updateFile;
@@ -123,7 +124,7 @@ public class MavenAutoUpdateClient {
 				String ext = FilenameUtils.getExtension(update.toString());
 				if(ext.contains("update") ){
 					try {
-						cached.add(MavenVersion.parse(ext));
+						cached.add(MavenVersion.parse(update.getName()));
 					} catch (VersionFormatException e) {
 						e.printStackTrace();
 					}
@@ -189,14 +190,13 @@ public class MavenAutoUpdateClient {
 
 	/**
 	 * Downloads the content of the given URI as string
-	 * @param uri
+	 * @param path
 	 * @return
 	 */
-	private String uriDownloadString(URI uri){
+	private String uriDownloadString(URI path){
 		String string = null;
 		InputStream in = null;
 		try {
-			URI path = getURI(Action_Version_Latest);
             System.out.println("Maven Client: fetching " + path.toString());
             in = path.toURL().openStream();
 			string = IOUtils.toString( in );
@@ -207,8 +207,6 @@ public class MavenAutoUpdateClient {
 		}
 		return string;
 	}
-
-
 
 
 	private URI getURI(String action){

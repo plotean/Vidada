@@ -1,10 +1,10 @@
 package vidada.server.services;
 
-import java.util.concurrent.Callable;
-
 import vidada.server.VidadaServer;
 import vidada.server.dal.IVidadaDALService;
 import vidada.server.dal.repositories.IRepository;
+
+import java.util.concurrent.Callable;
 
 /**
  * Base-class for all Vidada server services
@@ -48,7 +48,7 @@ public abstract class VidadaServerService {
 	}
 
 	/**
-	 * 
+	 * Run the given code in a Unit of work and returns the calculated result.
 	 * @param code
 	 * @return
 	 */
@@ -56,6 +56,12 @@ public abstract class VidadaServerService {
 		return dalService.getUnitOfWorkRunner().runUnit(code);
 	}
 
+    /**
+     * Resolves the given Repository
+     * @param iclazz
+     * @param <T>
+     * @return
+     */
 	protected <T extends IRepository> T getRepository(Class<T> iclazz){
 		return dalService.getRepository(iclazz);
 	}

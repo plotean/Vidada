@@ -1,10 +1,12 @@
 package vidada.viewsFX.update;
 
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import org.controlsfx.glyphfont.FontAwesome;
 import org.controlsfx.glyphfont.Glyph;
 import org.controlsfx.glyphfont.GlyphFont;
@@ -13,37 +15,64 @@ import vidada.model.update.SelfUpdateState;
 import vidada.services.ISelfUpdateService;
 import vidada.services.ServiceProvider;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 /**
- * Visualizes updates
+ * Visualizes version / updates and the current update status
  */
 public class UpdateBar extends BorderPane{
 
     private final ISelfUpdateService updateService = ServiceProvider.Resolve(ISelfUpdateService.class);
     private final GlyphFont font = GlyphFontRegistry.font("FontAwesome");
+    private Timer statusTimer = new java.util.Timer();
 
     public UpdateBar(){
-        updateService.getUpdateAvailableEvent().add((s,e)-> updateView(updateService.getState()));
-        updateService.getUpdateInstallAvailableEvent().add((s,e)-> updateView(updateService.getState()));
+        startPollStatus();
+        updateService.checkForUpdateAsync();
+    }
 
-        updateView(SelfUpdateState.UpdateAvailableForInstall);
+    private void startPollStatus(){
+        statusTimer.schedule(new TimerTask() {
+            public void run() {
+                Platform.runLater(() -> {
+                    updateView();
+                });
+            }
+        }, 2 * 1000, 5 * 1000);
+    }
+
+    private void updateView(){
+        updateView(updateService.getState());
     }
 
     private void updateView(SelfUpdateState state){
 
-        Node icon = null;
+        Node icon;
 
         switch (state){
 
             case UpdateAvailableForDownload:
-                icon = createIcon(FontAwesome.Glyph.CLOUD_DOWNLOAD, "Download new Update!", () -> updateService.downloadUpdateAsync());
+                icon = createIcon(FontAwesome.Glyph.CLOUD_DOWNLOAD, "Download the new Update!", () -> {
+                    updateService.downloadUpdateAsync();
+                    updateView(SelfUpdateState.UpdateDownloading);
+                });
                 break;
 
             case UpdateAvailableForInstall:
-                icon = createIcon(FontAwesome.Glyph.REFRESH, "Install new Update!", () -> updateService.installAndRestart());
+                icon = createIcon(FontAwesome.Glyph.REFRESH, "Install the new Update!", () -> updateService.installAndRestart());
                 break;
 
-            default:
+            case UpToDate:
+                icon = createIcon(FontAwesome.Glyph.INFO, "Great, you use the latest available version!", null);
+                break;
 
+            case UpdateDownloading:
+                icon = createIcon(FontAwesome.Glyph.SPINNER, "Update is being downloaded...", null);
+            break;
+
+            default:
+                icon = createIcon(FontAwesome.Glyph.EXCLAMATION_SIGN, "No update information available.", null);
                 break;
         }
 
@@ -57,8 +86,15 @@ public class UpdateBar extends BorderPane{
                 .fontSize(40)
                 .create(glyph.name());
 
+        if(action != null) {
+            icon.getStyleClass().addAll(Glyph.STYLE_HOVER_EFFECT);
+        }
+
         icon.setPadding(new Insets(0,20,0,20));
-        icon.setTooltip(new Tooltip(tooltip));
+        Tooltip tip = new Tooltip(tooltip);
+        tip.setFont(new Font(tip.getFont().getName(), 18));
+
+        icon.setTooltip(tip);
         icon.setOnMouseClicked(x -> action.run());
 
         return icon;

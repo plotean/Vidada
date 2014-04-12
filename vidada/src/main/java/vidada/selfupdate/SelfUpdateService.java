@@ -36,11 +36,11 @@ public class SelfUpdateService implements ISelfUpdateService {
     private MavenVersion latestVersion = null;
 
 
-	private EventHandlerEx<EventArgsG<UpdateInformation>> updateAvailableEvent = new EventHandlerEx<EventArgsG<UpdateInformation>>();
+	private EventHandlerEx<EventArgsG<UpdateInformation>> updateAvailableEvent = new EventHandlerEx<>();
 	@Override
-	public IEvent<EventArgsG<UpdateInformation>> getUpdateAvailableEvent() { return updateAvailableEvent; }
+	public IEvent<EventArgsG<UpdateInformation>> getUpdateDownloadAvailableEvent() { return updateAvailableEvent; }
 
-	private EventHandlerEx<EventArgs> updateInstallAvailableEvent = new EventHandlerEx<EventArgs>();
+	private EventHandlerEx<EventArgs> updateInstallAvailableEvent = new EventHandlerEx<>();
 	@Override
 	public IEvent<EventArgs> getUpdateInstallAvailableEvent() { return updateInstallAvailableEvent; }
 
@@ -86,7 +86,9 @@ public class SelfUpdateService implements ISelfUpdateService {
 							}else {
 								info = new UpdateInformation(false, latestVersion.toString());
 							}
-						}
+						}else{
+                            System.err.println("Auto-Update: Update-Check: Can not determine the running version, aborting.");
+                        }
 						updateCheckTask = null;
 						return info;
 					}
@@ -132,7 +134,8 @@ public class SelfUpdateService implements ISelfUpdateService {
 
 	public boolean isDownloading(){
 		synchronized (downloadUpdateTaskLock) {
-			return downloadUpdateTask.getState() == TaskState.RUNNING;
+            CancelableTask<Void> task = downloadUpdateTask;
+			return task != null && task.getState() == TaskState.RUNNING;
 		}
 	}
 
@@ -192,19 +195,32 @@ public class SelfUpdateService implements ISelfUpdateService {
 	 */
 	private synchronized MavenVersion getRunningVersion(){
 		if(runningVersion == null){
-			Package pack = Application.class.getPackage();
-			String version = pack.getImplementationVersion();
-			if(version == null || version.isEmpty()){
-				runningVersion = MavenVersion.INVLAID;
-			} else
-				try {
-					runningVersion = MavenVersion.parse(version);
-				} catch (VersionFormatException e) {
-					runningVersion = MavenVersion.INVLAID;
-					e.printStackTrace();
-				}
+            runningVersion = fetchCurrentVersion();
+
+            // FIXME DEBUG ONLY
+            if(runningVersion.equals(MavenVersion.INVLAID)){
+                try {
+                    runningVersion = MavenVersion.parse("0.1.2");
+                } catch (VersionFormatException e) {
+                    e.printStackTrace();
+                }
+            }
 		}
 		return runningVersion;
 	}
+
+    private MavenVersion fetchCurrentVersion(){
+        MavenVersion runningVersion = MavenVersion.INVLAID;
+        Package pack = Application.class.getPackage();
+        String version = pack.getImplementationVersion();
+        if(version != null && !version.isEmpty()){
+            try {
+                runningVersion = MavenVersion.parse(version);
+            } catch (VersionFormatException e) {
+                e.printStackTrace();
+            }
+        }
+        return runningVersion;
+    }
 
 }
