@@ -149,12 +149,12 @@ public class Application extends  javafx.application.Application {
 			}else
 				stop();
 
-		}catch(Exception e){
+		}catch(Throwable e){
 			e.printStackTrace();
 
 			Dialogs.create()
 			.title("Vidada Erorr")
-			.masthead("Vidada encoutered an Error and has stopped working.")
+			.masthead("Vidada encountered an Error and has stopped working.")
 			.showException(e);
 		}
 	}
