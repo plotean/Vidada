@@ -104,6 +104,11 @@ public class MavenAutoUpdateClient {
 		return null;
 	}
 
+    /**
+     * Gets the update file for the given version if already downloaded in cache.
+     * @param version
+     * @return
+     */
 	public synchronized File fetchCachedUpdate(MavenVersion version){
 		File updateFile = getUpdateFile(version);
 		if(updateFile.exists())

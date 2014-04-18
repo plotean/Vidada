@@ -4,7 +4,6 @@ import archimedes.core.events.EventArgs;
 import archimedes.core.events.EventArgsG;
 import archimedes.core.events.EventHandlerEx;
 import archimedes.core.events.IEvent;
-import archimedes.core.exceptions.NotImplementedException;
 import archimedes.core.threading.CancelableTask;
 import archimedes.core.threading.CancellationTokenSource.CancellationToken;
 import archimedes.core.threading.CancellationTokenSource.OperationCanceledException;
@@ -22,6 +21,7 @@ import vidada.services.ISelfUpdateService;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 
 /**
  * This service manages the self update of Vidada
@@ -29,12 +29,26 @@ import java.net.URISyntaxException;
  */
 public class SelfUpdateService implements ISelfUpdateService {
 
+    /***************************************************************************
+     *                                                                         *
+     * Private Fields                                                          *
+     *                                                                         *
+     **************************************************************************/
+
     private File localUpdateCache;
     private MavenAutoUpdateClient mavenUpdateClient;
 
     private MavenVersion runningVersion = null;
     private MavenVersion latestVersion = null;
 
+    private CancelableTask<UpdateInformation> updateCheckTask;
+    private final Object updateCheckTaskLock = new Object();
+
+    /***************************************************************************
+     *                                                                         *
+     * Events                                                                  *
+     *                                                                         *
+     **************************************************************************/
 
 	private EventHandlerEx<EventArgsG<UpdateInformation>> updateAvailableEvent = new EventHandlerEx<>();
 	@Override
@@ -44,6 +58,11 @@ public class SelfUpdateService implements ISelfUpdateService {
 	@Override
 	public IEvent<EventArgs> getUpdateInstallAvailableEvent() { return updateInstallAvailableEvent; }
 
+    /***************************************************************************
+     *                                                                         *
+     * Constructors                                                            *
+     *                                                                         *
+     **************************************************************************/
 
 	public SelfUpdateService(){
 
@@ -61,8 +80,11 @@ public class SelfUpdateService implements ISelfUpdateService {
 		}
 	}
 
-	private CancelableTask<UpdateInformation> updateCheckTask;
-	private final Object updateCheckTaskLock = new Object();
+    /***************************************************************************
+     *                                                                         *
+     * Public API                                                              *
+     *                                                                         *
+     **************************************************************************/
 
 	@Override
 	public IAsyncTask<UpdateInformation> checkForUpdateAsync() {
@@ -141,7 +163,21 @@ public class SelfUpdateService implements ISelfUpdateService {
 
 	@Override
 	public void installAndRestart() {
-		throw new NotImplementedException();
+		if(isUpdateReadyToInstall()){
+            MavenVersion latestReadyUpdate = mavenUpdateClient.getLatestCachedUpdate();
+            File update = mavenUpdateClient.fetchCachedUpdate(latestReadyUpdate);
+
+            URL url = getClass().getProtectionDomain().getCodeSource().getLocation();
+
+            System.out.println("current locatino: " + url);
+
+            // Remove current running .exe / jar / .app
+
+            // Move (and unpack if necessary) update file to previous file
+
+            // Restart
+
+        }
 	}
 
 
@@ -167,6 +203,12 @@ public class SelfUpdateService implements ISelfUpdateService {
 		}
 		return SelfUpdateState.Unknown;
 	}
+
+    /***************************************************************************
+     *                                                                         *
+     * Private methods                                                         *
+     *                                                                         *
+     **************************************************************************/
 
 
 	private boolean isUpdateReadyToInstall(){
@@ -197,7 +239,7 @@ public class SelfUpdateService implements ISelfUpdateService {
 		if(runningVersion == null){
             runningVersion = fetchCurrentVersion();
 
-            // FIXME DEBUG ONLY
+            // FIXME DEBUG ONLY --->
             if(runningVersion.equals(MavenVersion.INVLAID)){
                 try {
                     runningVersion = MavenVersion.parse("0.1.2");
@@ -205,6 +247,7 @@ public class SelfUpdateService implements ISelfUpdateService {
                     e.printStackTrace();
                 }
             }
+            // FIXME < ------------|
 		}
 		return runningVersion;
 	}
