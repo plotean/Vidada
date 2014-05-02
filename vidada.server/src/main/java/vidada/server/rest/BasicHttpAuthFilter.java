@@ -60,6 +60,7 @@ public class BasicHttpAuthFilter implements javax.servlet.Filter {
     }
 
     private boolean authenticate(ServletRequest servletRequest, String user, String password){
+
         return(this.user.equals(user) && this.password.equals(password));
     }
 

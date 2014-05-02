@@ -1,16 +1,20 @@
-package vidada.model.images.cache.crypto;
+package vidada.model.images.cache;
 
 import archimedes.core.io.locations.DirectoryLocation;
-import vidada.model.images.cache.IImageCache;
-import vidada.model.images.cache.ImageFileCache;
-import vidada.model.images.cache.LeveledImageCache;
+import vidada.model.images.cache.crypto.CryptedImageFileCache;
+import vidada.model.images.cache.crypto.ICacheKeyProvider;
+import vidada.model.images.cache.crypto.VidadaCacheKeyProvider;
 import vidada.model.security.AuthenticationException;
 import vidada.model.security.ICredentialManager;
 
+/**
+ * Provides helper methods to build image caches.
+ */
 public class ImageCacheFactory {
 
 	/**
-	 * Build a leveled cache
+	 * Build a leveled cache form the given two caches.
+     *
 	 * @param firstLevelCache
 	 * @param secondLevelCache
 	 * @return

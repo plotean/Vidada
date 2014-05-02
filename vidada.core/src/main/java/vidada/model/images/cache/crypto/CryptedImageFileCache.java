@@ -69,7 +69,7 @@ public class CryptedImageFileCache extends ImageFileCache {
 	protected InputStream openImageStream(ResourceLocation path){
 
 		InputStream fis = super.openImageStream(path);
-		// the file was stored encrypted, so we have to decrypt the inputstream
+		// The file was stored encrypted, so we have to decrypt the InputStream
 
 		ByteArrayInputStream proxyStream = null;
 		byte[] buffer = null;

@@ -1,6 +1,6 @@
 package vidada.server.services;
 
-import vidada.model.images.IThumbImageCreator;
+import vidada.model.images.IThumbImageExtractor;
 import vidada.model.images.LocalImageCacheManager;
 import vidada.model.images.ThumbImageExtractor;
 import vidada.model.images.cache.CacheUtils;
@@ -12,13 +12,20 @@ import vidada.server.settings.VidadaServerSettings;
 import archimedes.core.geometry.Size;
 import archimedes.core.images.IMemoryImage;
 
+/**
+ * Basic implementation of a {@link IThumbnailService}
+ *
+ */
 public class ThumbnailService extends VidadaServerService implements IThumbnailService {
 
 	transient private final Size maxThumbSize;
-	transient private final IThumbImageCreator thumbImageCreator;
+	transient private final IThumbImageExtractor thumbImageCreator;
 	transient private final LocalImageCacheManager localImageCacheManager;
 
-
+    /**
+     * Creates a new ThumbnailService
+     * @param server
+     */
 	public ThumbnailService(VidadaServer server) {
 		super(server);
 
@@ -27,7 +34,7 @@ public class ThumbnailService extends VidadaServerService implements IThumbnailS
 		thumbImageCreator = new ThumbImageExtractor();
 	}
 
-
+    /** {@inheritDoc} */
 	@Override
 	public IMemoryImage getThumbImage(MediaItem media, Size size) {
 		IMemoryImage thumb = null;
@@ -47,6 +54,7 @@ public class ThumbnailService extends VidadaServerService implements IThumbnailS
 		return thumb;
 	}
 
+    /** {@inheritDoc} */
 	@Override
 	public void renewThumbImage(MovieMediaItem media, float pos) {
 

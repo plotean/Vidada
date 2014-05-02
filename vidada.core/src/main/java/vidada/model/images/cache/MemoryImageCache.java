@@ -12,9 +12,9 @@ import java.util.Set;
 
 /**
  * Implements a basic memory image cache for super fast 
- * item access.
+ * image access.
  * 
- * The cache uses now a LRU Cache to stay inside a max boundary
+ * The cache uses a LRU Cache to stay inside a max boundary
  * of memory consumption. Yet, the values are not dependent on
  * any system and VM configuration such as the available memory.
  * 

@@ -7,7 +7,7 @@ import vidada.model.media.MediaItem;
 import vidada.model.media.MovieMediaItem;
 
 /**
- * Manages all of a {@link IVidadaServer}
+ * Service which manages all thumbnails of a {@link IVidadaServer}
  * @author IsNull
  *
  */

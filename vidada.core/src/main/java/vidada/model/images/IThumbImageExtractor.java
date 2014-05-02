@@ -4,7 +4,10 @@ import archimedes.core.geometry.Size;
 import archimedes.core.images.IMemoryImage;
 import vidada.model.media.MediaItem;
 
-public interface IThumbImageCreator {
+/**
+ * Generic media thumbnail extractor service.
+ */
+public interface IThumbImageExtractor {
 
 	/**
 	 * Is it possible to extract a thumb for the given media?

@@ -4,7 +4,7 @@ import archimedes.core.io.locations.DirectoryLocation;
 import vidada.model.images.cache.IImageCache;
 import vidada.model.images.cache.ImageCacheProxyBase;
 import vidada.model.images.cache.MemoryImageCache;
-import vidada.model.images.cache.crypto.ImageCacheFactory;
+import vidada.model.images.cache.ImageCacheFactory;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaLibrary;
 import vidada.model.media.source.MediaSource;
@@ -23,15 +23,40 @@ import java.util.Map;
  */
 public class LocalImageCacheManager {
 
+    /***************************************************************************
+     *                                                                         *
+     * Private fields                                                          *
+     *                                                                         *
+     **************************************************************************/
+
 	transient private final ICredentialManager credentialManager =  ServiceProvider.Resolve(ICredentialManager.class);
 
 	transient private final IImageCache localImageCache;
 	transient private final ImageCacheFactory cacheFactory = new ImageCacheFactory();
 	transient private final Map<MediaLibrary, IImageCache> combinedCachesMap = new HashMap<MediaLibrary, IImageCache>();
 
+
+
+    /***************************************************************************
+     *                                                                         *
+     * Constructors                                                            *
+     *                                                                         *
+     **************************************************************************/
+
+    /**
+     * Creates a new LocalImageCacheManager.
+     * @param cacheLocation Local central file based cache.
+     */
 	public LocalImageCacheManager(File cacheLocation){
 		localImageCache = openLocalCache(cacheLocation);
 	}
+
+
+    /***************************************************************************
+     *                                                                         *
+     * Public API                                                              *
+     *                                                                         *
+     **************************************************************************/
 
 
 	/**
@@ -59,6 +84,12 @@ public class LocalImageCacheManager {
 
 		return imageCache;
 	}
+
+    /***************************************************************************
+     *                                                                         *
+     * Private methods                                                         *
+     *                                                                         *
+     **************************************************************************/
 
 
 	/**

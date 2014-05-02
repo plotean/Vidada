@@ -16,7 +16,10 @@ import vidada.services.ServiceProvider;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class ThumbImageExtractor implements IThumbImageCreator {
+/**
+ * Thumbnail extractor for video and image files.
+ */
+public class ThumbImageExtractor implements IThumbImageExtractor {
 
 	transient private final IRawImageFactory imageFactory = ServiceProvider.Resolve(IRawImageFactory.class);
 

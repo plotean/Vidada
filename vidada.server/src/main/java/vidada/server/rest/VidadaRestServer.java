@@ -74,9 +74,6 @@ public class VidadaRestServer {
         servletRegistration.addMapping("/api/*"); // map the REST API to the /api
         servletRegistration.setInitParameter("jersey.config.server.provider.packages", "vidada.server.rest.resource"); // scan this package for resource classes
 
-        // Add filters
-
-        // Basic Http Authentication filter
         FilterRegistration filter = webappContext.addFilter("Auth filter", new BasicHttpAuthFilter("admin", "1337")); // TODO replace with real credential system
         filter.addMappingForServletNames(EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD), true, SERVLET_JERSEY);
 

@@ -3,7 +3,7 @@ package vidada.model.media;
 import archimedes.core.io.locations.DirectoryLocation;
 import vidada.model.entities.IdEntity;
 import vidada.model.images.cache.IImageCache;
-import vidada.model.images.cache.crypto.ImageCacheFactory;
+import vidada.model.images.cache.ImageCacheFactory;
 import vidada.model.media.extracted.IMediaPropertyStore;
 import vidada.model.media.extracted.MediaPropertyStore;
 
