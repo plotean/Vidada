@@ -39,8 +39,12 @@ public class MediaBrowserFX extends BorderPane {
 		initView();		
 	}
 
+    private final double defaultItemWidth = 200;
+    private final double defaultItemHeight = 140;
+    private final double itemAspectRatio = defaultItemWidth / defaultItemHeight;
+
 	private void initView(){
-		gridView = new GridView<>();
+        gridView = new GridView<>();
 
 		gridViewPort = new GridViewViewPort(gridView);
 		gridViewPort.getViewPortItemsChanged().add((sender, eventArgs) -> onVisibleItemsChanged());
@@ -58,13 +62,26 @@ public class MediaBrowserFX extends BorderPane {
 		setItemSize(200, 140);
 
 		this.setCenter(gridView);
-	}
+
+
+        gridView.setOnZoom(event -> {
+            //System.out.println("zoom factor: " + event.getZoomFactor());
+            setItemSize(gridView.getCellWidth() * event.getZoomFactor());
+            event.consume();
+        });
+
+
+    }
 
 
 	public void setItemSize(double width, double height){
 		gridView.setCellWidth(width);
 		gridView.setCellHeight(height);
 	}
+
+    public void setItemSize(double width){
+        setItemSize(width, width / itemAspectRatio);
+    }
 
 
 
