@@ -14,3 +14,11 @@ Thumbs.db
 /vidada.server/
 
 *.log
+
+# Config Files #
+vidada-client.json
+vidada-server.json
+
+# Generated Files #
+.idea
+data
