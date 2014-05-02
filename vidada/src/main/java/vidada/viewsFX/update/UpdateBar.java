@@ -87,7 +87,7 @@ public class UpdateBar extends BorderPane{
                 .create(glyph.name());
 
         if(action != null) {
-            icon.getStyleClass().addAll(Glyph.STYLE_HOVER_EFFECT);
+           // icon.getStyleClass().addAll(Glyph.STYLE_HOVER_EFFECT);
         }
 
         icon.setPadding(new Insets(0,20,0,20));
