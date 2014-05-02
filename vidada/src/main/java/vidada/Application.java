@@ -66,27 +66,31 @@ public class Application extends  javafx.application.Application {
 	 */
 	public static void main(String[] args) {
 
-        setupLogging();
+        setupLogging(true);
 
 
-        System.out.println("# Welcome to Vidada " + DateTime.now().toString(DateTimeFormat.fullDate()));
+        System.err.println("# Welcome to Vidada (" + VidadaClientSettings.instance().getVersionInfo() + ") at "+ DateTime.now().toString(DateTimeFormat.fullDate()));
         //
 		// print some system infos
 		//
-		System.out.println(System.getProperty("java.home"));
-		System.out.println(System.getProperty("java.vendor"));
-		System.out.println(System.getProperty("java.vendor.url"));
-		System.out.println(System.getProperty("java.version"));
+		System.err.println(System.getProperty("java.home"));
+		System.err.println(System.getProperty("java.vendor"));
+		System.err.println(System.getProperty("java.vendor.url"));
+		System.err.println(System.getProperty("java.version"));
 
-        System.out.println("Platform : " + OSValidator.getPlatformName());
+        System.err.println("Platform : " + OSValidator.getPlatformName());
 
 		long maxBytes = Runtime.getRuntime().maxMemory();
-		System.out.println("Max memory: " + maxBytes / 1024 / 1024 + "MB");
+		System.err.println("Max memory: " + maxBytes / 1024 / 1024 + "MB");
 
 		launch(args);
 	}
 
-    private static void setupLogging(){
+    /**
+     *
+     * @param ignoreStdout Only log error out
+     */
+    private static void setupLogging(boolean ignoreStdout){
 
         try
         {
@@ -96,17 +100,17 @@ public class Application extends  javafx.application.Application {
             }
 
             System.out.println("Logging to " + log.getAbsolutePath());
-
             FileOutputStream logStream = new FileOutputStream(log);
-            TeeOutputStream multiOut= new TeeOutputStream(System.out, logStream);
+
+            if(ignoreStdout) {
+                TeeOutputStream multiOut = new TeeOutputStream(System.out, logStream);
+                PrintStream stdout= new PrintStream(multiOut);
+                System.setOut(stdout);
+            }
+
             TeeOutputStream multiErr= new TeeOutputStream(System.err, logStream);
-
-            PrintStream stdout= new PrintStream(multiOut);
             PrintStream stderr= new PrintStream(multiErr);
-
-            System.setOut(stdout);
             System.setErr(stderr);
-
         }
         catch (FileNotFoundException ex)
         {
