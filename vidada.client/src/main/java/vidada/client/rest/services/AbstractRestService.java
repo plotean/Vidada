@@ -25,7 +25,7 @@ public abstract class AbstractRestService {
 
 
 	/**
-	 * 
+	 * Creates a new AbstractRestService
 	 * @param client
 	 * @param api base URI of the API
 	 */
@@ -35,11 +35,6 @@ public abstract class AbstractRestService {
 		this.mapper = mapper;
 	}
 
-
-	public void test() {
-		// Get plain text
-		//System.out.println(resource().path("rest").path("hello").accept(MediaType.TEXT_PLAIN).get(String.class));
-	}
 
 	protected WebTarget apiResource(){
 		return client.target(getApiURI());
@@ -54,10 +49,17 @@ public abstract class AbstractRestService {
 	}
 
 
-	public <T> T deserialize(String data, TypeReference<T> type){
+    /**
+     * Deserialize the given JSON String to an object
+     * @param jsonData JSON data
+     * @param type The Jackson Type-Reference (used for generics) to de-serialize to.
+     * @param <T>
+     * @return
+     */
+	public <T> T deserialize(String jsonData, TypeReference<T> type){
 		T obj = null;
 		try {
-			obj = getMapper().readValue(data, type);
+			obj = getMapper().readValue(jsonData, type);
 		} catch (JsonParseException e) {
 			e.printStackTrace();
 		} catch (JsonMappingException e) {
@@ -68,10 +70,17 @@ public abstract class AbstractRestService {
 		return obj;
 	}
 
-	public <T> T deserialize(String data, Class<T> type){
+    /**
+     * Deserialize the given JSON String to an object
+     * @param jsonData JSON data
+     * @param type The class type to de-serialize to.
+     * @param <T>
+     * @return
+     */
+	public <T> T deserialize(String jsonData, Class<T> type){
 		T obj = null;
 		try {
-			obj = getMapper().readValue(data, type);
+			obj = getMapper().readValue(jsonData, type);
 		} catch (JsonParseException e) {
 			e.printStackTrace();
 		} catch (JsonMappingException e) {
@@ -82,7 +91,13 @@ public abstract class AbstractRestService {
 		return obj;
 	}
 
-	protected String multiValueQueryParam(Collection<?> values){
+    /**
+     * Builds a multi value URL Query parameter.
+     * Multiple values are usually delimited by a space (becoming a '+' in the URL)
+     * @param values All values to turn into a multi value parameter
+     * @return Returns the multi value parameter ready to insert in a query parameter.
+     */
+	protected static String buildMultiValueURLQueryParam(Collection<?> values){
 		StringBuilder builder = new StringBuilder();
 		if(!values.isEmpty()){
 			for (Object object : values) {

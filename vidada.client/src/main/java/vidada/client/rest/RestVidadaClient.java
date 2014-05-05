@@ -1,13 +1,11 @@
 package vidada.client.rest;
 
-import java.net.URI;
-
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.joda.JodaModule;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
-
 import vidada.client.IVidadaClient;
 import vidada.client.rest.services.MediaServiceRestClient;
 import vidada.client.rest.services.TagServiceRestClient;
@@ -16,10 +14,9 @@ import vidada.client.services.IMediaClientService;
 import vidada.client.services.ITagClientService;
 import vidada.client.services.IThumbnailClientService;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.joda.JodaModule;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import java.net.URI;
 
 
 public class RestVidadaClient implements IVidadaClient{
@@ -38,11 +35,9 @@ public class RestVidadaClient implements IVidadaClient{
 	public RestVidadaClient(URI vidadaBaseUri){
 
 		this.vidadaBaseUri = vidadaBaseUri;
-		//ClientConfig config = new DefaultClientConfig();
 
 		ClientConfig config = new ClientConfig();
 		client = ClientBuilder.newClient(config);
-
 
 		// TODO replace with real credentials
 		HttpAuthenticationFeature feature = HttpAuthenticationFeature.basicBuilder()
