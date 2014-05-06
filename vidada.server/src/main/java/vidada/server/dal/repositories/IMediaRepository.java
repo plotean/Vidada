@@ -1,9 +1,9 @@
 package vidada.server.dal.repositories;
 
+import archimedes.core.data.pagination.ListPage;
 import archimedes.core.io.locations.ResourceLocation;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaLibrary;
-import vidada.model.pagination.ListPage;
 import vidada.model.tags.Tag;
 import vidada.server.queries.MediaExpressionQuery;
 

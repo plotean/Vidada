@@ -32,7 +32,7 @@ public class FilterViewFx extends BorderPane {
 	private final FilterModel filtermodel;
 
 	private final TagItPanel<TagViewModel> tagPane;
-	private final TextField searchText = TextFields.createSearchField();
+	private final TextField searchText = TextFields.createClearableTextField();
 	private final CheckBox chkReverse = new CheckBox("Reverse");
 	private final ComboBox<MediaType> cboMediaType= new ComboBox<>();
 	private final ComboBox<OrderProperty> cboOrder= new ComboBox<>();

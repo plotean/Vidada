@@ -1,5 +1,6 @@
 package vidada.viewsFX.util;
 
+import archimedes.core.data.IDataProvider;
 import archimedes.core.data.events.CollectionEventArg;
 import archimedes.core.events.EventHandlerEx;
 import archimedes.core.events.IEvent;
@@ -9,7 +10,6 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
-import vidada.model.pagination.IDataProvider;
 
 import java.util.*;
 import java.util.function.Consumer;

@@ -1,15 +1,15 @@
 package vidada.client.local.impl;
 
+import archimedes.core.data.pagination.ListPage;
 import archimedes.core.events.EventArgs;
 import archimedes.core.events.EventHandlerEx;
 import archimedes.core.events.IEvent;
+import archimedes.core.io.locations.ResourceLocation;
 import vidada.client.services.IMediaClientService;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaQuery;
 import vidada.model.media.source.MediaSource;
-import vidada.model.pagination.ListPage;
 import vidada.server.services.IMediaService;
-import archimedes.core.io.locations.ResourceLocation;
 
 public class LocalMediaClientService implements IMediaClientService {
 

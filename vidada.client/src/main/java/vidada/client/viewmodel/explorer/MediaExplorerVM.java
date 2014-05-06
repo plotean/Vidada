@@ -1,5 +1,6 @@
 package vidada.client.viewmodel.explorer;
 
+import archimedes.core.data.IDataProvider;
 import archimedes.core.events.EventArgs;
 import archimedes.core.events.EventHandlerEx;
 import archimedes.core.events.EventListenerEx;
@@ -9,7 +10,6 @@ import vidada.IVidadaServer;
 import vidada.client.model.browser.BrowserFolderItem;
 import vidada.client.model.browser.BrowserFolderItemLocation;
 import vidada.client.model.browser.IBrowserItem;
-import vidada.model.pagination.IDataProvider;
 import vidada.server.services.IMediaService;
 
 import java.util.List;

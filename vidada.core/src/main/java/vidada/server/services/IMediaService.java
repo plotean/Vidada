@@ -1,10 +1,10 @@
 package vidada.server.services;
 
+import archimedes.core.data.pagination.ListPage;
 import archimedes.core.io.locations.ResourceLocation;
 import vidada.IVidadaServer;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaQuery;
-import vidada.model.pagination.ListPage;
 
 import java.util.Collection;
 import java.util.List;

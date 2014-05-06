@@ -1,5 +1,13 @@
 package vidada.controller.filters;
 
+import archimedes.core.data.pagination.IPageLoader;
+import archimedes.core.data.pagination.ListPage;
+import archimedes.core.data.pagination.VirtualPagedList;
+import archimedes.core.events.EventArgs;
+import archimedes.core.events.EventListenerEx;
+import archimedes.core.threading.CancellationTokenSource;
+import archimedes.core.threading.CancellationTokenSource.CancellationToken;
+import archimedes.core.threading.CancellationTokenSource.OperationCanceledException;
 import vidada.client.IVidadaClientManager;
 import vidada.client.model.browser.MediaBrowserModel;
 import vidada.client.services.IMediaClientService;
@@ -10,14 +18,6 @@ import vidada.model.media.MediaItem;
 import vidada.model.media.MediaQuery;
 import vidada.model.media.MediaType;
 import vidada.model.media.OrderProperty;
-import vidada.model.pagination.IPageLoader;
-import vidada.model.pagination.ListPage;
-import vidada.model.pagination.VirtualPagedList;
-import archimedes.core.events.EventArgs;
-import archimedes.core.events.EventListenerEx;
-import archimedes.core.threading.CancellationTokenSource;
-import archimedes.core.threading.CancellationTokenSource.CancellationToken;
-import archimedes.core.threading.CancellationTokenSource.OperationCanceledException;
 
 /**
  * Represents a binding between a mediabrowser model an filter settings.

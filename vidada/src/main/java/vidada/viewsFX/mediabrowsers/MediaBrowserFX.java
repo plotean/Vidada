@@ -1,6 +1,7 @@
 package vidada.viewsFX.mediabrowsers;
 
 
+import archimedes.core.data.IDeferLoaded;
 import archimedes.core.events.EventArgs;
 import archimedes.core.events.EventListenerEx;
 import archimedes.core.services.ISelectionManager;
@@ -13,7 +14,6 @@ import vidada.client.model.browser.BrowserFolderItem;
 import vidada.client.model.browser.IBrowserItem;
 import vidada.client.model.browser.MediaBrowserModel;
 import vidada.client.viewmodel.browser.BrowserItemVM;
-import vidada.model.pagination.IDeferLoaded;
 import vidada.viewsFX.player.IMediaPlayerService;
 import vidada.viewsFX.player.MediaPlayerService;
 import vidada.viewsFX.util.ObservableListFXAdapter;

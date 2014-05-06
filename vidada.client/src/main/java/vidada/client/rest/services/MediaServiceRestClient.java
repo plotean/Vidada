@@ -1,5 +1,6 @@
 package vidada.client.rest.services;
 
+import archimedes.core.data.pagination.ListPage;
 import archimedes.core.events.EventArgs;
 import archimedes.core.events.IEvent;
 import archimedes.core.io.locations.ResourceLocation;
@@ -10,7 +11,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import vidada.client.services.IMediaClientService;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaQuery;
-import vidada.model.pagination.ListPage;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;

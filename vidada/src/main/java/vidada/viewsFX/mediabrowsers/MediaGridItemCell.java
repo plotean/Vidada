@@ -1,5 +1,6 @@
 package vidada.viewsFX.mediabrowsers;
 
+import archimedes.core.data.IDeferLoaded;
 import archimedes.core.events.EventArgs;
 import archimedes.core.events.EventListenerEx;
 import javafx.beans.property.DoubleProperty;
@@ -8,7 +9,6 @@ import org.controlsfx.control.GridCell;
 import vidada.client.viewmodel.MediaViewModel;
 import vidada.client.viewmodel.browser.BrowserFolderItemVM;
 import vidada.client.viewmodel.browser.BrowserItemVM;
-import vidada.model.pagination.IDeferLoaded;
 import vidada.viewsFX.player.IMediaPlayerService;
 
 import java.lang.reflect.InvocationTargetException;

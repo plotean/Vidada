@@ -1,19 +1,18 @@
 package vidada.client.model.browser;
 
-import vidada.client.viewmodel.MediaViewModel;
-import vidada.client.viewmodel.browser.BrowserFolderItemVM;
-import vidada.client.viewmodel.browser.BrowserItemVM;
-import vidada.model.media.MediaItem;
-import vidada.model.pagination.DataProviderTransformer;
-import vidada.model.pagination.DataProviderTransformer.ITransform;
-import vidada.model.pagination.IDataProvider;
-import vidada.model.pagination.IDeferLoaded;
+import archimedes.core.data.DataProviderTransformer;
+import archimedes.core.data.IDataProvider;
+import archimedes.core.data.IDeferLoaded;
 import archimedes.core.events.EventArgs;
 import archimedes.core.events.EventHandlerEx;
 import archimedes.core.events.EventListenerEx;
 import archimedes.core.events.IEvent;
 import archimedes.core.services.ISelectionManager;
 import archimedes.core.services.SelectionManager;
+import vidada.client.viewmodel.MediaViewModel;
+import vidada.client.viewmodel.browser.BrowserFolderItemVM;
+import vidada.client.viewmodel.browser.BrowserItemVM;
+import vidada.model.media.MediaItem;
 
 
 /**
@@ -53,9 +52,9 @@ public class MediaBrowserModel {
 
 			System.out.println("MediaBrowserModel:setMedias size(" + mediaProvider.size() + ")");
 
-			ITransform<
-			IDeferLoaded<BrowserItemVM>,
-			IDeferLoaded<MediaItem>> transformer = new ITransform<IDeferLoaded<BrowserItemVM>, IDeferLoaded<MediaItem>>(){
+			DataProviderTransformer.ITransform<
+                        IDeferLoaded<BrowserItemVM>,
+                        IDeferLoaded<MediaItem>> transformer = new DataProviderTransformer.ITransform<IDeferLoaded<BrowserItemVM>, IDeferLoaded<MediaItem>>(){
 				@Override
 				public IDeferLoaded<BrowserItemVM> transform(IDeferLoaded<MediaItem> source) {
 					return new DerefBrowserItemVM(source);

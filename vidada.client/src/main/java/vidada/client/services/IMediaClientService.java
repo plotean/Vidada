@@ -1,11 +1,11 @@
 package vidada.client.services;
 
+import archimedes.core.data.pagination.ListPage;
 import archimedes.core.events.EventArgs;
 import archimedes.core.events.IEvent;
 import archimedes.core.io.locations.ResourceLocation;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaQuery;
-import vidada.model.pagination.ListPage;
 
 /**
  * Provides an API to access media items.

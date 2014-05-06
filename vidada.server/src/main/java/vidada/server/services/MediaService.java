@@ -1,9 +1,9 @@
 package vidada.server.services;
 
+import archimedes.core.data.pagination.ListPage;
 import archimedes.core.exceptions.NotSupportedException;
 import archimedes.core.io.locations.ResourceLocation;
 import vidada.model.media.*;
-import vidada.model.pagination.ListPage;
 import vidada.model.queries.*;
 import vidada.model.tags.Tag;
 import vidada.server.VidadaServer;

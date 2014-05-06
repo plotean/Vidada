@@ -1,11 +1,11 @@
 package vidada.client.model.browser;
 
+import archimedes.core.data.IDataProvider;
 import archimedes.core.data.events.CollectionEventArg;
 import archimedes.core.events.EventArgs;
 import archimedes.core.events.EventHandlerEx;
 import archimedes.core.events.IEvent;
 import vidada.model.media.MediaItem;
-import vidada.model.pagination.IDataProvider;
 
 import java.util.List;
 
@@ -14,7 +14,7 @@ import java.util.List;
  * @author IsNull
  *
  */
-public abstract class BrowserFolderItem implements IBrowserItem, IDataProvider<IBrowserItem>{
+public abstract class BrowserFolderItem implements IBrowserItem, IDataProvider<IBrowserItem> {
 
 	private List<IBrowserItem> children = null;
 
