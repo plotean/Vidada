@@ -78,13 +78,10 @@ public class MediaHashUtil {
 	 * @return
 	 */
 	public String retriveFileHashMetaData(ResourceLocation mediaPath){
-		String hash = null;
 
-		if(!forceUpdateMetaData){
-			hash = metaDataSupport.readMetaData(mediaPath.getUri(), MediaMetaAttribute.FileHash);
-		}
+		String hash = metaDataSupport.readMetaData(mediaPath.getUri(), MediaMetaAttribute.FileHash);
 
-		if(hash == null)
+		if(hash == null || forceUpdateMetaData)
 		{
 			hash = calculateHash(mediaPath);
 			metaDataSupport.writeMetaData(mediaPath.getUri(), MediaMetaAttribute.FileHash, hash);
