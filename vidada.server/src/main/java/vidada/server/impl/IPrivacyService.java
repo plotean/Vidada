@@ -1,9 +1,10 @@
 package vidada.server.impl;
 
-import vidada.model.security.AuthenticationException;
-import vidada.model.security.AuthenticationRequieredException;
+
 import archimedes.core.events.EventArgs;
 import archimedes.core.events.IEvent;
+import archimedes.core.security.AuthenticationException;
+import archimedes.core.security.AuthenticationRequiredException;
 import archimedes.core.security.Credentials;
 import archimedes.core.services.IService;
 
@@ -75,17 +76,17 @@ public interface IPrivacyService extends IService{
 	 * in order to get this crypto pad.
 	 * 
 	 * @return
-	 * @throws AuthenticationRequieredException Thrown if the current user is not authenticated. 
+	 * @throws AuthenticationRequiredException Thrown if the current user is not authenticated.
 	 * @see <code>authenticate(String password)</code>
 	 */
-	public abstract byte[] getCryptoPad() throws AuthenticationRequieredException;
+	public abstract byte[] getCryptoPad() throws AuthenticationRequiredException;
 
 	/**
 	 * Gets the currently authenticated user credentials
 	 * 
 	 * @return
-	 * @throws AuthenticationRequieredException
+	 * @throws AuthenticationRequiredException
 	 */
-	Credentials getCredentials() throws AuthenticationRequieredException;
+	Credentials getCredentials() throws AuthenticationRequiredException;
 
 }

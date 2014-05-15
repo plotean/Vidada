@@ -6,8 +6,8 @@ import archimedes.core.crypto.XORByteCrypter;
 import archimedes.core.images.IMemoryImage;
 import archimedes.core.io.locations.DirectoryLocation;
 import archimedes.core.io.locations.ResourceLocation;
+import archimedes.core.security.AuthenticationException;
 import vidada.model.images.cache.ImageFileCache;
-import vidada.model.security.AuthenticationException;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

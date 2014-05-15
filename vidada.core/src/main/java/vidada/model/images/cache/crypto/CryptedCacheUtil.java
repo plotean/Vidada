@@ -12,7 +12,6 @@ import archimedes.core.security.Credentials;
 import archimedes.core.util.Debug;
 import vidada.model.security.CredentialUtil;
 import vidada.model.security.ICredentialManager;
-import vidada.model.security.ICredentialManager.CredentialsChecker;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -111,7 +110,7 @@ public class CryptedCacheUtil {
 					domain,
 					"Enter password for cache " + enckeyFile.toString(),
 					CredentialType.PasswordOnly,
-					new CredentialsChecker() {
+					new ICredentialManager.ICredentialsChecker() {
 						@Override
 						public boolean check(Credentials credentials) {
 

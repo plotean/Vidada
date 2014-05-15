@@ -12,8 +12,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Maven: ch.securityvision.archimedes:archimedes.core:0.2.2" level="project" />
-    <orderEntry type="library" name="Maven: ch.securityvision.archimedes:archimedes.core:0.2.2" level="project" />
+    <orderEntry type="library" name="Maven: ch.securityvision.archimedes:archimedes.core:0.2.3" level="project" />
     <orderEntry type="library" name="Maven: org.hibernate.javax.persistence:hibernate-jpa-2.0-api:1.0.1.Final" level="project" />
     <orderEntry type="library" name="Maven: commons-io:commons-io:2.4" level="project" />
     <orderEntry type="library" name="Maven: jcifs:jcifs:1.3.17" level="project" />

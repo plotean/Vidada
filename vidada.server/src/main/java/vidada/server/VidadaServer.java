@@ -3,11 +3,11 @@ package vidada.server;
 import archimedes.core.events.EventArgs;
 import archimedes.core.events.EventListenerEx;
 import archimedes.core.io.locations.DirectoryLocation;
+import archimedes.core.security.AuthenticationRequiredException;
 import archimedes.core.security.CredentialType;
 import archimedes.core.security.Credentials;
 import vidada.IVidadaServer;
 import vidada.model.images.cache.crypto.CryptedCacheUtil;
-import vidada.model.security.AuthenticationRequieredException;
 import vidada.model.security.ICredentialManager;
 import vidada.server.dal.IVidadaDALService;
 import vidada.server.impl.IPrivacyService;
@@ -222,7 +222,7 @@ public class VidadaServer implements IVidadaServer {
 
 						System.out.println("ServiceProvider: " + privacyService.getCredentials().toString());
 						CryptedCacheUtil.encryptWithPassword(localCache, privacyService.getCredentials());
-					} catch (AuthenticationRequieredException e) {
+					} catch (AuthenticationRequiredException e) {
 						e.printStackTrace();
 					}
 				}
@@ -238,7 +238,7 @@ public class VidadaServer implements IVidadaServer {
 								.create(VidadaServerSettings.instance().getAbsoluteCachePath());
 
 						CryptedCacheUtil.removeEncryption( localCache, privacyService.getCredentials());
-					} catch (AuthenticationRequieredException e) {
+					} catch (AuthenticationRequiredException e) {
 						e.printStackTrace();
 					}
 				}

@@ -7,10 +7,10 @@ import archimedes.core.events.EventArgs;
 import archimedes.core.events.EventArgsG;
 import archimedes.core.events.EventHandlerEx;
 import archimedes.core.events.IEvent;
+import archimedes.core.security.AuthenticationException;
+import archimedes.core.security.AuthenticationRequiredException;
 import archimedes.core.security.Credentials;
 import archimedes.core.util.Debug;
-import vidada.model.security.AuthenticationException;
-import vidada.model.security.AuthenticationRequieredException;
 import vidada.server.VidadaServer;
 import vidada.server.services.VidadaServerService;
 import vidada.server.settings.DatabaseSettings;
@@ -111,7 +111,7 @@ public class PrivacyService extends VidadaServerService implements IPrivacyServi
 
 							ProtectionRemovedEvent.fireEvent(this, EventArgsG.Empty);
 
-						} catch (AuthenticationRequieredException e) {
+						} catch (AuthenticationRequiredException e) {
 							e.printStackTrace();
 						}
 					}
@@ -165,7 +165,7 @@ public class PrivacyService extends VidadaServerService implements IPrivacyServi
 	 * Gets the un encrypted crypto pad
 	 */
 	@Override
-	public byte[] getCryptoPad() throws AuthenticationRequieredException{
+	public byte[] getCryptoPad() throws AuthenticationRequiredException {
 
 		if(plainCryptoPad == null){
 
@@ -181,7 +181,7 @@ public class PrivacyService extends VidadaServerService implements IPrivacyServi
 							byte[] cryptoPadEncrypted = settings.getCryptoBlock();
 							// we have to decrypt the cryptoPad
 							plainCryptoPad = keyPadCrypter.deCrypt(cryptoPadEncrypted, userKey);
-						} catch (AuthenticationRequieredException e) {
+						} catch (AuthenticationRequiredException e) {
 							e.printStackTrace();
 							throw e;
 						} 
@@ -205,9 +205,9 @@ public class PrivacyService extends VidadaServerService implements IPrivacyServi
 	 * 
 	 */
 	@Override
-	public Credentials getCredentials() throws AuthenticationRequieredException {
+	public Credentials getCredentials() throws AuthenticationRequiredException {
 		if(!isAuthenticated())
-			throw new AuthenticationRequieredException();
+			throw new AuthenticationRequiredException();
 		return authCredentials;
 	}
 

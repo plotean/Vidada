@@ -1,10 +1,10 @@
 package vidada.model.images.cache;
 
 import archimedes.core.io.locations.DirectoryLocation;
+import archimedes.core.security.AuthenticationException;
 import vidada.model.images.cache.crypto.CryptedImageFileCache;
 import vidada.model.images.cache.crypto.ICacheKeyProvider;
 import vidada.model.images.cache.crypto.VidadaCacheKeyProvider;
-import vidada.model.security.AuthenticationException;
 import vidada.model.security.ICredentialManager;
 
 /**

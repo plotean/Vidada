@@ -1,10 +1,10 @@
 package vidada.server.services;
 
 import archimedes.core.exceptions.NotImplementedException;
+import archimedes.core.security.AuthenticationRequiredException;
 import archimedes.core.security.Credentials;
+import archimedes.core.security.StoredCredentials;
 import archimedes.core.util.Lists;
-import vidada.model.security.AuthenticationRequieredException;
-import vidada.model.security.StoredCredentials;
 import vidada.server.VidadaServer;
 import vidada.server.dal.repositories.ICredentialRepository;
 
@@ -14,7 +14,6 @@ public class CredentialStore extends VidadaServerService implements ICredentialS
 
 	protected CredentialStore(VidadaServer server) {
 		super(server);
-		// TODO Auto-generated constructor stub
 	}
 
 	private final ICredentialRepository repository = getRepository(ICredentialRepository.class);
@@ -22,7 +21,7 @@ public class CredentialStore extends VidadaServerService implements ICredentialS
 
 	@Override
 	public Credentials creditalsFor(String domain)
-			throws AuthenticationRequieredException {
+			throws AuthenticationRequiredException {
 		// TODO Implement
 		/*
 		StoredCredentials credentials = findCredentials(domain);
@@ -33,7 +32,7 @@ public class CredentialStore extends VidadaServerService implements ICredentialS
 
 	@Override
 	public void storeCredentials(String domain, Credentials credentials)
-			throws AuthenticationRequieredException {
+			throws AuthenticationRequiredException {
 		// TODO Implement
 		/*
 		StoredCredentials existingCredentials = findCredentials(domain);
@@ -70,14 +69,14 @@ public class CredentialStore extends VidadaServerService implements ICredentialS
 
 	@Override
 	public List<StoredCredentials> getAllStoredCredentials()
-			throws AuthenticationRequieredException {
+			throws AuthenticationRequiredException {
 
 		List<StoredCredentials> libs = repository.getAllCredentials();
 		return Lists.newList(libs);
 	}
 
 	@Override
-	public void clearCredentialStore() throws AuthenticationRequieredException {
+	public void clearCredentialStore() throws AuthenticationRequiredException {
 		for (StoredCredentials credentials : getAllStoredCredentials()) {
 			repository.delete(credentials);
 		}

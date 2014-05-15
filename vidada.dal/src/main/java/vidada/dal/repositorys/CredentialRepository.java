@@ -1,8 +1,8 @@
 package vidada.dal.repositorys;
 
 import archimedes.core.aop.IUnitOfWorkService;
+import archimedes.core.security.StoredCredentials;
 import vidada.dal.JPARepository;
-import vidada.model.security.StoredCredentials;
 import vidada.server.dal.repositories.ICredentialRepository;
 
 import javax.persistence.EntityManager;

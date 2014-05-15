@@ -1,8 +1,9 @@
 package vidada.server.dal.repositories;
 
+import archimedes.core.security.StoredCredentials;
+
 import java.util.List;
 
-import vidada.model.security.StoredCredentials;
 
 public interface ICredentialRepository extends IRepository {
 

@@ -9,7 +9,7 @@ public class CredentialManager implements ICredentialManager {
 
 
 	@Override
-	public Credentials requestAuthentication(String domain, String description, CredentialType type, CredentialsChecker checker, boolean useKeyStore) {
+	public Credentials requestAuthentication(String domain, String description, CredentialType type, ICredentialsChecker checker, boolean useKeyStore) {
 
 		System.out.println("requestAuthentication for " + domain);
 
@@ -69,9 +69,9 @@ public class CredentialManager implements ICredentialManager {
 		return credentials;
 	}
 
-	transient private CredentialsProvider authProvider;
+	transient private ICredentialsProvider authProvider;
 	@Override
-	public void register(CredentialsProvider authProvider) {
+	public void register(ICredentialsProvider authProvider) {
 		this.authProvider = authProvider;
 	}
 

@@ -25,7 +25,7 @@ class VidadaDALServiceJPA implements IVidadaDALService {
 
 		registerRepos();
 
-		unitOfWorkService.setIntercepter(new UnitOfWorkService.IUnitOfWorkIntercepter<EntityManager>() {
+		unitOfWorkService.setIntercepter(new UnitOfWorkService.IUnitOfWorkInterceptor<EntityManager>() {
 			@Override
 			public EntityManager initUnitOfWork() {
 				EntityManager em;
