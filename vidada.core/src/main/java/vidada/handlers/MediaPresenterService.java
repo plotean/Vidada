@@ -22,8 +22,9 @@ public class MediaPresenterService implements IMediaPresenterService {
 		IMediaHandler handler;
 		for (int i = 0; i < handlerChain.size(); i++) {
 			handler = handlerChain.get( handlerChain.size() - (1 + i));
-			if(handler.handle(media, mediaResource))
-				return true;
+			if(handler.handle(media, mediaResource)) {
+                return true;
+            }
 		}
 		return false;
 	}
