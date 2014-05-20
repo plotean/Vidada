@@ -6,8 +6,6 @@ import archimedes.core.exceptions.NotSupportedException;
 import archimedes.core.images.IRawImageFactory;
 import archimedes.core.images.ImageContainer;
 import archimedes.core.images.viewer.IImageViewerService;
-import archimedes.core.images.viewer.ISmartImage;
-import archimedes.core.images.viewer.SmartImageLazy;
 import archimedes.core.io.locations.ResourceLocation;
 import archimedes.core.util.FileSupport;
 import javafx.event.EventHandler;
@@ -40,6 +38,9 @@ import vidada.viewsFX.util.AsyncImageProperty;
  *
  */
 public class MediaItemView extends BrowserCellView {
+
+    transient private final IImageViewerService imageViewer = ServiceProvider.Resolve(IImageViewerService.class);
+    transient private final IRawImageFactory imageFactory = ServiceProvider.Resolve(IRawImageFactory.class);
 
 	private final IMediaPlayerService mediaPlayerService;
 
@@ -159,10 +160,6 @@ public class MediaItemView extends BrowserCellView {
             onMediaInspectAction((float)(me.getX() / MediaItemView.this.getWidth()));
     };
 
-
-	transient private final IImageViewerService imageViewer = ServiceProvider.Resolve(IImageViewerService.class);
-	transient private final IRawImageFactory imageFactory = ServiceProvider.Resolve(IRawImageFactory.class);
-
 	/**
 	 * 
 	 */
@@ -250,27 +247,16 @@ public class MediaItemView extends BrowserCellView {
 	 * Occurs when a media is opened
 	 */
 	private void onMediaOpenAction(){
-		if(mediaViewModel.getMediaType().equals(MediaType.IMAGE)){
-			//
-			// In case it is an image, show it in internal preview
-			//
-			ISmartImage smartImage;
-			ResourceLocation resource = mediaViewModel.getMediaResource();
-			smartImage = new SmartImageLazy(imageFactory, resource.getUri());
-			imageViewer.showImage(smartImage);
-
-		}else{
-			if(!mediaViewModel.open()){
-				Dialogs.create()
-				.owner(null)
-				.title("Can not open Media")
-				.masthead("No media source found!")
-				.message("The file " + mediaViewModel.getTitle() + 
-						" could not be opened!" +
-						FileSupport.NEWLINE + mediaViewModel.getModel().getData().getSource())
-						.showWarning();
-			}
-		}
+        if(!mediaViewModel.open()){
+            Dialogs.create()
+                    .owner(null)
+                    .title("Can not open Media")
+                    .masthead("No media source found!")
+                    .message("The file " + mediaViewModel.getTitle() +
+                            " could not be opened!" +
+                            FileSupport.NEWLINE + mediaViewModel.getModel().getData().getSource())
+                    .showWarning();
+        }
 	}
 
 	private void onItemImageChanged(boolean force){
