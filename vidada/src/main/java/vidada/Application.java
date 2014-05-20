@@ -47,6 +47,7 @@ import vidada.services.ServiceProvider;
 import vidada.viewsFX.MainViewFx;
 import vidada.viewsFX.dialoges.ChooseMediaDatabaseView;
 import vidada.viewsFX.dialoges.ChooseVidadaInstanceView;
+import vidada.viewsFX.images.ImageOpenHandler;
 import vidada.viewsFX.images.ImageViewerServiceFx;
 
 import javax.imageio.ImageIO;
@@ -195,7 +196,7 @@ public class Application extends  javafx.application.Application {
 	 */
 	private void afterStartup() {
 
-        registerExternalMediaHandlers();
+        registerMediaHandlers();
 
         if(getLocalServer() != null) {
             loadUserTagRelations(getLocalServer());
@@ -377,9 +378,17 @@ public class Application extends  javafx.application.Application {
 
     }
 
-    private void registerExternalMediaHandlers(){
+    private void registerMediaHandlers(){
+
         // register media play handlers
         IMediaPresenterService mediaPresenterService = ServiceProvider.Resolve(IMediaPresenterService.class);
+
+        // register the internal image viewer
+
+        IMediaHandler internalImageHandler = new ImageOpenHandler();
+        mediaPresenterService.chainMediaHandler(internalImageHandler);
+
+        // register external video players
 
         List<MediaPlayerCommand> externalPlayers =  Lists.newArrayList(VidadaClientSettings.instance().getExternalMediaPlayers());;
         Collections.reverse(externalPlayers);
