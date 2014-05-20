@@ -1,5 +1,6 @@
 package vidada.viewsFX;
 
+import archimedes.core.exceptions.NotSupportedException;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 
@@ -18,10 +19,17 @@ public final class FXMLLoaderX {
      * @return
      */
     public static Node load(String path){
+        Node node = null;
         URL resource = FXMLLoaderX.class.getResource(path);
-        if(resource == null)
+        if(resource != null){
+            node = load(resource);
+            if(node == null){
+                throw new NotSupportedException("The fxml could not be loaded. fxml @ " + path);
+            }
+        }else {
             System.err.println("Can not find relative path: " + path);
-        return load(resource);
+        }
+        return node;
     }
 
     /**

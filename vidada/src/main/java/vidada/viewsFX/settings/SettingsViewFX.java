@@ -24,7 +24,7 @@ public class SettingsViewFX extends BorderPane {
         Pane myPane = null;
 
         try {
-            myPane = (Pane) FXMLLoader.load(getClass().getResource("./../libraries/LibraryManagerView.fxml"));
+            myPane = (Pane) FXMLLoader.load(getClass().getResource("../../../../resources/vidada/viewsFX/libraries/LibraryManagerView.fxml"));
 
         } catch (IOException e) {
             e.printStackTrace();
