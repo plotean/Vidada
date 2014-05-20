@@ -15,7 +15,6 @@ import vidada.client.viewmodel.browser.BrowserItemVM;
  */
 public abstract class BrowserCellView extends BorderPane {
 
-	private ContextMenu contextMenu;
 	private BrowserItemVM viewmodel;
 
 	public BrowserCellView(){
@@ -32,12 +31,6 @@ public abstract class BrowserCellView extends BorderPane {
 		return viewmodel;
 	}
 
-	protected ContextMenu getContextMenu(){
-		if(contextMenu == null){
-			contextMenu =  createContextMenu();
-		}
-		return contextMenu;
-	}
 
 	/**
 	 * Create the context menu for this cell
@@ -60,8 +53,7 @@ public abstract class BrowserCellView extends BorderPane {
 			} else if(me.getButton().equals(MouseButton.SECONDARY)){
 
 				if(me.getClickCount() == 1){
-					System.out.println("showing context menu:");
-					ContextMenu menu = getContextMenu();
+					ContextMenu menu = createContextMenu();
 					if(menu != null){
 						//contextMenu.show(MediaItemView.this, me.getX(), me.getY());
 						menu.show(BrowserCellView.this, Side.RIGHT, 0,0);
