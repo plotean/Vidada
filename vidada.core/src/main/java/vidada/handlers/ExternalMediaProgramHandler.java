@@ -28,12 +28,16 @@ public abstract class ExternalMediaProgramHandler extends AbstractMediaHandler {
 
 	@Override
 	public final boolean handle(MediaItem media, ResourceLocation mediaResource) {
-		String[] args = getCommandArgs(template, media, mediaResource);
-		Process process = null;
-		if(args != null){
-			process = ShellExec.execute(args);
-		}
-		return process != null;
+        if(isSupported(media)){
+            String[] args = getCommandArgs(template, media, mediaResource);
+            Process process = null;
+            if (args != null) {
+                process = ShellExec.execute(args);
+            }
+            return process != null;
+        }else{
+            return false;
+        }
 	}
 
 	/**
