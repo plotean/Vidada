@@ -5,6 +5,7 @@ import vidada.server.rest.VidadaRestServer;
 import vidada.server.services.IMediaService;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -34,5 +35,11 @@ public class MediaResource {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
 	}
+
+    @Path("stream")
+    @GET
+    public MediaStreamResource getStream(){
+        return new MediaStreamResource(mediaHash);
+    }
 
 }
