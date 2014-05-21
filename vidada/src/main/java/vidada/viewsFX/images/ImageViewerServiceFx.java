@@ -1,12 +1,14 @@
 package vidada.viewsFX.images;
 
-import javafx.scene.Scene;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import archimedes.core.images.viewer.IImageProvider;
 import archimedes.core.images.viewer.IImageViewerService;
 import archimedes.core.images.viewer.ISmartImage;
 import archimedes.core.images.viewer.StaticImageProvider;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.Scene;
+import javafx.stage.Screen;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 public class ImageViewerServiceFx implements IImageViewerService {
 
@@ -15,11 +17,15 @@ public class ImageViewerServiceFx implements IImageViewerService {
 
 		SmartImagePanelFx panel = new SmartImagePanelFx(imageProvider);
 
-		Stage dialog = new Stage();
-		dialog.initStyle(StageStyle.UTILITY);
+        Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
+
+		Stage stage = new Stage();
+        stage.initStyle(StageStyle.UTILITY);
+        stage.setWidth(primaryScreenBounds.getWidth());
+        stage.setHeight(primaryScreenBounds.getHeight());
 		Scene scene = new Scene(panel);
-		dialog.setScene(scene);
-		dialog.show();
+        stage.setScene(scene);
+        stage.show();
 	}
 
 	@Override
