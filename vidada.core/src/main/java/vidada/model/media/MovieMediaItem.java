@@ -16,7 +16,7 @@ import java.net.URI;
 public class MovieMediaItem extends MediaItem implements Cloneable {
 
 	transient public final static int INVALID_POSITION = -1;
-	transient private final static int MAX_THUMB_RETRY_COUT = 2;
+	transient private final static int MAX_THUMB_RETRY_COUNT = 2;
 
 	private float preferredThumbPosition = INVALID_POSITION;
 	private float currentThumbPosition = INVALID_POSITION;
@@ -35,7 +35,7 @@ public class MovieMediaItem extends MediaItem implements Cloneable {
 	 * Creates a new MoviePart
 	 * 
 	 * @param parentLibrary
-	 * @param movieFile
+	 * @param relativePath
 	 * @param hash
 	 */
 	public MovieMediaItem(MediaLibrary parentLibrary, URI relativePath, String hash) {
@@ -134,7 +134,7 @@ public class MovieMediaItem extends MediaItem implements Cloneable {
 	 */
 	public boolean canCreateThumbnail() {
 		// Ensure we do not try forever when we deal with defect videos
-		return thumbCreationFails <= MAX_THUMB_RETRY_COUT  && isAvailable();
+		return thumbCreationFails <= MAX_THUMB_RETRY_COUNT  && isAvailable();
 	}
 
 	public float getThumbPos(){
@@ -170,8 +170,8 @@ public class MovieMediaItem extends MediaItem implements Cloneable {
 	 * Set the bitrate in Kilo bits (Kb)
 	 * @param bitRate
 	 */
-	public void setBitrate(int bitrate) {
-		this.bitrate = bitrate;
+	public void setBitrate(int bitRate) {
+		this.bitrate = bitRate;
 	}
 
 	/**
