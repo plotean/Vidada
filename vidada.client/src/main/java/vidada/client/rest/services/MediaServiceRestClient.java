@@ -97,7 +97,6 @@ public class MediaServiceRestClient extends AbstractRestService implements IMedi
                 .path("stream").path(media.getFilehash())
 				.queryParam("redirect", false)
                 .request(MediaType.TEXT_PLAIN_TYPE).get(String.class);
-
 		try {
 			mediaResource = ResourceLocation.Factory.create(mediaStreamUri);
 		} catch (URISyntaxException e) {

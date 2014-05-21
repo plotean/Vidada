@@ -66,7 +66,6 @@ public class MediaService extends VidadaServerService implements IMediaService {
 
             System.out.println("created tag expression: " + tagExpression.code());
 
-            // TODO build expr query
             MediaExpressionQuery exprQuery = new MediaExpressionQuery(
                     tagExpression,
                     qry.getMediaType(),
