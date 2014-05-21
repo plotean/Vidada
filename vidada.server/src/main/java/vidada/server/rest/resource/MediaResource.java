@@ -15,7 +15,7 @@ import javax.ws.rs.core.Response;
  *
  * path: api/medias/{hash}/
  */
-public class MediaResource {
+public class MediaResource extends AbstractResource {
 
 
 	private final IMediaService mediaService = VidadaRestServer.VIDADA_SERVER.getMediaService();
@@ -29,15 +29,15 @@ public class MediaResource {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getJSON() {
 		MediaItem media = mediaService.queryByHash(mediaHash);
+
         if(media != null){
-            return Response.ok(media).build();
+            return Response.ok(serializeJson(media)).build();
         }else{
             return Response.status(Response.Status.NOT_FOUND).build();
         }
 	}
 
     @Path("stream")
-    @GET
     public MediaStreamResource getStream(){
         return new MediaStreamResource(mediaHash);
     }

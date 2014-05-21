@@ -84,9 +84,7 @@ public class MediasResource extends AbstractResource {
      * @param hash
      * @return
      */
-    @GET
     @Path("{hash}")
-    @Produces({ MediaType.APPLICATION_JSON })
     public MediaResource getMedia(@PathParam("hash") String hash) {
         return new MediaResource(hash);
     }
