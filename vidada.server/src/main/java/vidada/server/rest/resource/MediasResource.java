@@ -7,7 +7,6 @@ import vidada.model.tags.Tag;
 import vidada.model.tags.TagFactory;
 import vidada.server.rest.VidadaRestServer;
 import vidada.server.services.IMediaService;
-import vidada.server.services.ITagService;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
@@ -25,9 +24,8 @@ public class MediasResource extends AbstractResource {
 	Request request;
 
 	private final IMediaService mediaService = VidadaRestServer.VIDADA_SERVER.getMediaService();
-	private final ITagService tagService = VidadaRestServer.VIDADA_SERVER.getTagService();
+	//private final ITagService tagService = VidadaRestServer.VIDADA_SERVER.getTagService();
 
-	// JAXBElement<MediaItem>
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response update(String mediaJson){
@@ -80,6 +78,18 @@ public class MediasResource extends AbstractResource {
 	public String getCount() {		
 		return String.valueOf(mediaService.count());
 	}
+
+    /**
+     * Gets the detail of a single media
+     * @param hash
+     * @return
+     */
+    @GET
+    @Path("{hash}")
+    @Produces({ MediaType.APPLICATION_JSON })
+    public MediaResource getMedia(@PathParam("hash") String hash) {
+        return new MediaResource(hash);
+    }
 
 
     /**

@@ -1,28 +1,38 @@
 package vidada.server.rest.resource;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-
 import vidada.model.media.MediaItem;
 import vidada.server.rest.VidadaRestServer;
 import vidada.server.services.IMediaService;
 
-@Path("/media")
+import javax.ws.rs.GET;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
+/**
+ * Represents a single media resource
+ *
+ * path: api/medias/{hash}/
+ */
 public class MediaResource {
 
 
 	private final IMediaService mediaService = VidadaRestServer.VIDADA_SERVER.getMediaService();
+    private final String mediaHash;
 
+    public MediaResource(String mediaHash){
+        this.mediaHash = mediaHash;
+    }
 
 	@GET
-	@Path("{hash}")
 	@Produces({ MediaType.APPLICATION_JSON })
-	public MediaItem getJSON(@PathParam("hash") String hash) {
-		MediaItem media = mediaService.queryByHash(hash);
-		return media;
+	public Response getJSON() {
+		MediaItem media = mediaService.queryByHash(mediaHash);
+        if(media != null){
+            return Response.ok(media).build();
+        }else{
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
 	}
 
 }
