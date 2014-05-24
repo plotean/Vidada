@@ -5,7 +5,9 @@ import vidada.model.media.source.MediaSource;
 import vidada.server.rest.VidadaRestServer;
 import vidada.server.services.IMediaService;
 
-import javax.ws.rs.*;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.*;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -66,6 +68,7 @@ public class MediaStreamResource extends AbstractResource {
         MediaSource source = media.getSource();
         name = source.getResourceLocation().getName();
         try {
+            name = name.replace(" ","_");
             name = URLEncoder.encode(name, "UTF-8");
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
