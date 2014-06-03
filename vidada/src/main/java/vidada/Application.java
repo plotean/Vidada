@@ -54,6 +54,8 @@ import javax.imageio.ImageIO;
 import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -208,24 +210,33 @@ public class Application extends  javafx.application.Application {
 
 		System.out.println("configuring Vidada Instance");
 
-		Dialog dlg = new Dialog(null, "Vidada Instance Chooser");
-		final ChooseVidadaInstanceView chooseView =new ChooseVidadaInstanceView(VidadaClientSettings.instance().getVidadaInstances());
-		final AbstractAction actionChoose = new AbstractAction("Choose") {
-			{  
-				ButtonBar.setType(this, ButtonType.OK_DONE); 
-			}
-			@Override
-			public void execute(ActionEvent ae) {
-				Dialog dlg = (Dialog) ae.getSource();
-				VidadaInstance instance = chooseView.getDatabase();
-				VidadaClientSettings.instance().setCurrentInstnace(instance);
-				dlg.hide();
-			}
-		};
-		dlg.setContent(chooseView);	
-		dlg.setMasthead("Choose to which Vidada Instance you want to connect.");
-		dlg.getActions().addAll(actionChoose, Dialog.Actions.CANCEL);
-		dlg.show();
+        List<VidadaInstance> allVidadaInstances = new ArrayList<>(VidadaClientSettings.instance().getVidadaInstances());
+
+        if(allVidadaInstances.size() > 1) {
+            // Multiple instances to choose from
+            Dialog dlg = new Dialog(null, "Vidada Instance Chooser");
+            final ChooseVidadaInstanceView chooseView = new ChooseVidadaInstanceView(allVidadaInstances);
+            final AbstractAction actionChoose = new AbstractAction("Choose") {
+                {
+                    ButtonBar.setType(this, ButtonType.OK_DONE);
+                }
+
+                @Override
+                public void execute(ActionEvent ae) {
+                    Dialog dlg = (Dialog) ae.getSource();
+                    VidadaInstance instance = chooseView.getDatabase();
+                    VidadaClientSettings.instance().setCurrentInstnace(instance);
+                    dlg.hide();
+                }
+            };
+            dlg.setContent(chooseView);
+            dlg.setMasthead("Choose to which Vidada Instance you want to connect.");
+            dlg.getActions().addAll(actionChoose, Dialog.Actions.CANCEL);
+            dlg.show();
+        }else if(allVidadaInstances.size() == 1){
+            // Only one instance, so we select it automatically
+            VidadaClientSettings.instance().setCurrentInstnace(allVidadaInstances.get(0));
+        }
 
 		return VidadaClientSettings.instance().getCurrentInstance(); 
 	}
