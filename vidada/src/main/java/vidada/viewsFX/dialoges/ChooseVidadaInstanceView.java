@@ -1,40 +1,48 @@
 package vidada.viewsFX.dialoges;
 
-import java.util.Collection;
-
 import javafx.collections.FXCollections;
-import javafx.scene.control.ComboBox;
+import javafx.geometry.Insets;
+import javafx.geometry.VPos;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import vidada.model.settings.VidadaInstance;
 
+import java.util.Collection;
+
 public class ChooseVidadaInstanceView extends BorderPane {
 
-	ComboBox<VidadaInstance> cboDatabase = new ComboBox<VidadaInstance>();
+    private final ListView<VidadaInstance> databasesView = new ListView<>();
 
-	public ChooseVidadaInstanceView(Collection<VidadaInstance> availableInstances)
+    public ChooseVidadaInstanceView(Collection<VidadaInstance> availableInstances)
 	{
-		cboDatabase.setItems(FXCollections.observableArrayList(availableInstances));
+        databasesView.setItems(FXCollections.observableArrayList(availableInstances));
 
 		GridPane content = new GridPane();
+
 		content.setHgap(10);
 		content.setVgap(10);
-		content.add(new Label("Vidada Instance:"), 0, 0);
-		content.add(cboDatabase, 1, 0);
-		GridPane.setHgrow(cboDatabase, Priority.ALWAYS);
+        Label label =  new Label("Vidada Instance:");
+		content.add(label, 0, 0);
+		content.add(databasesView, 1, 0);
+
+        GridPane.setValignment(label, VPos.TOP);
+		GridPane.setHgrow(databasesView, Priority.ALWAYS);
 		//this.add(new Label("Password"), 0, 1);
 		//this.add(txPassword, 1, 1);
 		//GridPane.setHgrow(txPassword, Priority.ALWAYS);
 
 		if(availableInstances.size() > 0)
-			cboDatabase.getSelectionModel().select(availableInstances.iterator().next());
+            databasesView.getSelectionModel().select(availableInstances.iterator().next());
 
+
+        BorderPane.setMargin(content, new Insets(10));
 		this.setCenter(content);
 	}
 
 	public VidadaInstance getDatabase(){
-		return cboDatabase.getSelectionModel().getSelectedItem();
+		return databasesView.getSelectionModel().getSelectedItem();
 	}
 }
