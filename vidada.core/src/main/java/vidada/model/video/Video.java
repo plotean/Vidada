@@ -52,7 +52,7 @@ public class Video {
 	}
 
 	public static boolean isGenericEncoderPresent(){
-		return videoAccessService.isAvaiable();
+		return videoAccessService.isAvailable();
 	}
 
 

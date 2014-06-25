@@ -1,6 +1,8 @@
 package vidada.model.images;
 
 import archimedes.core.io.locations.DirectoryLocation;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import vidada.model.images.cache.IImageCache;
 import vidada.model.images.cache.ImageCacheProxyBase;
 import vidada.model.images.cache.MemoryImageCache;
@@ -29,13 +31,13 @@ public class LocalImageCacheManager {
      *                                                                         *
      **************************************************************************/
 
-	transient private final ICredentialManager credentialManager =  ServiceProvider.Resolve(ICredentialManager.class);
+    private static final Logger logger = LogManager.getLogger(LocalImageCacheManager.class.getName());
+
+    transient private final ICredentialManager credentialManager =  ServiceProvider.Resolve(ICredentialManager.class);
 
 	transient private final IImageCache localImageCache;
 	transient private final ImageCacheFactory cacheFactory = new ImageCacheFactory();
 	transient private final Map<MediaLibrary, IImageCache> combinedCachesMap = new HashMap<MediaLibrary, IImageCache>();
-
-
 
     /***************************************************************************
      *                                                                         *
@@ -109,7 +111,7 @@ public class LocalImageCacheManager {
 		if(cache != null){
 			return cache;
 		}else{
-			System.err.println("LocalImageCacheManager: Injecting a MemoryCache to replace LocalFile Cache");
+            logger.warn("Injecting a MemoryCache to replace LocalFile Cache");
 			return new MemoryImageCache(new ImageCacheProxyBase(null));
 		}
 

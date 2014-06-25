@@ -3,6 +3,8 @@ package vidada.viewsFX;
 import archimedes.core.exceptions.NotSupportedException;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.net.URL;
@@ -11,6 +13,9 @@ import java.net.URL;
  * Advanced FXML loader.
  */
 public final class FXMLLoaderX {
+
+    private static final Logger logger = LogManager.getLogger(FXMLLoaderX.class.getName());
+
 
     /**
      * This will load the given fxml file and store the controller of this node in the userData property.
@@ -27,7 +32,7 @@ public final class FXMLLoaderX {
                 throw new NotSupportedException("The fxml could not be loaded. fxml @ " + path);
             }
         }else {
-            System.err.println("Can not find relative path: " + path);
+            logger.error("Can not find relative path: " + path);
         }
         return node;
     }

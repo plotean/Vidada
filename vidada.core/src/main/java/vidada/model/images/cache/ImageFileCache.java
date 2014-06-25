@@ -8,6 +8,8 @@ import archimedes.core.images.IRawImageFactory;
 import archimedes.core.io.locations.DirectoryLocation;
 import archimedes.core.io.locations.ResourceLocation;
 import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import vidada.services.ServiceProvider;
 
 import java.io.FileNotFoundException;
@@ -27,7 +29,15 @@ import java.util.*;
  */
 public class ImageFileCache implements IImageCache {
 
-	private static final String RESOLUTION_DELEMITER = "_";
+    /***************************************************************************
+     *                                                                         *
+     * Private Fields                                                          *
+     *                                                                         *
+     **************************************************************************/
+
+    private static final Logger logger = LogManager.getLogger(ImageFileCache.class.getName());
+
+    private static final String RESOLUTION_DELEMITER = "_";
 
 	private final DirectoryLocation cacheRoot;
 	private final DirectoryLocation scaledCacheDataBase;
@@ -38,10 +48,14 @@ public class ImageFileCache implements IImageCache {
 	private final Map<Integer, ResourceLocation> dimensionPathCache = new HashMap<Integer, ResourceLocation>(2000);
 	private final Map<Size, DirectoryLocation> resolutionFolders = new HashMap<Size, DirectoryLocation>(10);
 
-
-
 	private final Set<Size> knownDimensions = new HashSet<Size>();
 	private final Object knownDimensionsLOCK = new Object();
+
+    /***************************************************************************
+     *                                                                         *
+     * Constructor                                                             *
+     *                                                                         *
+     **************************************************************************/
 
 	/**
 	 * Creates a new image cache which uses the file system to store images.
@@ -77,19 +91,14 @@ public class ImageFileCache implements IImageCache {
 		}
 	}
 
-
+    /***************************************************************************
+     *                                                                         *
+     * Public API                                                              *
+     *                                                                         *
+     **************************************************************************/
 
 	public DirectoryLocation getCacheRoot() {
 		return cacheRoot;
-	}
-
-	private static DirectoryLocation getScaledCache(DirectoryLocation cacheRoot){
-		try {
-			return DirectoryLocation.Factory.create(cacheRoot, "scaled");
-		} catch (URISyntaxException e1) {
-			e1.printStackTrace();
-		}
-		return null;
 	}
 
 	/**
@@ -111,14 +120,6 @@ public class ImageFileCache implements IImageCache {
 		return avaiableForId;
 	}
 
-
-	protected Set<Size> getKnownDimensions(){
-		synchronized (knownDimensionsLOCK) {
-			return new HashSet<Size>(this.knownDimensions);
-		}
-	}
-
-
 	@Override
 	public IMemoryImage getImageById(String id, Size size) {
 
@@ -131,11 +132,9 @@ public class ImageFileCache implements IImageCache {
 			try {
 				thumbnail = load(cachedPath); 
 			}catch(Exception e) {
-				System.err.println("Can not read image" + cachedPath);
+                logger.error("Can not read image" + cachedPath, e);
 			}
 		}
-
-
 		return thumbnail;
 	}
 
@@ -189,6 +188,31 @@ public class ImageFileCache implements IImageCache {
 		}
 	}
 
+    /**
+     * Gets the image extension to use for cached files
+     * @return
+     */
+    public String getImageExtension(){
+        return ".png";
+    }
+
+
+    /***************************************************************************
+     *                                                                         *
+     * Protected methods                                                       *
+     *                                                                         *
+     **************************************************************************/
+
+    /**
+     * Gets all known dimensions in this cache
+     * @return
+     */
+    protected Set<Size> getKnownDimensions(){
+        synchronized (knownDimensionsLOCK) {
+            return new HashSet<Size>(this.knownDimensions);
+        }
+    }
+
 	/**
 	 * Load an image file from the disk
 	 * @param path
@@ -203,7 +227,7 @@ public class ImageFileCache implements IImageCache {
 				try {
 					is.close();
 				} catch (IOException e) {
-					e.printStackTrace();
+                    logger.error(e);
 				}
 		}
 	}
@@ -245,9 +269,9 @@ public class ImageFileCache implements IImageCache {
 					fos.close();
 			}
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+            logger.error(e);
 		} catch (IOException e) {
-			e.printStackTrace();
+            logger.error(e);
 		}
 	}
 
@@ -278,10 +302,11 @@ public class ImageFileCache implements IImageCache {
 		return cachedThumb;
 	}
 
-	public String getImageExtension(){
-		return ".png";
-	}
-
+    /***************************************************************************
+     *                                                                         *
+     * Private methods                                                         *
+     *                                                                         *
+     **************************************************************************/
 
 	private DirectoryLocation getFolderForResolution(Size size){
 
@@ -303,9 +328,13 @@ public class ImageFileCache implements IImageCache {
 		return resolutionFolder;
 	}
 
-
-
-
-
+    private static DirectoryLocation getScaledCache(DirectoryLocation cacheRoot){
+        try {
+            return DirectoryLocation.Factory.create(cacheRoot, "scaled");
+        } catch (URISyntaxException e1) {
+            logger.error(e1);
+        }
+        return null;
+    }
 
 }

@@ -7,6 +7,8 @@ import archimedes.core.util.OSValidator;
 import archimedes.core.util.PackageUtil;
 import ffmpeg.FFmpegException;
 import org.apache.commons.io.FileUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.joda.time.Duration;
 import vidada.model.video.VideoInfo;
 
@@ -28,12 +30,24 @@ import java.util.zip.ZipException;
  */
 public abstract class FFmpegInterop {
 
-	protected static File encoder;
+    /***************************************************************************
+     *                                                                         *
+     * Private Fields                                                          *
+     *                                                                         *
+     **************************************************************************/
+
+    private static final Logger logger = LogManager.getLogger(FFmpegInterop.class.getName());
+
+
+    protected static File encoder;
 
 	private static FFmpegInterop instance = null;
 	private static int DEFAULT_TIMEOUT = 1000 * 5; // ms
 
-
+    /**
+     * Gets the FFmpegInterop instance
+     * @return
+     */
 	public static FFmpegInterop instance(){
 
 		if(instance == null){
@@ -43,7 +57,7 @@ public abstract class FFmpegInterop {
 				instance = new FFmpegInteropLinux();
 			}
 
-			System.out.println("loaded ffmpeg interop: " + instance.getClass().getName());
+            logger.info("Loaded ffmpeg interop: " + instance.getClass().getName());
 		}
 		return instance;
 	}
@@ -64,14 +78,14 @@ public abstract class FFmpegInterop {
 			ffmpeg = new File(ffmpegURI);
 			ffmpeg.setExecutable(true);
 
-			System.out.println("FFmpegInterop: Extracted ffmpeg to " + ffmpeg);
+            logger.info("FFmpegInterop: Extracted ffmpeg to " + ffmpeg);
 
 		} catch (URISyntaxException e) {
-			e.printStackTrace();
+            logger.error(e);
 		} catch (ZipException e) {
-			e.printStackTrace();
+            logger.error(e);
 		} catch (IOException e) {
-			e.printStackTrace();
+            logger.error(e);
 		}
 
 		return ffmpeg;
@@ -167,7 +181,7 @@ public abstract class FFmpegInterop {
 			Duration d = Duration.millis(hours.getMillis() + minutes.getMillis() + seconds.getMillis());
 			videoDuration = (int)d.getStandardSeconds();
 		}else {
-			System.err.println("duration info not found!");
+            logger.warn("Duration info not found!");
 		}
 
 		//
@@ -179,7 +193,7 @@ public abstract class FFmpegInterop {
 			videoBitrate = Integer.parseInt(m.group(1));
 
 		}else {
-			System.err.println("bitrate info not found!");
+            logger.warn("Bitrate info not found!");
 		}
 
 
@@ -192,7 +206,7 @@ public abstract class FFmpegInterop {
 					Integer.parseInt(m.group(1)),
 					Integer.parseInt(m.group(2)));
 		}else {
-			System.err.println("resolution info not found!");
+            logger.warn("Resolution info not found!");
 		}
 
 		return new VideoInfo(videoDuration, videoBitrate, resolution);
@@ -212,17 +226,17 @@ public abstract class FFmpegInterop {
 		try {
 			args.add(0, getFFmpegCMD());
 			String[] command = args.toArray(new String[0]);
-			System.out.println("FFmpegInterop: running ShellExecute.executeAndWait ...");
 
+            logger.debug("Running ffmpeg over shell...");
 			int exitVal = ShellExec.executeAndWait(command, output, true, timeout);
 
 		} catch( TimeoutException e){
-            System.err.println(e.getMessage());
+            logger.warn("ffmpeg process timed out: " + e.getMessage());
         } catch(Exception e) {
-			e.printStackTrace();
+            logger.error(e);
 		}
 
-		System.out.println("FFmpegInterop: ffmpeg done.");
+        logger.trace("ffmpeg process done.");
 
 		return output.toString();
 	} 

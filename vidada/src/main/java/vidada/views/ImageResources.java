@@ -1,6 +1,8 @@
 package vidada.views;
 
 import archimedes.core.swing.images.IconFactory;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import javax.swing.*;
 import java.net.URL;
@@ -12,7 +14,9 @@ import java.net.URL;
  */
 public class ImageResources {
 
-	private static ImageResources instance = new ImageResources();
+    private static final Logger logger = LogManager.getLogger(ImageResources.class.getName());
+
+    private static ImageResources instance = new ImageResources();
 
 
 	// main icons
@@ -47,7 +51,7 @@ public class ImageResources {
 		if(imgURL != null)
 			return IconFactory.instance().loadIcon(imgURL);
 		else {
-			System.out.println("cant find image @ " + path);
+            logger.error("cant find image @ " + path);
 			return null;
 		}
 

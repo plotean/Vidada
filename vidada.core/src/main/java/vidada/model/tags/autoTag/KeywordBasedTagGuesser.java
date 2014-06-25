@@ -1,5 +1,7 @@
 package vidada.model.tags.autoTag;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import vidada.model.media.MediaItem;
 import vidada.model.media.source.MediaSource;
 import vidada.model.tags.Tag;
@@ -18,11 +20,25 @@ import java.util.Set;
  */
 public class KeywordBasedTagGuesser  implements ITagGuessingStrategy {
 
-	private static final String splitRegEx = "\\W|_";
+    /***************************************************************************
+     *                                                                         *
+     * Private Fields                                                          *
+     *                                                                         *
+     **************************************************************************/
+
+    private static final Logger logger = LogManager.getLogger(KeywordBasedTagGuesser.class.getName());
+
+    private static final String splitRegEx = "\\W|_";
 	private static final String splitPathRegex = "/|\\\\";
     private static final int MAX_RECOMBINATION_DEEPTH = 4;
 
 	private Collection<Tag> tags;
+
+    /***************************************************************************
+     *                                                                         *
+     * Constructors                                                            *
+     *                                                                         *
+     **************************************************************************/
 
 	/**
 	 * Creates a new KeywordBasedTagGuesser
@@ -31,6 +47,12 @@ public class KeywordBasedTagGuesser  implements ITagGuessingStrategy {
 	public KeywordBasedTagGuesser(Collection<Tag> tags){
 		this.tags = tags;
 	}
+
+    /***************************************************************************
+     *                                                                         *
+     * Public API                                                              *
+     *                                                                         *
+     **************************************************************************/
 
 	@Override
 	public Set<Tag> guessTags(MediaItem media) {
@@ -47,6 +69,12 @@ public class KeywordBasedTagGuesser  implements ITagGuessingStrategy {
 		return matchingTags;
 	}
 
+    /***************************************************************************
+     *                                                                         *
+     * Private methods                                                         *
+     *                                                                         *
+     **************************************************************************/
+
     /**
      * Returns all possible keywords (tokens) derived from this media item.
      * @param media
@@ -59,7 +87,7 @@ public class KeywordBasedTagGuesser  implements ITagGuessingStrategy {
             path = URLDecoder.decode(path, "utf-8");
             return  getPossibleTagStrings(path);
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace(); // should never happen
+            logger.error(e);
         }
         return new HashSet<String>();
     }
@@ -125,17 +153,22 @@ public class KeywordBasedTagGuesser  implements ITagGuessingStrategy {
             }
         }
     }
-    
+
+    /***************************************************************************
+     *                                                                         *
+     * Some local tests                                                        *
+     *                                                                         *
+     **************************************************************************/
 
     public static void main(String[] args){
         // Just some fantasy file path
         String samplePath = "/root/action/Game of Thrones (Season 1) [action super.hero 720p] cool.avi";
-        System.out.println("Analyzing path: " + samplePath);
+        logger.info("Analyzing path: " + samplePath);
 
         Set<String> tags = getPossibleTagStrings(samplePath);
 
         for(String tag : tags ){
-           System.out.println(tag);
+            logger.info(tag);
         }
     }
 

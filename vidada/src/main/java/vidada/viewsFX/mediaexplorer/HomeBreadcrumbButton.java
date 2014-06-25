@@ -23,9 +23,6 @@ public class HomeBreadcrumbButton extends BreadCrumbButton {
 		@Override
 		public void handle(MouseEvent me) {
 			if(me.getButton().equals(MouseButton.PRIMARY)){
-
-				System.out.println("showing PopOver...");
-
 				Node owner = HomeBreadcrumbButton.this;
 				javafx.geometry.Point2D point = owner.localToScreen(owner.getLayoutBounds().getMaxX(),owner.getLayoutBounds().getMaxY() ); // get coordinates of node
 				popover.show(owner, point.getX(), point.getY());

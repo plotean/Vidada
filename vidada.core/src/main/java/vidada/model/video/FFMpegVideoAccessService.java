@@ -6,6 +6,8 @@ import archimedes.core.images.IRawImageFactory;
 import ffmpeg.FFmpegException;
 import ffmpeg.Interop.FFmpegInterop;
 import org.apache.commons.io.FileUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import vidada.services.ServiceProvider;
 
 import java.io.File;
@@ -16,10 +18,23 @@ import java.util.Map;
 
 public class FFMpegVideoAccessService implements IVideoAccessService {
 
-	private final IRawImageFactory imageFactory = ServiceProvider.Resolve(IRawImageFactory.class);
+    /***************************************************************************
+     *                                                                         *
+     * Private Fields                                                          *
+     *                                                                         *
+     **************************************************************************/
+
+    private static final Logger logger = LogManager.getLogger(FFMpegVideoAccessService.class.getName());
+
+    private final IRawImageFactory imageFactory = ServiceProvider.Resolve(IRawImageFactory.class);
 	private final static FFmpegInterop ffmpeg = FFmpegInterop.instance();	
 	private final Map<String, VideoInfo> videoInfoCache = new HashMap<String, VideoInfo>();
 
+    /***************************************************************************
+     *                                                                         *
+     * Public API                                                              *
+     *                                                                         *
+     **************************************************************************/
 
 	@Override
 	public VideoInfo extractVideoInfo(URI pathToVideFile) {
@@ -61,10 +76,10 @@ public class FFMpegVideoAccessService implements IVideoAccessService {
 				return extractFrame(pathToVideFile, position, info.NativeResolution);
 
 			}else{
-				System.err.println("extractNativeFrame: video info NativeResolution is unavaiable.");
+                logger.warn("extractNativeFrame: video info NativeResolution is unavaiable.");
 			}
 		}else{
-			System.err.println("extractNativeFrame: video info could not be extracted!");
+            logger.warn("extractNativeFrame: video info could not be extracted!");
 		}
 
 		return null; 
@@ -84,15 +99,25 @@ public class FFMpegVideoAccessService implements IVideoAccessService {
 				frame = extractFrame(pathToVideFile, second, frameSize);
 
 			}else{
-				System.err.println("extractFrame: video Duration info is unavaiable");
+                logger.warn("extractFrame: video Duration info is unavailable");
 			}
 		}else{
-			System.err.println("extractFrame: video info could not be extracted!");
+            logger.warn("extractFrame: video info could not be extracted!");
 		}
 
 		return frame; 
 	}
 
+    @Override
+    public boolean isAvailable() {
+        return ffmpeg.isAvaiable();
+    }
+
+    /***************************************************************************
+     *                                                                         *
+     * Private methods                                                         *
+     *                                                                         *
+     **************************************************************************/
 
 	/**
 	 * Returns a frame of this video at the given position and with the given size
@@ -114,10 +139,10 @@ public class FFMpegVideoAccessService implements IVideoAccessService {
 				frame = imageFactory.createImage(pathToImage);
 
 			} catch (FFmpegException e) {
-				e.printStackTrace();
+				logger.error(e);
 			}
 		} catch (IOException e1) {
-			e1.printStackTrace();
+            logger.error(e1);
 		}finally{
 			// remove the temporary image
 			FileUtils.deleteQuietly(pathToImage);
@@ -125,13 +150,6 @@ public class FFMpegVideoAccessService implements IVideoAccessService {
 
 		return frame;	
 	}
-
-	@Override
-	public boolean isAvaiable() {
-		return ffmpeg.isAvaiable();
-	}
-
-
 
 
 

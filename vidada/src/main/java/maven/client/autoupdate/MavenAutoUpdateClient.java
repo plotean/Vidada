@@ -4,6 +4,8 @@ import archimedes.core.util.OSValidator;
 import maven.client.autoupdate.MavenVersion.VersionFormatException;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import javax.ws.rs.core.UriBuilder;
 import java.io.File;
@@ -19,7 +21,15 @@ import java.util.List;
 
 public class MavenAutoUpdateClient {
 
-	private static String MetaDataFile = "maven-metadata.xml";
+    /***************************************************************************
+     *                                                                         *
+     * Private Fields                                                          *
+     *                                                                         *
+     **************************************************************************/
+
+    private static final Logger logger = LogManager.getLogger(MavenAutoUpdateClient.class.getName());
+
+    private static String MetaDataFile = "maven-metadata.xml";
 	private static String Api = "RepositoryClient.php";
 
 	private static String Action_Version_Latest = "VERSION_LATEST";
@@ -34,6 +44,13 @@ public class MavenAutoUpdateClient {
 	private final File mavenCache;
 
 	private URI projectRepository;
+
+
+    /***************************************************************************
+     *                                                                         *
+     * Constructor                                                             *
+     *                                                                         *
+     **************************************************************************/
 
 
 	/**
@@ -52,7 +69,14 @@ public class MavenAutoUpdateClient {
         this.projectRepository = getProjectRepository(mavenRepository, groupId, artifactId);
 	}
 
-	/**
+    /***************************************************************************
+     *                                                                         *
+     * Public API                                                              *
+     *                                                                         *
+     **************************************************************************/
+
+
+    /**
 	 * Fetches the latest available version information.
 	 * This method call blocks!
 	 * 
@@ -66,7 +90,7 @@ public class MavenAutoUpdateClient {
             try {
                 version = MavenVersion.parse(versionString);
             } catch (VersionFormatException e) {
-                e.printStackTrace();
+                logger.error(e);
             }
         }
 		return version;
@@ -92,13 +116,13 @@ public class MavenAutoUpdateClient {
 				updateUri = new URI(updateLocation);
 
 				File tmpDownloadFile = getTempDownloadUpdateFile(version);
-                System.out.println("Downloading " + updateUri + " to " + tmpDownloadFile);
+                logger.info("Downloading " + updateUri + " to " + tmpDownloadFile);
                 if(uriDownloadToFile(updateUri, tmpDownloadFile)){
 					tmpDownloadFile.renameTo(updateFile);
 				}
 				return updateFile;
 			} catch (URISyntaxException e) {
-				e.printStackTrace();
+                logger.error(e);
 			}
 		}
 		return null;
@@ -131,7 +155,7 @@ public class MavenAutoUpdateClient {
 					try {
 						cached.add(MavenVersion.parse(update.getName()));
 					} catch (VersionFormatException e) {
-						e.printStackTrace();
+                        logger.error(e);
 					}
 				}
 			}
@@ -151,7 +175,11 @@ public class MavenAutoUpdateClient {
 		return !cachedUpdates.isEmpty() ? cachedUpdates.get(0) : null;
 	}
 
-
+    /***************************************************************************
+     *                                                                         *
+     * Private methods                                                         *
+     *                                                                         *
+     **************************************************************************/
 
 
     private URI getProjectRepository(URI mavenRepository, String groupId, String artifactId){
@@ -159,7 +187,7 @@ public class MavenAutoUpdateClient {
         try {
             repository = new URI(mavenRepository.toString() + "/" + groupId.replace(".","/") + "/" + artifactId);
         } catch (URISyntaxException e) {
-            e.printStackTrace();
+            logger.error(e);
         }
         return repository;
     }
@@ -185,9 +213,9 @@ public class MavenAutoUpdateClient {
 			org.apache.commons.io.FileUtils.copyURLToFile(uri.toURL(), destination);
 			return true;
 		} catch (MalformedURLException e) {
-			e.printStackTrace();
+            logger.error(e);
 		} catch (IOException e) {
-			e.printStackTrace();
+            logger.error(e);
 		}
 		return false;
 	}
@@ -202,11 +230,11 @@ public class MavenAutoUpdateClient {
 		String string = null;
 		InputStream in = null;
 		try {
-            System.out.println("Maven Client: fetching " + path.toString());
+            logger.info("Maven Client: fetching " + path.toString());
             in = path.toURL().openStream();
 			string = IOUtils.toString( in );
 		} catch (IOException e) {
-            System.err.println(e.getMessage());
+            logger.error(e);
         } finally {
 			IOUtils.closeQuietly(in);
 		}

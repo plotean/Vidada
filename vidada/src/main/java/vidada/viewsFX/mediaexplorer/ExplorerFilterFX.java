@@ -1,5 +1,6 @@
 package vidada.viewsFX.mediaexplorer;
 
+import archimedes.core.io.locations.DirectoryLocation;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -10,17 +11,25 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import vidada.IVidadaServer;
 import vidada.client.viewmodel.explorer.MediaExplorerVM;
 import vidada.model.media.MediaLibrary;
 import vidada.server.services.IMediaLibraryService;
-import archimedes.core.events.EventArgsG;
-import archimedes.core.events.EventListenerEx;
-import archimedes.core.io.locations.DirectoryLocation;
 
 public class ExplorerFilterFX extends BorderPane {
 
-	private final ComboBox<MediaLibrary> cboMediaLibrary= new ComboBox<>();
+    /***************************************************************************
+     *                                                                         *
+     * Private Fields                                                          *
+     *                                                                         *
+     **************************************************************************/
+
+    private static final Logger logger = LogManager.getLogger(ExplorerFilterFX.class.getName());
+
+
+    private final ComboBox<MediaLibrary> cboMediaLibrary= new ComboBox<>();
 	private final Label libraryDescription = new Label("Media Library:");
 	private ObservableList<MediaLibrary> observableMedias;
 
@@ -30,6 +39,16 @@ public class ExplorerFilterFX extends BorderPane {
 
 	private MediaExplorerVM mediaExplorerVm;
 
+
+    /***************************************************************************
+     *                                                                         *
+     * Constructor                                                             *
+     *                                                                         *
+     **************************************************************************/
+
+    /**
+     * Creates a new ExplorerFilterFX
+     */
 	public ExplorerFilterFX(){
 
 		if(localServer != null){
@@ -58,7 +77,7 @@ public class ExplorerFilterFX extends BorderPane {
 					if(mediaExplorerVm != null){
 						mediaExplorerVm.setHomeLocation(dir);
 					}else
-						System.err.println("ExplorerFilterFX: mediaExplorerVm is NULL!");
+                        logger.error("ExplorerFilterFX: mediaExplorerVm is NULL!");
 				}
 			}
 
@@ -69,30 +88,9 @@ public class ExplorerFilterFX extends BorderPane {
 			observableMedias = FXCollections.observableArrayList(mediaLibraryService.getAllLibraries());
 			cboMediaLibrary.setItems(observableMedias);
 
-			mediaLibraryService.getLibraryAddedEvent().add(new EventListenerEx<EventArgsG<MediaLibrary>>() {
-				@Override
-				public void eventOccured(Object sender, final EventArgsG<MediaLibrary> eventArgs) {
-					Platform.runLater(new Runnable() {
-						@Override
-						public void run() {
-							observableMedias.add(eventArgs.getValue());
-						}
-					});
+			mediaLibraryService.getLibraryAddedEvent().add((sender, eventArgs) -> Platform.runLater(() -> observableMedias.add(eventArgs.getValue())));
 
-				}
-			});
-
-			mediaLibraryService.getLibraryRemovedEvent().add(new EventListenerEx<EventArgsG<MediaLibrary>>() {
-				@Override
-				public void eventOccured(Object sender, final EventArgsG<MediaLibrary> eventArgs) {
-					Platform.runLater(new Runnable() {
-						@Override
-						public void run() {
-							observableMedias.remove(eventArgs.getValue());
-						}
-					});
-				}
-			});
+			mediaLibraryService.getLibraryRemovedEvent().add((sender, eventArgs) -> Platform.runLater(() -> observableMedias.remove(eventArgs.getValue())));
 		}
 
 		setCenter(box);

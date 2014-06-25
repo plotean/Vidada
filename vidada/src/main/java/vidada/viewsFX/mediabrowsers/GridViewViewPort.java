@@ -10,6 +10,8 @@ import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.IndexedCell;
 import javafx.scene.control.ScrollBar;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.controlsfx.control.GridCell;
 import org.controlsfx.control.GridView;
 
@@ -29,6 +31,7 @@ public class GridViewViewPort {
 	 *                                                                         *
 	 **************************************************************************/
 
+    private static final Logger logger = LogManager.getLogger(GridViewViewPort.class.getName());
 
 	private static Field flowField;
 
@@ -37,9 +40,9 @@ public class GridViewViewPort {
 			flowField = VirtualContainerBase.class.getDeclaredField("flow");
 			flowField.setAccessible(true);
 		} catch (NoSuchFieldException e) {
-			e.printStackTrace();
+            logger.error(e);
 		} catch (SecurityException e) {
-			e.printStackTrace();
+            logger.error(e);
 		}
 	}
 
@@ -83,7 +86,7 @@ public class GridViewViewPort {
 
 			for (Node node: gridview.lookupAll(".scroll-bar")) {
 				if (node instanceof ScrollBar) {
-					System.out.println("found scrollbar!");
+					logger.debug("found scrollbar of GridView to inject a listener");
 					registered = true;
 					final ScrollBar bar = (ScrollBar) node;
 					bar.valueProperty().addListener((value, oldValue, newValue) -> updateVisibleCells());
@@ -131,12 +134,10 @@ public class GridViewViewPort {
 			VirtualContainerBase container= skin;
 			try {
 				vf = (VirtualFlow)flowField.get(container);
-			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
+			} catch (IllegalArgumentException | IllegalAccessException e) {
+                logger.error(e);
 			}
-		}
+        }
 
 		return vf;
 	}
@@ -167,18 +168,18 @@ public class GridViewViewPort {
 							firstVisibleCell != null ? firstVisibleCell.getIndex() : 0,
 									lastVisibleCell != null ? lastVisibleCell.getIndex() : 0);
 				}else{
-					System.err.print("GridViewViewPort: firstVisibleRow := " + firstVisibleRow + ", lastVisibleRow := " + lastVisibleRow);
+					logger.debug("firstVisibleRow := " + firstVisibleRow + ", lastVisibleRow := " + lastVisibleRow);
 				}
 			}else{
-				System.err.println("GridViewViewPort: VirtualFlow := NULL!");
+                logger.debug("VirtualFlow := NULL!");
 			}
 		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
+            logger.error(e);
 		}
 
 		if(outRange == null){
 			outRange = IndexRange.Undefined;
-			System.err.println("GridViewViewPort: outrange was NULL -> setting undefined");
+            logger.debug("outRange was NULL -> setting undefined");
 		}
 
 		return outRange;

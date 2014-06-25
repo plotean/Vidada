@@ -2,6 +2,8 @@ package vidada.model.images.cache;
 
 import archimedes.core.io.locations.DirectoryLocation;
 import archimedes.core.security.AuthenticationException;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import vidada.model.images.cache.crypto.CryptedImageFileCache;
 import vidada.model.images.cache.crypto.ICacheKeyProvider;
 import vidada.model.images.cache.crypto.VidadaCacheKeyProvider;
@@ -12,7 +14,10 @@ import vidada.model.security.ICredentialManager;
  */
 public class ImageCacheFactory {
 
-	/**
+    private static final Logger logger = LogManager.getLogger(ImageCacheFactory.class.getName());
+
+
+    /**
 	 * Build a leveled cache form the given two caches.
      *
 	 * @param firstLevelCache
@@ -32,7 +37,7 @@ public class ImageCacheFactory {
 			}
 		}else if(secondLevelCache != null){
 			imageCache = secondLevelCache;
-			System.err.println("ImageCacheFactory: firstLevelCache is NULL!");
+            logger.warn("ImageCacheFactory: firstLevelCache is NULL!");
 		}else{
 			// both caches are null
 			return null;
@@ -51,7 +56,7 @@ public class ImageCacheFactory {
 		try {
 			cache = new CryptedImageFileCache(cacheLocation, cacheKeyProvider);
 		} catch (AuthenticationException e) {
-			System.err.println("ImageCacheFactory: AuthenticationException - openCache failed!");
+            logger.error("ImageCacheFactory: AuthenticationException - openCache failed!");
 			e.printStackTrace();
 		}
 		return cache;
