@@ -13,11 +13,31 @@ import archimedes.core.events.EventArgs;
 import archimedes.core.events.EventListenerEx;
 import archimedes.core.images.IMemoryImage;
 import archimedes.core.images.ImageContainer;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 public class AsyncImageProperty extends SimpleObjectProperty<Image> {
-	private final ImageLoadService imageLoadService = new ImageLoadService();
+
+    /***************************************************************************
+     *                                                                         *
+     * Private Fields                                                          *
+     *                                                                         *
+     **************************************************************************/
+
+    private static final Logger logger = LogManager.getLogger(AsyncImageProperty.class.getName());
+
+    private final ImageLoadService imageLoadService = new ImageLoadService();
 	private final ObjectProperty<ImageContainer> imageContainer = new SimpleObjectProperty<ImageContainer>();
 
+    /***************************************************************************
+     *                                                                         *
+     * Constructor                                                             *
+     *                                                                         *
+     **************************************************************************/
+
+    /**
+     * Creates a new AsyncImageProperty
+     */
 	public AsyncImageProperty() {
 		imageLoadService.stateProperty().addListener(new ChangeListener<State>() {
 			@Override
@@ -26,7 +46,7 @@ public class AsyncImageProperty extends SimpleObjectProperty<Image> {
 					set(imageLoadService.getValue());
 				}else if(value == State.FAILED) {
 					set(null);
-					System.err.println("AsyncImageProperty.imageLoadService: image failed to load.");
+                    logger.warn("AsyncImageProperty.imageLoadService: image failed to load.");
 				}else if(value == State.CANCELLED) {
 					// loading has been canceled
 					set(null);
@@ -47,6 +67,12 @@ public class AsyncImageProperty extends SimpleObjectProperty<Image> {
 		});
 	}
 
+    /***************************************************************************
+     *                                                                         *
+     * Public API                                                              *
+     *                                                                         *
+     **************************************************************************/
+
 	public ObjectProperty<ImageContainer> imageContainerProperty() {
 		return imageContainer;
 	}
@@ -59,6 +85,12 @@ public class AsyncImageProperty extends SimpleObjectProperty<Image> {
 
 		loadImageInBackground();
 	}
+
+    /***************************************************************************
+     *                                                                         *
+     * Private methods                                                         *
+     *                                                                         *
+     **************************************************************************/
 
 
 	private EventListenerEx<EventArgs> imageContainerImageChanged = new EventListenerEx<EventArgs>() {
@@ -99,7 +131,7 @@ public class AsyncImageProperty extends SimpleObjectProperty<Image> {
 						if(image.getOriginal() instanceof Image){
 							return (Image)image.getOriginal();
 						}else{
-							System.err.println("recived image of wrong type: " + image.getOriginal());
+                            logger.error("Received image of wrong type: " + image.getOriginal());
 						}
 					}
 					return null;

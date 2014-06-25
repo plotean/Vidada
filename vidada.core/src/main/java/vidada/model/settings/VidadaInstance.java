@@ -1,11 +1,27 @@
 package vidada.model.settings;
 
-public class VidadaInstance {	
+/**
+ * This is a helper class for Vidada settings and represents a instance.
+ * A Vidada Instance can be a local database or a remote Vidada server to connect to.
+ */
+public class VidadaInstance {
+
+    /***************************************************************************
+     *                                                                         *
+     * Private Fields                                                          *
+     *                                                                         *
+     **************************************************************************/
 
 	transient public static VidadaInstance LOCAL = new VidadaInstance("Local Instance", "local");
 
 	private String name;
 	private String uri;
+
+    /***************************************************************************
+     *                                                                         *
+     * Constructors                                                            *
+     *                                                                         *
+     **************************************************************************/
 
 	public VidadaInstance(){}
 
@@ -13,6 +29,12 @@ public class VidadaInstance {
 		setName(name);
 		setUri(uri);
 	}
+
+    /***************************************************************************
+     *                                                                         *
+     * Properties                                                              *
+     *                                                                         *
+     **************************************************************************/
 
 	public String getUri() {
 		return uri;
@@ -29,6 +51,12 @@ public class VidadaInstance {
 	public void setName(String name) {
 		this.name = name;
 	}
+
+    /***************************************************************************
+     *                                                                         *
+     * Overridden Public API                                                   *
+     *                                                                         *
+     **************************************************************************/
 
 	@Override
 	public String toString(){

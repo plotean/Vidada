@@ -4,6 +4,8 @@ import archimedes.core.geometry.Size;
 import archimedes.core.images.IMemoryImage;
 import archimedes.core.util.Debug;
 import archimedes.core.util.Lists;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -17,6 +19,8 @@ import java.util.Set;
  *
  */
 public class CacheUtils {
+
+    private static final Logger logger = LogManager.getLogger(CacheUtils.class.getName());
 
 
 	/**
@@ -40,11 +44,11 @@ public class CacheUtils {
 		if(size != null)
 		{
 			// found a already rescaled image which is bigger
-			System.out.println("getRescaledInstance: creating thumb from existing bigger thumb. Existing: " + size + " desired: " + desiredSize);
+            logger.debug("getRescaledInstance: creating thumb from existing bigger thumb. Existing: " + size + " desired: " + desiredSize);
 
 			sourceImage = imageCache.getImageById(id, size);
 			if(sourceImage == null){
-				System.err.println("getRescaledInstance: imageCache.getImageById = NULL for size: " +  size + ", id: " + id);
+                logger.warn("getRescaledInstance: imageCache.getImageById = NULL for size: " +  size + ", id: " + id);
 			}else {
 				if(desiredSize.equals(size))
 					return sourceImage; // the already cached image fits perfectly
@@ -52,7 +56,7 @@ public class CacheUtils {
 		}
 
 		if(sourceImage != null){
-			System.out.println("getRescaledInstance: rescaling source image to thumb. id: --> " + id);
+            logger.debug("getRescaledInstance: rescaling source image to thumb. id: --> " + id);
 			if(sourceImage != null)
 				resizedImage =  sourceImage.rescale(desiredSize.width, desiredSize.height); //ScalrEx.rescaleImage(sourceImage, );
 		}

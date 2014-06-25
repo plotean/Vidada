@@ -10,6 +10,8 @@ import archimedes.core.io.locations.ResourceLocation;
 import archimedes.core.security.CredentialType;
 import archimedes.core.security.Credentials;
 import archimedes.core.util.Debug;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import vidada.model.security.CredentialUtil;
 import vidada.model.security.ICredentialManager;
 
@@ -18,12 +20,26 @@ import java.net.URISyntaxException;
 
 public class CryptedCacheUtil {
 
-	transient private final static int KEYPAD_SIZE = 20;
+    /***************************************************************************
+     *                                                                         *
+     * Private Fields                                                          *
+     *                                                                         *
+     **************************************************************************/
+
+    transient private static final Logger logger = LogManager.getLogger(CryptedCacheUtil.class.getName());
+
+
+    transient private final static int KEYPAD_SIZE = 20;
 
 	transient private final static IByteBufferEncryption keyCrypter = new XORByteCrypter();
 	transient private final static String KeyFileName = "cache.keypad";
 	transient private final static String EncryptedKeyFileName = "cache.encrypted";
 
+    /***************************************************************************
+     *                                                                         *
+     * Public methods                                                          *
+     *                                                                         *
+     **************************************************************************/
 
 	/**
 	 * Gets the encryption keypad for the given folder
@@ -46,10 +62,10 @@ public class CryptedCacheUtil {
 
 		if(keyFile.exists())
 		{
-			System.out.println("Reading KeyPad from file: " + keyFile);
+            logger.info("Reading KeyPad from file: " + keyFile);
 			keyPad = readKeyPad(keyFile);
 		}else if(enckeyFile.exists()){
-			System.out.println("Reading encrypted KeyPad from file: " + enckeyFile);
+            logger.info("Reading encrypted KeyPad from file: " + enckeyFile);
 			keyPad = readEncryptedKeyPad(enckeyFile, credentialManager);
 		}else{
 			// no file found
@@ -96,78 +112,13 @@ public class CryptedCacheUtil {
 	}
 	 */
 
-	private static byte[] readEncryptedKeyPad(ResourceLocation enckeyFile, ICredentialManager credentialManager){
-		byte[] keyPad = null;
-
-		try {
-
-			final byte[] encryptedPad = enckeyFile.readAllBytes();
-			System.out.println("CRYPTO PAD: " + Debug.toString(encryptedPad) + " len: " + encryptedPad.length );
-
-			String domain = CredentialUtil.toDomain("vidada.cache", enckeyFile.toString());
-
-			Credentials validCredentials = credentialManager.requestAuthentication(
-					domain,
-					"Enter password for cache " + enckeyFile.toString(),
-					CredentialType.PasswordOnly,
-					new ICredentialManager.ICredentialsChecker() {
-						@Override
-						public boolean check(Credentials credentials) {
-
-							byte[] currentKeyPad = decryptPad(encryptedPad, credentials);
-
-							System.out.println("decrypted pad: " + Debug.toString(currentKeyPad) + " len: " + currentKeyPad.length );
-							System.out.println("encrypted pad: " + Debug.toString(encryptedPad) + " len: " + encryptedPad.length );
-
-							return KeyPad.validate(currentKeyPad);
-						}
-					}  ,true);
-
-			if(validCredentials != null){
-				System.out.println("ReadEncryptedKeyPad: Valid Credentials: " + validCredentials);
-
-				keyPad = decryptPad(encryptedPad, validCredentials);
-
-				System.out.println("decrypted pad: " + Debug.toString(keyPad) + " len: " + keyPad.length );
-				System.out.println("encrypted pad: " + Debug.toString(encryptedPad) + " len: " + encryptedPad.length );
-
-				try {
-					// should always pass this check 
-					// since the creditals were checked previously
-					KeyPad.checkKey(keyPad);
-				} catch (KeyCurruptedException e) {
-					e.printStackTrace();
-					keyPad = null;
-				}
-			}else {
-				System.err.println("ReadEncryptedKeyPad: User could not provide correct credentials.");
-			}
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		return keyPad;
-	}
-
-
-	private static byte[] generateNewKeyPad(ResourceLocation keyFile){
-		byte[] keyPad = KeyPad.generateKey(KEYPAD_SIZE);
-		try {
-			keyFile.writeAllBytes(keyPad);
-			System.out.println("generated cache encryption key");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return keyPad;
-	}
 
 	/**
 	 * Encrypt the key pad with the given password
 	 * 
 	 * 
 	 * @param root
-	 * @param password
+	 * @param credentials
 	 */
 	public static void encryptWithPassword(DirectoryLocation root, Credentials credentials){
 
@@ -206,7 +157,7 @@ public class CryptedCacheUtil {
 	 * Removes the encryption from the key pad with the given password
 	 *
 	 * @param root
-	 * @param password
+	 * @param oldPass
 	 */
 	public static void removeEncryption(DirectoryLocation root, Credentials oldPass){
 
@@ -242,6 +193,78 @@ public class CryptedCacheUtil {
 	public static byte[] decryptPad(byte[] encryptedPad, Credentials credentials){
 		return keyCrypter.deCrypt(encryptedPad, credentials.getUserSecret());
 	}
+
+    /***************************************************************************
+     *                                                                         *
+     * Private methods                                                         *
+     *                                                                         *
+     **************************************************************************/
+
+    private static byte[] readEncryptedKeyPad(ResourceLocation enckeyFile, ICredentialManager credentialManager){
+        byte[] keyPad = null;
+
+        try {
+
+            final byte[] encryptedPad = enckeyFile.readAllBytes();
+            System.out.println("CRYPTO PAD: " + Debug.toString(encryptedPad) + " len: " + encryptedPad.length );
+
+            String domain = CredentialUtil.toDomain("vidada.cache", enckeyFile.toString());
+
+            Credentials validCredentials = credentialManager.requestAuthentication(
+                    domain,
+                    "Enter password for cache " + enckeyFile.toString(),
+                    CredentialType.PasswordOnly,
+                    new ICredentialManager.ICredentialsChecker() {
+                        @Override
+                        public boolean check(Credentials credentials) {
+
+                            byte[] currentKeyPad = decryptPad(encryptedPad, credentials);
+
+                            System.out.println("decrypted pad: " + Debug.toString(currentKeyPad) + " len: " + currentKeyPad.length );
+                            System.out.println("encrypted pad: " + Debug.toString(encryptedPad) + " len: " + encryptedPad.length );
+
+                            return KeyPad.validate(currentKeyPad);
+                        }
+                    }  ,true);
+
+            if(validCredentials != null){
+                System.out.println("ReadEncryptedKeyPad: Valid Credentials: " + validCredentials);
+
+                keyPad = decryptPad(encryptedPad, validCredentials);
+
+                System.out.println("decrypted pad: " + Debug.toString(keyPad) + " len: " + keyPad.length );
+                System.out.println("encrypted pad: " + Debug.toString(encryptedPad) + " len: " + encryptedPad.length );
+
+                try {
+                    // should always pass this check
+                    // since the creditals were checked previously
+                    KeyPad.checkKey(keyPad);
+                } catch (KeyCurruptedException e) {
+                    e.printStackTrace();
+                    keyPad = null;
+                }
+            }else {
+                System.err.println("ReadEncryptedKeyPad: User could not provide correct credentials.");
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return keyPad;
+    }
+
+
+    private static byte[] generateNewKeyPad(ResourceLocation keyFile){
+        byte[] keyPad = KeyPad.generateKey(KEYPAD_SIZE);
+        try {
+            keyFile.writeAllBytes(keyPad);
+            System.out.println("generated cache encryption key");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return keyPad;
+    }
 
 
 }

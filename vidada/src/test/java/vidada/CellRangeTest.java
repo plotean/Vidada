@@ -1,16 +1,19 @@
 package vidada;
 
-import java.util.Arrays;
-
 import junit.framework.TestCase;
-
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.junit.Test;
-
 import vidada.viewsFX.mediabrowsers.IndexRange;
+
+import java.util.Arrays;
 
 public class CellRangeTest extends TestCase {
 
-	@Test
+    private static final Logger logger = LogManager.getLogger(CellRangeTest.class.getName());
+
+
+    @Test
 	public void testUnusedNull(){
 		IndexRange range1 = new IndexRange(0,10);
 		IndexRange.unused(null, range1);
@@ -56,12 +59,11 @@ public class CellRangeTest extends TestCase {
 	}
 
 	private void print(String prev, int[] arr){
-		System.out.print(prev + " {");
+		logger.info(prev + " {");
 		for (int i : arr) {
-			System.out.print(i+",");
+            logger.info(i+",");
 		}
-		System.out.println("}");
-
+        logger.info("}");
 	}
 
 	@Test

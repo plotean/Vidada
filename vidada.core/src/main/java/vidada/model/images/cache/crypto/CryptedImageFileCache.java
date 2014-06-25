@@ -7,6 +7,8 @@ import archimedes.core.images.IMemoryImage;
 import archimedes.core.io.locations.DirectoryLocation;
 import archimedes.core.io.locations.ResourceLocation;
 import archimedes.core.security.AuthenticationException;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import vidada.model.images.cache.ImageFileCache;
 
 import java.io.ByteArrayInputStream;
@@ -20,7 +22,16 @@ import java.io.InputStream;
  */
 public class CryptedImageFileCache extends ImageFileCache {
 
-	private byte[] keypad = null;
+    /***************************************************************************
+     *                                                                         *
+     * Private Fields                                                          *
+     *                                                                         *
+     **************************************************************************/
+
+    private static final Logger logger = LogManager.getLogger(CryptedImageFileCache.class.getName());
+
+
+    private byte[] keypad = null;
 	private final Object keypadLock = new Object();
 
 	private final IByteBufferEncryption bytestreamEncrypter;
@@ -39,7 +50,14 @@ public class CryptedImageFileCache extends ImageFileCache {
 		this(cacheRoot, new XORByteCrypter(), keyProvider);
 	}
 
-	/**
+    /***************************************************************************
+     *                                                                         *
+     * Constructor                                                             *
+     *                                                                         *
+     **************************************************************************/
+
+
+    /**
 	 * Creates a encrypted image file cache with the default encryption algorithm
 	 * 
 	 * @param encryption Buffer encryption strategy
@@ -49,7 +67,7 @@ public class CryptedImageFileCache extends ImageFileCache {
 			IByteBufferEncryption encryption,  ICacheKeyProvider keyProvider)throws AuthenticationException{
 		super(cacheRoot);
 
-		System.err.println("Creating CryptedImageFileCache!");
+        logger.debug("Creating CryptedImageFileCache!");
 
 		bytestreamEncrypter = encryption;
 		cachekeyProvider = keyProvider;
@@ -57,12 +75,18 @@ public class CryptedImageFileCache extends ImageFileCache {
 
 		keypad = cachekeyProvider.getEncryptionKeyPad(this);
 		if(keypad == null){
-			System.err.println("CryptedImageFileCache: cachekeyProvider returned a NULL EncryptionKeyPad!");
+            logger.warn("The cachekeyProvider returned a NULL EncryptionKeyPad!");
 			throw new AuthenticationException();
 		}else {
-			System.out.println("CryptedImageFileCache: Got EncryptionKeyPad.");
+            logger.debug("Retried a EncryptionKeyPad.");
 		}
 	}
+
+    /***************************************************************************
+     *                                                                         *
+     * Protected methods                                                       *
+     *                                                                         *
+     **************************************************************************/
 
 
 	@Override

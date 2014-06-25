@@ -10,14 +10,13 @@ import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import jersey.repackaged.com.google.common.collect.Lists;
-import org.apache.commons.io.output.TeeOutputStream;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.controlsfx.control.ButtonBar;
 import org.controlsfx.control.ButtonBar.ButtonType;
 import org.controlsfx.control.action.AbstractAction;
 import org.controlsfx.dialog.Dialog;
 import org.controlsfx.dialog.Dialogs;
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
 import vidada.client.IVidadaClient;
 import vidada.client.IVidadaClientManager;
 import vidada.client.VidadaClientManager;
@@ -51,16 +50,35 @@ import vidada.viewsFX.images.ImageOpenHandler;
 import vidada.viewsFX.images.ImageViewerServiceFx;
 
 import javax.imageio.ImageIO;
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
 
 public class Application extends  javafx.application.Application {
+
+    /***************************************************************************
+     *                                                                         *
+     * Private Fields                                                          *
+     *                                                                         *
+     **************************************************************************/
+
+    private static final Logger logger = LogManager.getLogger(Application.class.getName());
+    private static IVidadaServer localserver;
+
+    private Stage primaryStage;
+
+
+    /***************************************************************************
+     *                                                                         *
+     * Primary Entry Point                                                     *
+     *                                                                         *
+     **************************************************************************/
+
 
 	/**
 	 * Primary entry point for this Application
@@ -69,74 +87,58 @@ public class Application extends  javafx.application.Application {
 	 */
 	public static void main(String[] args) {
 
-        setupLogging(true);
 
-
-        System.err.println("# Welcome to Vidada (" + VidadaClientSettings.instance().getVersionInfo() + ") at "+ DateTime.now().toString(DateTimeFormat.fullDate()));
-        //
-		// print some system infos
-		//
-		System.err.println(System.getProperty("java.home"));
-		System.err.println(System.getProperty("java.vendor"));
-		System.err.println(System.getProperty("java.vendor.url"));
-		System.err.println(System.getProperty("java.version"));
-
-        System.err.println("Platform : " + OSValidator.getPlatformName());
+		logger.info(System.getProperty("java.home"));
+		logger.info(System.getProperty("java.vendor"));
+		logger.info(System.getProperty("java.vendor.url"));
+		logger.info(System.getProperty("java.version"));
+        logger.info("Platform : " + OSValidator.getPlatformName());
 
 		long maxBytes = Runtime.getRuntime().maxMemory();
-		System.err.println("Max memory: " + maxBytes / 1024 / 1024 + "MB");
+        logger.info("Max memory: " + maxBytes / 1024 / 1024 + "MB");
 
 		launch(args);
 	}
 
-    /**
-     *
-     * @param ignoreStdout Only log error out
-     */
-    private static void setupLogging(boolean ignoreStdout){
 
-        try
-        {
-            File log = new File("vidada.log");
-            if(log.exists()){
-                log.delete();
-            }
+    /***************************************************************************
+     *                                                                         *
+     * Constructor                                                             *
+     *                                                                         *
+     **************************************************************************/
 
-            System.out.println("Logging to " + log.getAbsolutePath());
-            FileOutputStream logStream = new FileOutputStream(log);
-
-            if(ignoreStdout) {
-                TeeOutputStream multiOut = new TeeOutputStream(System.out, logStream);
-                PrintStream stdout= new PrintStream(multiOut);
-                System.setOut(stdout);
-            }
-
-            TeeOutputStream multiErr= new TeeOutputStream(System.err, logStream);
-            PrintStream stderr= new PrintStream(multiErr);
-            System.setErr(stderr);
-        }
-        catch (FileNotFoundException ex)
-        {
-            ex.printStackTrace();
-        }
-
+    public Application(){
+        super();
     }
 
+    /***************************************************************************
+     *                                                                         *
+     * Properties                                                              *
+     *                                                                         *
+     **************************************************************************/
 
-	private Stage primaryStage;
-	private static IVidadaServer localserver;
+    /**
+     * Gets the local server.
+     * This might be null if no server is running.
+     *
+     * @return
+     */
+    public static IVidadaServer getLocalServer(){
+        return localserver;
+    }
 
-	/**
-	 * Gets the local server. 
-	 * This might be null if no server is running.
-	 * 
-	 * @return
-	 */
-	public static IVidadaServer getLocalServer(){
-		return localserver;
-	}
+    /***************************************************************************
+     *                                                                         *
+     * Public API                                                              *
+     *                                                                         *
+     **************************************************************************/
 
 
+    /**
+     * JavaFX start callback
+     * @param primaryStage
+     * @throws Exception
+     */
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		this.primaryStage = primaryStage;
@@ -146,18 +148,19 @@ public class Application extends  javafx.application.Application {
 		ImageIO.setUseCache(false);
 
 		try{
-			System.out.println("initializing...");
+            logger.info("Initializing...");
 			if(initialize()){
-				System.out.println("initalized successfully.");
+                logger.info("Initialisation successful.");
 				afterStartup();
 
 				// Show MainFrame
 				showMainUI();
-			}else
-				stop();
+			}else {
+                stop();
+            }
 
 		}catch(Throwable e){
-			e.printStackTrace();
+            logger.error(e);
 
 			Dialogs.create()
 			.title("Vidada Erorr")
@@ -179,18 +182,22 @@ public class Application extends  javafx.application.Application {
 			primaryStage.show();
 
 		}catch(Exception e){
-			e.printStackTrace();
+            logger.error(e);
 		}
 	}
 
 	@Override
 	public void stop(){
-		System.out.println("MainFXContext.stop(): bye bye");
+		logger.info("Exiting Vidada.");
 		Platform.exit();
 		System.exit(0);
 	}
 
-
+    /***************************************************************************
+     *                                                                         *
+     * Private methods                                                         *
+     *                                                                         *
+     **************************************************************************/
 
 
 	/**
@@ -208,7 +215,7 @@ public class Application extends  javafx.application.Application {
 
 	private VidadaInstance configInstance(){
 
-		System.out.println("configuring Vidada Instance");
+        logger.info("configuring Vidada Instance");
 
         List<VidadaInstance> allVidadaInstances = new ArrayList<>(VidadaClientSettings.instance().getVidadaInstances());
 
@@ -288,7 +295,7 @@ public class Application extends  javafx.application.Application {
 
             locator.registerSingleton(IVidadaClientManager.class, VidadaClientManager.class);
         });
-		System.out.println("Loaded settings v" + VidadaClientSettings.instance().getSettingsVersion());
+        logger.info("Loaded settings v" + VidadaClientSettings.instance().getSettingsVersion());
 
 		// now we have to choose either to connect to a client or the local embedded vidada instance
 
@@ -330,17 +337,17 @@ public class Application extends  javafx.application.Application {
 		VidadaDatabase dbconfig = VidadaServerSettings.instance().getCurrentDBConfig();
 
 		if(dbconfig == null){
-			System.err.println("No Database has been chosen - exiting now");
+            logger.info("No Database has been chosen - exiting now");
 			return null;
 		}
 
 		try{
-			System.out.println("Settings up Vidada DAL...");
+            logger.info("Settings up Vidada DAL...");
 
 			IVidadaDALService vidadaDALService = DAL.build(new File(dbconfig.getDataBasePath()));
-			System.out.println("DAL Layer loaded successfully.");
+            logger.info("DAL Layer loaded successfully.");
 
-			System.out.println("Creating Vidada Server...");
+            logger.info("Creating Vidada Server...");
 			localserver = new VidadaServer(vidadaDALService);
 
 			// Create a local client for the local server
@@ -369,20 +376,20 @@ public class Application extends  javafx.application.Application {
                 TagRelationDefinitionParser parser = new TagRelationDefinitionParser();
                 try {
                     TagRelationDefinition relationDef = parser.parse(def);
-                    System.out.println("TagRelationDefinition: " + relationDef);
+                    logger.debug("TagRelationDefinition: " + relationDef);
                     relationDef.print();
                     getLocalServer().getTagService().mergeRelation(relationDef);
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    logger.error(e);
                 } catch (ParseException e) {
-                    e.printStackTrace();
+                    logger.error(e);
                 }
             } else {
                 try {
                     def.getParentFile().mkdirs();
                     def.createNewFile();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    logger.error(e);
                 }
             }
         }

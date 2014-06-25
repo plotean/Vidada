@@ -1,18 +1,40 @@
 package vidada.viewsFX.mediaexplorer;
 
+import archimedes.core.io.locations.DirectoryLocation;
 import javafx.scene.control.TreeItem;
-
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.controlsfx.control.BreadCrumbBar;
 
-import archimedes.core.io.locations.DirectoryLocation;
-
+/**
+ * TODO Documentation
+ */
 public class BreadCrumbNavigationDecorator {
 
-	private final HomeLocationBreadCrumb home;
+    /***************************************************************************
+     *                                                                         *
+     * Private fields                                                          *
+     *                                                                         *
+     **************************************************************************/
+
+    private static final Logger logger = LogManager.getLogger(BreadCrumbNavigationDecorator.class.getName());
+
+    private final HomeLocationBreadCrumb home;
 	private final BreadCrumbBar<LocationBreadCrumb> breadCrumbBar;
 	private DirectoryLocation root;
 	private DirectoryLocation directory;
 
+    /***************************************************************************
+     *                                                                         *
+     * Constructor                                                             *
+     *                                                                         *
+     **************************************************************************/
+
+    /**
+     * Creates a new BreadCrumbNavigationDecorator
+     * @param breadCrumbBar
+     * @param home
+     */
 	public BreadCrumbNavigationDecorator(BreadCrumbBar<LocationBreadCrumb> breadCrumbBar, HomeLocationBreadCrumb home){
 		this.home = home;
 		this.breadCrumbBar = breadCrumbBar;
@@ -20,9 +42,15 @@ public class BreadCrumbNavigationDecorator {
 		updateModel();
 	}
 
+    /***************************************************************************
+     *                                                                         *
+     * Public API                                                              *
+     *                                                                         *
+     **************************************************************************/
+
 	public void setDirectory(DirectoryLocation home, DirectoryLocation directory){
 
-		System.out.println("LocationBreadCrumbBarModel: " + directory);
+        logger.debug("LocationBreadCrumbBarModel: " + directory);
 
 		if(this.root == home && this.directory == directory) return;
 
@@ -34,6 +62,12 @@ public class BreadCrumbNavigationDecorator {
 	public DirectoryLocation getHomeDirectory(){
 		return root;
 	}
+
+    /***************************************************************************
+     *                                                                         *
+     * Private methods                                                         *
+     *                                                                         *
+     **************************************************************************/
 
 	private void updateModel(){
 		TreeItem<LocationBreadCrumb> targetNode = null;
@@ -61,9 +95,9 @@ public class BreadCrumbNavigationDecorator {
 
 			if(!foundHome){
 				// Curently, only debug output
-				System.err.println("LocationBreadCrumbBarModel could not backtrack from directory to root dir:");
-				System.err.println("Root  : " + root);
-				System.err.println("Target: " + directory);
+                logger.warn("LocationBreadCrumbBarModel could not backtrack from directory to root dir:");
+                logger.warn("Root  : " + root);
+                logger.warn("Target: " + directory);
 			}
 		}
 		TreeItem<LocationBreadCrumb> homeNode = new TreeItem<LocationBreadCrumb>(home);
