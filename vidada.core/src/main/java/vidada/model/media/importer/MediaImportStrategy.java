@@ -321,10 +321,8 @@ public class MediaImportStrategy implements IMediaImportStrategy {
 	 * @return
 	 */
 	private boolean updateExistingMedia(MediaLibrary library, MediaItem existingMeida, Entry<ResourceLocation, String> entry){
-		boolean hasChanges = false;
 
-
-		hasChanges = updateExistingMediaSources(library, existingMeida, entry.getKey());
+        boolean hasChanges = updateExistingMediaSources(library, existingMeida, entry.getKey());
 
 		// Update Tags From file path
 		if(tagGuessingStrategy != null && AutoTagSupport.updateTags(tagGuessingStrategy, existingMeida)){
