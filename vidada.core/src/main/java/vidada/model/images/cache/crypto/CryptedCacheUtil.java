@@ -56,7 +56,7 @@ public class CryptedCacheUtil {
 			keyFile = ResourceLocation.Factory.create(root, KeyFileName);
 			enckeyFile = ResourceLocation.Factory.create(root, EncryptedKeyFileName);
 		} catch (URISyntaxException e1) {
-			e1.printStackTrace();
+            logger.error(e1);
 			return keyPad;
 		}
 
@@ -82,9 +82,9 @@ public class CryptedCacheUtil {
 			keyPad = keyFile.readAllBytes();
 			KeyPad.checkKey(keyPad);
 		} catch (KeyCurruptedException e) {
-			e.printStackTrace();
+			logger.error(e);
 		} catch (IOException e) {
-			e.printStackTrace();
+            logger.error(e);
 		}
 		return keyPad;
 	}
@@ -143,11 +143,11 @@ public class CryptedCacheUtil {
 
 				keyFile.delete();
 			} catch (IOException e) {
-				e.printStackTrace();
+                logger.error(e);
 			}
 
 		} catch (URISyntaxException e1) {
-			e1.printStackTrace();
+            logger.error(e1);
 		}
 	}
 
@@ -176,13 +176,13 @@ public class CryptedCacheUtil {
 					keyFile.writeAllBytes(key);
 					enckeyFile.delete();
 				} catch (IOException e) {
-					e.printStackTrace();
+                    logger.error(e);
 				}
 
 			}else
 				throw new NotSupportedException("Already decrypted!");
 		} catch (URISyntaxException e1) {
-			e1.printStackTrace();
+            logger.error(e1);
 		}
 	}
 
@@ -206,7 +206,7 @@ public class CryptedCacheUtil {
         try {
 
             final byte[] encryptedPad = enckeyFile.readAllBytes();
-            System.out.println("CRYPTO PAD: " + Debug.toString(encryptedPad) + " len: " + encryptedPad.length );
+            logger.debug("CRYPTO PAD: " + Debug.toString(encryptedPad) + " len: " + encryptedPad.length );
 
             String domain = CredentialUtil.toDomain("vidada.cache", enckeyFile.toString());
 
@@ -228,12 +228,12 @@ public class CryptedCacheUtil {
                     }  ,true);
 
             if(validCredentials != null){
-                System.out.println("ReadEncryptedKeyPad: Valid Credentials: " + validCredentials);
+                logger.debug("ReadEncryptedKeyPad: Valid Credentials: " + validCredentials);
 
                 keyPad = decryptPad(encryptedPad, validCredentials);
 
-                System.out.println("decrypted pad: " + Debug.toString(keyPad) + " len: " + keyPad.length );
-                System.out.println("encrypted pad: " + Debug.toString(encryptedPad) + " len: " + encryptedPad.length );
+               logger.debug("decrypted pad: " + Debug.toString(keyPad) + " len: " + keyPad.length );
+               logger.debug("encrypted pad: " + Debug.toString(encryptedPad) + " len: " + encryptedPad.length );
 
                 try {
                     // should always pass this check
@@ -244,11 +244,11 @@ public class CryptedCacheUtil {
                     keyPad = null;
                 }
             }else {
-                System.err.println("ReadEncryptedKeyPad: User could not provide correct credentials.");
+                logger.warn("ReadEncryptedKeyPad: User could not provide correct credentials.");
             }
 
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(e);
         }
 
         return keyPad;
@@ -259,9 +259,9 @@ public class CryptedCacheUtil {
         byte[] keyPad = KeyPad.generateKey(KEYPAD_SIZE);
         try {
             keyFile.writeAllBytes(keyPad);
-            System.out.println("generated cache encryption key");
+            logger.info("Generated new cache encryption key.");
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(e);
         }
         return keyPad;
     }

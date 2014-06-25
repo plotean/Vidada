@@ -3,6 +3,8 @@ package vidada.server.services;
 import archimedes.core.data.pagination.ListPage;
 import archimedes.core.exceptions.NotSupportedException;
 import archimedes.core.io.locations.ResourceLocation;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import vidada.model.media.*;
 import vidada.model.queries.*;
 import vidada.model.tags.Tag;
@@ -16,9 +18,26 @@ import java.util.Set;
 
 public class MediaService extends VidadaServerService implements IMediaService {
 
+    /***************************************************************************
+     *                                                                         *
+     * Private Fields                                                          *
+     *                                                                         *
+     **************************************************************************/
+
+    private static final Logger logger = LogManager.getLogger(MediaService.class.getName());
+
 	transient private final IMediaRepository repository = getRepository(IMediaRepository.class);
 
+    /***************************************************************************
+     *                                                                         *
+     * Constructor                                                             *
+     *                                                                         *
+     **************************************************************************/
 
+    /**
+     * Creates a new MediaService
+     * @param server
+     */
 	public MediaService(VidadaServer server) {
 		super(server);
 	}
@@ -64,7 +83,7 @@ public class MediaService extends VidadaServerService implements IMediaService {
 
             Expression<Tag> tagExpression = Expressions.and(required, blocked);
 
-            System.out.println("created tag expression: " + tagExpression.code());
+            logger.debug("Created tag expression: " + tagExpression.code());
 
             MediaExpressionQuery exprQuery = new MediaExpressionQuery(
                     tagExpression,

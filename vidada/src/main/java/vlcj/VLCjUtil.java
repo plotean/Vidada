@@ -1,13 +1,14 @@
 package vlcj;
 
-import java.util.List;
-
+import com.sun.jna.Native;
+import com.sun.jna.NativeLibrary;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import uk.co.caprica.vlcj.binding.LibVlc;
 import uk.co.caprica.vlcj.runtime.RuntimeUtil;
 import vlc.VLCUtil;
 
-import com.sun.jna.Native;
-import com.sun.jna.NativeLibrary;
+import java.util.List;
 
 /**
  * Utility for VLCj which helps loading the JNI libraries.
@@ -15,6 +16,14 @@ import com.sun.jna.NativeLibrary;
  *
  */
 public class VLCjUtil {
+
+    /***************************************************************************
+     *                                                                         *
+     * Private Fields                                                          *
+     *                                                                         *
+     **************************************************************************/
+
+    private static final Logger logger = LogManager.getLogger(VLCjUtil.class.getName());
 
 	static volatile boolean vlcjLoaded = false;
 	static boolean vlcjLoadError = false;
@@ -41,11 +50,11 @@ public class VLCjUtil {
 		{
 			String vlclibName = RuntimeUtil.getLibVlcLibraryName();
 			List<String> libPaths = VLCUtil.getVLCLibPaths();
-			System.out.println("jni loading: " + vlclibName);
+			logger.info("jni loading: " + vlclibName);
 
 
 			for (String libPath : libPaths) {
-				System.out.println("adding search path: " + libPath);
+                logger.debug("adding search path: " + libPath);
 				NativeLibrary.addSearchPath(vlclibName, libPath);
 			}
 
@@ -54,7 +63,7 @@ public class VLCjUtil {
 				vlcjLoaded = true;
 			}catch(UnsatisfiedLinkError e){
 				vlcjLoadError = true;
-				e.printStackTrace();
+				logger.error(e);
 			}
 		}
 	}

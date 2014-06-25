@@ -6,6 +6,8 @@ import archimedes.core.io.locations.DirectoryLocation;
 import archimedes.core.security.AuthenticationRequiredException;
 import archimedes.core.security.CredentialType;
 import archimedes.core.security.Credentials;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import vidada.IVidadaServer;
 import vidada.model.images.cache.crypto.CryptedCacheUtil;
 import vidada.model.security.ICredentialManager;
@@ -33,7 +35,10 @@ public class VidadaServer implements IVidadaServer {
 	 *                                                                         *
 	 **************************************************************************/
 
-	private final IVidadaDALService dalService;
+    private static final Logger logger = LogManager.getLogger(VidadaServer.class.getName());
+
+
+    private final IVidadaDALService dalService;
 
 	private final IDatabaseSettingsService databaseSettingsService;
 	private final IMediaLibraryService mediaLibraryService;
@@ -79,7 +84,7 @@ public class VidadaServer implements IVidadaServer {
 		if(VidadaServerSettings.instance().isEnableNetworkSharing()){
 			startNetworkSharing();
 		}else {
-			System.out.println("Network sharing is disabled.");
+            logger.info("Network sharing is disabled.");
 		}
 
 	}
@@ -163,7 +168,7 @@ public class VidadaServer implements IVidadaServer {
 
 	private synchronized void startRestServer(){
 		if(restServer == null){
-			System.out.println("Starting REST Server...");
+            logger.info("Starting REST Server...");
 
 			try{
 				restServer = new VidadaRestServer(this);
@@ -173,7 +178,7 @@ public class VidadaServer implements IVidadaServer {
 			}
 
 		}else {
-			System.err.println("startRestServer canceled, already running.");
+            logger.info("startRestServer canceled, already running.");
 		}
 	}
 
@@ -188,22 +193,22 @@ public class VidadaServer implements IVidadaServer {
 		// hibernate has initialized
 		//
 
-		System.out.println("Checking user authentication...");
+        logger.info("Checking user authentication...");
 
 		registerProtectionHandler(privacyService);
 
 		ICredentialManager credentialManager= ServiceProvider.Resolve(ICredentialManager.class);
 
 		if(privacyService.isProtected()){
-			System.out.println("Requesting user authentication for privacyService!");
+            logger.info("Requesting user authentication for privacyService!");
 			if(requestAuthentication(privacyService, credentialManager)){
 				return true;
 			}else {
-				System.err.println("Autentification failed, aborting...");
+                logger.info("Autentification failed, aborting...");
 				return false;
 			}
 		}else {
-			System.out.println("No authentication necessary.");
+            logger.info("No authentication necessary.");
 			return true;
 		}
 	}
@@ -220,7 +225,7 @@ public class VidadaServer implements IVidadaServer {
 						final DirectoryLocation localCache = DirectoryLocation.Factory
 								.create(VidadaServerSettings.instance().getAbsoluteCachePath());
 
-						System.out.println("ServiceProvider: " + privacyService.getCredentials().toString());
+                        logger.info("ServiceProvider: " + privacyService.getCredentials().toString());
 						CryptedCacheUtil.encryptWithPassword(localCache, privacyService.getCredentials());
 					} catch (AuthenticationRequiredException e) {
 						e.printStackTrace();
@@ -244,7 +249,7 @@ public class VidadaServer implements IVidadaServer {
 				}
 			});
 		}else
-			System.err.println("CacheKeyProvider: IPrivacyService is not avaiable!");
+            logger.error("CacheKeyProvider: IPrivacyService is not available!");
 	}
 
 	/**

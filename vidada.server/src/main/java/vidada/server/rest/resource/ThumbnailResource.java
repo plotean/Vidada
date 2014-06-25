@@ -2,6 +2,8 @@ package vidada.server.rest.resource;
 
 import archimedes.core.geometry.Size;
 import archimedes.core.images.IMemoryImage;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MovieMediaItem;
 import vidada.server.rest.VidadaRestServer;
@@ -19,13 +21,29 @@ import java.io.OutputStream;
 @Path("/thumbnail")
 public class ThumbnailResource extends AbstractResource {
 
-	private final IMediaService mediaService = VidadaRestServer.VIDADA_SERVER.getMediaService();
+    /***************************************************************************
+     *                                                                         *
+     * Private Fields                                                          *
+     *                                                                         *
+     **************************************************************************/
+
+    private static final Logger logger = LogManager.getLogger(ThumbnailResource.class.getName());
+
+    private final IMediaService mediaService = VidadaRestServer.VIDADA_SERVER.getMediaService();
 	private final IThumbnailService thumbnailService = VidadaRestServer.VIDADA_SERVER.getThumbnailService();
 
 	private static int MIN_SIZE = 50;
 	private static int MAX_SIZE = 1000;
 
-	@POST
+
+    /***************************************************************************
+     *                                                                         *
+     * Public API                                                              *
+     *                                                                         *
+     **************************************************************************/
+
+
+    @POST
 	@Path("{hash}")
 	public Response updateThumb(
 			@PathParam("hash") String hash,
@@ -37,7 +55,7 @@ public class ThumbnailResource extends AbstractResource {
 				thumbnailService.renewThumbImage((MovieMediaItem)media, pos);
 				return Response.status(Status.ACCEPTED).build();
 			}else{
-				System.err.println("Can not recreate thumb of media type: " + media.getType());
+                logger.error("Can not recreate thumb of media type: " + media.getType());
 				Response.status(Status.UNSUPPORTED_MEDIA_TYPE).build();
 			}
 		}
@@ -73,7 +91,7 @@ public class ThumbnailResource extends AbstractResource {
                 return Response.status(Status.INTERNAL_SERVER_ERROR).build();
             }
 		} catch (Exception e) {
-			e.printStackTrace();
+            logger.error(e);
 			return Response.status(Status.NOT_FOUND).build();
 		}
 	}

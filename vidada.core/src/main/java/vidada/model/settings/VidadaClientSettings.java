@@ -1,6 +1,8 @@
 package vidada.model.settings;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import vlc.VLCUtil;
 
 import java.io.File;
@@ -24,7 +26,10 @@ public class VidadaClientSettings extends JsonSettings {
 	 *                                                                         *
 	 **************************************************************************/
 
-	transient public static final String ProductName = "vidada-client";
+    transient private static final Logger logger = LogManager.getLogger(VidadaClientSettings.class.getName());
+
+
+    transient public static final String ProductName = "vidada-client";
 
 	transient public static File Path;
 	transient public static String defaultCache; 
@@ -127,19 +132,19 @@ public class VidadaClientSettings extends JsonSettings {
 					is = new FileInputStream(infoPropertiesFile);
 					properties.load(is);
 				} catch (FileNotFoundException e) {
-					e.printStackTrace();
+                    logger.error(e);
 				} catch (IOException e) {
-					e.printStackTrace();
+                    logger.error(e);
 				}finally{
 					if(is != null)
 						try {
 							is.close();
 						} catch (IOException e) {
-							e.printStackTrace();
+                            logger.error(e);
 						}
 				}
 			}else{
-				System.err.println("can not find " + infoPropertiesFile.getAbsolutePath());
+				logger.error("Can not find " + infoPropertiesFile.getAbsolutePath());
 			}
 			versionInfo = properties.getProperty("vidada.version", "unknown");
 		}

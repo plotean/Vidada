@@ -1,6 +1,8 @@
 package vidada.model.media.source;
 
 import archimedes.core.io.locations.ResourceLocation;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import vidada.model.media.MediaLibrary;
 
 import javax.persistence.Access;
@@ -21,6 +23,14 @@ import java.net.URISyntaxException;
 @Entity
 @Access(AccessType.FIELD)
 public class MediaSourceLocal extends MediaSource {
+
+    /***************************************************************************
+     *                                                                         *
+     * Private Fields                                                          *
+     *                                                                         *
+     **************************************************************************/
+
+    transient private static final Logger logger = LogManager.getLogger(MediaSourceLocal.class.getName());
 
 	transient private boolean isFileAvaiable;
 
@@ -78,9 +88,9 @@ public class MediaSourceLocal extends MediaSource {
 			if(parentLib != null){
 				absolutePath = parentLib.getMediaDirectory().getAbsolutePath(relativePath);
 			}else
-				System.err.println("Source::getResourceLocation: parent library is null of " + relativeFilePath);
+                logger.error("Parent library is null of " + relativeFilePath);
 		}else {
-			System.err.println("Source::getResourceLocation: relativePath is NULL!");
+            logger.error("getResourceLocation: relativePath is NULL!");
 		}
 		return absolutePath;
 	}
@@ -95,7 +105,7 @@ public class MediaSourceLocal extends MediaSource {
 		try {
 			return new URI(relativeFilePath);
 		} catch (URISyntaxException e) {
-			e.printStackTrace();
+            logger.error(e);
 		}
 		return null;
 	}

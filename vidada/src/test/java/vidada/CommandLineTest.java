@@ -1,14 +1,19 @@
 package vidada;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.junit.Ignore;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import org.junit.Ignore;
-
 public class CommandLineTest {
 
-	/**
+    private static final Logger logger = LogManager.getLogger(CommandLineTest.class.getName());
+
+
+    /**
 	 * @param args
 	 * @throws  
 	 */
@@ -21,12 +26,12 @@ public class CommandLineTest {
 
 
 		Runtime runtime = Runtime.getRuntime();
-		System.out.println("exec: " + commandLine);
+        logger.info("exec: " + commandLine);
 		Process process;
 		try {
 			process = runtime.exec(commandLine);
 
-			System.out.println("process started");
+            logger.info("process started");
 
 			//process.getInputStream();
 			//process.getErrorStream();
@@ -37,21 +42,21 @@ public class CommandLineTest {
 			BufferedReader errorReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
 			String errString = null;
 			while((errString = errorReader.readLine()) != null)
-				System.out.println(errString);
+                logger.info(errString);
 
 
 
 			try {
-				System.out.println("waition for completion");
+                logger.info("waition for completion");
 				int err = process.waitFor();
-				System.out.println("finished err: " + err);
+                logger.info("finished err: " + err);
 			} catch (InterruptedException e) {
-				e.printStackTrace();
+                logger.error(e);
 			}
 
 
 		} catch (IOException e) {
-			e.printStackTrace();
+            logger.error(e);
 		}
 
 

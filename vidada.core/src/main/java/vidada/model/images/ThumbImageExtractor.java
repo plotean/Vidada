@@ -5,6 +5,8 @@ import archimedes.core.geometry.Size;
 import archimedes.core.images.IMemoryImage;
 import archimedes.core.images.IRawImageFactory;
 import archimedes.core.io.locations.ResourceLocation;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import vidada.model.media.ImageMediaItem;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaType;
@@ -21,7 +23,9 @@ import java.io.InputStream;
  */
 public class ThumbImageExtractor implements IThumbImageExtractor {
 
-	transient private final IRawImageFactory imageFactory = ServiceProvider.Resolve(IRawImageFactory.class);
+    private static final Logger logger = LogManager.getLogger(ThumbImageExtractor.class.getName());
+
+    transient private final IRawImageFactory imageFactory = ServiceProvider.Resolve(IRawImageFactory.class);
 
 	/***************************************************************************
 	 *                                                                         *
@@ -38,7 +42,7 @@ public class ThumbImageExtractor implements IThumbImageExtractor {
 		if(media.getType() == MediaType.MOVIE){
 			return ((MovieMediaItem) media).canCreateThumbnail() && Video.isGenericEncoderPresent();
 		}else{
-			System.err.println("ThumbImageExtractor::canExtractThumb: Unknown media type: " + media.getClass().getName());
+            logger.warn("ThumbImageExtractor::canExtractThumb: Unknown media type: " + media.getClass().getName());
 			return false;
 		}
 	}
@@ -79,19 +83,19 @@ public class ThumbImageExtractor implements IThumbImageExtractor {
 		if(source != null){
 			ResourceLocation filePath = source.getResourceLocation();
 			if (filePath != null && filePath.exists()) {
-				System.out.println("reading image...");
+                logger.debug("Reading image...");
 				InputStream is = null;
 				try {
 					is = filePath.openInputStream();
 					bufferedImage = imageFactory.createImage(is);
 				} catch (Exception e) {
-					System.err.println("Can not read image" + filePath.toString());
+                    logger.error("Can not read image" + filePath.toString());
 				}finally{
 					if(is != null){
 						try {
 							is.close();
 						} catch (IOException e) {
-							e.printStackTrace();
+                            logger.error(e);
 						}
 					}
 				}

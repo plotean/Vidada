@@ -1,5 +1,7 @@
 package vidada.server.rest.resource;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaQuery;
 import vidada.model.media.OrderProperty;
@@ -16,6 +18,14 @@ import java.util.List;
 @Path("/medias")
 public class MediasResource extends AbstractResource {
 
+    /***************************************************************************
+     *                                                                         *
+     * Private Fields                                                          *
+     *                                                                         *
+     **************************************************************************/
+
+    private static final Logger logger = LogManager.getLogger(MediasResource.class.getName());
+
 	// Allows to insert contextual objects into the class, 
 	// e.g. ServletContext, Request, Response, UriInfo
 	@Context
@@ -24,7 +34,12 @@ public class MediasResource extends AbstractResource {
 	Request request;
 
 	private final IMediaService mediaService = VidadaRestServer.VIDADA_SERVER.getMediaService();
-	//private final ITagService tagService = VidadaRestServer.VIDADA_SERVER.getTagService();
+
+    /***************************************************************************
+     *                                                                         *
+     * Public API                                                              *
+     *                                                                         *
+     **************************************************************************/
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -60,7 +75,7 @@ public class MediasResource extends AbstractResource {
 		query.setOrder((order != null) ? order : OrderProperty.FILENAME);
         query.setReverseOrder(reverse);
 
-		System.out.println("Delivering medias page: " + page + " pageSize: " + pageSize);
+        logger.info("Delivering medias page: " + page + " pageSize: " + pageSize);
 
 		return serializeJson(mediaService.query(query, page, pageSize)); 
 	}
@@ -89,6 +104,11 @@ public class MediasResource extends AbstractResource {
         return new MediaResource(hash);
     }
 
+    /***************************************************************************
+     *                                                                         *
+     * Private methods                                                         *
+     *                                                                         *
+     **************************************************************************/
 
     /**
      * Parses the tags query param string into Tag objects

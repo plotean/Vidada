@@ -1,5 +1,7 @@
 package vidada.server.services;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import vidada.model.images.IThumbImageExtractor;
 import vidada.model.images.LocalImageCacheManager;
 import vidada.model.images.ThumbImageExtractor;
@@ -17,6 +19,14 @@ import archimedes.core.images.IMemoryImage;
  *
  */
 public class ThumbnailService extends VidadaServerService implements IThumbnailService {
+
+    /***************************************************************************
+     *                                                                         *
+     * Private Fields                                                          *
+     *                                                                         *
+     **************************************************************************/
+
+    private static final Logger logger = LogManager.getLogger(ThumbnailService.class.getName());
 
 	transient private final Size maxThumbSize;
 	transient private final IThumbImageExtractor thumbImageCreator;
@@ -48,7 +58,7 @@ public class ThumbnailService extends VidadaServerService implements IThumbnailS
 				e.printStackTrace();
 			}
 		}else{
-			System.err.println("LocalMediaStore: can not get image cache for " + media);
+            logger.error("Can not find image cache for " + media);
 		}
 
 		return thumb;
@@ -67,7 +77,7 @@ public class ThumbnailService extends VidadaServerService implements IThumbnailS
 
 			imagecache.removeImage(media.getFilehash());
 		} catch (Exception e) {
-			e.printStackTrace();
+            logger.error(e);
 		}
 	}
 

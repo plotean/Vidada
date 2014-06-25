@@ -6,6 +6,8 @@ import archimedes.core.geometry.Size;
 import archimedes.core.util.Lists;
 import archimedes.core.util.OSValidator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import vidada.model.settings.JsonSettings;
 import vidada.model.settings.VidadaDatabase;
 
@@ -22,6 +24,8 @@ public class VidadaServerSettings extends JsonSettings {
 	 * Transient fields                                                        *
 	 *                                                                         *
 	 **************************************************************************/
+
+    transient private static final Logger logger = LogManager.getLogger(VidadaServerSettings.class.getName());
 
 	transient public static final String ProductName = "vidada-server";
 
@@ -120,7 +124,7 @@ public class VidadaServerSettings extends JsonSettings {
 			public boolean where(VidadaDatabase t) { 
 				File path = toAbsolutePath(t.getDataBasePath()).getParentFile().getAbsoluteFile();
 
-				System.out.println(path.getAbsolutePath() + " -- " + path.exists());
+                logger.debug("Available database " + path.getAbsolutePath() + " exists? " + path.exists());
 				return path.exists(); 
 			}
 		});
@@ -136,16 +140,16 @@ public class VidadaServerSettings extends JsonSettings {
 
 		if(OSValidator.isAndroid())
 		{
-			System.out.println("config db for Android, using default location:");
+            logger.info("config db for Android, using default location:");
 			setCurrentDBConfig(getDefaultConfig());
 			return true;
 		}else{
-			System.out.println("found " + databases.size() + " configured DBs.");
+            logger.info("found " + databases.size() + " configured DBs.");
 
 			List<VidadaDatabase> availableDbs = getAvaiableDatabases();
 
 			if(availableDbs.isEmpty()){
-				System.out.println("No database config points to an existing location. Restored defaults.");
+                logger.info("No database config points to an existing location. Restored defaults.");
 				databases.add(getDefaultConfig());
 				availableDbs.add(getDefaultConfig());
 				persist();
@@ -156,7 +160,7 @@ public class VidadaServerSettings extends JsonSettings {
 				if(mydb != null)
 				{
 					setCurrentDBConfig(mydb);
-					System.out.println("auto config the only database as primary");
+                    logger.info("Auto-config the only available database as primary.");
 					return true;
 				}
 			}
@@ -183,7 +187,7 @@ public class VidadaServerSettings extends JsonSettings {
 
 	public void setCurrentDBConfig(VidadaDatabase db){
 		currentDBConfig = db;
-		System.out.println("current db: " + currentDBConfig != null ? currentDBConfig.getDataBasePath() : "null");
+		logger.debug("current db: " + currentDBConfig != null ? currentDBConfig.getDataBasePath() : "null");
 	}
 
 	public File getAbsoluteDBPath(){
