@@ -17,7 +17,6 @@ public class SystemService implements ISystemService{
 
 		if (resource.exists()) {
 			try{
-				System.out.println("shell open: " + resource);
 				File file = new File(resource.getUri());
 				Desktop.getDesktop().open(file);
 				success = true;

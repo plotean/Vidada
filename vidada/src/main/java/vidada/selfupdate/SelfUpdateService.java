@@ -13,6 +13,8 @@ import archimedes.core.util.OSValidator;
 import maven.client.autoupdate.MavenAutoUpdateClient;
 import maven.client.autoupdate.MavenVersion;
 import maven.client.autoupdate.MavenVersion.VersionFormatException;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import vidada.Application;
 import vidada.model.update.SelfUpdateState;
 import vidada.model.update.UpdateInformation;
@@ -34,6 +36,9 @@ public class SelfUpdateService implements ISelfUpdateService {
      * Private Fields                                                          *
      *                                                                         *
      **************************************************************************/
+
+    private static final Logger logger = LogManager.getLogger(SelfUpdateService.class.getName());
+
 
     private File localUpdateCache;
     private MavenAutoUpdateClient mavenUpdateClient;
@@ -76,7 +81,7 @@ public class SelfUpdateService implements ISelfUpdateService {
 					"Vidada",
 					localUpdateCache);
 		} catch (URISyntaxException e) {
-			e.printStackTrace();
+            logger.error(e);
 		}
 	}
 
@@ -109,7 +114,7 @@ public class SelfUpdateService implements ISelfUpdateService {
 								info = new UpdateInformation(false, latestVersion.toString());
 							}
 						}else{
-                            System.err.println("Auto-Update: Update-Check: Can not determine the running version, aborting.");
+                            logger.warn("Update-Check: Can not determine the running version, aborting.");
                         }
 						updateCheckTask = null;
 						return info;
@@ -136,12 +141,12 @@ public class SelfUpdateService implements ISelfUpdateService {
 							throws OperationCanceledException {
 
 						latestVersion = mavenUpdateClient.fetchLatestVersion();
-						System.out.println("SelfUpdateService: Fetching latest version " + latestVersion);
+                        logger.info("Fetching latest version " + latestVersion);
 						if(isUpdateAvailableToDownload()){
 							// Download it...
-							System.out.println("SelfUpdateService: Downloading version "+latestVersion +" ...");
+                            logger.info("Downloading version "+latestVersion +" ...");
 							File updateFile = mavenUpdateClient.fetchUpdate(latestVersion);
-							System.out.println("SelfUpdateService: Download completed: " + updateFile.toString());
+                            logger.info("Download completed: " + updateFile.toString());
 							updateInstallAvailableEvent.fireEvent(this, EventArgs.Empty);
 						}
 						downloadUpdateTask = null;
@@ -169,7 +174,7 @@ public class SelfUpdateService implements ISelfUpdateService {
 
             URL url = getClass().getProtectionDomain().getCodeSource().getLocation();
 
-            System.out.println("current locatino: " + url);
+            logger.debug("Current Install locatino: " + url);
 
             // Remove current running .exe / jar / .app
 
@@ -244,7 +249,7 @@ public class SelfUpdateService implements ISelfUpdateService {
                 try {
                     runningVersion = MavenVersion.parse("0.1.2");
                 } catch (VersionFormatException e) {
-                    e.printStackTrace();
+                    logger.error(e);
                 }
             }
             // FIXME < ------------|

@@ -1,30 +1,34 @@
 package vidada.viewsFX.mediaexplorer;
 
 
-import impl.org.controlsfx.skin.BreadCrumbBarSkin.BreadCrumbButton;
-import javafx.event.EventHandler;
-import javafx.geometry.Insets;
-import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.TitledPane;
-import javafx.scene.control.TreeItem;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.VBox;
-import javafx.util.Callback;
-
-import org.controlsfx.control.BreadCrumbBar;
-import org.controlsfx.control.BreadCrumbBar.BreadCrumbActionEvent;
-import org.controlsfx.glyphfont.FontAwesome;
-import org.controlsfx.glyphfont.GlyphFont;
-import org.controlsfx.glyphfont.GlyphFontRegistry;
-
-import vidada.client.viewmodel.explorer.MediaExplorerVM;
-import vidada.viewsFX.mediabrowsers.MediaBrowserFX;
 import archimedes.core.events.EventArgs;
 import archimedes.core.events.EventListenerEx;
 import archimedes.core.io.locations.DirectoryLocation;
+import impl.org.controlsfx.skin.BreadCrumbBarSkin.BreadCrumbButton;
+import javafx.geometry.Insets;
+import javafx.scene.Node;
+import javafx.scene.control.TitledPane;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.controlsfx.control.BreadCrumbBar;
+import org.controlsfx.glyphfont.FontAwesome;
+import org.controlsfx.glyphfont.GlyphFont;
+import org.controlsfx.glyphfont.GlyphFontRegistry;
+import vidada.client.viewmodel.explorer.MediaExplorerVM;
+import vidada.viewsFX.mediabrowsers.MediaBrowserFX;
 
 public class PrimaryMediaExplorerFX extends BorderPane {
+
+    /***************************************************************************
+     *                                                                         *
+     * Private Fields                                                          *
+     *                                                                         *
+     **************************************************************************/
+
+    private static final Logger logger = LogManager.getLogger(PrimaryMediaExplorerFX.class.getName());
+
 	private final MediaBrowserFX mediaBrowserFX;
 	private final ExplorerFilterFX filterView;
 	private final BreadCrumbBar<LocationBreadCrumb> breadCrumbBar;
@@ -34,8 +38,16 @@ public class PrimaryMediaExplorerFX extends BorderPane {
 
 	private final Node homeView;
 
+    /***************************************************************************
+     *                                                                         *
+     * Constructor                                                             *
+     *                                                                         *
+     **************************************************************************/
 
-	public PrimaryMediaExplorerFX(){
+    /**
+     * Creates a new PrimaryMediaExplorerFX
+     */
+    public PrimaryMediaExplorerFX(){
 
 
 		GlyphFont font = GlyphFontRegistry.font("FontAwesome");
@@ -65,38 +77,31 @@ public class PrimaryMediaExplorerFX extends BorderPane {
 
 	private BreadCrumbBar<LocationBreadCrumb> createNavigation(){
 
-		BreadCrumbBar<LocationBreadCrumb> bar = new BreadCrumbBar<LocationBreadCrumb>();
+		BreadCrumbBar<LocationBreadCrumb> bar = new BreadCrumbBar<>();
 
 
-		bar.setCrumbFactory(new Callback<TreeItem<LocationBreadCrumb>, Button>() {
-			@Override
-			public Button call(TreeItem<LocationBreadCrumb> crumbModel) {
-				BreadCrumbButton crumbView = null;
-				if(crumbModel.getValue() instanceof HomeLocationBreadCrumb){
-					crumbView = new HomeBreadcrumbButton("", homeView);
-				}else{
-					crumbView = new BreadCrumbButton(crumbModel.getValue().getName());
-				}
-				return crumbView;
-			}
-		});
+		bar.setCrumbFactory(crumbModel -> {
+            BreadCrumbButton crumbView = null;
+            if(crumbModel.getValue() instanceof HomeLocationBreadCrumb){
+                crumbView = new HomeBreadcrumbButton("", homeView);
+            }else{
+                crumbView = new BreadCrumbButton(crumbModel.getValue().getName());
+            }
+            return crumbView;
+        });
 
 
-		bar.setOnCrumbAction(new EventHandler<BreadCrumbBar.BreadCrumbActionEvent<LocationBreadCrumb>>() {
+		bar.setOnCrumbAction(crumbArgs -> {
+            LocationBreadCrumb crumb = crumbArgs.getSelectedCrumb().getValue();
 
-			@Override
-			public void handle(BreadCrumbActionEvent<LocationBreadCrumb> crumbArgs) {
-				LocationBreadCrumb crumb = crumbArgs.getSelectedCrumb().getValue();
-
-				if(crumb instanceof HomeLocationBreadCrumb){
-					System.out.println("home pressed...");
-				}else{
-					DirectoryLocation dir = crumb.getDirectoryLocation();
-					explorerViewModel.setCurrentLocation(dir);
-					breadCrumbModel.setDirectory(breadCrumbModel.getHomeDirectory(), dir);
-				}
-			}
-		});
+            if(crumb instanceof HomeLocationBreadCrumb){
+                System.out.println("home pressed...");
+            }else{
+                DirectoryLocation dir = crumb.getDirectoryLocation();
+                explorerViewModel.setCurrentLocation(dir);
+                breadCrumbModel.setDirectory(breadCrumbModel.getHomeDirectory(), dir);
+            }
+        });
 
 		BorderPane.setMargin(bar, new Insets(10));
 
@@ -117,20 +122,15 @@ public class PrimaryMediaExplorerFX extends BorderPane {
 		updateBrowserModel();
 	}
 
-	private final EventListenerEx<EventArgs> browserModelChangedListener = new EventListenerEx<EventArgs>() {
-		@Override
-		public void eventOccured(Object sender, EventArgs eventArgs) {
-			updateBrowserModel();
-		}
-	};
+	private final EventListenerEx<EventArgs> browserModelChangedListener = (sender, eventArgs) -> updateBrowserModel();
 
 
 	private void updateBrowserModel(){
 
-		System.out.println("PrimaryMediaExplorerFX updateBrowserModel! (TODO)");
+		logger.debug("PrimaryMediaExplorerFX updateBrowserModel!");
 
 		if(explorerViewModel != null){
-			// TODO
+			// TODO update Browser Model
 			//mediaBrowserFX.setDataContext(explorerViewModel.getBrowserModel());
 			filterView.setDataContext(explorerViewModel);
 			breadCrumbModel.setDirectory(explorerViewModel.getHomeLocation(), explorerViewModel.getCurrentDirectory());

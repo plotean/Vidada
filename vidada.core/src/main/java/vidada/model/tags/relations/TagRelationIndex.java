@@ -2,6 +2,8 @@ package vidada.model.tags.relations;
 
 import archimedes.core.exceptions.NotSupportedException;
 import archimedes.core.util.Lists;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import vidada.model.tags.Tag;
 
 import java.util.*;
@@ -18,8 +20,15 @@ import java.util.*;
  */
 public class TagRelationIndex {
 
-	transient private final Map<Tag, TagNode> rootNodes = new HashMap<Tag, TagNode>(5000);
-	//transient private final Map<TagNode, Set<Tag>> equalTags = new HashMap<TagNode, Set<Tag>>(5000);
+    /***************************************************************************
+     *                                                                         *
+     * Private fields                                                          *
+     *                                                                         *
+     **************************************************************************/
+
+    private static final Logger logger = LogManager.getLogger(TagRelationIndex.class.getName());
+
+    transient private final Map<Tag, TagNode> rootNodes = new HashMap<Tag, TagNode>(5000);
 
 
 	/***************************************************************************
@@ -34,9 +43,7 @@ public class TagRelationIndex {
 	 * Add a relation between two tags. 
 	 * This will update this index accordingly.
 	 * 
-	 * @param left
 	 * @param relation
-	 * @param right
 	 */
 	public void addRelation(TagRelation relation){
 		switch (relation.getOperator()) {
@@ -118,21 +125,20 @@ public class TagRelationIndex {
 	 */
 	public boolean isSlaveTag(Tag tag){
 		TagNode node = findNode(tag);
-		return node != null ? !node.getTag().equals(tag) : false;
+		return node != null && !node.getTag().equals(tag);
 	}
 
 
 	public void print(){
 		Set<TagNode> addedNodes = new HashSet<TagNode>();
 
-		System.out.println("-------------- "+ rootNodes.size() +" ------------- ");
+        logger.info("RelationIndex has " + rootNodes.size() + "root nodes");
 		for (Tag tag : rootNodes.keySet()) {
 			TagNode node = findNode(tag);
 			if(addedNodes.add(node)){ // ensure we print each node max once
 				node.print();
 			}
 		} 
-		System.out.println("------------------------------");
 	}
 
 	/***************************************************************************
@@ -144,8 +150,8 @@ public class TagRelationIndex {
 	/**
 	 * Introduce an equality relation between two tags
 	 * This will in fact merge all the references of the two tags into the left one
-	 * @param left
-	 * @param right
+	 * @param master
+	 * @param slave
 	 */
 	private void setEqualityRelation(Tag master, Tag slave){
 		TagNode masterNode = getNode(master);
@@ -258,7 +264,8 @@ public class TagRelationIndex {
 			return tag.getName();
 		}
 
-		private void print(String prefix, boolean isTail) {
+		@SuppressWarnings("UseOfSystemOutOrSystemErr")
+        private void print(String prefix, boolean isTail) {
 			System.out.println(prefix + (isTail ? "└── " : "├── ") + toString() + equalTags(tag));
 
 			List<TagNode> chr = Lists.toList(children);

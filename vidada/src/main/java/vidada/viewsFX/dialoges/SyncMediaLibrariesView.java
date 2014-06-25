@@ -11,14 +11,30 @@ import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import vidada.IVidadaServer;
 
 public class SyncMediaLibrariesView extends GridPane {
 
-	private final ProgressBar bar = new ProgressBar();
+    /***************************************************************************
+     *                                                                         *
+     * Private Fields                                                          *
+     *                                                                         *
+     **************************************************************************/
+
+    private static final Logger logger = LogManager.getLogger(SyncMediaLibrariesView.class.getName());
+
+    private final ProgressBar bar = new ProgressBar();
 	private final Label currentActivity = new Label("Ready.");
 
 	public final EventHandlerEx<EventArgs> DoneEvent = new EventHandlerEx<EventArgs>();
+
+    /***************************************************************************
+     *                                                                         *
+     * Constructor                                                             *
+     *                                                                         *
+     **************************************************************************/
 
 
 	public SyncMediaLibrariesView(){
@@ -48,7 +64,7 @@ public class SyncMediaLibrariesView extends GridPane {
 
 	private synchronized void startSync(){
 
-		System.out.println("SyncMediaLibrariesView: startSync");
+        logger.info("Syncing media libraries start...");
 
 		final IProgressListener listener = new IProgressListener() {
 			@Override
@@ -62,7 +78,7 @@ public class SyncMediaLibrariesView extends GridPane {
 
                         if(progressInfo.isCompleted()){
                             isFinished = true;
-                            System.out.println("SyncMediaLibrariesView: synchronizing media libraries done.");
+                            logger.info("SyncMediaLibrariesView: synchronizing media libraries done.");
                             DoneEvent.fireEvent(SyncMediaLibrariesView.this, EventArgs.Empty);
                         }
 					}
@@ -75,10 +91,10 @@ public class SyncMediaLibrariesView extends GridPane {
             if(localServer != null){
                 localServer.getImportService().synchronizeAll(listener);
             }else {
-                System.err.println("SyncMediaLibrariesView: LocalServer not available");
+                logger.warn("SyncMediaLibrariesView: LocalServer not available");
             }
         }catch(Exception e){
-            e.printStackTrace();
+            logger.error(e);
         }
 
 	}

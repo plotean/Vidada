@@ -1,5 +1,8 @@
 package vidada.dal;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import java.util.HashMap;
@@ -7,9 +10,21 @@ import java.util.Map;
 
 public class SessionManager
 {
-	private EntityManagerFactory entityManagerFactory; 
+    /***************************************************************************
+     *                                                                         *
+     * Private Fields                                                          *
+     *                                                                         *
+     **************************************************************************/
 
-	//private EntityManager defaultEntityManager = null;
+    private static final Logger logger = LogManager.getLogger(SessionManager.class.getName());
+
+    private EntityManagerFactory entityManagerFactory;
+
+    /***************************************************************************
+     *                                                                         *
+     * Singleton                                                               *
+     *                                                                         *
+     **************************************************************************/
 
 	private static SessionManager instance;
 	public synchronized static SessionManager instance(){
@@ -19,19 +34,22 @@ public class SessionManager
 		return instance;
 	}
 
+    /**
+     * Private singleton constructor
+     */
 	private SessionManager(){
-		configure();
 	}
 
-	private void configure(){
-		//configuration = new Configuration();
-		//configuration.configure();
-	}
+    /***************************************************************************
+     *                                                                         *
+     * Public API                                                              *
+     *                                                                         *
+     **************************************************************************/
 
 	public synchronized EntityManagerFactory getSessionFactory(String dbpath){
 		if(entityManagerFactory == null){
-			
-			System.out.println("SessionManager: Creating EntityManagerFactory for db: " + dbpath);
+
+            logger.info("Creating EntityManagerFactory for db: " + dbpath);
 			
 			Map<String, String> config = new HashMap<>();
 			config.put("hibernate.connection.url", "jdbc:h2:" + dbpath);

@@ -1,5 +1,7 @@
 package vidada.server.rest.streaming;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Response;
 
@@ -10,10 +12,25 @@ import archimedes.core.io.locations.ResourceLocation;
 
 public class MediaStreamHttpHandler extends SeekableHttpHandler {
 
-	private final IMediaService mediaService;
+    /***************************************************************************
+     *                                                                         *
+     * Private Fields                                                          *
+     *                                                                         *
+     **************************************************************************/
 
 
-	public MediaStreamHttpHandler(IMediaService mediaService){
+    private static final Logger logger = LogManager.getLogger(MediaStreamHttpHandler.class.getName());
+
+    private final IMediaService mediaService;
+
+    /***************************************************************************
+     *                                                                         *
+     * Constructor                                                             *
+     *                                                                         *
+     **************************************************************************/
+
+
+    public MediaStreamHttpHandler(IMediaService mediaService){
 		this.mediaService = mediaService;
 	}
 
@@ -31,10 +48,10 @@ public class MediaStreamHttpHandler extends SeekableHttpHandler {
                 if (localSource != null) {
                     resource = localSource.getResourceLocation();
                 } else {
-                    System.err.println("Server: Stream - Media has no source!");
+                    logger.error("Server: Stream - Media has no source!");
                 }
             } else {
-                System.out.println("Requested media '" + relativeUri + "' could not be found. Hash = " + hash);
+                logger.warn("Requested media '" + relativeUri + "' could not be found. Hash = " + hash);
             }
         }
 		return resource;

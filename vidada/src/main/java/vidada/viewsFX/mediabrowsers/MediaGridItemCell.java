@@ -5,6 +5,8 @@ import archimedes.core.events.EventArgs;
 import archimedes.core.events.EventListenerEx;
 import javafx.beans.property.DoubleProperty;
 import javafx.scene.layout.BorderPane;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.controlsfx.control.GridCell;
 import vidada.client.viewmodel.MediaViewModel;
 import vidada.client.viewmodel.browser.BrowserFolderItemVM;
@@ -15,6 +17,14 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 class MediaGridItemCell extends GridCell<IDeferLoaded<BrowserItemVM>> {
+
+    /***************************************************************************
+     *                                                                         *
+     * Private Fields                                                          *
+     *                                                                         *
+     **************************************************************************/
+
+    private static final Logger logger = LogManager.getLogger(MediaGridItemCell.class.getName());
 
 	private final MediaItemView mediaView; 
 	private final FolderView folderView;
@@ -137,7 +147,7 @@ class MediaGridItemCell extends GridCell<IDeferLoaded<BrowserItemVM>> {
 		if(item != null && item.isLoaded()){
 			if( isSelected() != item.getLoadedItem().isSelected()){
 				setSelectionInternal(item.getLoadedItem().isSelected());
-				System.out.println("MediaGridItemCell: Selected: " + isSelected() + " - " + item + " Cell" + this.hashCode() );
+                logger.debug("Selected: " + isSelected() + " - " + item + " Cell" + this.hashCode());
 			}
 		}else{
 			setSelectionInternal(false);
@@ -149,13 +159,9 @@ class MediaGridItemCell extends GridCell<IDeferLoaded<BrowserItemVM>> {
 
 			try {
 				setSelectionMethod.invoke(this, selected);
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
-			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
-			} catch (InvocationTargetException e) {
-				e.printStackTrace();
+			} catch (IllegalAccessException | InvocationTargetException | IllegalArgumentException e) {
+                logger.error(e);
 			}
-		}
+        }
 	}
 }

@@ -3,6 +3,8 @@ package vidada.server.services;
 
 import archimedes.core.threading.IProgressListener;
 import archimedes.core.threading.ProgressEventArgs;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import vidada.model.jobs.JobId;
 import vidada.model.jobs.JobServiceProgressListener;
 import vidada.model.jobs.JobState;
@@ -12,13 +14,35 @@ import vidada.server.VidadaServer;
 
 public class MediaImportService extends VidadaServerService implements IMediaImportService {
 
+    /***************************************************************************
+     *                                                                         *
+     * Private Fields                                                          *
+     *                                                                         *
+     **************************************************************************/
+
+    private static final Logger logger = LogManager.getLogger(MediaImportService.class.getName());
+
 	private final Object importLock = new Object();
 	private Thread importThread = null;
 	private volatile JobId currentImportJobId;
 
-	public MediaImportService(VidadaServer server) {
+    /***************************************************************************
+     *                                                                         *
+     * Constructor                                                             *
+     *                                                                         *
+     **************************************************************************/
+
+
+    public MediaImportService(VidadaServer server) {
 		super(server);
 	}
+
+    /***************************************************************************
+     *                                                                         *
+     * Public API                                                              *
+     *                                                                         *
+     **************************************************************************/
+
 
     /** {@inheritDoc} */
     @Override
@@ -64,7 +88,7 @@ public class MediaImportService extends VidadaServerService implements IMediaImp
                 return currentImportJobId;
 
             }else {
-                System.err.println("Import is already running, returning current job.");
+                logger.info("Import is already running, returning current job.");
                 return currentImportJobId;
             }
         }

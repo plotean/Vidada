@@ -3,6 +3,8 @@ package vidada.model.media;
 import archimedes.core.data.hashing.FileHashAlgorythms;
 import archimedes.core.data.hashing.IFileHashAlgorythm;
 import archimedes.core.io.locations.ResourceLocation;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.securityvision.metadata.MetaDataNotSupportedException;
 import vidada.model.metadata.MediaMetaAttribute;
 import vidada.model.metadata.MetaDataSupport;
@@ -17,6 +19,14 @@ import java.io.InputStream;
  *
  */
 public class MediaHashUtil {
+
+    /***************************************************************************
+     *                                                                         *
+     * Private Fields                                                          *
+     *                                                                         *
+     **************************************************************************/
+
+    private static final Logger logger = LogManager.getLogger(MediaHashUtil.class.getName());
 
 	private final IFileHashAlgorythm fileHashAlgorythm;
 
@@ -50,7 +60,7 @@ public class MediaHashUtil {
 			try {
 				metaDataSupport = new MetaDataSupport();
 			} catch (MetaDataNotSupportedException e) {
-				e.printStackTrace();
+                logger.error(e);
 			}	
 		}
 	}
@@ -85,7 +95,7 @@ public class MediaHashUtil {
 		{
 			hash = calculateHash(mediaPath);
 			metaDataSupport.writeMetaData(mediaPath.getUri(), MediaMetaAttribute.FileHash, hash);
-			System.out.println("MediaHashUtil: hash calculated and saved in meta data: " + hash);
+            logger.debug("MediaHashUtil: hash calculated and saved in meta data: " + hash);
 		}else{
 			//System.out.println("MediaHashUtil: hash readed from metadata: " + hash);
 		}
@@ -105,13 +115,13 @@ public class MediaHashUtil {
 			is = mediaPath.openInputStream();
 			hash = fileHashAlgorythm.calculateHashString(is, mediaPath.length());
 		}catch(Exception e){
-			e.printStackTrace();
+            logger.error(e);
 		}finally{
 			if(is != null)
 				try {
 					is.close();
 				} catch (IOException e) {
-					e.printStackTrace();
+                    logger.error(e);
 				}
 		}
 		return hash;

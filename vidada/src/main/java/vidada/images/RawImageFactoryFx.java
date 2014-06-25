@@ -4,6 +4,8 @@ import archimedes.core.images.IMemoryImage;
 import archimedes.core.images.IRawImageFactory;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import javax.imageio.ImageIO;
 import java.io.File;
@@ -13,6 +15,12 @@ import java.net.URI;
 
 public class RawImageFactoryFx implements IRawImageFactory {
 
+    private static final Logger logger = LogManager.getLogger(RawImageFactoryFx.class.getName());
+
+
+    /**
+     *
+     */
 	public RawImageFactoryFx(){
 
 	}
@@ -34,7 +42,7 @@ public class RawImageFactoryFx implements IRawImageFactory {
 		try {
 			return ImageIO.write(SwingFXUtils.fromFXImage(imageFX, null), "png", outputStream);
 		} catch (Exception s) {
-			s.printStackTrace();
+            logger.error(s);
 		}
 
 		return false;
@@ -45,7 +53,7 @@ public class RawImageFactoryFx implements IRawImageFactory {
 		if(file.exists()){
 			return createImage(file.toURI());
 		}else{
-			System.err.println("createImage failed: " + file + "(missing)");
+            logger.error("createImage failed: " + file + "(missing)");
 		}
 		return null;
 	}

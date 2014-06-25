@@ -13,6 +13,8 @@ import javafx.scene.Node;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.FlowPane;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.controlsfx.control.textfield.AutoCompletionBinding;
 import org.controlsfx.control.textfield.TextFields;
 
@@ -28,7 +30,15 @@ import java.util.List;
  */
 public class TagItPanelSkin<T> extends BehaviorSkinBase<TagItPanel<T>, BehaviorBase<TagItPanel<T>>> {
 
-	private static final String STYLE_CLASS_TAGIT_TEXTFIELD = "tagit-text-field";
+    /***************************************************************************
+     *                                                                         *
+     * Private fields                                                          *
+     *                                                                         *
+     **************************************************************************/
+
+    private static final Logger logger = LogManager.getLogger(TagItPanelSkin.class.getName());
+
+    private static final String STYLE_CLASS_TAGIT_TEXTFIELD = "tagit-text-field";
 
 	private final FlowPane layout = new FlowPane();
 
@@ -198,7 +208,7 @@ public class TagItPanelSkin<T> extends BehaviorSkinBase<TagItPanel<T>, BehaviorB
 			if(newTag != null)
 				appendTag(newTag);
 			else {
-				System.err.println("onAddNewTag: Tag-Model was null for tag name: '" + text + "'");
+                logger.error("onAddNewTag: Tag-Model was null for tag name: '" + text + "'");
 			}
 		}else {
 			throw new NotSupportedException("A tag-model-factory has to be set in order to create tags.");

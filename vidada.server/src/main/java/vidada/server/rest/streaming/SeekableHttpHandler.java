@@ -3,6 +3,8 @@ package vidada.server.rest.streaming;
 import archimedes.core.io.locations.ResourceLocation;
 import archimedes.core.io.streaming.ISeekableInputStream;
 import org.apache.commons.io.IOUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Response;
 import org.glassfish.grizzly.http.server.StaticHttpHandler;
@@ -15,8 +17,24 @@ import java.util.zip.GZIPOutputStream;
 
 public abstract class SeekableHttpHandler extends StaticHttpHandler {
 
+    /***************************************************************************
+     *                                                                         *
+     * Private Fields                                                          *
+     *                                                                         *
+     **************************************************************************/
 
-	@Override
+
+    private static final Logger logger = LogManager.getLogger(SeekableHttpHandler.class.getName());
+
+
+    /***************************************************************************
+     *                                                                         *
+     * Public methods                                                          *
+     *                                                                         *
+     **************************************************************************/
+
+
+    @Override
 	public void service(Request request, Response response) throws Exception {
 		String requestUri = getRelativeURI(request);
 		ResourceLocation resource = getStreamResource(request, response, requestUri);
@@ -90,7 +108,7 @@ public abstract class SeekableHttpHandler extends StaticHttpHandler {
 
 			response.sendAcknowledgement();
 		} catch (IOException e) {
-			e.printStackTrace();
+            logger.error(e);
 		}
 	}
 	
@@ -124,24 +142,23 @@ public abstract class SeekableHttpHandler extends StaticHttpHandler {
 		}else{
 			range = new HttpByteRange(0, totalLength);
 		}
-		
-		System.out.println("SeekableHttpHandler: requested range: " + requestRange);
-		System.out.println("SeekableHttpHandler: interpreted range: " + range);
+
+        logger.debug("requested range: " + requestRange);
+        logger.debug("interpreted range: " + range);
 		
 		return range;
 	}
 
 
 	private void printRequestHeader(Request request){
-		System.out.println(">> Request Header <<");
+        logger.debug("Request Header:");
 		for (String header : request.getHeaderNames()){
-			System.out.print(">> " + header + ": ");
+            String headerPart = "> ";
 			for (String headerValue : request.getHeaders(header)) {
-				System.out.print(headerValue + " ; ");
+                headerPart += headerValue + " ; ";
 			};
-			System.out.println();
+            logger.debug(headerPart);
 		}
-		System.out.println(">> Request Header <<");
 	}
 
 	/**
@@ -171,7 +188,7 @@ public abstract class SeekableHttpHandler extends StaticHttpHandler {
 			// Stream the file content
 			IOUtils.copy(inputStream, outputStream);
 		} catch (IOException e) {
-			System.err.println("SeekableHttpHandler:send -> " + e.getMessage());
+            logger.error("Sending stream failed with:" + e.getMessage());
 		}finally{
 			
 			response.finish();
@@ -179,11 +196,12 @@ public abstract class SeekableHttpHandler extends StaticHttpHandler {
 			try {
 				outputStream.close();
 			} catch (IOException e1) {
+                logger.error(e1);
 			}
 			try {
 				inputStream.close();
 			} catch (IOException e) {
-				e.printStackTrace();
+                logger.error(e);
 			}
 		}
 	}

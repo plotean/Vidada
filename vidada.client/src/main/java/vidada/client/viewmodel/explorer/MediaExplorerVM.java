@@ -6,6 +6,8 @@ import archimedes.core.events.EventHandlerEx;
 import archimedes.core.events.EventListenerEx;
 import archimedes.core.events.IEvent;
 import archimedes.core.io.locations.DirectoryLocation;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import vidada.IVidadaServer;
 import vidada.client.model.browser.BrowserFolderItem;
 import vidada.client.model.browser.BrowserFolderItemLocation;
@@ -15,6 +17,14 @@ import vidada.server.services.IMediaService;
 import java.util.List;
 
 public class MediaExplorerVM {
+
+    /***************************************************************************
+     *                                                                         *
+     * Private Fields                                                          *
+     *                                                                         *
+     **************************************************************************/
+
+    private static final Logger logger = LogManager.getLogger(MediaExplorerVM.class.getName());
 
 
 	private final IVidadaServer localServer = null; // TODO: VidadaClientManager.instance().getLocalServer();
@@ -44,14 +54,14 @@ public class MediaExplorerVM {
 		if(getCurrentDirectory() != location){
 			setCurrentLocation(new BrowserFolderItemLocation(location, localMediaService));
 		}else{
-			System.out.println("MediaExplorerVM: ignored setCurrentLocation!!");
+            logger.debug("Ignored setCurrentLocation!");
 		}
 	}
 
 	public void setCurrentLocation(BrowserFolderItemLocation newLocation){
 		browserModel = newLocation;
 
-		System.out.println("MediaExplorerVM: setCurrentLocation " + newLocation);
+        logger.debug("setCurrentLocation = " + newLocation);
 
 		List<IBrowserItem> children = browserModel.getChildren();
 		for (IBrowserItem iBrowserItem : children) {
@@ -66,7 +76,7 @@ public class MediaExplorerVM {
 	private final EventListenerEx<EventArgs> openRequestedListener = new EventListenerEx<EventArgs>() {
 		@Override
 		public void eventOccured(Object sender, EventArgs eventArgs) {
-			System.out.println("MediaExplorerVM: open folder requested " + sender);
+            logger.debug("Open folder requested " + sender);
 			setCurrentLocation((BrowserFolderItemLocation)sender);
 		}
 	};

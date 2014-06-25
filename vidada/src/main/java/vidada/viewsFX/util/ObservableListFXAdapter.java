@@ -10,6 +10,8 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -27,18 +29,41 @@ import java.util.stream.Stream;
  * @param <T>
  */
 public class ObservableListFXAdapter<T> implements IDataProvider<T>, ObservableList<T>{
-	private final IDataProvider<T> source;
+
+    /***************************************************************************
+     *                                                                         *
+     * Private Fields                                                          *
+     *                                                                         *
+     **************************************************************************/
+
+
+    private static final Logger logger = LogManager.getLogger(ObservableListFXAdapter.class.getName());
+
+    private final IDataProvider<T> source;
 
 	private final EventHandlerEx<CollectionEventArg<T>> itemsChangedEvent = new EventHandlerEx<CollectionEventArg<T>>();
 	@Override
 	public IEvent<CollectionEventArg<T>> getItemsChangedEvent() { return itemsChangedEvent; }
+
+    /***************************************************************************
+     *                                                                         *
+     * Constructor                                                             *
+     *                                                                         *
+     **************************************************************************/
 
 
 	public ObservableListFXAdapter(IDataProvider<T> source){
 		this.source = source;
 	}
 
-	@Override
+    /***************************************************************************
+     *                                                                         *
+     * Public API                                                              *
+     *                                                                         *
+     **************************************************************************/
+
+
+    @Override
 	public int size() {
 		return source.size();
 	}
@@ -66,22 +91,22 @@ public class ObservableListFXAdapter<T> implements IDataProvider<T>, ObservableL
 
 	@Override
 	public void addListener(InvalidationListener listener) {
-		System.out.println("VirtualListAdapter add InvalidationListener");
+        logger.debug("add InvalidationListener");
 	}
 
 	@Override
 	public void removeListener(InvalidationListener listener) {
-		System.out.println("VirtualListAdapter remove InvalidationListener");
+        logger.debug("remove InvalidationListener");
 	}
 
 	@Override
 	public void addListener(ListChangeListener<? super T> arg0) {
-		System.out.println("VirtualListAdapter add ListChangeListener");
+        logger.debug("add ListChangeListener");
 	}
 
 	@Override
 	public void removeListener(ListChangeListener<? super T> arg0) {
-		System.out.println("VirtualListAdapter remove ListChangeListener");
+        logger.debug("remove ListChangeListener");
 	}
 
 	/***************************************************************************

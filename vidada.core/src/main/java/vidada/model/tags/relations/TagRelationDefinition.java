@@ -1,5 +1,7 @@
 package vidada.model.tags.relations;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import vidada.model.tags.Tag;
 
 import java.util.HashMap;
@@ -23,6 +25,7 @@ public class TagRelationDefinition {
 	 *                                                                         *
 	 **************************************************************************/
 
+    private static final Logger logger = LogManager.getLogger(TagRelationDefinition.class.getName());
 
 	private Set<TagRelation> relations = new HashSet<TagRelation>();
 	private Map<TagRelationOperator, Set<TagRelation>> operatorCluster = new HashMap<TagRelationOperator, Set<TagRelation>>();
@@ -151,7 +154,7 @@ public class TagRelationDefinition {
 	}
 
 	private TagRelationIndex buildTagRelationIndex(){
-		System.out.println("building tag relation index...");
+        logger.info("Building tag relation index...");
 		TagRelationIndex index = new TagRelationIndex();
 
 		Set<TagRelation> equalRelations = getOperatorRelations(TagRelationOperator.Equal);

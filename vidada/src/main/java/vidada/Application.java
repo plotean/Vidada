@@ -255,7 +255,7 @@ public class Application extends  javafx.application.Application {
 
 		if(!settings.autoConfigDatabase()){
 
-			System.out.println("Vidada instance must be choosen by user:");
+			logger.info("Vidada instance / Database must be selected by user.");
 
 			Dialog dlg = new Dialog(null, "Vidada-Server Database Chooser");
 			final ChooseMediaDatabaseView chooseView = new ChooseMediaDatabaseView(settings.getAvaiableDatabases());
@@ -277,7 +277,7 @@ public class Application extends  javafx.application.Application {
 			dlg.show();
 
 		}else{
-			System.out.println("database automatically configured.");
+            logger.info("Instance / Database automatically configured.");
 		}
 	}
 

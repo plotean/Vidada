@@ -11,6 +11,8 @@ import archimedes.core.security.AuthenticationException;
 import archimedes.core.security.AuthenticationRequiredException;
 import archimedes.core.security.Credentials;
 import archimedes.core.util.Debug;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import vidada.server.VidadaServer;
 import vidada.server.services.VidadaServerService;
 import vidada.server.settings.DatabaseSettings;
@@ -25,6 +27,14 @@ import java.util.concurrent.Callable;
  *
  */
 public class PrivacyService extends VidadaServerService implements IPrivacyService{
+
+    /***************************************************************************
+     *                                                                         *
+     * Private Fields                                                          *
+     *                                                                         *
+     **************************************************************************/
+
+    private static final Logger logger = LogManager.getLogger(PrivacyService.class.getName());
 
 	private final EventHandlerEx<EventArgs> ProtectedEvent = new EventHandlerEx<EventArgs>();
 	private final EventHandlerEx<EventArgs> ProtectionRemovedEvent = new EventHandlerEx<EventArgs>();
@@ -112,7 +122,7 @@ public class PrivacyService extends VidadaServerService implements IPrivacyServi
 							ProtectionRemovedEvent.fireEvent(this, EventArgsG.Empty);
 
 						} catch (AuthenticationRequiredException e) {
-							e.printStackTrace();
+                            logger.error(e);
 						}
 					}
 				}
@@ -135,7 +145,7 @@ public class PrivacyService extends VidadaServerService implements IPrivacyServi
 				// we can now derive the user secret from the password
 
 				authCredentials = credentials;
-				System.out.println("PrivacyService: Authentification successful.");
+                logger.info("PrivacyService: Authentication successful.");
 				return true;
 			}
 		}else {
@@ -148,7 +158,7 @@ public class PrivacyService extends VidadaServerService implements IPrivacyServi
 		DatabaseSettings settings = getServer().getDatabaseSettingsService().getSettings();
 		byte[] hash = settings.getPasswordHash();
 		byte[] userPassHash = KeyPad.hashKey(credentials.getPassword());
-		System.out.println("checkPassword: " + Debug.toString(hash) + " == " + Debug.toString(userPassHash));
+        logger.debug("checkPassword: " + Debug.toString(hash) + " == " + Debug.toString(userPassHash));
 		return KeyPad.equals(hash, userPassHash);
 	}
 
@@ -182,7 +192,7 @@ public class PrivacyService extends VidadaServerService implements IPrivacyServi
 							// we have to decrypt the cryptoPad
 							plainCryptoPad = keyPadCrypter.deCrypt(cryptoPadEncrypted, userKey);
 						} catch (AuthenticationRequiredException e) {
-							e.printStackTrace();
+                            logger.debug(e);
 							throw e;
 						} 
 					}else{

@@ -3,6 +3,8 @@ package vidada.model.images.cache;
 import archimedes.core.data.caching.LRUCache;
 import archimedes.core.geometry.Size;
 import archimedes.core.images.IMemoryImage;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import java.lang.ref.SoftReference;
 import java.util.Collections;
@@ -25,7 +27,16 @@ import java.util.Set;
  */
 public class MemoryImageCache implements IImageCache {
 
-	private final IImageCache unbufferedImageCache;
+    /***************************************************************************
+     *                                                                         *
+     * Private Fields                                                          *
+     *                                                                         *
+     **************************************************************************/
+
+    private static final Logger logger = LogManager.getLogger(MemoryImageCache.class.getName());
+
+
+    private final IImageCache unbufferedImageCache;
 	private final Map<Size, Map<String, SoftReference<IMemoryImage>>> imageCache;
 
 	/**
@@ -58,7 +69,15 @@ public class MemoryImageCache implements IImageCache {
 	 */
 	public static final float MAX_MEMORY_SCALED_CACHE = MAX_OVERALL_MEMORY_SCALED_CACHE / MAX_SCALED_CACHE_SIZEFOLDERS;
 
-	/**
+
+    /***************************************************************************
+     *                                                                         *
+     * Constructor                                                             *
+     *                                                                         *
+     **************************************************************************/
+
+
+    /**
 	 * Wraps this memory cache around the given cache service,
 	 * that means that images only once are requested from the 
 	 * underlining cache. 
@@ -73,6 +92,12 @@ public class MemoryImageCache implements IImageCache {
 		this.imageCache = Collections.synchronizedMap(
 				new LRUCache<Size, Map<String, SoftReference<IMemoryImage>>>(MAX_SCALED_CACHE_SIZEFOLDERS));
 	}
+
+    /***************************************************************************
+     *                                                                         *
+     * Public API                                                              *
+     *                                                                         *
+     **************************************************************************/
 
 
 	@Override
@@ -122,12 +147,18 @@ public class MemoryImageCache implements IImageCache {
 		unbufferedImageCache.removeImage(id);
 	}
 
+    /***************************************************************************
+     *                                                                         *
+     * Protected methods                                                       *
+     *                                                                         *
+     **************************************************************************/
+
 
 	protected boolean existsInMemoryCache(String id, Size size){
 		Map<String, SoftReference<IMemoryImage>> map = imageCache.get(size);
 		if(map != null){
 			SoftReference<IMemoryImage> imageRef = map.get(id);
-			return imageRef != null ? imageRef.get() != null : false;
+			return imageRef != null && imageRef.get() != null;
 		}
 		return false;	
 	}
@@ -152,7 +183,7 @@ public class MemoryImageCache implements IImageCache {
 				Map<String, SoftReference<IMemoryImage>> realImageCache = new LRUCache<String, SoftReference<IMemoryImage>>(maxScaledSize);
 				imageCache.put(imageSize, realImageCache);
 
-				System.out.println("Created: Scaled image cache. maxScaledSize: " + maxScaledSize);
+                logger.info("Created Scaled image cache. maxScaledSize: " + maxScaledSize);
 			}
 			imageCache.get(imageSize).put(id, new SoftReference<IMemoryImage>(image));
 		}
