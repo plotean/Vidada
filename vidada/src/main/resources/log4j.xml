@@ -18,9 +18,17 @@
     </appender>
 
     <root>
-        <level value="ALL"/>
+        <level value="DEBUG"/>
         <appender-ref ref="consoleAppender"/>
         <appender-ref ref="fileAppender"/>
     </root>
+
+    <logger name="org.hibernate">
+        <level value="INFO"/>
+    </logger>
+
+    <logger name="org.hibernate.tool.hbm2ddl">
+        <level value="DEBUG"/>
+    </logger>
 
 </log4j:configuration>
