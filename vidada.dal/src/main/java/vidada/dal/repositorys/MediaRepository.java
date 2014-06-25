@@ -4,6 +4,8 @@ import archimedes.core.aop.IUnitOfWorkService;
 import archimedes.core.data.pagination.ListPage;
 import archimedes.core.exceptions.NotImplementedException;
 import archimedes.core.io.locations.ResourceLocation;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import vidada.dal.JPARepository;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaLibrary;
@@ -22,7 +24,10 @@ import java.util.List;
 
 public class MediaRepository extends JPARepository implements IMediaRepository{
 
-	public MediaRepository(
+    private static final Logger logger = LogManager.getLogger(MediaRepository.class.getName());
+
+
+    public MediaRepository(
 			IUnitOfWorkService<EntityManager> unitOfWorkService) {
 		super(unitOfWorkService);
 	}
@@ -51,7 +56,7 @@ public class MediaRepository extends JPARepository implements IMediaRepository{
 
 		String sQry = "SELECT m from MediaItem m WHERE " + buildMediaWhereQuery(qry) + " " + buildMediaOrderByQuery(qry);
 
-		System.out.println(sQry);
+        logger.debug(sQry);
 
 		TypedQuery<MediaItem> q = getEntityManager()
 				.createQuery(sQry, MediaItem.class);

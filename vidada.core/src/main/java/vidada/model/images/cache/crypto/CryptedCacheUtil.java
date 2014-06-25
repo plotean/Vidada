@@ -220,8 +220,8 @@ public class CryptedCacheUtil {
 
                             byte[] currentKeyPad = decryptPad(encryptedPad, credentials);
 
-                            System.out.println("decrypted pad: " + Debug.toString(currentKeyPad) + " len: " + currentKeyPad.length );
-                            System.out.println("encrypted pad: " + Debug.toString(encryptedPad) + " len: " + encryptedPad.length );
+                            logger.trace("decrypted pad: " + Debug.toString(currentKeyPad) + " len: " + currentKeyPad.length );
+                            logger.trace("encrypted pad: " + Debug.toString(encryptedPad) + " len: " + encryptedPad.length );
 
                             return KeyPad.validate(currentKeyPad);
                         }

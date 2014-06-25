@@ -8,6 +8,8 @@ import archimedes.core.events.EventListenerEx;
 import archimedes.core.threading.CancellationTokenSource;
 import archimedes.core.threading.CancellationTokenSource.CancellationToken;
 import archimedes.core.threading.CancellationTokenSource.OperationCanceledException;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import vidada.client.IVidadaClientManager;
 import vidada.client.model.browser.MediaBrowserModel;
 import vidada.client.services.IMediaClientService;
@@ -52,6 +54,8 @@ public class MediaFilterDatabaseBinding {
 	 * Private fields                                                          *
 	 *                                                                         *
 	 **************************************************************************/
+
+    private static final Logger logger = LogManager.getLogger(MediaFilterDatabaseBinding.class.getName());
 
 	private final FilterModel filterModel;
 	private final MediaBrowserModel mediaBrowserModel;
@@ -121,10 +125,10 @@ public class MediaFilterDatabaseBinding {
 				public void eventOccured(Object sender,final CancelTokenEventArgs<ListPage<MediaItem>> eventArgs) {
 
 					ListPage<MediaItem> firstPage = eventArgs.getValue();
-					System.out.println("MediaFilterDatabaseBinding: Data async fetched: " + firstPage);
+                    logger.info("MediaFilterDatabaseBinding: Data async fetched: " + firstPage);
 
 					if(firstPage != null){
-						System.out.println("creating pagedList...");
+                        logger.debug("Creating VirtualPagedList...");
 						try{
 							VirtualPagedList<MediaItem> pagedList = new VirtualPagedList<MediaItem>(new IPageLoader<MediaItem>() {
 								@Override
@@ -133,7 +137,7 @@ public class MediaFilterDatabaseBinding {
 								}
 							},firstPage);
 
-							System.out.println("setting paged list...");
+                            logger.debug("Setting paged list to browser model.");
 							mediaBrowserModel.setMedias(pagedList);
 
 						}catch(Throwable e){
@@ -180,7 +184,10 @@ public class MediaFilterDatabaseBinding {
 	 */
 	class AsyncFetchMediaItems extends AsyncFetchData<ListPage<MediaItem>> {
 
-		private final IMediaClientService mediaClientService;
+        private final Logger logger = LogManager.getLogger(AsyncFetchMediaItems.class.getName());
+
+
+        private final IMediaClientService mediaClientService;
 		private final MediaQuery query;
 
 		public AsyncFetchMediaItems(IMediaClientService mediaClientService, MediaQuery query, CancellationToken token) {
@@ -194,9 +201,9 @@ public class MediaFilterDatabaseBinding {
 				throws OperationCanceledException {
 
 			ListPage<MediaItem> page = null;
-			System.out.println("AsyncFetchMediaItems: fetching media datas...");
+			logger.debug("AsyncFetchMediaItems: fetching media datas...");
 			page = mediaClientService.query(query, 0, maxPageSize);
-			System.out.println("AsyncFetchMediaItems:: fetched: " + page );
+            logger.debug("AsyncFetchMediaItems:: fetched: " + page );
 
 			return page;
 		}

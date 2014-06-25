@@ -1,7 +1,13 @@
 package vidada.client.viewmodel.media;
 
-import java.util.Collection;
-
+import archimedes.core.data.events.CollectionEventArg;
+import archimedes.core.data.observable.IObservableCollection;
+import archimedes.core.data.observable.IObservableList;
+import archimedes.core.data.observable.ObservableArrayList;
+import archimedes.core.events.EventListenerEx;
+import archimedes.core.exceptions.NotSupportedException;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import vidada.client.model.browser.BrowserMediaItem;
 import vidada.client.model.browser.IBrowserItem;
 import vidada.client.services.ITagClientService;
@@ -9,12 +15,8 @@ import vidada.client.viewmodel.MediaViewModel;
 import vidada.model.media.MediaItem;
 import vidada.model.tags.Tag;
 import vidada.model.tags.TagFactory;
-import archimedes.core.data.events.CollectionEventArg;
-import archimedes.core.data.observable.IObservableCollection;
-import archimedes.core.data.observable.IObservableList;
-import archimedes.core.data.observable.ObservableArrayList;
-import archimedes.core.events.EventListenerEx;
-import archimedes.core.exceptions.NotSupportedException;
+
+import java.util.Collection;
 
 /**
  * Represents a single media item
@@ -23,9 +25,22 @@ import archimedes.core.exceptions.NotSupportedException;
  */
 public class MediaDetailViewModel extends MediaViewModel implements IMediaViewModel {
 
+    /***************************************************************************
+     *                                                                         *
+     * Private Fields                                                          *
+     *                                                                         *
+     **************************************************************************/
+
+    private static final Logger logger = LogManager.getLogger(MediaDetailViewModel.class.getName());
+
 	private final ITagClientService tagClientService;
 	private final IObservableList<Tag> observableTags = new ObservableArrayList<Tag>();
 
+    /***************************************************************************
+     *                                                                         *
+     * Constructor                                                             *
+     *                                                                         *
+     **************************************************************************/
 
 	/**
 	 * Creates a new media detail model form the given MediaData
@@ -64,7 +79,7 @@ public class MediaDetailViewModel extends MediaViewModel implements IMediaViewMo
 	transient private final EventListenerEx<CollectionEventArg<Tag>> tagsChangedListener = new EventListenerEx<CollectionEventArg<Tag>>() {
 		@Override
 		public void eventOccured(Object sender, CollectionEventArg<Tag> eventArgs) {
-			System.out.println("MediaDetailViewModel: Tags changed in model, persisting model now!");
+            logger.info("MediaDetailViewModel: Tags changed in model, persisting model now!");
 			persist();
 		}
 	};

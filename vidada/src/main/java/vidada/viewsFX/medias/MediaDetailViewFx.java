@@ -6,13 +6,18 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.controlsfx.control.Rating;
 import vidada.client.viewmodel.media.IMediaViewModel;
 import vidada.viewsFX.tags.MediaDetailTagPane;
 
 public class MediaDetailViewFx extends BorderPane {
 
-	private final GridPane gridpane = new GridPane();
+    private static final Logger logger = LogManager.getLogger(MediaDetailViewFx.class.getName());
+
+
+    private final GridPane gridpane = new GridPane();
 	private final MediaDetailTagPane mediaDetailTagPane;
 
 	private final TextField txtname;
@@ -79,7 +84,7 @@ public class MediaDetailViewFx extends BorderPane {
 	public void setDataContext(IMediaViewModel mediaVM){
 		this.mediaVM = mediaVM;
 
-		System.out.println("MediaDetailViewFx:DataContext := " + mediaVM);
+        logger.debug("DataContext := " + mediaVM);
 
 		if(mediaVM != null){
 			mediaDetailTagPane.setDisable(false);

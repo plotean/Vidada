@@ -1,11 +1,16 @@
 package vidada.model.tags.relations;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import vidada.model.tags.Tag;
 import vidada.model.tags.TagFactory;
 
 public class RelationTest {
 
-	public static void main(String[] args){
+    private static final Logger logger = LogManager.getLogger(RelationTest.class.getName());
+
+
+    public static void main(String[] args){
 
 		TagRelationDefinition rootDef = new TagRelationDefinition();
 
@@ -53,11 +58,11 @@ public class RelationTest {
 		definition.print();
 
 		/* */
-		System.out.println();
-		System.out.println("Tests:");
-		System.out.println(definition.getAllRelatedTags(TagFactory.instance().createTag("fruit")));
+
+        logger.info("Tests:");
+        logger.info(definition.getAllRelatedTags(TagFactory.instance().createTag("fruit")));
 		rootDef.merge(definition);
-		System.out.println(rootDef.getAllRelatedTags(TagFactory.instance().createTag("fruit")));
+        logger.info(rootDef.getAllRelatedTags(TagFactory.instance().createTag("fruit")));
 
 	}
 }

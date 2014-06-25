@@ -95,7 +95,7 @@ public class PrimaryMediaExplorerFX extends BorderPane {
             LocationBreadCrumb crumb = crumbArgs.getSelectedCrumb().getValue();
 
             if(crumb instanceof HomeLocationBreadCrumb){
-                System.out.println("home pressed...");
+                logger.debug("home pressed...");
             }else{
                 DirectoryLocation dir = crumb.getDirectoryLocation();
                 explorerViewModel.setCurrentLocation(dir);

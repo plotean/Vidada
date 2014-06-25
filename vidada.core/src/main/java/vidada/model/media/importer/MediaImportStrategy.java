@@ -4,6 +4,8 @@ import archimedes.core.io.locations.ResourceLocation;
 import archimedes.core.threading.IProgressListener;
 import archimedes.core.threading.ProgressEventArgs;
 import archimedes.core.util.Lists;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import vidada.model.media.MediaHashUtil;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaItemFactory;
@@ -41,7 +43,9 @@ public class MediaImportStrategy implements IMediaImportStrategy {
      *                                                                         *
      **************************************************************************/
 
-	private final IMediaService mediaService;
+    private static final Logger logger = LogManager.getLogger(MediaImportStrategy.class.getName());
+
+    private final IMediaService mediaService;
 	private final ITagService tagService;
 	private final MediaHashUtil mediaHashUtil;
 	private final ITagGuessingStrategy tagGuessingStrategy;
@@ -101,7 +105,7 @@ public class MediaImportStrategy implements IMediaImportStrategy {
                 ;
                 progressListener.currentProgress(new ProgressEventArgs(100, "Done."));
             } else {
-                System.out.println("Import aborted, you do not have specified any libraries!");
+                logger.info("Import aborted, you do not have specified any libraries!");
             }
         }finally {
             progressListener.currentProgress(ProgressEventArgs.COMPLETED);
@@ -219,7 +223,7 @@ public class MediaImportStrategy implements IMediaImportStrategy {
 				}
 			}
 		}catch(Exception e){
-			e.printStackTrace();
+            logger.error(e);
 			return null;
 		}
 
@@ -273,7 +277,7 @@ public class MediaImportStrategy implements IMediaImportStrategy {
 	 */
 	private boolean canMediaBeDeleted(MediaLibrary library, MediaItem media) {
 
-		System.out.println("handleNonExistingMedia: " + media );
+        logger.trace("handleNonExistingMedia: " + media );
 
 		// Remove non existing file sources
 		Set<MediaSource> srcs = media.getSources();
@@ -303,10 +307,10 @@ public class MediaImportStrategy implements IMediaImportStrategy {
 				if(parentLib != null){
 					return parentLib.equals(library);
 				}else{
-					System.err.println("MediaItem::isMemberofLibrary: parent library of " + s + " was NULL!");
+                    logger.error("Parent library of " + s + " was NULL!");
 				}
 			}else{
-				System.err.println("MediaItem::isMemberofLibrary: media source of " + this + " was NULL!");
+                logger.error("MediaSource of " + this + " was NULL!");
 			}
 		}
 		return false;
@@ -358,7 +362,7 @@ public class MediaImportStrategy implements IMediaImportStrategy {
 				source.setIsAvailableDirty();
 
 				if(!source.isAvailable()){
-					System.out.println("removing old source: " + source);
+					logger.debug("Removing old source: " + source);
 					existingMeida.removeSource(source);
 					hasChanges = true;
 				}else{
@@ -374,7 +378,7 @@ public class MediaImportStrategy implements IMediaImportStrategy {
 		if(!currentPathExisits)
 		{
 			URI relativePath = library.getMediaDirectory().getRelativePath(currentPath);
-			System.out.println("trying to add new source: " + relativePath);
+			logger.debug("trying to add new source: " + relativePath);
 			if(relativePath != null){
 				MediaSourceLocal source = new MediaSourceLocal(library, relativePath);
 				existingMeida.addSource(source);

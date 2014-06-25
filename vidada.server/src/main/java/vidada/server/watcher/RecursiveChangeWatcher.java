@@ -1,16 +1,21 @@
 package vidada.server.watcher;
 
 
+import static java.nio.file.LinkOption.NOFOLLOW_LINKS;
+import static java.nio.file.StandardWatchEventKinds.*;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashMap;
 import java.util.Map;
 
-import static java.nio.file.LinkOption.NOFOLLOW_LINKS;
-import static java.nio.file.StandardWatchEventKinds.*;
-
 public class RecursiveChangeWatcher {
+
+    private static final Logger logger = LogManager.getLogger(RecursiveChangeWatcher.class.getName());
+
 
     private final WatchService watcher;
     private final Map<WatchKey,Path> keys;
@@ -30,10 +35,10 @@ public class RecursiveChangeWatcher {
         if (trace) {
             Path prev = keys.get(key);
             if (prev == null) {
-                System.out.format("register: %s\n", dir);
+                logger.debug(String.format("register: %s\n", dir));
             } else {
                 if (!dir.equals(prev)) {
-                    System.out.format("update: %s -> %s\n", prev, dir);
+                    logger.debug(String.format("update: %s -> %s\n", prev, dir));
                 }
             }
         }
@@ -66,9 +71,9 @@ public class RecursiveChangeWatcher {
         this.recursive = recursive;
 
         if (recursive) {
-            System.out.format("Scanning %s ...\n", dir);
+            logger.debug(String.format("Scanning %s ...\n", dir));
             registerRecursive(dir);
-            System.out.println("Done.");
+            logger.debug("Done.");
         } else {
             register(dir);
         }
@@ -93,7 +98,7 @@ public class RecursiveChangeWatcher {
 
             Path dir = keys.get(key);
             if (dir == null) {
-                System.err.println("WatchKey not recognized!!");
+                logger.error("WatchKey not recognized!!");
                 continue;
             }
 
@@ -111,7 +116,7 @@ public class RecursiveChangeWatcher {
                 Path child = dir.resolve(name);
 
                 // print out event
-                System.out.format("%s: %s\n", event.kind().name(), child);
+                logger.debug(String.format("%s: %s\n", event.kind().name(), child));
 
                 // if directory is created, and watching recursively, then
                 // register it and its sub-directories
@@ -121,7 +126,7 @@ public class RecursiveChangeWatcher {
                             registerRecursive(child);
                         }
                     } catch (IOException x) {
-                        // ignore to keep sample readbale
+                        logger.error(x);
                     }
                 }
             }

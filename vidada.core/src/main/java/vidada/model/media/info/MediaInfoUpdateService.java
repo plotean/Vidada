@@ -5,6 +5,8 @@ import archimedes.core.geometry.Size;
 import archimedes.core.io.locations.ResourceLocation;
 import archimedes.core.swing.images.ImageInfo;
 import archimedes.core.swing.images.SimpleImageInfo;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import vidada.model.media.*;
 import vidada.model.media.extracted.IMediaPropertyStore;
 import vidada.model.media.source.MediaSource;
@@ -17,7 +19,10 @@ import java.io.InputStream;
 
 public class MediaInfoUpdateService implements IMediaInfoUpdateService {
 
-	private static String PROPERTY_RESOLUTION = "resolution";
+    private static final Logger logger = LogManager.getLogger(MediaInfoUpdateService.class.getName());
+
+
+    private static String PROPERTY_RESOLUTION = "resolution";
 	private static String PROPERTY_DURATION = "duration";
 	private static String PROPERTY_BITRATE = "bitrate";
 
@@ -152,9 +157,9 @@ public class MediaInfoUpdateService implements IMediaInfoUpdateService {
 						imageMedia.setResolution(resolution);
 						success = true;
 					}else
-						System.err.println("resolveResolution(): ImageInfo is NOT VALID! " + info);
+                        logger.error("resolveResolution(): ImageInfo is NOT VALID! " + info);
 				}catch(Exception e){
-					e.printStackTrace();
+                    logger.error(e);
 				}finally{
 					if(is != null){
 						is.close();
@@ -162,7 +167,7 @@ public class MediaInfoUpdateService implements IMediaInfoUpdateService {
 				}
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+            logger.error(e);
 		}
 
 		return success;

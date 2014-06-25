@@ -1,6 +1,8 @@
 package vidada.model.media;
 
 import archimedes.core.io.locations.DirectoryLocation;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import vidada.model.entities.IdEntity;
 import vidada.model.images.cache.IImageCache;
 import vidada.model.images.cache.ImageCacheFactory;
@@ -24,7 +26,10 @@ import java.net.URISyntaxException;
 @Access(AccessType.FIELD)
 public class MediaLibrary extends IdEntity {
 
-	/**
+    private static final Logger logger = LogManager.getLogger(MediaLibrary.class.getName());
+
+
+    /**
 	 * Vidadas cache directory name in a users library folder root
 	 */
 	public static final String VidataCacheFolder = "vidada.db";
@@ -84,7 +89,7 @@ public class MediaLibrary extends IdEntity {
 
 	/**
 	 * Set the root path of this media library
-	 * @param libraryRoot
+	 * @param location
 	 */
 	@Transient
 	public void setLibraryRoot(DirectoryLocation location) {
@@ -99,7 +104,7 @@ public class MediaLibrary extends IdEntity {
 			try {
 				libraryDirectoryLocation = DirectoryLocation.Factory.create(libraryRootURI);
 			} catch (URISyntaxException e) {
-				e.printStackTrace();
+                logger.error(e);
 			}
 		}
 		return libraryDirectoryLocation;
@@ -120,11 +125,11 @@ public class MediaLibrary extends IdEntity {
 			if(libraryRoot != null && libraryRoot.exists()){
 				try {
 					DirectoryLocation libCache = DirectoryLocation.Factory.create(libraryRoot, VidataThumbsFolder);
-					System.out.println("opening new library cache...");
+                    logger.info("Opening new library cache...");
 					ImageCacheFactory factory = new ImageCacheFactory();
 					imageCache = factory.openCache(libCache);
 				} catch (URISyntaxException e1) {
-					e1.printStackTrace();
+                    logger.error(e1);
 				}
 			}
 		}

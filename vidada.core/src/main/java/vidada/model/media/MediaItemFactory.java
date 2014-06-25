@@ -1,6 +1,8 @@
 package vidada.model.media;
 
 import archimedes.core.io.locations.ResourceLocation;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 
 import java.io.File;
@@ -12,12 +14,33 @@ import java.nio.file.attribute.FileTime;
 
 public class MediaItemFactory {
 
-	private final static MediaItemFactory instance = new MediaItemFactory();
+    /***************************************************************************
+     *                                                                         *
+     * Private Fields                                                          *
+     *                                                                         *
+     **************************************************************************/
 
-	public synchronized static MediaItemFactory instance(){
-		return instance;
-	}
 
+    private static final Logger logger = LogManager.getLogger(MediaItemFactory.class.getName());
+
+    private final static MediaItemFactory instance = new MediaItemFactory();
+
+
+    /***************************************************************************
+     *                                                                         *
+     * Singleton                                                               *
+     *                                                                         *
+     **************************************************************************/
+
+    public synchronized static MediaItemFactory instance(){
+        return instance;
+    }
+
+    /***************************************************************************
+     *                                                                         *
+     * Public API                                                              *
+     *                                                                         *
+     **************************************************************************/
 
 	/**
 	 * Simple media factory to create a media item from an existing file.
@@ -63,7 +86,7 @@ public class MediaItemFactory {
 					mediahash);
 
 		}else {
-			System.err.println("MediaService: Can not handle " + mediaLocation.toString());
+            logger.error("Can not build media for " + mediaLocation.toString());
 		}
 
         Path mediaFile = new File(mediaLocation.getPath()).toPath();
@@ -72,7 +95,7 @@ public class MediaItemFactory {
             FileTime time = attr.creationTime();
             newMedia.setAddedDate(new DateTime(time.toMillis()));
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(e);
         }
 
         return newMedia;

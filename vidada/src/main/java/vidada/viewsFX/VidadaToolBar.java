@@ -8,6 +8,8 @@ import javafx.scene.control.ToolBar;
 import javafx.scene.effect.Glow;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.dialog.Dialog;
 import org.controlsfx.dialog.Dialogs;
@@ -20,6 +22,8 @@ import vidada.viewsFX.libraries.LibraryManagerController;
 import vidada.viewsFX.update.UpdateBar;
 
 public class VidadaToolBar extends HBox{
+
+    private static final Logger logger = LogManager.getLogger(VidadaToolBar.class.getName());
 
     private static final String Style_ToolBar_Background = "-fx-background-color: #505050;";
 
@@ -74,7 +78,7 @@ public class VidadaToolBar extends HBox{
         bar.getItems().add(
                 createToolBarButton(IconType.TAG_ICON_32, () -> {
 
-                    System.out.println("Tag manager not implemented!");
+                    logger.error("Tag manager not implemented!");
                 }));
 
         bar.getItems().add(new Separator());

@@ -8,6 +8,8 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.image.*;
 import javafx.util.Duration;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import uk.co.caprica.vlcj.player.MediaPlayer;
 import uk.co.caprica.vlcj.player.MediaPlayerEventAdapter;
 import uk.co.caprica.vlcj.player.MediaPlayerEventListener;
@@ -29,9 +31,12 @@ import java.nio.ByteBuffer;
  * @author IsNull
  *
  */
-public class MediaPlayerVLC extends MediaPlayerFx 
+public class MediaPlayerVLC extends MediaPlayerFx
 {
-	// TODO refactor this dependency away
+    private static final Logger logger = LogManager.getLogger(MediaPlayerVLC.class.getName());
+
+
+    // TODO refactor this dependency away
 	private final VidadaClientSettings applicationSettings = VidadaClientSettings.instance();
 
 	// player factory config
@@ -175,7 +180,7 @@ public class MediaPlayerVLC extends MediaPlayerFx
 	 */
 	private void renderMovie(final double fps){
 
-		System.out.println("MediaPlayerVLC: render movie @ " + fps + " fps");
+        logger.info("MediaPlayerVLC: render movie @ " + fps + " fps");
 
 		if(t != null)
 			stopRender();
@@ -193,7 +198,7 @@ public class MediaPlayerVLC extends MediaPlayerFx
 	}
 
 	private void stopRender(){
-		System.out.println("MediaPlayerVLC: stoped render movie");
+        logger.info("MediaPlayerVLC: stoped render movie");
 		t.stop();
 		t = null;
 	}
@@ -247,7 +252,7 @@ public class MediaPlayerVLC extends MediaPlayerFx
 
 
 	private MediaPlayerFactory createFactory(){
-		System.out.println("creating new MediaPlayerFactory...");
+        logger.info("creating new MediaPlayerFactory...");
 
 		String[] myargs = args;
 
@@ -284,8 +289,7 @@ public class MediaPlayerVLC extends MediaPlayerFx
 
 			int width = (int)(videopane.getFitWidth()*getDpiMultiplier());
 			int height = (int)(videopane.getFitHeight()*getDpiMultiplier());
-			System.out.println("MediaPlayerVLC:getBufferFormat: Media(" + width + " x " + height + ") "
-					+ "dpi: " + getDpiMultiplier() );
+            logger.trace("getBufferFormat: Media(" + width + " x " + height + ") " + "dpi: " + getDpiMultiplier() );
 
 			return new RV32BufferFormat(width, height);
 		}

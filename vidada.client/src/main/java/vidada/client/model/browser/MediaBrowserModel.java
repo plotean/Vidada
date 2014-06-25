@@ -9,6 +9,8 @@ import archimedes.core.events.EventListenerEx;
 import archimedes.core.events.IEvent;
 import archimedes.core.services.ISelectionManager;
 import archimedes.core.services.SelectionManager;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import vidada.client.viewmodel.MediaViewModel;
 import vidada.client.viewmodel.browser.BrowserFolderItemVM;
 import vidada.client.viewmodel.browser.BrowserItemVM;
@@ -22,7 +24,10 @@ import vidada.model.media.MediaItem;
  */
 public class MediaBrowserModel {
 
-	private final ISelectionManager<IBrowserItem> selectionManager = new SelectionManager<IBrowserItem>();
+    private static final Logger logger = LogManager.getLogger(MediaBrowserModel.class.getName());
+
+
+    private final ISelectionManager<IBrowserItem> selectionManager = new SelectionManager<IBrowserItem>();
 
 	private IDataProvider<IDeferLoaded<BrowserItemVM>> mediasDataProvider;
 
@@ -50,7 +55,7 @@ public class MediaBrowserModel {
 
 		if(mediaProvider != null){
 
-			System.out.println("MediaBrowserModel:setMedias size(" + mediaProvider.size() + ")");
+            logger.debug("setMedias size(" + mediaProvider.size() + ")");
 
 			DataProviderTransformer.ITransform<
                         IDeferLoaded<BrowserItemVM>,
@@ -63,7 +68,7 @@ public class MediaBrowserModel {
 
 			mediasDataProvider = new DataProviderTransformer<IDeferLoaded<BrowserItemVM>, IDeferLoaded<MediaItem>>(mediaProvider, transformer);
 		}else {
-			System.out.println("MediaBrowserModel:setMedias mediaProvider := NULL");
+            logger.debug("setMedias mediaProvider := NULL");
 		}
 
 		mediasChangedEvent.fireEvent(this, EventArgs.Empty);
@@ -132,7 +137,7 @@ public class MediaBrowserModel {
 		@Override
 		public void eventOccured(Object sender, EventArgs eventArgs) {
 
-			System.out.println("MediaBrowserModel: VMselectionChangedListener ...");
+			logger.debug("MediaBrowserModel: VMselectionChangedListener ...");
 
 			BrowserItemVM vm = (BrowserItemVM)sender;
 

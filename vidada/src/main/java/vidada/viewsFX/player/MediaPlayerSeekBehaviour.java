@@ -2,6 +2,8 @@ package vidada.viewsFX.player;
 
 import javafx.event.EventHandler;
 import javafx.scene.input.MouseEvent;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 /**
  * Provides instant seeking to the relative position 
@@ -12,6 +14,19 @@ import javafx.scene.input.MouseEvent;
  */
 public class MediaPlayerSeekBehaviour implements IMediaPlayerBehavior {
 
+    /***************************************************************************
+     *                                                                         *
+     * Private Fields                                                          *
+     *                                                                         *
+     **************************************************************************/
+
+    private static final Logger logger = LogManager.getLogger(MediaPlayerSeekBehaviour.class.getName());
+
+    /***************************************************************************
+     *                                                                         *
+     * Public API                                                              *
+     *                                                                         *
+     **************************************************************************/
 
 	/**{@inheritDoc}*/
 	@Override
@@ -32,8 +47,8 @@ public class MediaPlayerSeekBehaviour implements IMediaPlayerBehavior {
         MediaPlayerFx mediaPlayer = (MediaPlayerFx) me.getSource();
         double width = mediaPlayer.getRealWidth();
         double relativePos = me.getX() / width;
-        System.out.println(me.getX() + " " + width);
-        System.out.println("MediaPlayerSeekBehaviour: pos " + relativePos);
+        logger.debug(me.getX() + " " + width);
+        logger.debug("pos " + relativePos);
         mediaPlayer.getMediaController().setPosition((float)relativePos);
     };
 

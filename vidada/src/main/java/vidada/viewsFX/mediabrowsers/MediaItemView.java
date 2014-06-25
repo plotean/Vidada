@@ -19,6 +19,8 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.controlsfx.control.Rating;
 import org.controlsfx.dialog.Dialogs;
 import vidada.client.viewmodel.MediaViewModel;
@@ -38,6 +40,14 @@ import vidada.viewsFX.util.AsyncImageProperty;
  *
  */
 public class MediaItemView extends BrowserCellView {
+
+    /***************************************************************************
+     *                                                                         *
+     * Private Fields                                                          *
+     *                                                                         *
+     **************************************************************************/
+
+    private static final Logger logger = LogManager.getLogger(MediaItemView.class.getName());
 
     transient private final IImageViewerService imageViewer = ServiceProvider.Resolve(IImageViewerService.class);
     transient private final IRawImageFactory imageFactory = ServiceProvider.Resolve(IRawImageFactory.class);
@@ -165,12 +175,12 @@ public class MediaItemView extends BrowserCellView {
 	 */
 	private void onMediaInspectAction(float relativePos){
 
-		System.out.println("inspect media: " + mediaViewModel.getMediaType());
+        logger.debug("Inspect media: " + mediaViewModel.getMediaType());
 		if(mediaViewModel.getMediaType().equals(MediaType.MOVIE))
 		{
 			if(mediaPlayerService.isMediaPlayerAvaiable()){
 
-				System.out.println("MediaView: Starting directplay:");
+                logger.info("Starting DirectPlay...");
 
 				MediaPlayerFx playerView = addMediaPlayer();
 
@@ -182,7 +192,7 @@ public class MediaItemView extends BrowserCellView {
 				playerView.getMediaController().setPosition(relativePos);
 
 			}else {
-				System.err.println("No MediaPlayer is avaible!");
+                logger.warn("No MediaPlayer is available!");
 			}
 		}
 	}
@@ -190,7 +200,7 @@ public class MediaItemView extends BrowserCellView {
 	private final static IMediaPlayerBehavior playerBehavior = new MediaPlayerSeekBehaviour();
 
 	private MediaPlayerFx addMediaPlayer(){
-		System.out.println("MediaItemView: adding MediaPlayer");
+        logger.debug("Adding MediaPlayer decorator.");
 
 		player = mediaPlayerService.resolveMediaPlayer();
 		player.getRequestReleaseEvent().add(playerReleaseListener);
@@ -215,7 +225,7 @@ public class MediaItemView extends BrowserCellView {
 
 		if(player != null){
 
-			System.out.println("MediaItemView: removing MediaPlayer");
+            logger.debug("Removing MediaPlayer");
 
 			MediaPlayerFx playerView = player.getSharedPlayer();
 			playerView.getMediaController().stop();
@@ -239,7 +249,7 @@ public class MediaItemView extends BrowserCellView {
     };
 
 	private final EventHandler<KeyEvent> playerKeyPressListener = ke -> {
-        System.out.println("keeeyy on player :D");
+        logger.debug("key-press on player :D");
     };
 
 

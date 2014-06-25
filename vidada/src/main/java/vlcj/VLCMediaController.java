@@ -1,5 +1,7 @@
 package vlcj;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import uk.co.caprica.vlcj.player.MediaPlayer;
 import vidada.viewsFX.player.IMediaController;
 
@@ -12,7 +14,10 @@ import vidada.viewsFX.player.IMediaController;
  */
 public class VLCMediaController implements IMediaController {
 
-	private MediaPlayer _mediaPlayer;
+    private static final Logger logger = LogManager.getLogger(VLCMediaController.class.getName());
+
+
+    private MediaPlayer _mediaPlayer;
 	private String lastPlayedMedia = null;
 
 	public void bind(MediaPlayer mediaPlayerVLC){
@@ -44,9 +49,9 @@ public class VLCMediaController implements IMediaController {
 		MediaPlayer mediaPlayer = _mediaPlayer;
 		if(mediaPlayer != null){
 			boolean success = mediaPlayer.playMedia(file);
-			System.out.println("playMedia succeeded? " + success + " - playing file: " + file);
+            logger.debug("playMedia succeeded? " + success + " - playing file: " + file);
 		}else{
-			System.err.println("media player not avaiable!");
+            logger.error("Media player not available!");
 		}
 	}
 
@@ -56,7 +61,7 @@ public class VLCMediaController implements IMediaController {
 		if(mediaPlayer != null){
 			mediaPlayer.setCropGeometry(aspectRatio);
 		}else {
-			System.err.println("media player not avaiable!");
+            logger.error("media player not available!");
 		}
 	}
 
@@ -65,9 +70,9 @@ public class VLCMediaController implements IMediaController {
 		MediaPlayer mediaPlayer = _mediaPlayer;
 		if(mediaPlayer != null){
 			mediaPlayer.setScale(factor);
-			System.out.println("scale set to " + factor + " scale is now " + mediaPlayer.getScale());
+            logger.debug("scale set to " + factor + " scale is now " + mediaPlayer.getScale());
 		}else {
-			System.err.println("media player not avaiable!");
+            logger.error("Media player not available!");
 		}
 	}
 
@@ -87,8 +92,8 @@ public class VLCMediaController implements IMediaController {
 		if(mediaPlayer != null){
 			mediaPlayer.setPosition(pos);
 		}else{
-			System.err.println("media player not avaiable!");
-		}
+            logger.error("Media player not available!");
+        }
 	}
 
 
@@ -107,8 +112,8 @@ public class VLCMediaController implements IMediaController {
 		if(mediaPlayer != null){
 			mediaPlayer.pause();
 		}else{
-			System.err.println("media player not avaiable!");
-		}
+            logger.error("Media player not available!");
+        }
 	}
 
 

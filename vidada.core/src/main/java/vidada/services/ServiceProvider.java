@@ -2,6 +2,8 @@ package vidada.services;
 
 
 import archimedes.core.services.*;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import vidada.handlers.MediaPresenterService;
 import vidada.model.security.CredentialManager;
 import vidada.model.security.ICredentialManager;
@@ -17,7 +19,10 @@ import vidada.model.security.ICredentialManager;
  */
 public class ServiceProvider implements ILocator {
 
-	public interface IServiceRegisterer { void registerServices(ServiceLocator locator); }
+    private static final Logger logger = LogManager.getLogger(ServiceProvider.class.getName());
+
+
+    public interface IServiceRegisterer { void registerServices(ServiceLocator locator); }
 
 
 
@@ -75,13 +80,13 @@ public class ServiceProvider implements ILocator {
 	 */
 	private void configServices(){
 
-		System.out.println("Config global services...");
+        logger.info("Config global services...");
 
 		serviceLocator.registerSingleton(ISelectionService.class, SelectionService.class);
 		serviceLocator.registerSingleton(ICredentialManager.class, CredentialManager.class);
 		serviceLocator.registerSingleton(IMediaPresenterService.class, MediaPresenterService.class);
 
-		System.out.println("Config services done.");
+        logger.info("Config services done.");
 	}
 
 
