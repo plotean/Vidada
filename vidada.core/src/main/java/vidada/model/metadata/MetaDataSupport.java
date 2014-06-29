@@ -1,8 +1,11 @@
 package vidada.model.metadata;
 
-import org.securityvision.metadata.FileMetaDataSupportFactory;
-import org.securityvision.metadata.IFileMetaDataSupport;
-import org.securityvision.metadata.MetaDataNotSupportedException;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import ch.securityvision.metadata.FileMetaDataSupportFactory;
+import ch.securityvision.metadata.IFileMetaDataSupport;
+import ch.securityvision.metadata.MetaDataNotSupportedException;
+import ch.securityvision.metadata.MetadataIOException;
 
 import java.io.File;
 import java.net.URI;
@@ -16,8 +19,14 @@ import java.net.URI;
  */
 public class MetaDataSupport {
 
+    private final static Logger logger = LogManager.getLogger(MetaDataSupport.class.getName());
+
 	private final IFileMetaDataSupport fileMetaDataSupport;
 
+    /**
+     * Creates a new MetaDataSupport instance
+     * @throws MetaDataNotSupportedException
+     */
 	public MetaDataSupport() throws MetaDataNotSupportedException {
 		fileMetaDataSupport = FileMetaDataSupportFactory.buildFileMetaSupport();
 	}
@@ -46,8 +55,12 @@ public class MetaDataSupport {
 	 * @param value
 	 */
 	public void writeMetaData(URI uri, MediaMetaAttribute attribute, String value){
-		fileMetaDataSupport.writeAttribute(new File(uri), attribute.getAttributeName(), value);
-	}
+        try {
+            fileMetaDataSupport.writeAttribute(new File(uri), attribute.getAttributeName(), value);
+        } catch (MetadataIOException e) {
+            logger.error(e);
+        }
+    }
 
 	/**
 	 * Read the given attribute from the given files meta data
@@ -56,7 +69,12 @@ public class MetaDataSupport {
 	 * @return
 	 */
 	public String readMetaData(URI uri, MediaMetaAttribute attribute){
-		return fileMetaDataSupport.readAttribute(new File(uri), attribute.getAttributeName());
-	}
+        try {
+            return fileMetaDataSupport.readAttribute(new File(uri), attribute.getAttributeName());
+        } catch (MetadataIOException e) {
+            logger.error(e);
+        }
+        return null;
+    }
 
 }

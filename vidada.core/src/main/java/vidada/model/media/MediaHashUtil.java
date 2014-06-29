@@ -5,7 +5,7 @@ import archimedes.core.data.hashing.IFileHashAlgorythm;
 import archimedes.core.io.locations.ResourceLocation;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.securityvision.metadata.MetaDataNotSupportedException;
+import ch.securityvision.metadata.MetaDataNotSupportedException;
 import vidada.model.metadata.MediaMetaAttribute;
 import vidada.model.metadata.MetaDataSupport;
 import vidada.model.settings.VidadaClientSettings;

@@ -3,7 +3,7 @@ package vidada;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.junit.Ignore;
-import org.securityvision.metadata.MetaDataNotSupportedException;
+import ch.securityvision.metadata.MetaDataNotSupportedException;
 import vidada.model.metadata.MediaMetaAttribute;
 import vidada.model.metadata.MetaDataSupport;
 
