@@ -12,6 +12,7 @@ import vidada.model.settings.VidadaClientSettings;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 /**
  * Provides file-hash utility functions
@@ -27,12 +28,10 @@ public class MediaHashUtil {
      **************************************************************************/
 
     private static final Logger logger = LogManager.getLogger(MediaHashUtil.class.getName());
+    private static MediaHashUtil defaultMediaHashUtil;
 
-	private final IFileHashAlgorythm fileHashAlgorythm;
-
-	private boolean forceUpdateMetaData = false;
-	private static MediaHashUtil defaultMediaHashUtil;
-
+    private final IFileHashAlgorythm fileHashAlgorythm;
+	private static final boolean forceUpdateMetaData = false;
 	private MetaDataSupport metaDataSupport;
 
 	/**
@@ -47,15 +46,29 @@ public class MediaHashUtil {
 		return defaultMediaHashUtil;
 	}
 
+    /***************************************************************************
+     *                                                                         *
+     * Constructors                                                            *
+     *                                                                         *
+     **************************************************************************/
+
+    /**
+     * Default Instance Constructor
+     */
 	private MediaHashUtil(){
-		this(FileHashAlgorythms.instance().getButtikscheHashAlgorythm());
-	}
+		this(FileHashAlgorythms.instance().getButtikscheHashAlgorythm(),
+             VidadaClientSettings.instance().isUsingMetaData()); // TODO Refactor this dependency away
 
-	public MediaHashUtil(IFileHashAlgorythm fileHashAlgorythm){
-		this.fileHashAlgorythm = fileHashAlgorythm;
+    }
 
-		// TODO Refactor this dependency away
-		if(VidadaClientSettings.instance().isUsingMetaData())
+    /**
+     * Creates a new MediaHashUtil
+     * @param fileHashAlgorithm
+     */
+	public MediaHashUtil(IFileHashAlgorythm fileHashAlgorithm, boolean useMetaData){
+		this.fileHashAlgorythm = fileHashAlgorithm;
+
+		if(useMetaData)
 		{
 			try {
 				metaDataSupport = new MetaDataSupport();
@@ -64,6 +77,12 @@ public class MediaHashUtil {
 			}	
 		}
 	}
+
+    /***************************************************************************
+     *                                                                         *
+     * Public API                                                              *
+     *                                                                         *
+     **************************************************************************/
 
 	/**
 	 * Returns the file-hash of the given file.
@@ -89,15 +108,28 @@ public class MediaHashUtil {
 	 */
 	public String retrieveFileHashMetaData(ResourceLocation mediaPath){
 
-		String hash = metaDataSupport.readMetaData(mediaPath.getUri(), MediaMetaAttribute.FileHash);
+		String hash = null;
 
-		if(hash == null || forceUpdateMetaData)
+        if(!forceUpdateMetaData){
+            hash = metaDataSupport.readMetaData(mediaPath.getUri(), MediaMetaAttribute.FileHash);
+        }
+
+        if(hash == null)
 		{
+            // We could not read the hash from meta-data, we have to recalculate it
+
 			hash = calculateHash(mediaPath);
-			metaDataSupport.writeMetaData(mediaPath.getUri(), MediaMetaAttribute.FileHash, hash);
-            logger.debug("MediaHashUtil: hash calculated and saved in meta data: " + hash);
+            if(hash != null){
+                if(metaDataSupport.writeMetaData(mediaPath.getUri(), MediaMetaAttribute.FileHash, hash)){
+                    logger.info("Hash recalculated and written to meta-data: " + hash);
+                }else{
+                    logger.warn("Could not write hash to meta-data attribute!");
+                }
+            }else{
+                logger.error("Hash could not be calculated for " + mediaPath);
+            }
 		}else{
-			//System.out.println("MediaHashUtil: hash readed from metadata: " + hash);
+            logger.debug(String.format("Hash '%s' was retrieved from meta-data!", hash));
 		}
 
 		return hash;
@@ -126,7 +158,5 @@ public class MediaHashUtil {
 		}
 		return hash;
 	}
-
-
 
 }

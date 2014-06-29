@@ -9,11 +9,12 @@ import ch.securityvision.metadata.MetadataIOException;
 
 import java.io.File;
 import java.net.URI;
+import java.util.List;
 
 /**
  * MetaData Support
  * Several file metadata helper methods
- * 
+ *
  * @author IsNull
  *
  */
@@ -21,56 +22,81 @@ public class MetaDataSupport {
 
     private final static Logger logger = LogManager.getLogger(MetaDataSupport.class.getName());
 
-	private final IFileMetaDataSupport fileMetaDataSupport;
+    private final IFileMetaDataSupport fileMetaDataSupport;
 
     /**
      * Creates a new MetaDataSupport instance
      * @throws MetaDataNotSupportedException
      */
-	public MetaDataSupport() throws MetaDataNotSupportedException {
-		fileMetaDataSupport = FileMetaDataSupportFactory.buildFileMetaSupport();
-	}
+    public MetaDataSupport() throws MetaDataNotSupportedException {
+        fileMetaDataSupport = FileMetaDataSupportFactory.buildFileMetaSupport();
+    }
 
-	/**
-	 * Does the given file (file-system where the file resides) support meta-data?
-	 * @param uri
-	 * @return
-	 */
-	public boolean isMetaDataSupported(URI uri){
-		if(isFileUri(uri)){
-			File file = new File(uri);
-			return fileMetaDataSupport.isMetaDataSupported(file);
-		}
-		return false;
-	}
+    /**
+     * Does the given file (file-system where the file resides) support meta-data?
+     * @param uri
+     * @return
+     */
+    public boolean isMetaDataSupported(URI uri){
+        if(isFileUri(uri)){
+            File file = new File(uri);
+            return fileMetaDataSupport.isMetaDataSupported(file);
+        }
+        return false;
+    }
 
-	private static boolean isFileUri(URI uri){
-		return uri.getScheme().indexOf("file") != -1;
-	}
+    private static boolean isFileUri(URI uri){
+        return uri.getScheme().indexOf("file") != -1;
+    }
 
-	/**
-	 * Write the given attribute value to the given file
-	 * @param uri
-	 * @param attribute
-	 * @param value
-	 */
-	public void writeMetaData(URI uri, MediaMetaAttribute attribute, String value){
+    /**
+     * Write the given attribute value to the given file
+     * @param uri
+     * @param attribute
+     * @param value
+     */
+    public boolean writeMetaData(URI uri, MediaMetaAttribute attribute, String value){
+        boolean success = false;
+        File file = new File(uri);
         try {
-            fileMetaDataSupport.writeAttribute(new File(uri), attribute.getAttributeName(), value);
+            fileMetaDataSupport.writeAttribute(file, attribute.getAttributeName(), value);
+            success = true;
+        } catch (MetadataIOException e) {
+            logger.error(e);
+            if(!file.canWrite()){
+                logger.warn("Can not write meta-data since file is read-only: " + file);
+            }
+        }
+        return success;
+    }
+
+    /**
+     * Read the given attribute from the given files meta data.
+     *
+     * If the attribute does not exists or when it could not be retrieved,
+     * NULL is returned.
+     *
+     * @param uri
+     * @param attribute
+     * @return
+     */
+    public String readMetaData(URI uri, MediaMetaAttribute attribute){
+        try {
+            return fileMetaDataSupport.readAttribute(new File(uri), attribute.getAttributeName());
         } catch (MetadataIOException e) {
             logger.error(e);
         }
+        return null;
     }
 
-	/**
-	 * Read the given attribute from the given files meta data
-	 * @param uri
-	 * @param attribute
-	 * @return
-	 */
-	public String readMetaData(URI uri, MediaMetaAttribute attribute){
+    /**
+     * Lists all meta-data attributes of the given file
+     * @param uri
+     * @return
+     */
+    public List<String> listAllAttributes(URI uri){
         try {
-            return fileMetaDataSupport.readAttribute(new File(uri), attribute.getAttributeName());
+            return fileMetaDataSupport.listAttributes(new File(uri));
         } catch (MetadataIOException e) {
             logger.error(e);
         }

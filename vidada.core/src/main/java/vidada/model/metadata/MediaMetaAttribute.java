@@ -25,15 +25,16 @@ public enum MediaMetaAttribute {
 
 	private String attributeName;
 
+    /**
+     * Enum Constructor
+     * @param attributeName
+     */
 	private MediaMetaAttribute(String attributeName){
-		this.setAttributeName(attributeName);
+        this.attributeName = attributeName;
 	}
 
 	public String getAttributeName() {
 		return attributeName;
 	}
 
-	private void setAttributeName(String attributeName) {
-		this.attributeName = attributeName;
-	}
 }
