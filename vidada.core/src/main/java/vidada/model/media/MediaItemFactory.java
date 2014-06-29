@@ -67,7 +67,7 @@ public class MediaItemFactory {
 
 		if(mediahash == null){
 			// if no hash has been provided we have to calculate it now
-			mediahash =  MediaHashUtil.getDefaultMediaHashUtil().retriveFileHash(mediaLocation);
+			mediahash =  MediaHashUtil.getDefaultMediaHashUtil().retrieveFileHash(mediaLocation);
 		}
 
 		// find the correct Media type for the given media

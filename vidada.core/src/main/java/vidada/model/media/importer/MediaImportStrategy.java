@@ -168,7 +168,7 @@ public class MediaImportStrategy implements IMediaImportStrategy {
 		for (int i = 0; i < locationCount; i++) {
             ResourceLocation location = mediaLocations.get(i);
 
-			hash = mediaHashUtil.retriveFileHash(location);
+			hash = mediaHashUtil.retrieveFileHash(location);
             fileContentMap.put(location, hash);
 			progressListener.currentProgress(new ProgressEventArgs(100 / locationCount * i, "hash: " + hash + "\tfile: " + location.getName()));
 		}

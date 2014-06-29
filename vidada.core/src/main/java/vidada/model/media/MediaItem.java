@@ -310,7 +310,7 @@ public abstract class MediaItem extends BaseEntity {
 			MediaSource source = getSource();
 			if(source != null && source.isAvailable()){
 				MediaHashUtil hashUtil = MediaHashUtil.getDefaultMediaHashUtil();
-				String hash =  hashUtil.retriveFileHash(source.getResourceLocation());
+				String hash =  hashUtil.retrieveFileHash(source.getResourceLocation());
 				setFilehash(hash);
 			}
 		}

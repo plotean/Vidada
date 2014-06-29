@@ -74,9 +74,9 @@ public class MediaHashUtil {
 	 * @param mediaPath
 	 * @return
 	 */
-	public String retriveFileHash(ResourceLocation mediaPath){
+	public String retrieveFileHash(ResourceLocation mediaPath){
 		if(metaDataSupport != null && metaDataSupport.isMetaDataSupported(mediaPath.getUri()))
-			return retriveFileHashMetaData(mediaPath);
+			return retrieveFileHashMetaData(mediaPath);
 		else
 			return calculateHash(mediaPath);
 	}
@@ -87,7 +87,7 @@ public class MediaHashUtil {
 	 * @param mediaPath
 	 * @return
 	 */
-	public String retriveFileHashMetaData(ResourceLocation mediaPath){
+	public String retrieveFileHashMetaData(ResourceLocation mediaPath){
 
 		String hash = metaDataSupport.readMetaData(mediaPath.getUri(), MediaMetaAttribute.FileHash);
 
