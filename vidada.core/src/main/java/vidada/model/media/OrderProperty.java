@@ -30,7 +30,24 @@ public enum OrderProperty
 	/**
 	 * Order by rating
 	 */
-	RATING("Rating", "rating");
+	RATING("Rating", "rating"),
+
+    /**
+     * Order by file size
+     */
+    SIZE("File size", "fileSize"),
+
+    /**
+     * Order by duration
+     */
+    DURATION("Duration", "duration"),
+
+    /**
+     * Order by bitrate
+     */
+    BITRATE("Bitrate", "bitrate");
+
+
 
 	private final String description;
 	private final String property;
