@@ -53,6 +53,7 @@ public abstract class MediaItem extends BaseEntity {
 	private String filehash = null;
 	private String filename = null;
 	private DateTime addedDate = new DateTime();
+    private long fileSize = -1;
 	private Size resolution = Size.Empty;
 	private int opened = 0;
 	private int rating = 0;
@@ -157,6 +158,23 @@ public abstract class MediaItem extends BaseEntity {
 		this.addedDate = addedDate;
 		firePropertyChange("addedDate");
 	}
+
+    /**
+     * Gets the file size in bytes
+     * @return
+     */
+    public long getFileSize() {
+        return fileSize;
+    }
+
+    /**
+     * Sets the file size in bytes
+     * @param fileSize
+     */
+    public void setFileSize(long fileSize) {
+        this.fileSize = fileSize;
+        firePropertyChange("fileSize");
+    }
 
 	/**
 	 * Is the primary media source available
@@ -427,6 +445,5 @@ public abstract class MediaItem extends BaseEntity {
 	public boolean isSelected() {
 		return selected;
 	}
-
 
 }
