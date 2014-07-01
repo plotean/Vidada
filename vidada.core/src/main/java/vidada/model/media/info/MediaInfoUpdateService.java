@@ -19,6 +19,12 @@ import java.io.InputStream;
 
 public class MediaInfoUpdateService implements IMediaInfoUpdateService {
 
+    /***************************************************************************
+     *                                                                         *
+     * Private fields                                                          *
+     *                                                                         *
+     **************************************************************************/
+
     private static final Logger logger = LogManager.getLogger(MediaInfoUpdateService.class.getName());
 
 
@@ -27,9 +33,13 @@ public class MediaInfoUpdateService implements IMediaInfoUpdateService {
 	private static String PROPERTY_BITRATE = "bitrate";
 
 
-	/* (non-Javadoc)
-	 * @see vidada.model.media.info.IMediaInfoUpdateService#updateInfo(vidada.model.media.MediaItem)
-	 */
+    /***************************************************************************
+     *                                                                         *
+     * Public API                                                              *
+     *                                                                         *
+     **************************************************************************/
+
+	/**{@inheritDoc}*/
 	@Override
 	public boolean updateInfo(MediaItem media){
 		if(media.getType().equals(MediaType.IMAGE)){
@@ -41,6 +51,7 @@ public class MediaInfoUpdateService implements IMediaInfoUpdateService {
 		}
 	}
 
+    /**{@inheritDoc}*/
 	@Override
 	public boolean updateInfoFromCache(MediaItem media, IMediaPropertyStore propertyStore){
 		if(media.getType().equals(MediaType.IMAGE)){
@@ -52,6 +63,18 @@ public class MediaInfoUpdateService implements IMediaInfoUpdateService {
 		}
 	}
 
+    /***************************************************************************
+     *                                                                         *
+     * Private methods                                                         *
+     *                                                                         *
+     **************************************************************************/
+
+    /**
+     * Updates the given movieMedia's properties from the cached values where necessary
+     * @param movieMedia
+     * @param propertyStore
+     * @return
+     */
 	private boolean updateMovieInfoCache(MovieMediaItem movieMedia, IMediaPropertyStore propertyStore) {
 		boolean updatedMedia = false;
 
