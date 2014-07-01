@@ -87,13 +87,17 @@ public class MediaItemFactory {
 
 		}else {
             logger.error("Can not build media for " + mediaLocation.toString());
+            return null;
 		}
 
         Path mediaFile = new File(mediaLocation.getPath()).toPath();
         try {
             BasicFileAttributes attr = Files.readAttributes(mediaFile, BasicFileAttributes.class);
             FileTime time = attr.creationTime();
+            long fileSize = attr.size();
+
             newMedia.setAddedDate(new DateTime(time.toMillis()));
+            newMedia.setFileSize(fileSize);
         } catch (IOException e) {
             logger.error(e);
         }
