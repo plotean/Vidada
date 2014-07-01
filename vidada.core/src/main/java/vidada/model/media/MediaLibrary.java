@@ -7,7 +7,7 @@ import vidada.model.entities.IdEntity;
 import vidada.model.images.cache.IImageCache;
 import vidada.model.images.cache.ImageCacheFactory;
 import vidada.model.media.extracted.IMediaPropertyStore;
-import vidada.model.media.extracted.MediaPropertyStore;
+import vidada.model.media.extracted.JsonMediaPropertyStore;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
@@ -145,7 +145,7 @@ public class MediaLibrary extends IdEntity {
 		if(propertyStore == null){
 			DirectoryLocation libraryRoot = getLibraryRoot();
 			if(libraryRoot != null && libraryRoot.exists()){
-				propertyStore = new MediaPropertyStore(new File(libraryRoot.getPath(), VidataInfoFolder));
+				propertyStore = new JsonMediaPropertyStore(new File(libraryRoot.getPath(), VidataInfoFolder));
 			}
 		}
 		return propertyStore;
