@@ -88,6 +88,7 @@ public class MediaImportStrategy implements IMediaImportStrategy {
      *                                                                         *
      **************************************************************************/
 
+    /**{@inheritDoc}*/
 	@Override
 	public void synchronize(IProgressListener progressListener){
         try {
@@ -102,7 +103,7 @@ public class MediaImportStrategy implements IMediaImportStrategy {
                         synchronizeLibrary(progressListener, lib);
                     }
                 }
-                ;
+
                 progressListener.currentProgress(new ProgressEventArgs(100, "Done."));
             } else {
                 logger.info("Import aborted, you do not have specified any libraries!");
@@ -322,7 +323,7 @@ public class MediaImportStrategy implements IMediaImportStrategy {
 	 * @param library
 	 * @param existingMeida
 	 * @param entry
-	 * @return
+	 * @return Returns true if any property of this media has been updated
 	 */
 	private boolean updateExistingMedia(MediaLibrary library, MediaItem existingMeida, Entry<ResourceLocation, String> entry){
 
@@ -424,10 +425,23 @@ public class MediaImportStrategy implements IMediaImportStrategy {
 			i++;
 		}
 
-		String msg = "Adding " + newMedias.size() + " new medias to the Library...";
-		progressListener.currentProgress(new ProgressEventArgs(true, msg));
+		progressListener.currentProgress(new ProgressEventArgs(true, "Adding " + newMedias.size() + " new medias to the Library..."));
 		mediaService.store(newMedias);
 	}
+
+    /**
+     * Updates all necessary properties of this media
+     * (file size, added date, resolution, duration etc)
+     * if they are not yet present.
+     *
+     *
+     * @param media
+     * @return
+     */
+    private boolean updateMediaProperties(MediaItem media){
+
+        return false;
+    }
 
 
 }
