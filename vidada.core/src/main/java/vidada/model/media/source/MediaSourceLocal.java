@@ -31,8 +31,7 @@ public class MediaSourceLocal extends MediaSource {
      **************************************************************************/
 
     transient private static final Logger logger = LogManager.getLogger(MediaSourceLocal.class.getName());
-
-	transient private boolean isFileAvaiable;
+	transient private boolean isFileAvailable;
 
 	@ManyToOne
 	private MediaLibrary parentLibrary = null;
@@ -40,7 +39,7 @@ public class MediaSourceLocal extends MediaSource {
 
 
 	/** ORM Constructor */
-	MediaSourceLocal(){ }
+	protected MediaSourceLocal(){ }
 
 	public MediaSourceLocal(MediaLibrary parentLibrary, URI relativeFilePath)
 	{
@@ -71,8 +70,8 @@ public class MediaSourceLocal extends MediaSource {
 	@Override
 	public boolean isAvailable() {
 		ResourceLocation absolutePath = getResourceLocation();
-		isFileAvaiable = absolutePath != null && absolutePath.exists();
-		return isFileAvaiable;
+		isFileAvailable = absolutePath != null && absolutePath.exists();
+		return isFileAvailable;
 	}
 
 	// ----------------
@@ -124,13 +123,12 @@ public class MediaSourceLocal extends MediaSource {
 
 	protected void setParentLibrary(MediaLibrary parentLibrary) {
 		this.parentLibrary = parentLibrary;
-		//isFileAvaiableDirty = true;
 	}
 
 
 	@Override
 	public String toString(){
-		return "[" + getName() + "] avaiable: " + isAvailable();
+		return "[" + getName() + "] available: " + isAvailable();
 	}
 }
 

@@ -40,7 +40,10 @@ public class BrowserFolderItemLocation extends BrowserFolderItem {
      * @param mediaService
      */
 	public BrowserFolderItemLocation(DirectoryLocation directory, IMediaService mediaService){
-		this.directory = directory;
+		if(directory == null) throw new IllegalArgumentException("directory is null");
+        if(mediaService == null) throw new IllegalArgumentException("mediaService null");
+
+        this.directory = directory;
 		this.mediaService = mediaService;
 	}
 

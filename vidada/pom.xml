@@ -248,12 +248,6 @@
 
 
 	<dependencies>
-
-	    <dependency>
-	        <groupId>org.securityvision</groupId>
-	        <artifactId>xattrj</artifactId>
-	        <version>1.1</version>
-	    </dependency>
 	    
   		<dependency>
 		    <groupId>ch.securityvision.vidada</groupId>

@@ -236,15 +236,15 @@ public class MediaImportStrategy implements IMediaImportStrategy {
 
 			if(existingMediaData.containsKey(entry.getValue()))
 			{	
-				MediaItem existingMeida = existingMediaData.get(entry.getValue());
-				realExistingMediaDatas.put(existingMeida, true); // mark the media data as real existing
+				MediaItem existingMedia = existingMediaData.get(entry.getValue());
+				realExistingMediaDatas.put(existingMedia, true); // mark the media data as real existing
 
 				//
 				// this file hash was already present in our media lib. 
 				// check if the details are still the same and update it if necessary
 				//
-				if(updateExistingMedia(library, existingMeida, entry))
-					updateMedias.add(existingMeida);
+				if(updateExistingMedia(existingMedia, library, entry))
+					updateMedias.add(existingMedia);
 
 			}else{
 				newFiles.put(entry.getValue(), entry.getKey());
@@ -281,9 +281,9 @@ public class MediaImportStrategy implements IMediaImportStrategy {
         logger.trace("handleNonExistingMedia: " + media );
 
 		// Remove non existing file sources
-		Set<MediaSource> srcs = media.getSources();
-		for (MediaSource msource : srcs) {
-			MediaSourceLocal source = (MediaSourceLocal)msource;
+		Set<MediaSource> allSources = media.getSources();
+		for (MediaSource currentSource : allSources) {
+			MediaSourceLocal source = (MediaSourceLocal)currentSource;
 			if(source.getParentLibrary().equals(library))
 			{
 				media.removeSource(source);
@@ -319,20 +319,24 @@ public class MediaImportStrategy implements IMediaImportStrategy {
 
 
 	/**
-	 * Update a existing media file
-	 * @param library
-	 * @param existingMeida
+	 * Update a existing media item
+	 * @param existingMedia
+	 * @param parentLibrary
 	 * @param entry
 	 * @return Returns true if any property of this media has been updated
 	 */
-	private boolean updateExistingMedia(MediaLibrary library, MediaItem existingMeida, Entry<ResourceLocation, String> entry){
+	private boolean updateExistingMedia(MediaItem existingMedia, MediaLibrary parentLibrary, Entry<ResourceLocation, String> entry){
 
-        boolean hasChanges = updateExistingMediaSources(library, existingMeida, entry.getKey());
+        boolean hasChanges = updateExistingMediaSources(parentLibrary, existingMedia, entry.getKey());
 
 		// Update Tags From file path
-		if(tagGuessingStrategy != null && AutoTagSupport.updateTags(tagGuessingStrategy, existingMeida)){
+		if(tagGuessingStrategy != null && AutoTagSupport.updateTags(tagGuessingStrategy, existingMedia)){
 			hasChanges = true;
 		}
+
+        if(updateMediaProperties(existingMedia, parentLibrary)){
+            hasChanges = true;
+        }
 
 		return hasChanges;
 	}
@@ -417,9 +421,7 @@ public class MediaImportStrategy implements IMediaImportStrategy {
 				if(tagGuessingStrategy != null)
 					AutoTagSupport.updateTags(tagGuessingStrategy, newMedia);
 
-				// Add media infos which might be present from previous caches
-				mediaInfoUpdateService.updateInfoFromCache(newMedia, parentlibrary.getPropertyStore());
-
+                updateMediaProperties(newMedia, parentlibrary);
                 newMedias.add(newMedia);
 			}
 			i++;
@@ -438,9 +440,16 @@ public class MediaImportStrategy implements IMediaImportStrategy {
      * @param media
      * @return
      */
-    private boolean updateMediaProperties(MediaItem media){
+    private boolean updateMediaProperties(MediaItem media, MediaLibrary parentLibrary){
 
-        return false;
+        boolean hasChanges = false;
+        hasChanges = MediaItemFactory.instance().updateBasicAttributes(media);
+
+        // TODO Handle more complex properties such as duration/bitrate etc.
+        // Add media infos which might be present from previous caches
+        mediaInfoUpdateService.updateInfoFromCache(media, parentLibrary.getPropertyStore());
+
+        return hasChanges;
     }
 
 

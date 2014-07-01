@@ -4,6 +4,7 @@ import archimedes.core.io.locations.ResourceLocation;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
+import vidada.model.media.source.MediaSource;
 
 import java.io.File;
 import java.io.IOException;
@@ -87,22 +88,40 @@ public class MediaItemFactory {
 
 		}else {
             logger.error("Can not build media for " + mediaLocation.toString());
-            return null;
 		}
-
-        Path mediaFile = new File(mediaLocation.getPath()).toPath();
-        try {
-            BasicFileAttributes attr = Files.readAttributes(mediaFile, BasicFileAttributes.class);
-            FileTime time = attr.creationTime();
-            long fileSize = attr.size();
-
-            newMedia.setAddedDate(new DateTime(time.toMillis()));
-            newMedia.setFileSize(fileSize);
-        } catch (IOException e) {
-            logger.error(e);
-        }
 
         return newMedia;
 	}
+
+    /**
+     * Updates the basic attributes of the given media item
+     * @param mediaItem
+     * @return
+     */
+    public boolean updateBasicAttributes(MediaItem mediaItem){
+
+        boolean wasUpdated = false;
+
+        if(mediaItem.getFileSize() == -1){ // Checks if a update is required
+
+            MediaSource source = mediaItem.getSource();
+            ResourceLocation mediaLocation = source.getResourceLocation();
+
+            Path mediaFile = new File(mediaLocation.getPath()).toPath();
+            try {
+                BasicFileAttributes attr = Files.readAttributes(mediaFile, BasicFileAttributes.class);
+                FileTime time = attr.creationTime();
+                long fileSize = attr.size();
+
+                mediaItem.setAddedDate(new DateTime(time.toMillis()));
+                mediaItem.setFileSize(fileSize);
+                wasUpdated = true;
+            } catch (IOException e) {
+                logger.error(e);
+            }
+        }
+
+        return wasUpdated;
+    }
 
 }
