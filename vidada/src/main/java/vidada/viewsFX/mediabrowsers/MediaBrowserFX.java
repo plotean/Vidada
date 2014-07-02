@@ -35,24 +35,90 @@ public class MediaBrowserFX extends BorderPane {
 
     private static final Logger logger = LogManager.getLogger(MediaBrowserFX.class.getName());
 
+    private final double defaultItemWidth = 200;
+    private final double defaultItemHeight = 140;
+    private final double itemAspectRatio = defaultItemWidth / defaultItemHeight;
+
     private MediaBrowserModel mediaModel;
     private GridView<IDeferLoaded<BrowserItemVM>> gridView;
     private GridViewViewPort gridViewPort;
     private IndexRange visibleCells;
 
-
     //transient private final ObservableList<BrowserItemVM> observableMedias;
     transient private final IMediaPlayerService mediaPlayerService = new MediaPlayerService();
 
+    private EventListenerEx<EventArgs> mediasChangedEventListener = (sender, eventArgs) -> updateView();
 
+
+    /***************************************************************************
+     *                                                                         *
+     * Constructor                                                             *
+     *                                                                         *
+     **************************************************************************/
+
+    /**
+     * Creates a new media browser view
+     */
     public MediaBrowserFX(){
         initView();
     }
 
-    private final double defaultItemWidth = 200;
-    private final double defaultItemHeight = 140;
-    private final double itemAspectRatio = defaultItemWidth / defaultItemHeight;
 
+    /***************************************************************************
+     *                                                                         *
+     * Public API                                                              *
+     *                                                                         *
+     **************************************************************************/
+
+    /**
+     * Set the browser item width / size. The height is calculated from the aspect ratio.
+     * @param width
+     */
+    public void setItemSize(double width){
+        setItemSize(width, width / itemAspectRatio);
+    }
+
+    /**
+     * Set the model data for this view
+     * @param mediaModel
+     */
+    public void setDataContext(MediaBrowserModel mediaModel){
+
+        logger.debug("Setting new MediaBrowserModel data context: " + mediaModel);
+
+        if(this.mediaModel != null){
+            this.mediaModel.getMediaChangedEvent().remove(mediasChangedEventListener);
+        }
+
+        this.mediaModel = mediaModel;
+
+        if(mediaModel != null){
+            mediaModel.getMediaChangedEvent().add(mediasChangedEventListener);
+        }
+
+        logger.debug("New media model events registered, now updating view...");
+
+        updateView();
+    }
+
+    /**
+     * Gets the {@link ISelectionManager} for the browser items.
+     * @return
+     */
+    public ISelectionManager<IBrowserItem> getSelectionManager() {
+        return mediaModel.getSelectionManager();
+    }
+
+    /***************************************************************************
+     *                                                                         *
+     * Private methods                                                         *
+     *                                                                         *
+     **************************************************************************/
+
+
+    /**
+     * Initializes the view
+     */
     private void initView(){
         gridView = new GridView<>();
 
@@ -79,21 +145,42 @@ public class MediaBrowserFX extends BorderPane {
             setItemSize(gridView.getCellWidth() * event.getZoomFactor());
             event.consume();
         });
-
-
     }
 
+    /**
+     * Updates the browser items
+     */
+    private synchronized void updateView(){
+        Platform.runLater(() -> {
+            // Run the following code in the JavaFX UI Thread soon
 
-    public void setItemSize(double width, double height){
+            logger.debug("Updating view...");
+
+            ObservableList<IDeferLoaded<BrowserItemVM>> observableMedias;
+
+            if(mediaModel != null && mediaModel.getMedias() != null){
+                observableMedias = new ObservableListFXAdapter<>(mediaModel.getMedias());
+            }else {
+                observableMedias = FXCollections.observableArrayList();
+                logger.debug("Medias empty, nothing to show.");
+            }
+
+            gridView.setItems(observableMedias);
+            gridViewPort.ensureViewportChangedListener(); // TODO HACK: (Should be called once after Scene is shown)
+
+            logger.debug("Updating view done.");
+        });
+    }
+
+    /**
+     * Set the item size
+     * @param width
+     * @param height
+     */
+    private void setItemSize(double width, double height){
         gridView.setCellWidth(width);
         gridView.setCellHeight(height);
     }
-
-    public void setItemSize(double width){
-        setItemSize(width, width / itemAspectRatio);
-    }
-
-
 
     /**
      * Occurs when the items visible in the current ViewPort have been changed.
@@ -118,51 +205,14 @@ public class MediaBrowserFX extends BorderPane {
         visibleCells = currentVisibleCells;
     }
 
-    public void setDataContext(MediaBrowserModel mediaModel){
-
-        logger.debug("MediaBrowserFX: setDataContext " + mediaModel);
-
-        if(this.mediaModel != null){
-            this.mediaModel.getMediaChangedEvent().remove(mediasChangedEventListener);
-        }
-
-        this.mediaModel = mediaModel;
-
-        if(mediaModel != null){
-            mediaModel.getMediaChangedEvent().add(mediasChangedEventListener);
-        }
-
-        updateView();
-    }
-
-    transient private EventListenerEx<EventArgs> mediasChangedEventListener = (sender, eventArgs) -> updateView();
-
     /**
      * Occurs when a folderItem was opened
+     * TODO Browser?
      * @param folderItem
      */
     protected void onItemFolderOpen(BrowserFolderItem folderItem){
         //setDataContext(folderItem);
     }
 
-    private synchronized void updateView(){
-        Platform.runLater(() -> {
-            ObservableList<IDeferLoaded<BrowserItemVM>> observableMedias;
-
-            if(mediaModel != null && mediaModel.getMedias() != null){
-                observableMedias = new ObservableListFXAdapter<>(mediaModel.getMedias());
-            }else {
-                observableMedias = FXCollections.observableArrayList();
-                logger.debug("Medias empty, nothing to show.");
-            }
-
-            gridView.setItems(observableMedias);
-            gridViewPort.ensureViewportChangedListener(); // TODO HACK: (Should be called once after Scene is shown)
-        });
-    }
-
-    public ISelectionManager<IBrowserItem> getSelectionManager() {
-        return mediaModel.getSelectionManager();
-    }
 
 }

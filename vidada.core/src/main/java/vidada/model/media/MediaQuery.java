@@ -34,20 +34,20 @@ public class MediaQuery extends AbstractQuery<MediaItem>{
 
 	/**
 	 * Creates a media query with the following 
-	 * @param selectedtype
+	 * @param selectedType
 	 * @param keywords
 	 * @param order
 	 * @param requiredTags
 	 * @param blockedTags
-	 * @param requiredMediaLibs
+	 * @param onlyAvailable
 	 * @param reverseOrder
 	 */
-	public MediaQuery(MediaType selectedtype, String keywords,
+	public MediaQuery(MediaType selectedType, String keywords,
 			OrderProperty order, List<Tag> requiredTags,
 			List<Tag> blockedTags, boolean onlyAvailable,
 			boolean reverseOrder) {
 		this(AbstractQuery.QueryType.Query);
-		this.selectedtype = selectedtype;
+		this.selectedtype = selectedType;
 		this.keywords = keywords;
 		this.order = order;
 		this.requiredTags = requiredTags;

@@ -24,16 +24,25 @@ import vidada.model.media.MediaItem;
  */
 public class MediaBrowserModel {
 
-    private static final Logger logger = LogManager.getLogger(MediaBrowserModel.class.getName());
+    /***************************************************************************
+     *                                                                         *
+     * Private Fields                                                          *
+     *                                                                         *
+     **************************************************************************/
 
+    private static final Logger logger = LogManager.getLogger(MediaBrowserModel.class.getName());
 
     private final ISelectionManager<IBrowserItem> selectionManager = new SelectionManager<IBrowserItem>();
 
 	private IDataProvider<IDeferLoaded<BrowserItemVM>> mediasDataProvider;
+    private BrowserItemVM previousSelection;
 
-	//
-	// Events
-	//
+    /***************************************************************************
+     *                                                                         *
+     * Events                                                                  *
+     *                                                                         *
+     **************************************************************************/
+
 	private final EventHandlerEx<EventArgs> mediasChangedEvent = new EventHandlerEx<EventArgs>();
 	/**
 	 * Raised when the media model has changed
@@ -41,47 +50,110 @@ public class MediaBrowserModel {
 	public IEvent<EventArgs> getMediaChangedEvent() {return mediasChangedEvent;}
 
 
+    /***************************************************************************
+     *                                                                         *
+     * Constructors                                                            *
+     *                                                                         *
+     **************************************************************************/
+
+    /**
+     * Creates a new MediaBrowserModel
+     */
 	public MediaBrowserModel(){
 
 	}
 
-	public ISelectionManager<IBrowserItem> getSelectionManager() {
+    /***************************************************************************
+     *                                                                         *
+     * Public API                                                              *
+     *                                                                         *
+     **************************************************************************/
+
+    /**
+     * Gets the selection manager
+     * @return
+     */
+    public ISelectionManager<IBrowserItem> getSelectionManager() {
 		return selectionManager;
 	}
 
+    /**
+     * Sets the media data provider
+     * @param mediaProvider
+     */
 	public void setMedias(IDataProvider<IDeferLoaded<MediaItem>> mediaProvider){
 
 		selectionManager.clear();
 
 		if(mediaProvider != null){
 
-            logger.debug("setMedias size(" + mediaProvider.size() + ")");
-
-			DataProviderTransformer.ITransform<
-                        IDeferLoaded<BrowserItemVM>,
-                        IDeferLoaded<MediaItem>> transformer = new DataProviderTransformer.ITransform<IDeferLoaded<BrowserItemVM>, IDeferLoaded<MediaItem>>(){
-				@Override
-				public IDeferLoaded<BrowserItemVM> transform(IDeferLoaded<MediaItem> source) {
-					return new DerefBrowserItemVM(source);
-				}
-			};
+            logger.debug("Setting " + mediaProvider.size() + " medias in MediaBrowserModel...");
 
 			mediasDataProvider = new DataProviderTransformer<IDeferLoaded<BrowserItemVM>, IDeferLoaded<MediaItem>>(mediaProvider, transformer);
 		}else {
-            logger.debug("setMedias mediaProvider := NULL");
+            logger.debug("Setting NULL medias in MediaBrowserModel.");
 		}
-
 		mediasChangedEvent.fireEvent(this, EventArgs.Empty);
 	}
 
-
+    /**
+     * Gets the media data provider
+     * @return
+     */
 	public IDataProvider<IDeferLoaded<BrowserItemVM>> getMedias(){
 		return mediasDataProvider;
 	}
 
+    /**
+     * Clears all medias in this model
+     */
 	public void clearMedias() {
 		setMedias(null);
 	}
+
+
+    /***************************************************************************
+     *                                                                         *
+     * Private methods                                                         *
+     *                                                                         *
+     **************************************************************************/
+
+    /**
+     * Event handler invoked when the selection has changed
+     */
+    transient private final EventListenerEx<EventArgs> VMselectionChangedListener = new EventListenerEx<EventArgs>() {
+        @Override
+        public void eventOccured(Object sender, EventArgs eventArgs) {
+
+            logger.debug("MediaBrowserModel: VMselectionChangedListener ...");
+
+            BrowserItemVM vm = (BrowserItemVM)sender;
+
+            if(previousSelection != null) previousSelection.setSelected(false);
+
+            selectionManager.trySelect(vm.getModel());
+
+            previousSelection = vm;
+        }
+    };
+
+    /**
+     * Media transformer / adapter
+     */
+    private final DataProviderTransformer.ITransform<
+            IDeferLoaded<BrowserItemVM>,
+            IDeferLoaded<MediaItem>> transformer = new DataProviderTransformer.ITransform<IDeferLoaded<BrowserItemVM>, IDeferLoaded<MediaItem>>(){
+        @Override
+        public IDeferLoaded<BrowserItemVM> transform(IDeferLoaded<MediaItem> source) {
+            return new DerefBrowserItemVM(source);
+        }
+    };
+
+    /***************************************************************************
+     *                                                                         *
+     * Internal Classes                                                        *
+     *                                                                         *
+     **************************************************************************/
 
 	private class DerefBrowserItemVM implements IDeferLoaded<BrowserItemVM>{
 
@@ -130,25 +202,5 @@ public class MediaBrowserModel {
 		}
 
 	}
-
-	private BrowserItemVM previousSelection;
-
-	transient private final EventListenerEx<EventArgs> VMselectionChangedListener = new EventListenerEx<EventArgs>() {
-		@Override
-		public void eventOccured(Object sender, EventArgs eventArgs) {
-
-			logger.debug("MediaBrowserModel: VMselectionChangedListener ...");
-
-			BrowserItemVM vm = (BrowserItemVM)sender;
-
-			if(previousSelection != null) previousSelection.setSelected(false);
-
-			selectionManager.trySelect(vm.getModel());
-
-			previousSelection = vm;
-		}
-	};
-
-
 
 }
