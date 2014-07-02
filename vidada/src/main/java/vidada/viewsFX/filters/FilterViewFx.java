@@ -2,6 +2,7 @@ package vidada.viewsFX.filters;
 
 import archimedes.core.util.Lists;
 import impl.org.controlsfx.autocompletion.SuggestionProvider;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -86,19 +87,19 @@ public class FilterViewFx extends BorderPane {
 		cboMediaType.setPromptText("Define mediatype...");
 		cboMediaType.setItems(mediaTypes);
 
-		//AquaFx.createTextFieldStyler().setType(TextFieldType.SEARCH).style(searchText);
-		// .createButtonStyler().setSizeVariant(ControlSizeVariant.REGULAR).style(buttonInstance);
-
 		// register change events
 		registerEventHandler();
 	}
 
 	private void updateTagSuggestionProvider() {
-        Collection<TagViewModel> availableTags = tagClientService.getUsedTags().stream()
-                .map(x -> createVM(x))
-                .collect(Collectors.toList());
-        SuggestionProvider<TagViewModel> tagSuggestionProvider = SuggestionProvider.create(availableTags);
-        tagPane.setSuggestionProvider(tagSuggestionProvider);
+        new Thread(() -> {
+            Collection<TagViewModel> availableTags = tagClientService.getUsedTags().stream()
+                    .map(x -> createVM(x))
+                    .collect(Collectors.toList());
+            SuggestionProvider<TagViewModel> tagSuggestionProvider = SuggestionProvider.create(availableTags);
+
+            Platform.runLater(() -> tagPane.setSuggestionProvider(tagSuggestionProvider));
+        }).start();
     }
 
 	private void registerEventHandler() {
