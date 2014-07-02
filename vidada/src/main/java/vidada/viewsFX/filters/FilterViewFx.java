@@ -30,6 +30,12 @@ import java.util.stream.Collectors;
 
 public class FilterViewFx extends BorderPane {
 
+    /***************************************************************************
+     *                                                                         *
+     * Private Fields                                                          *
+     *                                                                         *
+     **************************************************************************/
+
 	private final FilterModel filtermodel;
 
 	private final TagItPanel<TagViewModel> tagPane;
@@ -40,7 +46,16 @@ public class FilterViewFx extends BorderPane {
 
 	private final ITagClientService tagClientService = ServiceProvider.Resolve(IVidadaClientManager.class).getActive().getTagClientService();
 
+    /***************************************************************************
+     *                                                                         *
+     * Constructor                                                             *
+     *                                                                         *
+     **************************************************************************/
 
+    /**
+     * Creates a new filter view
+     * @param filtermodel
+     */
 	public FilterViewFx(final FilterModel filtermodel){
 
 		this.filtermodel = filtermodel;
@@ -91,8 +106,18 @@ public class FilterViewFx extends BorderPane {
 		registerEventHandler();
 	}
 
+    /***************************************************************************
+     *                                                                         *
+     * Private methods                                                         *
+     *                                                                         *
+     **************************************************************************/
+
+    /**
+     * Updates the tag suggestions
+     */
 	private void updateTagSuggestionProvider() {
         new Thread(() -> {
+            // Since we call a client service we have to expect long delays over network
             Collection<TagViewModel> availableTags = tagClientService.getUsedTags().stream()
                     .map(x -> createVM(x))
                     .collect(Collectors.toList());
