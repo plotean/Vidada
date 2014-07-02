@@ -1,6 +1,8 @@
 package vidada.viewsFX;
 
-import javafx.geometry.Insets;
+import archimedes.core.exceptions.NotImplementedException;
+import archimedes.core.services.ISelectionManager;
+import javafx.scene.Node;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.BorderPane;
 import vidada.client.IVidadaClientManager;
@@ -14,11 +16,7 @@ import vidada.client.viewmodel.media.MediaDetailViewModel;
 import vidada.controller.filters.MediaFilterDatabaseBinding;
 import vidada.viewsFX.filters.FilterViewFx;
 import vidada.viewsFX.mediabrowsers.MediaBrowserFX;
-import vidada.viewsFX.medias.MediaDetailViewFx;
-import archimedes.core.events.EventArgs;
-import archimedes.core.events.EventListenerEx;
-import archimedes.core.exceptions.NotImplementedException;
-import archimedes.core.services.ISelectionManager;
+import vidada.viewsFX.medias.MediaDetailController;
 
 /**
  * Represents the main media browser
@@ -31,17 +29,6 @@ public class PrimaryMediaBrowserFX extends BorderPane {
 
 	private final ITagClientService tagClientService;
 	private final MediaBrowserModel browserModel;
-	//private final MediaDetailViewModel singleMediaDetailVM;
-
-
-	/*
-	private final ITagStatesVM mediaDetailTagstates = new TagStatesModel(new IVMFactory<Tag, TagViewModel>() {
-		@Override
-		public TagViewModel create(Tag model) {
-			return new TagViewModel(model, TagState.Allowed,  TagState.Required);
-		}
-	});*/
-
 
 
 	public PrimaryMediaBrowserFX(MediaBrowserModel browserModel, IVidadaClientManager serverClientService, ITagClientService tagClientService, IMediaClientService mediaService){
@@ -70,19 +57,17 @@ public class PrimaryMediaBrowserFX extends BorderPane {
 		this.setTop(filterPane);
 
 		// Detail View
-		final MediaDetailViewFx detailView = new MediaDetailViewFx();
+        final Node detailView = FXMLLoaderX.load("medias/MediaDetailView.fxml");
+        final MediaDetailController mediaDetailController = (MediaDetailController)detailView.getUserData();
+
 		TitledPane detailPane = new TitledPane("Detail", detailView);
-		detailView.setPadding(new Insets(10));
 		this.setBottom(detailPane);
 
 
-		mediaBrowserFX.getSelectionManager().getSelectionChanged().add(new EventListenerEx<EventArgs>() {
-			@Override
-			public void eventOccured(Object sender, EventArgs eventArgs) {
-				IMediaViewModel vm = getMediaDetailVM(mediaBrowserFX.getSelectionManager());	
-				detailView.setDataContext(vm);
-			}
-		});
+		mediaBrowserFX.getSelectionManager().getSelectionChanged().add((sender, eventArgs) -> {
+            IMediaViewModel vm = getMediaDetailVM(mediaBrowserFX.getSelectionManager());
+            mediaDetailController.setDataContext(vm);
+        });
 
 	}
 

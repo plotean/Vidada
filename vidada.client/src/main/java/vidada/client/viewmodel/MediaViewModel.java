@@ -8,6 +8,7 @@ import archimedes.core.io.locations.ResourceLocation;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import org.joda.time.format.DateTimeFormat;
+import util.FormatUtil;
 import vidada.client.IVidadaClientManager;
 import vidada.client.facade.IThumbContainerService;
 import vidada.client.model.browser.BrowserMediaItem;
@@ -132,6 +133,10 @@ public class MediaViewModel extends BrowserItemVM  {
 		return (res != null && !res.isEmpty()) ? res.width + "x" + res.height : "unknown";
 	}
 
+    public String getFileSizeStr(){
+        return FormatUtil.readableFileSize(mediaData.getFileSize());
+    }
+
 
     public List<Runnable> getActions(){
         List<Runnable> actions = new ArrayList<Runnable>();
@@ -249,10 +254,10 @@ public class MediaViewModel extends BrowserItemVM  {
 		}
 	}
 
-	protected void persist(){
-		if(mediaData != null)
-			mediaClientService.update(mediaData);
-	}
+	protected void persist() {
+        if (mediaData != null)
+            mediaClientService.update(mediaData);
+    }
 
 
 

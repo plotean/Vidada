@@ -63,8 +63,10 @@ public interface IMediaViewModel {
 	 */
 	public abstract Collection<Tag> getAvailableTags();
 
+    public abstract String getFileSizeStr();
 
-	/***************************************************************************
+
+    /***************************************************************************
 	 *                                                                         *
 	 * Persistence                                                             *
 	 *                                                                         *

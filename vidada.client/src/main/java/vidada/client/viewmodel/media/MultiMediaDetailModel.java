@@ -166,5 +166,11 @@ public class MultiMediaDetailModel implements IMediaViewModel{
 		return null;
 	}
 
+    @Override
+    public String getFileSizeStr() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 
 }

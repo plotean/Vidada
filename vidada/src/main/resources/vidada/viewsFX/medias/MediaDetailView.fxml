@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.Group?>
+<?import javafx.scene.layout.*?>
+<?import org.controlsfx.control.Rating?>
+<?import vidada.viewsFX.tags.MediaDetailTagPane?>
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="vidada.viewsFX.medias.MediaDetailController">
+
+    <padding>
+        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+    </padding>
+
+    <center>
+        <GridPane alignment="TOP_LEFT" hgap="10" vgap="10">
+            <padding><Insets top="25" right="25" bottom="10" left="25"/></padding>
+            <columnConstraints>
+                <ColumnConstraints hgrow="NEVER" />
+                <ColumnConstraints hgrow="ALWAYS" />
+            </columnConstraints>
+
+
+            <Label Text="Name"
+                   GridPane.rowIndex="0" GridPane.columnIndex="0" />
+
+            <TextField fx:id="txtname" maxWidth="Infinity"
+                   GridPane.rowIndex="0" GridPane.columnIndex="1"  />
+
+            <Label Text="Rating"
+                   GridPane.rowIndex="1" GridPane.columnIndex="0" />
+
+
+            <Rating fx:id="ratingView"
+                    GridPane.rowIndex="1" GridPane.columnIndex="1">
+            </Rating>
+
+
+            <Label Text="Created"
+                   GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+            <Label fx:id="lblDate"
+                   GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+            <Label Text="Size"
+                   GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+            <Label fx:id="lblSize"
+                   GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+
+        </GridPane>
+    </center>
+
+    <right>
+        <MediaDetailTagPane fx:id="mediaDetailTagPane" />
+    </right>
+
+</BorderPane>
+
