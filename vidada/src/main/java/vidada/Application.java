@@ -39,6 +39,7 @@ import vidada.model.tags.relations.TagRelationDefinitionParser.ParseException;
 import vidada.selfupdate.SelfUpdateService;
 import vidada.server.VidadaServer;
 import vidada.server.dal.IVidadaDALService;
+import vidada.server.rest.VidadaRestServer;
 import vidada.server.settings.VidadaServerSettings;
 import vidada.services.IMediaPresenterService;
 import vidada.services.ISelfUpdateService;
@@ -304,7 +305,7 @@ public class Application extends  javafx.application.Application {
 		if(instance != null){
 			IVidadaClient vidadaClient;
 			if(instance.equals(VidadaInstance.LOCAL)){
-				vidadaClient = createlocalServerAndClient();
+				vidadaClient = createLocalServerAndClient();
 			}else{
 				vidadaClient = connectToRemoteVidadaInstance(instance);
 			}
@@ -329,7 +330,7 @@ public class Application extends  javafx.application.Application {
 		return vidadaClient;
 	}
 
-	private IVidadaClient createlocalServerAndClient(){
+	private IVidadaClient createLocalServerAndClient(){
 		IVidadaClient vidadaClient = null;
 
 		configLocalServerDatabase();
@@ -342,7 +343,7 @@ public class Application extends  javafx.application.Application {
 		}
 
 		try{
-            logger.info("Settings up Vidada DAL...");
+            logger.info("Setting up Vidada DAL...");
 
 			IVidadaDALService vidadaDALService = DAL.build(new File(dbconfig.getDataBasePath()));
             logger.info("DAL Layer loaded successfully.");
@@ -352,6 +353,9 @@ public class Application extends  javafx.application.Application {
 
 			// Create a local client for the local server
 			vidadaClient = new LocalVidadaClient(localserver);
+
+            initializeWebServer(localserver);
+
 		}catch(DatabaseConnectionException e){
 			e.printStackTrace();
 
@@ -365,6 +369,23 @@ public class Application extends  javafx.application.Application {
 
 		return vidadaClient;
 	}
+
+    private static VidadaRestServer initializeWebServer(IVidadaServer server) {
+        VidadaRestServer restServer = null;
+        if (VidadaServerSettings.instance().isEnableNetworkSharing()) {
+            logger.info("Starting REST Server...");
+
+            try {
+                restServer = new VidadaRestServer(server);
+                restServer.start();
+            } catch (Throwable e) {
+                logger.error(e);
+            }
+        } else {
+            logger.info("Network sharing is disabled.");
+        }
+        return restServer;
+    }
 
     private void loadUserTagRelations(IVidadaServer localserver) {
 

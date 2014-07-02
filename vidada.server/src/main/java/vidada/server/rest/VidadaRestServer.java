@@ -1,5 +1,7 @@
 package vidada.server.rest;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.glassfish.grizzly.http.server.CLStaticHttpHandler;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.grizzly.servlet.FilterRegistration;
@@ -12,28 +14,63 @@ import javax.servlet.DispatcherType;
 import java.io.IOException;
 import java.util.EnumSet;
 
-
+/**
+ * A Vidada Web-Server which exposes most of the server functionality
+ * to the REST API.
+ *
+ *
+ */
 public class VidadaRestServer {
 
+    /***************************************************************************
+     *                                                                         *
+     * Private Fields                                                          *
+     *                                                                         *
+     **************************************************************************/
+
     private static final String SERVLET_JERSEY = "jersey-servlet";
+    private static final Logger logger = LogManager.getLogger(VidadaRestServer.class.getName());
 
-
-	public static IVidadaServer VIDADA_SERVER;
+    public static IVidadaServer VIDADA_SERVER;
 	private final IVidadaServer vidadaServer;
 
 
+    /***************************************************************************
+     *                                                                         *
+     * Constructor                                                             *
+     *                                                                         *
+     **************************************************************************/
 
+    /**
+     * Creates a new Vidada Web-server with a REST API
+     * @param server
+     */
 	public VidadaRestServer(IVidadaServer server){
 		this.vidadaServer = server;
 		VIDADA_SERVER = server;
 	}
 
 
+    /***************************************************************************
+     *                                                                         *
+     * Public API                                                              *
+     *                                                                         *
+     **************************************************************************/
+
+    /**
+     * Starts the web server
+     * @return
+     */
     public HttpServer start() {
 
-        // Create the Web server
+        logger.info("Configuring Vidada HttpServer for REST API...");
 
-        HttpServer server = HttpServer.createSimpleServer("http://0.0.0.0/", 5555);
+        // Configure the Web server
+
+        String serverUrl = "http://0.0.0.0/";
+        int serverPort = 5555;
+
+        HttpServer server = HttpServer.createSimpleServer(serverUrl, serverPort);
 
         // Register a REST handler
         WebappContext webappContext = createRESTContext();
@@ -59,13 +96,20 @@ public class VidadaRestServer {
          */
 
         try {
+            logger.info("Starting HttpServer @ " + serverUrl + " at port " + serverPort);
             server.start();
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(e);
         }
 
         return server;
     }
+
+    /***************************************************************************
+     *                                                                         *
+     * Private Methods                                                         *
+     *                                                                         *
+     **************************************************************************/
 
     private WebappContext createRESTContext(){
         WebappContext webappContext = new WebappContext("Grizzly Web Context", "");

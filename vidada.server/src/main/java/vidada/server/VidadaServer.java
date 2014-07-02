@@ -14,7 +14,6 @@ import vidada.model.security.ICredentialManager;
 import vidada.server.dal.IVidadaDALService;
 import vidada.server.impl.IPrivacyService;
 import vidada.server.impl.PrivacyService;
-import vidada.server.rest.VidadaRestServer;
 import vidada.server.services.*;
 import vidada.server.settings.DataBaseSettingsManager;
 import vidada.server.settings.IDatabaseSettingsService;
@@ -50,7 +49,6 @@ public class VidadaServer implements IVidadaServer {
 	private final IJobService jobService;
 
 
-
 	/***************************************************************************
 	 *                                                                         *
 	 * Constructor                                                             *
@@ -80,13 +78,6 @@ public class VidadaServer implements IVidadaServer {
 			// Create default data etc.
 			// TODO
 		}
-
-		if(VidadaServerSettings.instance().isEnableNetworkSharing()){
-			startNetworkSharing();
-		}else {
-            logger.info("Network sharing is disabled.");
-		}
-
 	}
 
 	/***************************************************************************
@@ -105,11 +96,6 @@ public class VidadaServer implements IVidadaServer {
 
 	public IDatabaseSettingsService getDatabaseSettingsService(){
 		return databaseSettingsService;
-	}
-
-
-	public synchronized void startNetworkSharing(){
-		startRestServer();
 	}
 
 	/***************************************************************************
@@ -164,23 +150,6 @@ public class VidadaServer implements IVidadaServer {
 	 * Private Methods                                                         *
 	 *                                                                         *
 	 **************************************************************************/
-	VidadaRestServer restServer;
-
-	private synchronized void startRestServer(){
-		if(restServer == null){
-            logger.info("Starting REST Server...");
-
-			try{
-				restServer = new VidadaRestServer(this);
-				restServer.start();
-			}catch(Throwable e){
-				e.printStackTrace();
-			}
-
-		}else {
-            logger.info("startRestServer canceled, already running.");
-		}
-	}
 
 	/**
 	 * Connect to the database
