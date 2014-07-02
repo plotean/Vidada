@@ -20,6 +20,13 @@ public interface IMediaRepository extends IRepository {
 	 **************************************************************************/
 
 
+    /**
+     * Query for the media with the given unique hash
+     * @param hash
+     * @return
+     */
+    public abstract MediaItem queryByHash(String hash);
+
 	/**
 	 * Query for all medias which match the given media-query
 	 * @param qry
@@ -41,13 +48,16 @@ public interface IMediaRepository extends IRepository {
 	 */
 	public abstract Collection<MediaItem> query(Tag tag);
 
+    /**
+     * Returns all medias which are part of the given library
+     * @param library
+     * @return
+     */
+    public abstract List<MediaItem> queryByLibrary(MediaLibrary library);
 
-	/**
-	 * Query for the media with the given hash
-	 * @param hash
-	 * @return
-	 */
-	public abstract MediaItem queryByHash(String hash);
+
+    public abstract List<MediaItem> getAllMedias();
+
 
 	/**
 	 * Query for the first media item with the given path
@@ -57,15 +67,6 @@ public interface IMediaRepository extends IRepository {
 	 */
 	public MediaItem queryByPath(ResourceLocation file, MediaLibrary library);
 
-	/**
-	 * Returns all medias which are part of the given library
-	 * @param library
-	 * @return
-	 */
-	public abstract List<MediaItem> queryByLibrary(MediaLibrary library);
-
-
-	public abstract List<MediaItem> getAllMedias();
 
 	/**
 	 * Returns the count of all medias
