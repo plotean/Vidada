@@ -373,11 +373,14 @@ public class Application extends  javafx.application.Application {
     private static VidadaRestServer initializeWebServer(IVidadaServer server) {
         VidadaRestServer restServer = null;
         if (VidadaServerSettings.instance().isEnableNetworkSharing()) {
-            logger.info("Starting REST Server...");
+
+            logger.info("Creating VidadaRestServer Server.");
 
             try {
                 restServer = new VidadaRestServer(server);
+                logger.info("Starting VidadaRestServer...");
                 restServer.start();
+                logger.info("VidadaRestServer started!");
             } catch (Throwable e) {
                 logger.error(e);
             }
