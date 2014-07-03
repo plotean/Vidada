@@ -8,7 +8,9 @@ import archimedes.core.services.ISelectionManager;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.controlsfx.control.GridView;
@@ -43,6 +45,7 @@ public class MediaBrowserFX extends BorderPane {
     private GridView<IDeferLoaded<BrowserItemVM>> gridView;
     private GridViewViewPort gridViewPort;
     private IndexRange visibleCells;
+    private ProgressIndicator loadingProgress;
 
     //transient private final ObservableList<BrowserItemVM> observableMedias;
     transient private final IMediaPlayerService mediaPlayerService = new MediaPlayerService();
@@ -61,6 +64,7 @@ public class MediaBrowserFX extends BorderPane {
      */
     public MediaBrowserFX(){
         initView();
+        loadingProgress.setVisible(false);
     }
 
 
@@ -135,16 +139,19 @@ public class MediaBrowserFX extends BorderPane {
                 gridView.cellHeightProperty()
         ));
 
-        setItemSize(200, 140);
-
-        this.setCenter(gridView);
-
-
         gridView.setOnZoom(event -> {
-            //System.out.println("zoom factor: " + event.getZoomFactor());
             setItemSize(gridView.getCellWidth() * event.getZoomFactor());
             event.consume();
         });
+
+        setItemSize(200, 140);
+
+        loadingProgress = new ProgressIndicator();
+        loadingProgress.setMaxWidth(70);
+
+        StackPane mediaGridStack = new StackPane();
+        mediaGridStack.getChildren().addAll(gridView, loadingProgress);
+        this.setCenter(mediaGridStack);
     }
 
     /**
@@ -158,9 +165,9 @@ public class MediaBrowserFX extends BorderPane {
 
             ObservableList<IDeferLoaded<BrowserItemVM>> observableMedias;
 
-            if(mediaModel != null && mediaModel.getMedias() != null){
+            if (mediaModel != null && mediaModel.getMedias() != null) {
                 observableMedias = new ObservableListFXAdapter<>(mediaModel.getMedias());
-            }else {
+            } else {
                 observableMedias = FXCollections.observableArrayList();
                 logger.debug("Medias empty, nothing to show.");
             }
