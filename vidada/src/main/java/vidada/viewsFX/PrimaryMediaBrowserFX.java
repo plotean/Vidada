@@ -1,58 +1,37 @@
 package vidada.viewsFX;
 
-import archimedes.core.exceptions.NotImplementedException;
-import archimedes.core.services.ISelectionManager;
 import javafx.scene.Node;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.BorderPane;
-import vidada.client.IVidadaClientManager;
-import vidada.client.model.browser.IBrowserItem;
-import vidada.client.model.browser.MediaBrowserModel;
-import vidada.client.services.IMediaClientService;
-import vidada.client.services.ITagClientService;
-import vidada.client.viewmodel.FilterModel;
-import vidada.client.viewmodel.media.IMediaViewModel;
-import vidada.client.viewmodel.media.MediaDetailViewModel;
-import vidada.controller.filters.MediaFilterDatabaseBinding;
+import vidada.viewmodels.PrimaryMediaBrowserVM;
 import vidada.viewsFX.filters.FilterViewFx;
 import vidada.viewsFX.mediabrowsers.MediaBrowserFX;
 import vidada.viewsFX.medias.MediaDetailController;
 
 /**
- * Represents the main media browser
+ * Represents the main media browser view,
+ * with a filter on top, a nice browser grid and a detail pane to edit.
+ *
+ *
  * @author IsNull
  *
  */
 public class PrimaryMediaBrowserFX extends BorderPane {
 
-	private final FilterModel filterModel;
 
-	private final ITagClientService tagClientService;
-	private final MediaBrowserModel browserModel;
-
-
-	public PrimaryMediaBrowserFX(MediaBrowserModel browserModel, IVidadaClientManager serverClientService, ITagClientService tagClientService, IMediaClientService mediaService){
-		this.tagClientService = tagClientService;
-		this.browserModel = browserModel;
-		this.filterModel  = new FilterModel(mediaService);;
-
-		//singleMediaDetailVM = new MediaDetailViewModel(tagService);
-
-		// bind the different models together
-
-		//TagServiceModelBinding.bind(tagClientService, browserModel.getTagStatesModel());
-		//TagServiceModelBinding.bind(tagClientService, mediaDetailTagstates);
-		MediaFilterDatabaseBinding.bind(serverClientService, mediaService, filterModel, browserModel);
-
-		// setup views
+    /**
+     * Creates a PrimaryMediaBrowserFX View
+     * @param primaryMediaBrowserVM
+     */
+	public PrimaryMediaBrowserFX(PrimaryMediaBrowserVM primaryMediaBrowserVM){
 
 		// Browser View
 		final MediaBrowserFX mediaBrowserFX = new MediaBrowserFX();
-		mediaBrowserFX.setDataContext(browserModel);
+		mediaBrowserFX.setDataContext(primaryMediaBrowserVM.getBrowserModel());
 		this.setCenter(mediaBrowserFX);
 
 		// Filter View
-		FilterViewFx filterView = new FilterViewFx(filterModel);
+		FilterViewFx filterView = new FilterViewFx(primaryMediaBrowserVM.getFilterModel());
 		TitledPane filterPane = new TitledPane("Filter", filterView);
 		this.setTop(filterPane);
 
@@ -64,25 +43,12 @@ public class PrimaryMediaBrowserFX extends BorderPane {
 		this.setBottom(detailPane);
 
 
-		mediaBrowserFX.getSelectionManager().getSelectionChanged().add((sender, eventArgs) -> {
-            IMediaViewModel vm = getMediaDetailVM(mediaBrowserFX.getSelectionManager());
-            mediaDetailController.setDataContext(vm);
+        primaryMediaBrowserVM.getMediaDetailVMChanged().add((sender, eventArgs) -> {
+            mediaDetailController.setDataContext(primaryMediaBrowserVM.getMediaDetailViewModel());
         });
-
 	}
 
 
-	private  IMediaViewModel getMediaDetailVM(ISelectionManager<IBrowserItem> mediaSelection){
-		if(!mediaSelection.hasSelection()){
-			return null;
-		}else if(mediaSelection.getSelection().size() <= 1){
-			MediaDetailViewModel vm = new MediaDetailViewModel(tagClientService);
-			vm.setModel(mediaSelection.getFirstSelected());
-			return vm;
-		}else{
-			// currently only single selection supported
-			throw new NotImplementedException("MainViewFx: Multiple Selection not supported!");
-		}
-	}
+
 
 }

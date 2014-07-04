@@ -6,12 +6,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
-import vidada.client.IVidadaClientManager;
-import vidada.client.model.browser.MediaBrowserModel;
-import vidada.client.services.IMediaClientService;
-import vidada.client.services.ITagClientService;
-import vidada.client.viewmodel.explorer.MediaExplorerVM;
-import vidada.services.ServiceProvider;
+import vidada.viewmodels.MainViewModel;
 import vidada.viewsFX.mediaexplorer.PrimaryMediaExplorerFX;
 
 /**
@@ -21,20 +16,11 @@ import vidada.viewsFX.mediaexplorer.PrimaryMediaExplorerFX;
  */
 public class MainViewFx extends BorderPane {
 
-	private final IVidadaClientManager clientManager = ServiceProvider.Resolve(IVidadaClientManager.class);
-	private final ITagClientService tagService = clientManager.getActive().getTagClientService();
-	private final IMediaClientService mediaService = clientManager.getActive().getMediaClientService();
-	private final MediaBrowserModel browserModel;
-	private final MediaExplorerVM mediaExplorerVM;
 
+    private MainViewModel mainViewModel = new MainViewModel();
 
 
 	public MainViewFx(){
-
-		// TODO refactor this out into main-context-model
-		browserModel = new MediaBrowserModel();
-
-		mediaExplorerVM = new MediaExplorerVM();
 
 		// create the view
 		this.setTop(new VidadaToolBar());
@@ -53,10 +39,13 @@ public class MainViewFx extends BorderPane {
 		mainTab.getTabs().add(browserTab);
 		mainTab.getTabs().add(fileBrowserTab);
 
-		browserTab.setContent(new PrimaryMediaBrowserFX(browserModel, clientManager, tagService, mediaService));
+        //private final ITagClientService tagService = clientManager.getActive().getTagClientService();
+        //private final IMediaClientService mediaService = clientManager.getActive().getMediaClientService();
+
+		browserTab.setContent(new PrimaryMediaBrowserFX(mainViewModel.getPrimaryMediaBrowserVM()));
 
 		PrimaryMediaExplorerFX mediaExplorerFX = new PrimaryMediaExplorerFX();
-		mediaExplorerFX.setDataContext(mediaExplorerVM);
+		mediaExplorerFX.setDataContext(mainViewModel.getMediaExplorerVM());
 		fileBrowserTab.setContent(mediaExplorerFX);
 
 		AquaFx.createTabPaneStyler().setType(TabPaneType.REGULAR).style(mainTab);
