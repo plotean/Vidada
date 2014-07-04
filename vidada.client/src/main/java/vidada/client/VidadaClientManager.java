@@ -1,11 +1,14 @@
 package vidada.client;
 
+import archimedes.core.events.EventArgs;
+import archimedes.core.events.EventHandlerEx;
+import archimedes.core.events.IEvent;
+import vidada.client.facade.VidadaClientFacade;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import vidada.client.facade.VidadaClientFacade;
 
 public class VidadaClientManager implements IVidadaClientManager {
 
@@ -19,11 +22,26 @@ public class VidadaClientManager implements IVidadaClientManager {
 	transient private final Map<String, IVidadaClientFacade> allClients = new HashMap<String, IVidadaClientFacade>();
 	transient private IVidadaClientFacade active = null;
 
-	/***************************************************************************
-	 *                                                                         *
-	 * Constructor                                                             *
-	 *                                                                         *
-	 **************************************************************************/
+    /***************************************************************************
+     *                                                                         *
+     * Events                                                                  *
+     *                                                                         *
+     **************************************************************************/
+
+    private final EventHandlerEx<EventArgs> activeClientChanged = new EventHandlerEx<EventArgs>();
+
+    /**
+     * Raised when the Property Active (Client) has changed
+     * @return
+     */
+    @Override
+    public IEvent<EventArgs> getActiveClientChanged() { return activeClientChanged;}
+
+    /***************************************************************************
+     *                                                                         *
+     * Constructor                                                             *
+     *                                                                         *
+     **************************************************************************/
 
 	/**
 	 * Singleton private constructor
@@ -53,9 +71,10 @@ public class VidadaClientManager implements IVidadaClientManager {
 
 	private void setActive(IVidadaClientFacade active){
 		this.active = active;
+        activeClientChanged.fireEvent(this, EventArgs.Empty);
 	}
 
-	/**{@inheritDoc}*/
+    /**{@inheritDoc}*/
 	@Override
 	public IVidadaClientFacade getActive() {
 		return active;

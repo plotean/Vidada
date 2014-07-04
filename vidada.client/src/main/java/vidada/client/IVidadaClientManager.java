@@ -1,5 +1,7 @@
 package vidada.client;
 
+import archimedes.core.events.EventArgs;
+import archimedes.core.events.IEvent;
 import archimedes.core.services.IService;
 
 import java.util.List;
@@ -11,6 +13,13 @@ import java.util.List;
  *
  */
 public interface IVidadaClientManager extends IService {
+
+    /**
+     * Raised when the active client has been changed.
+     * @return
+     */
+    IEvent<EventArgs> getActiveClientChanged();
+
 
 	/**
 	 * Gets the active client.
