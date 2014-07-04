@@ -7,7 +7,6 @@ import archimedes.core.threading.CancellationTokenSource.CancellationToken;
 import archimedes.core.threading.CancellationTokenSource.OperationCanceledException;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import vidada.client.IVidadaClientManager;
 import vidada.client.model.browser.MediaBrowserModel;
 import vidada.client.services.IMediaClientService;
 import vidada.client.viewmodel.FilterModel;
@@ -37,8 +36,8 @@ public class MediaFilterDatabaseBinding {
      * @param mediaBrowserModel
      * @return
      */
-    public static MediaFilterDatabaseBinding bind(IVidadaClientManager serverClientService,IMediaClientService mediaClientService, FilterModel filterModel, MediaBrowserModel mediaBrowserModel){
-        return new MediaFilterDatabaseBinding(serverClientService, mediaClientService, filterModel, mediaBrowserModel);
+    public static MediaFilterDatabaseBinding bind(IMediaClientService mediaClientService, FilterModel filterModel, MediaBrowserModel mediaBrowserModel){
+        return new MediaFilterDatabaseBinding(mediaClientService, filterModel, mediaBrowserModel);
     }
 
 
@@ -53,7 +52,6 @@ public class MediaFilterDatabaseBinding {
     private final FilterModel filterModel;
     private final MediaBrowserModel mediaBrowserModel;
     private final IMediaClientService mediaClientService;
-    private final IVidadaClientManager serverClientService;
 
     transient private AsyncFetchData<ListPage<MediaItem>> datafetcher;
     transient private final Object datafetcherLock = new Object();
@@ -69,13 +67,11 @@ public class MediaFilterDatabaseBinding {
 
     /**
      * Creates a new MediaFilterDatabaseBinding
-     * @param serverClientService
      * @param mediaClientService
      * @param filterModel
      * @param mediaBrowserModel
      */
-    protected MediaFilterDatabaseBinding(IVidadaClientManager serverClientService, IMediaClientService mediaClientService, FilterModel filterModel, MediaBrowserModel mediaBrowserModel){
-        this.serverClientService = serverClientService;
+    protected MediaFilterDatabaseBinding(IMediaClientService mediaClientService, FilterModel filterModel, MediaBrowserModel mediaBrowserModel){
         this.mediaClientService = mediaClientService;
         this.filterModel = filterModel;
         this.mediaBrowserModel = mediaBrowserModel;

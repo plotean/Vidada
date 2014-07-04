@@ -7,7 +7,6 @@ import archimedes.core.events.EventArgs;
 import archimedes.core.events.EventHandlerEx;
 import archimedes.core.events.EventListenerEx;
 import archimedes.core.events.IEvent;
-import vidada.client.services.IMediaClientService;
 import vidada.model.media.MediaLibrary;
 import vidada.model.media.MediaType;
 import vidada.model.media.OrderProperty;
@@ -43,7 +42,7 @@ public class FilterModel {
 	public IEvent<EventArgs> getFilterChangedEvent() { return filterChangedEvent; }
 
 
-	public FilterModel(IMediaClientService mediaService){
+	public FilterModel(){
 
 		requiredTags.getChangeEvent().add(new EventListenerEx<CollectionEventArg<Tag>>() {
 			@Override
@@ -51,7 +50,6 @@ public class FilterModel {
 				onFilterChanged();
 			}
 		});
-
 		blockedTags.getChangeEvent().add(new EventListenerEx<CollectionEventArg<Tag>>() {
 			@Override
 			public void eventOccured(Object sender, CollectionEventArg<Tag> eventArgs) {
