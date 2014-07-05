@@ -9,8 +9,11 @@ import archimedes.core.events.EventListenerEx;
 import archimedes.core.events.IEvent;
 import archimedes.core.services.ISelectionManager;
 import archimedes.core.services.SelectionManager;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import vidada.client.ThreadUtil;
 import vidada.client.viewmodel.MediaViewModel;
 import vidada.client.viewmodel.browser.BrowserFolderItemVM;
 import vidada.client.viewmodel.browser.BrowserItemVM;
@@ -33,6 +36,8 @@ public class MediaBrowserModel {
     private static final Logger logger = LogManager.getLogger(MediaBrowserModel.class.getName());
 
     private final ISelectionManager<IBrowserItem> selectionManager = new SelectionManager<IBrowserItem>();
+
+    private final BooleanProperty loadingInProgress = new SimpleBooleanProperty();
 
 	private IDataProvider<IDeferLoaded<BrowserItemVM>> mediasDataProvider;
     private BrowserItemVM previousSelection;
@@ -60,7 +65,7 @@ public class MediaBrowserModel {
      * Creates a new MediaBrowserModel
      */
 	public MediaBrowserModel(){
-
+        setLoadingInProgress(false);
 	}
 
     /***************************************************************************
@@ -81,19 +86,24 @@ public class MediaBrowserModel {
      * Sets the media data provider
      * @param mediaProvider
      */
-	public void setMedias(IDataProvider<IDeferLoaded<MediaItem>> mediaProvider){
+	public void setMedias(final IDataProvider<IDeferLoaded<MediaItem>> mediaProvider){
 
-		selectionManager.clear();
+        ThreadUtil.runUIThread(new Runnable() {
+            @Override
+            public void run() {
+                logger.info("Setting media DataProvider...");
 
-		if(mediaProvider != null){
+                selectionManager.clear();
 
-            logger.debug("Setting " + mediaProvider.size() + " medias in MediaBrowserModel...");
-
-			mediasDataProvider = new DataProviderTransformer<IDeferLoaded<BrowserItemVM>, IDeferLoaded<MediaItem>>(mediaProvider, transformer);
-		}else {
-            logger.debug("Setting NULL medias in MediaBrowserModel.");
-		}
-		mediasChangedEvent.fireEvent(this, EventArgs.Empty);
+                if(mediaProvider != null){
+                    logger.debug("Setting " + mediaProvider.size() + " medias in MediaBrowserModel...");
+                    mediasDataProvider = new DataProviderTransformer<IDeferLoaded<BrowserItemVM>, IDeferLoaded<MediaItem>>(mediaProvider, transformer);
+                }else {
+                    logger.debug("Setting NULL medias in MediaBrowserModel.");
+                }
+                mediasChangedEvent.fireEvent(this, EventArgs.Empty);
+            }
+        });
 	}
 
     /**
@@ -111,6 +121,24 @@ public class MediaBrowserModel {
 		setMedias(null);
 	}
 
+    /***************************************************************************
+     *                                                                         *
+     * Public Properties                                                       *
+     *                                                                         *
+     **************************************************************************/
+
+    public BooleanProperty loadingInProgressProperty(){
+        return loadingInProgress;
+    }
+
+    public void setLoadingInProgress(final boolean state){
+        ThreadUtil.runUIThread(new Runnable() {
+            @Override
+            public void run() {
+                loadingInProgress.set(state);
+            }
+        });
+    }
 
     /***************************************************************************
      *                                                                         *

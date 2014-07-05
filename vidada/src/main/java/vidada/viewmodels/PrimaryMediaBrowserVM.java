@@ -176,6 +176,8 @@ public class PrimaryMediaBrowserVM {
      */
     private void updateMediaBrowserModel(){
 
+        browserModel.setLoadingInProgress(true);
+
         logger.debug("Updating MediaBrowserModel, creating query and async fetcher...");
 
         browserModel.clearMedias();
@@ -232,5 +234,7 @@ public class PrimaryMediaBrowserVM {
         }else{
             logger.warn("Could not fetch first page of media query!");
         }
+
+        browserModel.setLoadingInProgress(false);
     }
 }

@@ -50,7 +50,7 @@ public class MediaBrowserFX extends BorderPane {
     //transient private final ObservableList<BrowserItemVM> observableMedias;
     transient private final IMediaPlayerService mediaPlayerService = new MediaPlayerService();
 
-    private EventListenerEx<EventArgs> mediasChangedEventListener = (sender, eventArgs) -> updateView();
+    private EventListenerEx<EventArgs> mediasChangedEventListener = (s, args) -> updateView();
 
 
     /***************************************************************************
@@ -98,6 +98,7 @@ public class MediaBrowserFX extends BorderPane {
 
         if(mediaModel != null){
             mediaModel.getMediaChangedEvent().add(mediasChangedEventListener);
+            loadingProgress.visibleProperty().bind(mediaModel.loadingInProgressProperty());
         }
 
         logger.debug("New media model events registered, now updating view...");
