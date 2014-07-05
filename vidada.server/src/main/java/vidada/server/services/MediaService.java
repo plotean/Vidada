@@ -1,6 +1,9 @@
 package vidada.server.services;
 
 import archimedes.core.data.pagination.ListPage;
+import archimedes.core.events.EventArgs;
+import archimedes.core.events.EventHandlerEx;
+import archimedes.core.events.IEvent;
 import archimedes.core.exceptions.NotSupportedException;
 import archimedes.core.io.locations.ResourceLocation;
 import org.apache.log4j.LogManager;
@@ -30,6 +33,18 @@ public class MediaService extends VidadaServerService implements IMediaService {
 
     /***************************************************************************
      *                                                                         *
+     * Events                                                                  *
+     *                                                                         *
+     **************************************************************************/
+
+    private final EventHandlerEx<EventArgs> mediasChangedEvent = new EventHandlerEx<>();
+
+    /**{@inheritDoc}*/
+    @Override
+    public IEvent<EventArgs> getMediasChangedEvent() { return mediasChangedEvent;  }
+
+    /***************************************************************************
+     *                                                                         *
      * Constructor                                                             *
      *                                                                         *
      **************************************************************************/
@@ -42,12 +57,18 @@ public class MediaService extends VidadaServerService implements IMediaService {
 		super(server);
 	}
 
+    /***************************************************************************
+     *                                                                         *
+     * Public API                                                              *
+     *                                                                         *
+     **************************************************************************/
 
-	@Override
+    @Override
 	public void store(final MediaItem media) {
 		runUnitOfWork(() -> {
             repository.store(media);
         });
+        onMediasChanged();
 	}
 
 	@Override
@@ -55,6 +76,7 @@ public class MediaService extends VidadaServerService implements IMediaService {
 		runUnitOfWork(() -> {
             repository.store(medias);
         });
+        onMediasChanged();
 	}
 
 	@Override
@@ -73,7 +95,7 @@ public class MediaService extends VidadaServerService implements IMediaService {
 
 	@Override
 	public ListPage<MediaItem> query(final MediaQuery qry, final int pageIndex, final int maxPageSize) {
-		return runUnitOfWork(() -> {
+        return runUnitOfWork(() -> {
 
             // Add additional related tags to the users request
             // This is what vidada makes intelligent
@@ -95,35 +117,7 @@ public class MediaService extends VidadaServerService implements IMediaService {
 
             return repository.query(exprQuery, pageIndex, maxPageSize);
         });
-	}
-
-	private Expression<Tag> createTagExpression(Collection<Tag> conjunction, boolean not){
-
-		if(conjunction.isEmpty()) return null;
-
-		ITagService tagService = getServer().getTagService();
-
-		final VariableReferenceExpression<Tag> mediaTags = Expressions.varReference("m.tags");
-
-		ListExpression<Tag> tagConjunction = ListExpression.createConjunction();
-
-		for (Tag t : conjunction) {
-
-            ListExpression<Tag> tagDisjunction =  ListExpression.createDisjunction();
-
-            Set<Tag> relatedTags = tagService.getAllRelatedTags(t);
-			for (LiteralValueExpression<String> relatedTag : Expressions.literalStrings(relatedTags)) {
-				tagDisjunction.add(Expressions.memberOf(relatedTag, mediaTags));
-			}
-            if(!not) {
-                tagConjunction.add(tagDisjunction);
-            }else{
-                tagConjunction.add(Expressions.not(tagDisjunction));
-            }
-		}
-
-		return tagConjunction;
-	}
+    }
 
 
 	@Override
@@ -136,7 +130,7 @@ public class MediaService extends VidadaServerService implements IMediaService {
 		runUnitOfWork(() -> {
             repository.delete(media);
         });
-
+        onMediasChanged();
 	}
 
 	@Override
@@ -144,6 +138,7 @@ public class MediaService extends VidadaServerService implements IMediaService {
 		runUnitOfWork(() -> {
             repository.delete(media);
         });
+        onMediasChanged();
 	}
 
 
@@ -152,14 +147,30 @@ public class MediaService extends VidadaServerService implements IMediaService {
 		return findAndCreateMedia(file, true, persist);
 	}
 
+    @Override
+    public int count() {
+        return runUnitOfWork(() -> repository.countAll()) ;
+    }
 
-	/**
-	 * Search for the given media data by the given absolute path
-	 */
-	public MediaItem findMediaData(ResourceLocation file) {
-		return findAndCreateMedia(file, false, false);
-	}
 
+    @Override
+    public MediaItem queryByHash(final String hash) {
+        return runUnitOfWork(() -> repository.queryByHash(hash)) ;
+    }
+
+
+    /***************************************************************************
+     *                                                                         *
+     * Private methods                                                         *
+     *                                                                         *
+     **************************************************************************/
+
+    /**
+     * Search for the given media data by the given absolute path
+     */
+    private MediaItem findMediaData(ResourceLocation file) {
+        return findAndCreateMedia(file, false, false);
+    }
 
 	/**
 	 * 
@@ -187,7 +198,7 @@ public class MediaService extends VidadaServerService implements IMediaService {
                 mediaData = repository.queryByPath(resource, library);
                 if(mediaData == null)
                 {
-                    hash = retriveMediaHash(resource);
+                    hash = retrieveMediaHash(resource);
                     if(hash != null)
                         mediaData = repository.queryByHash(hash);
                 }
@@ -214,19 +225,42 @@ public class MediaService extends VidadaServerService implements IMediaService {
 	 * @param file
 	 * @return
 	 */
-	private String retriveMediaHash(ResourceLocation file){
+	private String retrieveMediaHash(ResourceLocation file){
 		return MediaHashUtil.getDefaultMediaHashUtil().retrieveFileHash(file);
 	}
 
+    private Expression<Tag> createTagExpression(Collection<Tag> conjunction, boolean not){
 
-	@Override
-	public int count() {
-		return runUnitOfWork(() -> repository.countAll()) ;
-	}
+        if(conjunction.isEmpty()) return null;
 
+        ITagService tagService = getServer().getTagService();
 
-	@Override
-	public MediaItem queryByHash(final String hash) {
-		return runUnitOfWork(() -> repository.queryByHash(hash)) ;
-	}
+        final VariableReferenceExpression<Tag> mediaTags = Expressions.varReference("m.tags");
+
+        ListExpression<Tag> tagConjunction = ListExpression.createConjunction();
+
+        for (Tag t : conjunction) {
+
+            ListExpression<Tag> tagDisjunction =  ListExpression.createDisjunction();
+
+            Set<Tag> relatedTags = tagService.getAllRelatedTags(t);
+            for (LiteralValueExpression<String> relatedTag : Expressions.literalStrings(relatedTags)) {
+                tagDisjunction.add(Expressions.memberOf(relatedTag, mediaTags));
+            }
+            if(!not) {
+                tagConjunction.add(tagDisjunction);
+            }else{
+                tagConjunction.add(Expressions.not(tagDisjunction));
+            }
+        }
+
+        return tagConjunction;
+    }
+
+    /**
+     * Occurs when medias have been changed
+     */
+    private void onMediasChanged(){
+        mediasChangedEvent.fireEvent(this, EventArgs.Empty);
+    }
 }

@@ -3,6 +3,7 @@ package vidada.client.local.impl;
 import archimedes.core.data.pagination.ListPage;
 import archimedes.core.events.EventArgs;
 import archimedes.core.events.EventHandlerEx;
+import archimedes.core.events.EventListenerEx;
 import archimedes.core.events.IEvent;
 import archimedes.core.io.locations.ResourceLocation;
 import org.apache.log4j.LogManager;
@@ -46,8 +47,14 @@ public class LocalMediaClientService implements IMediaClientService {
      */
 	public LocalMediaClientService(IMediaService mediaService){
 		this.mediaService = mediaService;
-	}
 
+        this.mediaService.getMediasChangedEvent().add(new EventListenerEx<EventArgs>() {
+            @Override
+            public void eventOccured(Object o, EventArgs args) {
+                mediasChangedEvent.fireEvent(this, args);
+            }
+        });
+	}
 
     /***************************************************************************
      *                                                                         *

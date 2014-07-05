@@ -5,6 +5,7 @@ import archimedes.core.data.pagination.ListPage;
 import archimedes.core.data.pagination.VirtualPagedList;
 import archimedes.core.events.EventArgs;
 import archimedes.core.events.EventHandlerEx;
+import archimedes.core.events.EventListenerEx;
 import archimedes.core.events.IEvent;
 import archimedes.core.exceptions.NotImplementedException;
 import archimedes.core.services.ISelectionManager;
@@ -126,9 +127,18 @@ public class PrimaryMediaBrowserVM {
      * Occurs when the active Vidada client has been changed
      */
     private void onActiveClientChanged(){
-        //IVidadaClientFacade current = clientManager.getActive();
+        IVidadaClientFacade current = clientManager.getActive();
+
+        if(current != null){
+            current.getMediaClientService().getMediasChanged().add(mediaChangedEventListener);
+        }
+
         updateMediaBrowserModel();
     }
+
+    private final EventListenerEx<EventArgs> mediaChangedEventListener = (sender, args) -> {
+        updateMediaBrowserModel();
+    };
 
     /**
      * Creates a Media-Detail ViewModel from the given selection.

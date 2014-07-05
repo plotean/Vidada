@@ -1,6 +1,8 @@
 package vidada.server.services;
 
 import archimedes.core.data.pagination.ListPage;
+import archimedes.core.events.EventArgs;
+import archimedes.core.events.IEvent;
 import archimedes.core.io.locations.ResourceLocation;
 import vidada.IVidadaServer;
 import vidada.model.media.MediaItem;
@@ -15,6 +17,12 @@ import java.util.List;
  *
  */
 public interface IMediaService {
+
+    /**
+     * Raised when medias have been added or removed
+     * @return
+     */
+    public IEvent<EventArgs> getMediasChangedEvent();
 
 	/**
 	 * Store the new media item
