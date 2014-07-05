@@ -25,6 +25,7 @@ public class VidadaToolBar extends HBox{
 
     private static final Logger logger = LogManager.getLogger(VidadaToolBar.class.getName());
 
+    private static boolean autoSync = true;
     private static final String Style_ToolBar_Background = "-fx-background-color: #505050;";
 
 
@@ -55,13 +56,16 @@ public class VidadaToolBar extends HBox{
                     LibraryManagerController vm  = (LibraryManagerController)libManager.getUserData();
 
                     if(vm != null && vm.hasChanges()) {
-                        Action response = Dialogs.create()
-                                .title("Vidada - Libraries have changed")
-                                .masthead("Do you want to synchronize your media library?")
-                                .message("The media libraries have changed which means that your current media database needs to be updated. Do you want to update now?")
-                                .showConfirm();
-
-                        if (response == Dialog.Actions.YES) {
+                        boolean sync = true;
+                        if(!autoSync) {
+                            Action response = Dialogs.create()
+                                    .title("Vidada - Libraries have changed")
+                                    .masthead("Do you want to synchronize your media library?")
+                                    .message("The media libraries have changed which means that your current media database needs to be updated. Do you want to update now?")
+                                    .showConfirm();
+                            sync = response == Dialog.Actions.YES;
+                        }
+                        if(sync){
                             UpdateMediaLibraryAction updateMediaLibraryAction = new UpdateMediaLibraryAction(null);
                             updateMediaLibraryAction.actionPerformed(null);
                         }
