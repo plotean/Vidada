@@ -18,7 +18,8 @@ public interface IMediaClientService {
      * Event which is fired when there are changes in the available medias.
      * (I.e when new medias are added or medias where removed)
      *
-     * Warning: Not all vidada client connections support events.
+     * Warning: Not all vidada client connections support events,
+     * in which case this event will be NULL!
      *
      * @return
      */

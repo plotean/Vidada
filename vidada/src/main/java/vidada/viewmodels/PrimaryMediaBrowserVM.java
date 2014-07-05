@@ -130,7 +130,10 @@ public class PrimaryMediaBrowserVM {
         IVidadaClientFacade current = clientManager.getActive();
 
         if(current != null){
-            current.getMediaClientService().getMediasChanged().add(mediaChangedEventListener);
+            IMediaClientService mediaClientService = current.getMediaClientService();
+            if(mediaClientService.getMediasChanged() != null){
+                mediaClientService.getMediasChanged().add(mediaChangedEventListener);
+            }
         }
 
         updateMediaBrowserModel();
