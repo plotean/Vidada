@@ -23,12 +23,13 @@ public class SettingsViewFX extends BorderPane {
 
         Pane myPane = null;
 
+        /*
         try {
             myPane = (Pane) FXMLLoader.load(getClass().getResource("../../../../resources/vidada/viewsFX/libraries/LibraryManagerView.fxml"));
 
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        }*/
 
 
 
@@ -51,8 +52,10 @@ public class SettingsViewFX extends BorderPane {
 		tab.setText(name);
 
 		BorderPane border = new BorderPane();
-		BorderPane.setMargin(node, new Insets(20));
-		border.setCenter(node);
+        if(node != null){
+            BorderPane.setMargin(node, new Insets(20));
+            border.setCenter(node);
+        }
 		tab.setContent(border);
 
 		tabPane.getTabs().add(tab);
