@@ -27,12 +27,12 @@ import vidada.client.viewmodel.MediaViewModel;
 import vidada.client.viewmodel.browser.BrowserItemVM;
 import vidada.model.media.MediaType;
 import vidada.services.ServiceProvider;
+import vidada.viewsFX.images.ImageContainerPane;
 import vidada.viewsFX.player.IMediaPlayerBehavior;
 import vidada.viewsFX.player.IMediaPlayerService;
 import vidada.viewsFX.player.IMediaPlayerService.IMediaPlayerComponent;
 import vidada.viewsFX.player.MediaPlayerFx;
 import vidada.viewsFX.player.MediaPlayerSeekBehaviour;
-import vidada.viewsFX.util.AsyncImageProperty;
 
 /**
  * View of a single media item in the MediaBrowser
@@ -55,8 +55,7 @@ public class MediaItemView extends BrowserCellView {
 	private final IMediaPlayerService mediaPlayerService;
 
 	private final StackPane primaryContent = new StackPane();
-	private final AsyncImageProperty imageProperty = new AsyncImageProperty();
-	private final ImagePane imagePane = new ImagePane(imageProperty);
+	private final ImageContainerPane imagePane = new ImageContainerPane();
 	private final Rating rating = new Rating();
 	private final Label description = new Label("<no description>");
 
@@ -293,7 +292,7 @@ public class MediaItemView extends BrowserCellView {
 					(int)(width*dpiMultiplier),
 					(int)(height*dpiMultiplier));
 
-			imageProperty.imageContainerProperty().set(container);
+            imagePane.setImageContainer(container);
 		}
 	}
 
