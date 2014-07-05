@@ -4,6 +4,7 @@ import archimedes.core.data.IDeferLoaded;
 import archimedes.core.events.EventArgs;
 import archimedes.core.events.EventListenerEx;
 import javafx.beans.property.DoubleProperty;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.layout.BorderPane;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -38,7 +39,8 @@ class MediaGridItemCell extends GridCell<IDeferLoaded<BrowserItemVM>> {
 		folderView = new FolderView();
 		simpleView = new SimpleCellItemView();
 		loadingView = new BorderPane();
-		loadingView.setStyle("-fx-background-color: yellow;"); // TODO: Create beautiful loading view :)
+        loadingView.setCenter(new ProgressIndicator());
+		loadingView.setStyle("-fx-background-color: grey;");
 
 
 		setId("media-cell");
