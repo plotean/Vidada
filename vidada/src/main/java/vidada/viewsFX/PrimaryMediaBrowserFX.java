@@ -31,7 +31,7 @@ public class PrimaryMediaBrowserFX extends BorderPane {
 		this.setCenter(mediaBrowserFX);
 
 		// Filter View
-		FilterViewFx filterView = new FilterViewFx(primaryMediaBrowserVM.getFilterModel());
+		FilterViewFx filterView = new FilterViewFx(primaryMediaBrowserVM.getFilterViewModel());
 		TitledPane filterPane = new TitledPane("Filter", filterView);
 		this.setTop(filterPane);
 

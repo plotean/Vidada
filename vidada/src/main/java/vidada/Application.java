@@ -144,8 +144,6 @@ public class Application extends  javafx.application.Application {
 	public void start(Stage primaryStage) throws Exception {
 		this.primaryStage = primaryStage;
 
-		OSValidator.setForceHDPI(VidadaClientSettings.instance().isForceHDPIRender());
-
 		ImageIO.setUseCache(false);
 
 		try{
@@ -161,7 +159,7 @@ public class Application extends  javafx.application.Application {
             }
 
 		}catch(Throwable e){
-            logger.error(e);
+            logger.error("Vidada start failed.", e);
 
 			Dialogs.create()
 			.title("Vidada Erorr")
@@ -171,10 +169,10 @@ public class Application extends  javafx.application.Application {
 	}
 
 	public void showMainUI(){
+
+        logger.info("Creating primary UI...");
 		try {
 			primaryStage.setTitle("Vidada 2014");
-
-			//AquaFx.style();
 
 			Node contentPane = new MainViewFx();
 			StackPane root = new StackPane();
@@ -182,8 +180,8 @@ public class Application extends  javafx.application.Application {
 			primaryStage.setScene(new Scene(root, 1080, 800));
 			primaryStage.show();
 
-		}catch(Exception e){
-            logger.error(e);
+		}catch(Throwable e){
+            logger.error("Failed to create UI",e);
 		}
 	}
 
@@ -325,7 +323,7 @@ public class Application extends  javafx.application.Application {
 			URI serverUri = new URI(instance.getUri());
 			vidadaClient = new RestVidadaClient(serverUri);
 		} catch (URISyntaxException e) {
-			e.printStackTrace();
+			logger.error(e);
 		}
 		return vidadaClient;
 	}
@@ -357,10 +355,7 @@ public class Application extends  javafx.application.Application {
             initializeWebServer(localserver);
 
 		}catch(DatabaseConnectionException e){
-			e.printStackTrace();
-
-			// notify user
-			e.printStackTrace();
+            logger.error(e);
 			Dialogs.create()
 			.title("Vidada Erorr")
 			.masthead("Vidada has trouble to access / connect to your database.")

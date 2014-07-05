@@ -9,7 +9,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import vidada.client.model.browser.MediaBrowserModel;
 import vidada.client.services.IMediaClientService;
-import vidada.client.viewmodel.FilterModel;
+import vidada.client.viewmodel.FilterViewModel;
 import vidada.model.filters.AsyncFetchData;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaQuery;
@@ -32,12 +32,12 @@ public class MediaFilterDatabaseBinding {
     /**
      * Creates a binding between the filter-model and browser-model using the given mediaClientService
      * @param mediaClientService
-     * @param filterModel
+     * @param filterViewModel
      * @param mediaBrowserModel
      * @return
      */
-    public static MediaFilterDatabaseBinding bind(IMediaClientService mediaClientService, FilterModel filterModel, MediaBrowserModel mediaBrowserModel){
-        return new MediaFilterDatabaseBinding(mediaClientService, filterModel, mediaBrowserModel);
+    public static MediaFilterDatabaseBinding bind(IMediaClientService mediaClientService, FilterViewModel filterViewModel, MediaBrowserModel mediaBrowserModel){
+        return new MediaFilterDatabaseBinding(mediaClientService, filterViewModel, mediaBrowserModel);
     }
 
 
@@ -49,7 +49,7 @@ public class MediaFilterDatabaseBinding {
 
     private static final Logger logger = LogManager.getLogger(MediaFilterDatabaseBinding.class.getName());
 
-    private final FilterModel filterModel;
+    private final FilterViewModel filterViewModel;
     private final MediaBrowserModel mediaBrowserModel;
     private final IMediaClientService mediaClientService;
 
@@ -68,15 +68,15 @@ public class MediaFilterDatabaseBinding {
     /**
      * Creates a new MediaFilterDatabaseBinding
      * @param mediaClientService
-     * @param filterModel
+     * @param filterViewModel
      * @param mediaBrowserModel
      */
-    protected MediaFilterDatabaseBinding(IMediaClientService mediaClientService, FilterModel filterModel, MediaBrowserModel mediaBrowserModel){
+    protected MediaFilterDatabaseBinding(IMediaClientService mediaClientService, FilterViewModel filterViewModel, MediaBrowserModel mediaBrowserModel){
         this.mediaClientService = mediaClientService;
-        this.filterModel = filterModel;
+        this.filterViewModel = filterViewModel;
         this.mediaBrowserModel = mediaBrowserModel;
 
-        filterModel.getFilterChangedEvent().add((sender, eventArgs) -> updateMediaBrowserModel());
+        filterViewModel.getFilterChangedEvent().add((sender, eventArgs) -> updateMediaBrowserModel());
 
         updateMediaBrowserModel();
     }
@@ -96,7 +96,7 @@ public class MediaFilterDatabaseBinding {
         logger.debug("Updating MediaBrowserModel, creating query and async fetcher...");
 
         mediaBrowserModel.clearMedias();
-        final MediaQuery query = buildQuery();
+        final MediaQuery query = filterViewModel.buildQuery();
 
         // Since executing the query may take some time
         // we run it in a background thread
@@ -119,7 +119,7 @@ public class MediaFilterDatabaseBinding {
                     try{
                         VirtualPagedList<MediaItem> pagedList =
                                 new VirtualPagedList<>(
-                                        pageIndex -> mediaClientService.query(query, pageIndex, maxPageSize), //TODO Why query here??
+                                        pageIndex -> mediaClientService.query(query, pageIndex, maxPageSize),
                                         firstPage);
 
                         logger.debug("Setting paged list to browser model.");
@@ -138,24 +138,6 @@ public class MediaFilterDatabaseBinding {
         logger.debug("Updating MediaBrowserModel done.");
     }
 
-
-    /**
-     * Build the criteria query from the users selection in the view
-     * @return
-     */
-    private MediaQuery buildQuery(){
-
-        MediaQuery query = new MediaQuery(
-                filterModel.getMediaType(),
-                filterModel.getQueryString(),
-                filterModel.getOrder(),
-                filterModel.getRequiredTags(),
-                filterModel.getBlockedTags(),
-                filterModel.isOnlyAvaiable(),
-                filterModel.isReverse());
-
-        return query;
-    }
 
 
     /***************************************************************************

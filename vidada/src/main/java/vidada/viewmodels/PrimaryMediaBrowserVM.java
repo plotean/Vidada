@@ -9,7 +9,7 @@ import vidada.client.IVidadaClientFacade;
 import vidada.client.IVidadaClientManager;
 import vidada.client.model.browser.IBrowserItem;
 import vidada.client.model.browser.MediaBrowserModel;
-import vidada.client.viewmodel.FilterModel;
+import vidada.client.viewmodel.FilterViewModel;
 import vidada.client.viewmodel.media.IMediaViewModel;
 import vidada.client.viewmodel.media.MediaDetailViewModel;
 import vidada.services.ServiceProvider;
@@ -27,7 +27,7 @@ public class PrimaryMediaBrowserVM {
 
     private final IVidadaClientManager clientManager = ServiceProvider.Resolve(IVidadaClientManager.class);
 
-    private final FilterModel filterModel;
+    private final FilterViewModel filterViewModel;
     private final MediaBrowserModel browserModel;
 
     private IMediaViewModel mediaDetailViewModel = null;
@@ -59,8 +59,9 @@ public class PrimaryMediaBrowserVM {
      */
     public PrimaryMediaBrowserVM() {
         browserModel = new MediaBrowserModel();
-        filterModel = new FilterModel();
+        filterViewModel = new FilterViewModel();
 
+        // TODO
         //MediaFilterDatabaseBinding.bind(mediaService, filterModel, browserModel);
 
         clientManager.getActiveClientChanged().add((sender,args) -> updateActiveClient());
@@ -93,8 +94,8 @@ public class PrimaryMediaBrowserVM {
         return browserModel;
     }
 
-    public FilterModel getFilterModel() {
-        return filterModel;
+    public FilterViewModel getFilterViewModel() {
+        return filterViewModel;
     }
 
     /***************************************************************************
