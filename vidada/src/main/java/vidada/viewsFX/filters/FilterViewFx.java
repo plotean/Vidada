@@ -131,9 +131,6 @@ public class FilterViewFx extends BorderPane {
         cboMediaType.valueProperty().addListener((observable, oldValue, newValue) -> {
             filterViewModel.setMediaType(cboMediaType.getValue() != null ? cboMediaType.getValue() : MediaType.ANY);
         });
-
-        //tagPane.getTags().addListener(
-        //        (ListChangeListener.Change<? extends TagViewModel> changeEvent) -> updateModelTags());
     }
 
 
