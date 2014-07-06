@@ -204,9 +204,10 @@
 		            </goals>
 		            <configuration>
 		                <headerType>gui</headerType>
-		                <outfile>target/${project.artifactId}.exe</outfile>
-		                <jar>target/${project.artifactId}.jar</jar> 
-		                <errTitle>App Err</errTitle>
+                        <dontWrapJar>true</dontWrapJar>
+		                <jar>${project.artifactId}.jar</jar>
+                        <outfile>target/${project.artifactId}.exe</outfile>
+                        <errTitle>App Err</errTitle>
 		                <classPath>
 		                    <mainClass>vidada.Application</mainClass>
 		                </classPath>
@@ -220,8 +221,8 @@
 		                <versionInfo>
 		                    <fileVersion>1.0.0.0</fileVersion>
 		                    <txtFileVersion>1.0.0.0</txtFileVersion>
-		                    <fileDescription>Desc</fileDescription>
-		                    <copyright>C</copyright>
+		                    <fileDescription>Vidada</fileDescription>
+		                    <copyright>securityvision.ch</copyright>
 		                    <productVersion>1.0.0.0</productVersion>
 		                    <txtProductVersion>${project.version}</txtProductVersion>
 		                    <productName>${project.artifactId}</productName>
