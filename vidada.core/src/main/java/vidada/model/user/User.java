@@ -2,12 +2,14 @@ package vidada.model.user;
 
 import vidada.model.entities.BaseEntity;
 
+import java.security.Principal;
+
 /**
  * Represents a User
  * @author IsNull
  *
  */
-public class User extends BaseEntity {
+public class User extends BaseEntity implements Principal {
 
 	private String name;
 
@@ -18,6 +20,7 @@ public class User extends BaseEntity {
 		setName(username);
 	}
 
+    @Override
 	public String getName() {
 		return name;
 	}

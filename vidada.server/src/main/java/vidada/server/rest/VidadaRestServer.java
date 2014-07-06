@@ -4,15 +4,13 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.glassfish.grizzly.http.server.CLStaticHttpHandler;
 import org.glassfish.grizzly.http.server.HttpServer;
-import org.glassfish.grizzly.servlet.FilterRegistration;
 import org.glassfish.grizzly.servlet.ServletRegistration;
 import org.glassfish.grizzly.servlet.WebappContext;
+import org.glassfish.jersey.server.ServerProperties;
 import vidada.IVidadaServer;
 import vidada.server.rest.streaming.MediaStreamHttpHandler;
 
-import javax.servlet.DispatcherType;
 import java.io.IOException;
-import java.util.EnumSet;
 
 /**
  * A Vidada Web-Server which exposes most of the server functionality
@@ -116,10 +114,10 @@ public class VidadaRestServer {
 
         ServletRegistration servletRegistration = webappContext.addServlet(SERVLET_JERSEY, org.glassfish.jersey.servlet.ServletContainer.class);
         servletRegistration.addMapping("/api/*"); // map the REST API to the /api
-        servletRegistration.setInitParameter("jersey.config.server.provider.packages", "vidada.server.rest.resource"); // scan this package for resource classes
-
-        FilterRegistration filter = webappContext.addFilter("Auth filter", new BasicHttpAuthFilter("admin", "1337")); // TODO replace with real credential system
-        filter.addMappingForServletNames(EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD), true, SERVLET_JERSEY);
+        servletRegistration.setInitParameter(
+                ServerProperties.PROVIDER_PACKAGES,
+                        "vidada.server.rest.resource;" +   // scan this package for resource classes
+                        "vidada.server.rest.provider"); // Specail Providers for server such as Authentication
 
         return webappContext;
     }

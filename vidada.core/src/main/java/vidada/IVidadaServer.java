@@ -52,6 +52,12 @@ public interface IVidadaServer {
 	 */
 	IJobService getJobService();
 
+    /**
+     * Get the user service for this server
+     * @return
+     */
+    IUserService getUserService();
+
 	/**
 	 * Gets the unique name identifier of this server
 	 * @return

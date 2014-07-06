@@ -47,6 +47,7 @@ public class VidadaServer implements IVidadaServer {
 	private final IMediaImportService importService;
 	private final IPrivacyService privacyService;
 	private final IJobService jobService;
+    private final IUserService userService;
 
 
 	/***************************************************************************
@@ -73,6 +74,7 @@ public class VidadaServer implements IVidadaServer {
 		importService = new MediaImportService(this);
 		privacyService = new PrivacyService(this);
         jobService = new JobService(this);
+        userService = new UserService(this);
 
 		if(connectToDB()){
 			// Create default data etc.
@@ -139,7 +141,10 @@ public class VidadaServer implements IVidadaServer {
         return jobService;
 	}
 
-	@Override
+    @Override
+    public IUserService getUserService() {  return userService; }
+
+    @Override
 	public String getNameId() {
 		return "vidada.local"; 
 	}
