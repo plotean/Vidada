@@ -1,17 +1,16 @@
-# Windows bat
-
-echo "OSX App bundler running..."
+Echo "Windows OSX App bundler running..."
 
 set DIR = %~dp0
 
-echo "Setting working dir to %DIR%!"
+Echo "Setting working dir to %DIR%!"
 cd %DIR%
 
-echo "Copy Vidada.app template to target"
-xcopy Vidada.app .\..\target\Vidada.app /E
+Echo "Copy Vidada.app template to target"
+Xcopy Vidada.app .\..\target\Vidada.app /E /i /Y
 cd .\..\target\
 
-echo "Assembling Vidada.jar into app..."
-cp Vidada.jar Vidada.app\Contents\Resources\Java\Vidada.jar
+Echo "Assembling Vidada.jar into app..."
+mkdir Vidada.app\Contents\Resources\Java
+Copy vidada.jar Vidada.app\Contents\Resources\Java\Vidada.jar /Y
 
-echo "OSX App created successfully!"
+Echo "OSX App created successfully!"
