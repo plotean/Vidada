@@ -1,0 +1,17 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+ 	<modelVersion>4.0.0</modelVersion>
+ 	<groupId>ch.securityvision.vidada</groupId>
+	<artifactId>VidadaAggregate</artifactId>
+    <packaging>pom</packaging>
+    <name>Vidada Aggregate</name>
+	<version>0.1.3-BETA</version>
+	
+	<modules>
+   		<module>vidada</module>
+		<module>vidada.client</module>
+		<module>vidada.dal</module>
+		<module>vidada.server</module>
+		<module>vidada.core</module>
+    </modules>
+   
+</project>
