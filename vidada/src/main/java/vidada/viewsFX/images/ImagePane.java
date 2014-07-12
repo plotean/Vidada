@@ -31,29 +31,37 @@ public class ImagePane extends BorderPane {
      *                                                                         *
      **************************************************************************/
 
-	/**
-	 * Creates a new ImagePane
-	 */
-	public ImagePane(){
+    /**
+     * Creates a new ImagePane
+     */
+    public ImagePane(){
+        this(null);
+    }
 
-		imageView = new ImageView();
-		//imageView.setPreserveRatio(true);
-		imageView.setSmooth(true);
-		imageView.fitWidthProperty().bind(widthProperty());
-		imageView.fitHeightProperty().bind(heightProperty());
+    /**
+     * Creates a new ImagePane with the given Image
+     * @param image
+     */
+    public ImagePane(Image image){
+        imageView = new ImageView();
+        imageView.setSmooth(true);
+        imageView.fitWidthProperty().bind(widthProperty());
+        imageView.fitHeightProperty().bind(heightProperty());
 
-		fadeTransition = 
-				new FadeTransition(Duration.millis(2000), imageView);
-		fadeTransition.setFromValue(0.0f);
-		fadeTransition.setToValue(1.0f);
-		fadeTransition.setCycleCount(1);
-		fadeTransition.setAutoReverse(false);
-		fadeTransition.setCycleCount(1);
+        fadeTransition =
+                new FadeTransition(Duration.millis(2000), imageView);
+        fadeTransition.setFromValue(0.0f);
+        fadeTransition.setToValue(1.0f);
+        fadeTransition.setCycleCount(1);
+        fadeTransition.setAutoReverse(false);
+        fadeTransition.setCycleCount(1);
 
         setCenter(imageView);
 
         imageProperty().addListener(imageChangeListener);
-	}
+
+        setImage(image);
+    }
 
     /***************************************************************************
      *                                                                         *
