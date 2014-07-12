@@ -9,6 +9,7 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import jersey.repackaged.com.google.common.collect.Lists;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -45,6 +46,7 @@ import vidada.services.IMediaPresenterService;
 import vidada.services.ISelfUpdateService;
 import vidada.services.ServiceProvider;
 import vidada.viewsFX.MainViewFx;
+import vidada.viewsFX.SplashScreen;
 import vidada.viewsFX.dialoges.ChooseMediaDatabaseView;
 import vidada.viewsFX.dialoges.ChooseVidadaInstanceView;
 import vidada.viewsFX.images.ImageOpenHandler;
@@ -71,6 +73,7 @@ public class Application extends  javafx.application.Application {
     private static final Logger logger = LogManager.getLogger(Application.class.getName());
     private static IVidadaServer localserver;
 
+    private SplashScreen splashScreen;
     private Stage primaryStage;
 
 
@@ -137,13 +140,17 @@ public class Application extends  javafx.application.Application {
 
     /**
      * JavaFX start callback
-     * @param primaryStage
+     * @param initStage
      * @throws Exception
      */
 	@Override
-	public void start(Stage primaryStage) throws Exception {
-		this.primaryStage = primaryStage;
+	public void start(Stage initStage) throws Exception {
 
+        splashScreen = new SplashScreen();
+        splashScreen.show(initStage);
+
+
+		this.primaryStage = new Stage(StageStyle.DECORATED);
 		ImageIO.setUseCache(false);
 
 		try{
@@ -179,6 +186,9 @@ public class Application extends  javafx.application.Application {
 			root.getChildren().add(contentPane);
 			primaryStage.setScene(new Scene(root, 1080, 800));
 			primaryStage.show();
+
+            splashScreen.hide();
+            primaryStage.toFront();
 
 		}catch(Throwable e){
             logger.error("Failed to create UI",e);
