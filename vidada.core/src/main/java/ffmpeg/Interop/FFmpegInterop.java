@@ -228,7 +228,7 @@ public abstract class FFmpegInterop {
 			String[] command = args.toArray(new String[0]);
 
             logger.debug("Running ffmpeg over shell...");
-			int exitVal = ShellExec.executeAndWait(command, output, true, timeout);
+			int exitVal = ShellExec.executeAndWait(command, output, timeout);
 
 		} catch( TimeoutException e){
             logger.warn("ffmpeg process timed out: " + e.getMessage());

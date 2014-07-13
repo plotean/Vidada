@@ -12,7 +12,7 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="vidada.core" />
-    <orderEntry type="library" name="Maven: ch.securityvision.archimedes:archimedes.core:0.2.4" level="project" />
+    <orderEntry type="library" name="Maven: ch.securityvision.archimedes:archimedes.core:0.2.5-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.0.Final" level="project" />
     <orderEntry type="library" name="Maven: log4j:log4j:1.2.17" level="project" />
     <orderEntry type="library" name="Maven: commons-io:commons-io:2.4" level="project" />
