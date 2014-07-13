@@ -8,13 +8,13 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
-import vidada.model.settings.VidadaDatabase;
+import vidada.model.settings.VidadaDatabaseConfig;
 
 public class ChooseMediaDatabaseView extends BorderPane {
 
-	ComboBox<VidadaDatabase> cboDatabase = new ComboBox<VidadaDatabase>();
+	ComboBox<VidadaDatabaseConfig> cboDatabase = new ComboBox<VidadaDatabaseConfig>();
 
-	public ChooseMediaDatabaseView(List<VidadaDatabase> availableDbs)
+	public ChooseMediaDatabaseView(List<VidadaDatabaseConfig> availableDbs)
 	{
 		cboDatabase.setItems(FXCollections.observableArrayList(availableDbs));
 
@@ -34,7 +34,7 @@ public class ChooseMediaDatabaseView extends BorderPane {
 		this.setCenter(content);
 	}
 
-	public VidadaDatabase getDatabase(){
+	public VidadaDatabaseConfig getDatabase(){
 		return cboDatabase.getSelectionModel().getSelectedItem();
 	}
 }

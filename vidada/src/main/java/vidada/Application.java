@@ -31,7 +31,7 @@ import vidada.images.RawImageFactoryFx;
 import vidada.model.media.MediaLibrary;
 import vidada.model.settings.MediaPlayerCommand;
 import vidada.model.settings.VidadaClientSettings;
-import vidada.model.settings.VidadaDatabase;
+import vidada.model.settings.VidadaDatabaseConfig;
 import vidada.model.settings.VidadaInstance;
 import vidada.model.system.ISystemService;
 import vidada.model.tags.relations.TagRelationDefinition;
@@ -275,7 +275,7 @@ public class Application extends  javafx.application.Application {
 				@Override
 				public void execute(ActionEvent ae) {
 					Dialog dlg = (Dialog) ae.getSource();
-					VidadaDatabase db = chooseView.getDatabase();
+					VidadaDatabaseConfig db = chooseView.getDatabase();
 					settings.setCurrentDBConfig(db);
 					dlg.hide();
 				}
@@ -343,7 +343,7 @@ public class Application extends  javafx.application.Application {
 
 		configLocalServerDatabase();
 
-		VidadaDatabase dbconfig = VidadaServerSettings.instance().getCurrentDBConfig();
+		VidadaDatabaseConfig dbconfig = VidadaServerSettings.instance().getCurrentDBConfig();
 
 		if(dbconfig == null){
             logger.info("No Database has been chosen - exiting now");
