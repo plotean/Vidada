@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import vidada.model.settings.JsonSettings;
-import vidada.model.settings.VidadaDatabase;
+import vidada.model.settings.VidadaDatabaseConfig;
 
 import java.io.File;
 import java.util.HashSet;
@@ -30,7 +30,6 @@ public class VidadaServerSettings extends JsonSettings {
 	transient public static final String ProductName = "vidada-server";
 
 	transient public static File Path;
-	transient public static String defaultCache; 
 	transient public static String defaultDB;
 
 	static {
@@ -38,12 +37,11 @@ public class VidadaServerSettings extends JsonSettings {
 		// Default paths
 
 		Path = new File(".", ProductName + ".json");
-		defaultCache = "data/cache"; 
-		defaultDB  = "data/vidada.db";
+		defaultDB  = "data";
 	}
 
 
-	transient private VidadaDatabase currentDBConfig = null;
+	transient private VidadaDatabaseConfig currentDBConfig = null;
 
 	// thumb size boundaries
 	transient public static final int THUMBNAIL_SIZE_MAX = 500;
@@ -57,7 +55,7 @@ public class VidadaServerSettings extends JsonSettings {
 	 *                                                                         *
 	 **************************************************************************/
 
-	private Set<VidadaDatabase> databases = new HashSet<VidadaDatabase>();
+	private Set<VidadaDatabaseConfig> databases = new HashSet<VidadaDatabaseConfig>();
 	private boolean usingMetaData = true;
 	private boolean isDebug = false;
 	private boolean enableNetworkSharing = true;
@@ -118,10 +116,10 @@ public class VidadaServerSettings extends JsonSettings {
 	 * 
 	 * @return
 	 */
-	public List<VidadaDatabase> getAvaiableDatabases(){
-		return Lists.where(databases, new Predicate<VidadaDatabase>() {
+	public List<VidadaDatabaseConfig> getAvaiableDatabases(){
+		return Lists.where(databases, new Predicate<VidadaDatabaseConfig>() {
 			@Override
-			public boolean where(VidadaDatabase t) { 
+			public boolean where(VidadaDatabaseConfig t) {
 				File path = toAbsolutePath(t.getDataBasePath()).getParentFile().getAbsoluteFile();
 
                 logger.debug("Available database " + path.getAbsolutePath() + " exists? " + path.exists());
@@ -146,7 +144,7 @@ public class VidadaServerSettings extends JsonSettings {
 		}else{
             logger.info("found " + databases.size() + " configured DBs.");
 
-			List<VidadaDatabase> availableDbs = getAvaiableDatabases();
+			List<VidadaDatabaseConfig> availableDbs = getAvaiableDatabases();
 
 			if(availableDbs.isEmpty()){
                 logger.info("No database config points to an existing location. Restored defaults.");
@@ -156,7 +154,7 @@ public class VidadaServerSettings extends JsonSettings {
 			}
 
 			if(availableDbs.size() == 1){
-				VidadaDatabase mydb = availableDbs.get(0);
+				VidadaDatabaseConfig mydb = availableDbs.get(0);
 				if(mydb != null)
 				{
 					setCurrentDBConfig(mydb);
@@ -174,7 +172,7 @@ public class VidadaServerSettings extends JsonSettings {
 	 * Available
 	 * @return
 	 */
-	public VidadaDatabase getCurrentDBConfig() {
+	public VidadaDatabaseConfig getCurrentDBConfig() {
 		return currentDBConfig;
 	}
 
@@ -185,7 +183,7 @@ public class VidadaServerSettings extends JsonSettings {
 		}
 	}
 
-	public void setCurrentDBConfig(VidadaDatabase db){
+	public void setCurrentDBConfig(VidadaDatabaseConfig db){
 		currentDBConfig = db;
 		logger.debug("current db: " + currentDBConfig != null ? currentDBConfig.getDataBasePath() : "null");
 	}
@@ -249,10 +247,8 @@ public class VidadaServerSettings extends JsonSettings {
 	 *                                                                         *
 	 **************************************************************************/
 
-	private static VidadaDatabase getDefaultConfig(){
-		VidadaDatabase defaultConfig = new VidadaDatabase();
-		defaultConfig.setDataBasePath(defaultDB);
-		defaultConfig.setFileCachePath(defaultCache);
+	private static VidadaDatabaseConfig getDefaultConfig(){
+		VidadaDatabaseConfig defaultConfig = new VidadaDatabaseConfig(defaultDB, false);
 		return defaultConfig;
 	}
 
