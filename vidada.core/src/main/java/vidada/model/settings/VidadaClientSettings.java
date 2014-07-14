@@ -33,12 +33,12 @@ public class VidadaClientSettings extends JsonSettings {
 
 	transient public static File Path;
 	transient public static String defaultCache; 
-	transient public static File infoPropertiesFile; 
+	transient public static File infoPropertiesFile;
 
 	static {
 		// Default paths
 		Path = new File(".", ProductName + ".json");
-		defaultCache = "data/cache"; 
+		defaultCache = "data/cache";
 		infoPropertiesFile = new File(".", "info.properties");
 
 	}
@@ -74,11 +74,13 @@ public class VidadaClientSettings extends JsonSettings {
 		if(instance == null){
 			if(Path.exists())
 			{
-				instance = JsonSettings.loadSettings(Path, VidadaClientSettings.class);
+                logger.info("Loading settings from " + Path);
+                instance = JsonSettings.loadSettings(Path, VidadaClientSettings.class);
 			}
 		}
 
 		if(instance == null){
+            logger.info("Could not load existing settings, creating defaults...");
 			instance = new VidadaClientSettings();
             instance.loadDefaults();
 		}
