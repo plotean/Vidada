@@ -11,6 +11,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="Maven: ch.securityvision.archimedes:archimedes.core:0.2.5-SNAPSHOT" level="project" />
     <orderEntry type="module" module-name="vidada.core" />
     <orderEntry type="library" name="Maven: ch.securityvision.archimedes:archimedes.core:0.2.5-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.0.Final" level="project" />
