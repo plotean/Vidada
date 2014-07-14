@@ -20,6 +20,7 @@ import org.controlsfx.dialog.Dialog;
 import org.controlsfx.dialog.Dialogs;
 import vidada.client.IVidadaClient;
 import vidada.client.IVidadaClientManager;
+import vidada.client.ThreadUtil;
 import vidada.client.VidadaClientManager;
 import vidada.client.local.LocalVidadaClient;
 import vidada.client.rest.RestVidadaClient;
@@ -32,7 +33,7 @@ import vidada.model.media.MediaLibrary;
 import vidada.model.settings.MediaPlayerCommand;
 import vidada.model.settings.VidadaClientSettings;
 import vidada.model.settings.VidadaDatabaseConfig;
-import vidada.model.settings.VidadaInstance;
+import vidada.model.settings.VidadaInstanceConfig;
 import vidada.model.system.ISystemService;
 import vidada.model.tags.relations.TagRelationDefinition;
 import vidada.model.tags.relations.TagRelationDefinitionParser;
@@ -150,30 +151,43 @@ public class Application extends  javafx.application.Application {
         splashScreen.show(initStage);
 
 
-		this.primaryStage = new Stage(StageStyle.DECORATED);
-		ImageIO.setUseCache(false);
+        this.primaryStage = new Stage(StageStyle.DECORATED);
+        ImageIO.setUseCache(false);
 
-		try{
+        try {
             logger.info("Initializing...");
-			if(initialize()){
-                logger.info("Initialisation successful.");
-				afterStartup();
 
-				// Show MainFrame
-				showMainUI();
-			}else {
-                stop();
+            VidadaInstanceConfig instance = initialize();
+
+            if(instance != null){
+                logger.info("Starting Vidada with instance configured...");
+                new Thread(() -> {
+                    if(startVidadaInstance(instance)) {
+                        // Show MainFrame
+                        ThreadUtil.runUIThread(() -> showMainUI());
+                    }else{
+                        // Shut down
+                        ThreadUtil.runUIThread(() -> stop());
+                    }
+                }).start();
+            }else{
+                logger.warn("Vidada instance config is NULL!");
             }
 
-		}catch(Throwable e){
+        } catch (Throwable e) {
             logger.error("Vidada start failed.", e);
 
-			Dialogs.create()
-			.title("Vidada Erorr")
-			.masthead("Vidada encountered an Error and has stopped working.")
-			.showException(e);
-		}
-	}
+            ThreadUtil.runUIThread(() -> {
+                Dialogs.create()
+                        .title("Vidada Erorr")
+                        .masthead("Vidada encountered an Error and has stopped working.")
+                        .showException(e);
+                stop();
+            });
+        }
+    }
+
+
 
 	public void showMainUI(){
 
@@ -222,16 +236,44 @@ public class Application extends  javafx.application.Application {
 
 	}
 
-	private VidadaInstance configInstance(){
+    /**
+     * Start Vidada with the given config
+     * @param instanceConfig
+     * @return
+     */
+    private boolean startVidadaInstance(VidadaInstanceConfig instanceConfig){
+        boolean success = false;
 
-        logger.info("configuring Vidada Instance");
+        logger.info("Starting Vidada instance...");
 
-        List<VidadaInstance> allVidadaInstances = new ArrayList<>(VidadaClientSettings.instance().getVidadaInstances());
+        IVidadaClient vidadaClient;
+        if(instanceConfig.equals(VidadaInstanceConfig.LOCAL)){
+            vidadaClient = createLocalServerAndClient();
+        }else{
+            vidadaClient = connectToRemoteVidadaInstance(instanceConfig);
+        }
+        if(vidadaClient != null){
+            ServiceProvider.Resolve(IVidadaClientManager.class).addClient(vidadaClient);
+            logger.info("Initialisation successful.");
+            afterStartup();
+            success = true;
+        }
+        return success;
+    }
 
-        if(allVidadaInstances.size() > 1) {
+	private VidadaInstanceConfig configInstance(){
+
+        List<VidadaInstanceConfig> allVidadaInstanceConfigs = new ArrayList<>(VidadaClientSettings.instance().getVidadaInstanceConfigs());
+
+        logger.info("Configuring Vidada Instance form found " + allVidadaInstanceConfigs.size() + " configurations.");
+
+
+        if(allVidadaInstanceConfigs.size() > 1) {
+            logger.info("Multiple instance configurations are available, user has to choose...");
+
             // Multiple instances to choose from
             Dialog dlg = new Dialog(null, "Vidada Instance Chooser");
-            final ChooseVidadaInstanceView chooseView = new ChooseVidadaInstanceView(allVidadaInstances);
+            final ChooseVidadaInstanceView chooseView = new ChooseVidadaInstanceView(allVidadaInstanceConfigs);
             final AbstractAction actionChoose = new AbstractAction("Choose") {
                 {
                     ButtonBar.setType(this, ButtonType.OK_DONE);
@@ -240,7 +282,7 @@ public class Application extends  javafx.application.Application {
                 @Override
                 public void execute(ActionEvent ae) {
                     Dialog dlg = (Dialog) ae.getSource();
-                    VidadaInstance instance = chooseView.getDatabase();
+                    VidadaInstanceConfig instance = chooseView.getDatabase();
                     VidadaClientSettings.instance().setCurrentInstnace(instance);
                     dlg.hide();
                 }
@@ -249,10 +291,15 @@ public class Application extends  javafx.application.Application {
             dlg.setMasthead("Choose to which Vidada Instance you want to connect.");
             dlg.getActions().addAll(actionChoose, Dialog.Actions.CANCEL);
             dlg.show();
-        }else if(allVidadaInstances.size() == 1){
-            // Only one instance, so we select it automatically
-            VidadaClientSettings.instance().setCurrentInstnace(allVidadaInstances.get(0));
+
+        }else if(allVidadaInstanceConfigs.size() == 1){
+            logger.info("Automatically configure the only available instance.");
+            VidadaClientSettings.instance().setCurrentInstnace(allVidadaInstanceConfigs.get(0));
+        }else if(allVidadaInstanceConfigs.size() == 0){
+            logger.warn("No instance configuration found. Check your client settings!");
         }
+
+        logger.debug("Vidada instance configured.");
 
 		return VidadaClientSettings.instance().getCurrentInstance(); 
 	}
@@ -293,7 +340,7 @@ public class Application extends  javafx.application.Application {
 	/**
 	 * Initialize Vidada
 	 */
-	private boolean initialize() {
+	private VidadaInstanceConfig initialize() {
 
 		// Register global services
 		ServiceProvider.getInstance().startup(locator -> {
@@ -308,26 +355,11 @@ public class Application extends  javafx.application.Application {
 
 		// now we have to choose either to connect to a client or the local embedded vidada instance
 
-		VidadaInstance instance = configInstance();
-
-		if(instance != null){
-			IVidadaClient vidadaClient;
-			if(instance.equals(VidadaInstance.LOCAL)){
-				vidadaClient = createLocalServerAndClient();
-			}else{
-				vidadaClient = connectToRemoteVidadaInstance(instance);
-			}
-
-			if(vidadaClient != null){
-				ServiceProvider.Resolve(IVidadaClientManager.class).addClient(vidadaClient);
-				return true;
-			}
-		}
-		return false;
+		return configInstance();
 	}
 
 
-	private IVidadaClient connectToRemoteVidadaInstance(VidadaInstance instance){
+	private IVidadaClient connectToRemoteVidadaInstance(VidadaInstanceConfig instance){
 		IVidadaClient vidadaClient = null;
 		try {
 			URI serverUri = new URI(instance.getUri());
@@ -395,9 +427,9 @@ public class Application extends  javafx.application.Application {
         return restServer;
     }
 
-    private void loadUserTagRelations(IVidadaServer localserver) {
+    private void loadUserTagRelations(IVidadaServer localServer) {
 
-        for (MediaLibrary library : localserver.getLibraryService().getAllLibraries()) {
+        for (MediaLibrary library : localServer.getLibraryService().getAllLibraries()) {
             File def = library.getUserTagRelationDef();
             if (def.exists()) {
 

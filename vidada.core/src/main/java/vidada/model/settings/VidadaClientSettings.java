@@ -44,7 +44,7 @@ public class VidadaClientSettings extends JsonSettings {
 	}
 
 	transient private String versionInfo = null;
-	transient private VidadaInstance currentInstance;
+	transient private VidadaInstanceConfig currentInstance;
 
 	/***************************************************************************
 	 *                                                                         *
@@ -52,7 +52,7 @@ public class VidadaClientSettings extends JsonSettings {
 	 *                                                                         *
 	 **************************************************************************/
 
-	public Set<VidadaInstance> vidadaInstances = new HashSet<VidadaInstance>();
+	public Set<VidadaInstanceConfig> vidadaInstanceConfigs = new HashSet<VidadaInstanceConfig>();
 	private String localCachePath = defaultCache;
 	private boolean enableDirectPlaySound = false;
 	private boolean ignoreImages = false;
@@ -95,8 +95,8 @@ public class VidadaClientSettings extends JsonSettings {
 
     private void loadDefaults(){
         // Set defaults
-        vidadaInstances.add(VidadaInstance.LOCAL);
-        vidadaInstances.add(new VidadaInstance("REST Localhost", "http://localhost:5555/api"));
+        vidadaInstanceConfigs.add(VidadaInstanceConfig.LOCAL);
+        vidadaInstanceConfigs.add(new VidadaInstanceConfig("REST Localhost", "http://localhost:5555/api"));
 
         String vlcBin = VLCUtil.getVLCBinaryPath();
         if(vlcBin != null)
@@ -219,8 +219,8 @@ public class VidadaClientSettings extends JsonSettings {
 		this.usingMetaData = usingMetaData;
 	}
 
-	public Collection<VidadaInstance> getVidadaInstances(){
-		return vidadaInstances;
+	public Collection<VidadaInstanceConfig> getVidadaInstanceConfigs(){
+		return vidadaInstanceConfigs;
 	}
 
 	public Collection<MediaPlayerCommand> getExternalMediaPlayers() {
@@ -234,11 +234,11 @@ public class VidadaClientSettings extends JsonSettings {
 	 *                                                                         *
 	 **************************************************************************/
 
-	public void setCurrentInstnace(VidadaInstance instance) {
+	public void setCurrentInstnace(VidadaInstanceConfig instance) {
 		currentInstance = instance;
 	}
 
-	public VidadaInstance getCurrentInstance(){
+	public VidadaInstanceConfig getCurrentInstance(){
 		return currentInstance;
 	}
 

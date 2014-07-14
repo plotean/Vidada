@@ -8,15 +8,15 @@ import javafx.scene.control.ListView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
-import vidada.model.settings.VidadaInstance;
+import vidada.model.settings.VidadaInstanceConfig;
 
 import java.util.Collection;
 
 public class ChooseVidadaInstanceView extends BorderPane {
 
-    private final ListView<VidadaInstance> databasesView = new ListView<>();
+    private final ListView<VidadaInstanceConfig> databasesView = new ListView<>();
 
-    public ChooseVidadaInstanceView(Collection<VidadaInstance> availableInstances)
+    public ChooseVidadaInstanceView(Collection<VidadaInstanceConfig> availableInstances)
 	{
         databasesView.setItems(FXCollections.observableArrayList(availableInstances));
 
@@ -42,7 +42,7 @@ public class ChooseVidadaInstanceView extends BorderPane {
 		this.setCenter(content);
 	}
 
-	public VidadaInstance getDatabase(){
+	public VidadaInstanceConfig getDatabase(){
 		return databasesView.getSelectionModel().getSelectedItem();
 	}
 }

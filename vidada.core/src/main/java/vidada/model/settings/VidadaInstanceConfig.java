@@ -4,7 +4,7 @@ package vidada.model.settings;
  * This is a helper class for Vidada settings and represents a instance.
  * A Vidada Instance can be a local database or a remote Vidada server to connect to.
  */
-public class VidadaInstance {
+public class VidadaInstanceConfig {
 
     /***************************************************************************
      *                                                                         *
@@ -12,7 +12,7 @@ public class VidadaInstance {
      *                                                                         *
      **************************************************************************/
 
-	transient public static VidadaInstance LOCAL = new VidadaInstance("Local Instance", "local");
+	transient public static VidadaInstanceConfig LOCAL = new VidadaInstanceConfig("Local Instance", "local");
 
 	private String name;
 	private String uri;
@@ -23,9 +23,9 @@ public class VidadaInstance {
      *                                                                         *
      **************************************************************************/
 
-	public VidadaInstance(){}
+	public VidadaInstanceConfig(){}
 
-	public VidadaInstance(String name, String uri){
+	public VidadaInstanceConfig(String name, String uri){
 		setName(name);
 		setUri(uri);
 	}
@@ -79,7 +79,7 @@ public class VidadaInstance {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		VidadaInstance other = (VidadaInstance) obj;
+		VidadaInstanceConfig other = (VidadaInstanceConfig) obj;
 		if (uri == null) {
 			if (other.uri != null)
 				return false;
