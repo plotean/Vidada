@@ -263,7 +263,7 @@ public class Application extends  javafx.application.Application {
 
 	private VidadaInstanceConfig configInstance(){
 
-        List<VidadaInstanceConfig> allVidadaInstanceConfigs = new ArrayList<>(VidadaClientSettings.instance().getVidadaInstanceConfigs());
+        List<VidadaInstanceConfig> allVidadaInstanceConfigs = new ArrayList<>(VidadaClientSettings.instance().getVidadaInstances());
 
         logger.info("Configuring Vidada Instance form found " + allVidadaInstanceConfigs.size() + " configurations.");
 

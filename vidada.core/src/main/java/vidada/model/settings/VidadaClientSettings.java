@@ -52,7 +52,7 @@ public class VidadaClientSettings extends JsonSettings {
 	 *                                                                         *
 	 **************************************************************************/
 
-	public Set<VidadaInstanceConfig> vidadaInstanceConfigs = new HashSet<VidadaInstanceConfig>();
+	public Set<VidadaInstanceConfig> vidadaInstances = new HashSet<VidadaInstanceConfig>();
 	private String localCachePath = defaultCache;
 	private boolean enableDirectPlaySound = false;
 	private boolean ignoreImages = false;
@@ -95,8 +95,8 @@ public class VidadaClientSettings extends JsonSettings {
 
     private void loadDefaults(){
         // Set defaults
-        vidadaInstanceConfigs.add(VidadaInstanceConfig.LOCAL);
-        vidadaInstanceConfigs.add(new VidadaInstanceConfig("REST Localhost", "http://localhost:5555/api"));
+        vidadaInstances.add(VidadaInstanceConfig.LOCAL);
+        vidadaInstances.add(new VidadaInstanceConfig("REST Localhost", "http://localhost:5555/api"));
 
         String vlcBin = VLCUtil.getVLCBinaryPath();
         if(vlcBin != null)
@@ -219,8 +219,8 @@ public class VidadaClientSettings extends JsonSettings {
 		this.usingMetaData = usingMetaData;
 	}
 
-	public Collection<VidadaInstanceConfig> getVidadaInstanceConfigs(){
-		return vidadaInstanceConfigs;
+	public Collection<VidadaInstanceConfig> getVidadaInstances(){
+		return vidadaInstances;
 	}
 
 	public Collection<MediaPlayerCommand> getExternalMediaPlayers() {
