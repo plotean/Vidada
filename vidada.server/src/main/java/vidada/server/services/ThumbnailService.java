@@ -47,7 +47,6 @@ public class ThumbnailService extends VidadaServerService implements IThumbnailS
 
 		maxThumbSize = VidadaServerSettings.instance().getMaxThumbResolution();
 
-
         LocalImageCacheManager globalCache = null;
         if(VidadaServerSettings.instance().getCurrentDBConfig().isUseLocalCache()){
             globalCache = new LocalImageCacheManager(VidadaServerSettings.instance().getAbsoluteCachePath());
@@ -88,14 +87,14 @@ public class ThumbnailService extends VidadaServerService implements IThumbnailS
 	@Override
 	public void renewThumbImage(MovieMediaItem media, float pos) {
 
-		IImageCache imagecache = localImageCacheManager.getImageCache(media);
+		IImageCache imageCache = localImageCacheManager.getImageCache(media);
 
 		try {
 			media.setPreferredThumbPosition(pos);
 			media.setCurrentThumbPosition(MovieMediaItem.INVALID_POSITION);
 			getServer().getMediaService().update(media);
 
-			imagecache.removeImage(media.getFilehash());
+			imageCache.removeImage(media.getFilehash());
 		} catch (Exception e) {
             logger.error(e);
 		}

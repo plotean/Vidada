@@ -25,7 +25,7 @@ import java.util.Set;
  * @author IsNull
  *
  */
-public class MemoryImageCache implements IImageCache {
+public class MemoryImageCache extends ImageCacheProxyBase {
 
     /***************************************************************************
      *                                                                         *
@@ -35,8 +35,6 @@ public class MemoryImageCache implements IImageCache {
 
     private static final Logger logger = LogManager.getLogger(MemoryImageCache.class.getName());
 
-
-    private final IImageCache unbufferedImageCache;
 	private final Map<Size, Map<String, SoftReference<IMemoryImage>>> imageCache;
 
 	/**
@@ -77,10 +75,10 @@ public class MemoryImageCache implements IImageCache {
      **************************************************************************/
 
     /**
-     * Creates a standalone memory image cache
+     * Creates a standalone memory image cache without an underlying cache.
      */
     public MemoryImageCache(){
-        this(new ImageCacheProxyBase(null));
+        this(null);
     }
 
     /**
@@ -92,8 +90,7 @@ public class MemoryImageCache implements IImageCache {
 	 * @param unbufferedImageCache A slow cache which gets a memory cache wrapper
 	 */
 	public MemoryImageCache(IImageCache unbufferedImageCache){
-		this.unbufferedImageCache = unbufferedImageCache;
-
+        super(unbufferedImageCache);
 		// Setup image cache
 		this.imageCache = Collections.synchronizedMap(
 				new LRUCache<Size, Map<String, SoftReference<IMemoryImage>>>(MAX_SCALED_CACHE_SIZEFOLDERS));
@@ -114,25 +111,29 @@ public class MemoryImageCache implements IImageCache {
 		{
 			image = imageCache.get(size).get(id).get();
 		} else {		
-			image = this.unbufferedImageCache.getImageById(id, size);	
-			storeImageInMemoryCache(id, image, size);
+			image = super.getImageById(id, size);
+            if(image != null) {
+                storeImageInMemoryCache(id, image, size);
+            }
 		}
 		return image;
 	}
 
 	@Override
 	public Set<Size> getCachedDimensions(String id) {
-		return this.unbufferedImageCache.getCachedDimensions(id);
+        // TODO Memory cached dimensions?
+		return super.getCachedDimensions(id);
 	}
 
 	@Override
 	public boolean exists(String id, Size size) {
-		return existsInMemoryCache(id, size) || unbufferedImageCache.exists(id, size);
+		return existsInMemoryCache(id, size) || super.exists(id, size);
 	}
 
 	@Override
 	public void storeImage(String id, IMemoryImage image) {
-		this.unbufferedImageCache.storeImage(id, image);
+        // TODO storing an existing image - probably remove old first
+        super.storeImage(id, image);
 		storeImageInMemoryCache(id, image);
 	}
 
@@ -146,11 +147,11 @@ public class MemoryImageCache implements IImageCache {
 				idImageMap.remove(id);
 			}
 
-			if(idImageMap.isEmpty())
-				imageCache.remove(d);
+			if(idImageMap.isEmpty()) {
+                imageCache.remove(d);
+            }
 		}
-
-		unbufferedImageCache.removeImage(id);
+		super.removeImage(id);
 	}
 
     /***************************************************************************
@@ -171,29 +172,24 @@ public class MemoryImageCache implements IImageCache {
 
 
 	protected void storeImageInMemoryCache(String id, IMemoryImage image) {
-		if(image != null)
-		{
-			Size d = new Size(image.getWidth(), image.getHeight());
-			storeImageInMemoryCache(id, image, d);
-		}
-	}
+        if(image == null) throw new IllegalArgumentException("image must not be NULL");
+        Size d = new Size(image.getWidth(), image.getHeight());
+        storeImageInMemoryCache(id, image, d);
+    }
 
 
 	protected void storeImageInMemoryCache(String id, IMemoryImage image, Size imageSize) {
+        if (image == null) throw new IllegalArgumentException("image must not be NULL");
 
-		if(image != null)
-		{
-			if(!imageCache.containsKey(imageSize))
-			{
-				int maxScaledSize = (int)(MAX_MEMORY_SCALED_CACHE / AVERAGE_SCALED_IMAGE_SIZE);
-				Map<String, SoftReference<IMemoryImage>> realImageCache = new LRUCache<String, SoftReference<IMemoryImage>>(maxScaledSize);
-				imageCache.put(imageSize, realImageCache);
+        if (!imageCache.containsKey(imageSize)) {
+            int maxScaledSize = (int) (MAX_MEMORY_SCALED_CACHE / AVERAGE_SCALED_IMAGE_SIZE);
+            Map<String, SoftReference<IMemoryImage>> realImageCache = new LRUCache<String, SoftReference<IMemoryImage>>(maxScaledSize);
+            imageCache.put(imageSize, realImageCache);
 
-                logger.info("Created Scaled image cache. maxScaledSize: " + maxScaledSize);
-			}
-			imageCache.get(imageSize).put(id, new SoftReference<IMemoryImage>(image));
-		}
-	}
+            logger.info("Created Scaled image cache. maxScaledSize: " + maxScaledSize);
+        }
+        imageCache.get(imageSize).put(id, new SoftReference<IMemoryImage>(image));
+    }
 
 
 

@@ -18,7 +18,7 @@ import java.net.URISyntaxException;
 
 /**
  * Represents an local user MediaLibrary folder.
- * 
+ *
  * @author IsNull
  *
  */
@@ -26,145 +26,186 @@ import java.net.URISyntaxException;
 @Access(AccessType.FIELD)
 public class MediaLibrary extends IdEntity {
 
+    /***************************************************************************
+     *                                                                         *
+     * Private static fields                                                   *
+     *                                                                         *
+     **************************************************************************/
+
     private static final Logger logger = LogManager.getLogger(MediaLibrary.class.getName());
 
 
     /**
-	 * Vidadas cache directory name in a users library folder root
-	 */
-	public static final String VidataCacheFolder = "vidada.db";
-	public static final String VidataThumbsFolder = VidataCacheFolder + "/thumbs";
-	public static final String VidataInfoFolder = VidataCacheFolder + "/info";
-	public static final String VidataTagRelations = VidataCacheFolder + "/tags.txt";
+     * Vidadas cache directory name in a users library folder root
+     */
+    public static final String VidataCacheFolder = "vidada.db";
+    public static final String VidataThumbsFolder = VidataCacheFolder + "/thumbs";
+    public static final String VidataInfoFolder = VidataCacheFolder + "/info";
+    public static final String VidataTagRelations = VidataCacheFolder + "/tags.txt";
+
+    /***************************************************************************
+     *                                                                         *
+     * Private fields                                                          *
+     *                                                                         *
+     **************************************************************************/
+
+    private String libraryRootURI;
+    private boolean ignoreMovies;
+    private boolean ignoreImages;
+
+    transient private IImageCache imageCache = null;
+    transient private IMediaPropertyStore propertyStore = null;
+    transient private MediaDirectory mediaDirectory = null;
+    transient private DirectoryLocation libraryDirectoryLocation = null;
+
+    /***************************************************************************
+     *                                                                         *
+     * Constructors                                                            *
+     *                                                                         *
+     **************************************************************************/
+
+    /**
+     * Empty ORM Constructor
+     */
+    public MediaLibrary(){
+
+    }
+
+    /***************************************************************************
+     *                                                                         *
+     * Public API                                                              *
+     *                                                                         *
+     **************************************************************************/
+
+    /**
+     * Determines if movies are ignored in this folder
+     * @return
+     */
+    public boolean isIgnoreMovies() {
+        return ignoreMovies;
+    }
+
+    public void setIgnoreMovies(boolean ignoreMovies) {
+        this.ignoreMovies = ignoreMovies;
+        mediaDirectory = null;
+    }
+
+    /**
+     * Determines if images are ignored in this folder
+     * @return
+     */
+    public boolean isIgnoreImages() {
+        return ignoreImages;
+    }
+
+    public void setIgnoreImages(boolean ignoreImages) {
+        this.ignoreImages = ignoreImages;
+        mediaDirectory = null;
+    }
 
 
-	private String libraryRootURI;
-	private boolean ignoreMovies;
-	private boolean ignoreImages;
+    /**
+     * Gets the media directory which represents the root of this media library.
+     * @return
+     */
+    public MediaDirectory getMediaDirectory(){
 
-	transient private IImageCache imageCache = null;
-	transient private IMediaPropertyStore propertyStore = null;
-	transient private MediaDirectory mediaDirectory = null;
-	transient private DirectoryLocation libraryDirectoryLocation = null;
+        if(mediaDirectory == null){
+            mediaDirectory = new MediaDirectory(getLibraryRoot(), ignoreImages, ignoreMovies);
+        }
 
-	/**
-	 *
-	 */
-	public MediaLibrary(){	
-		//  Note: Empty constructor required by ORM
-	}
+        return mediaDirectory;
+    }
 
+    /**
+     * Set the root path of this media library
+     * @param location
+     */
+    public void setLibraryRoot(DirectoryLocation location) {
+        this.libraryDirectoryLocation = location;
+        libraryRootURI = libraryDirectoryLocation.getUri().toString();
+    }
 
-	public boolean isIgnoreMovies() {
-		return ignoreMovies;
-	}
-
-	public void setIgnoreMovies(boolean ignoreMovies) {
-		this.ignoreMovies = ignoreMovies;
-		mediaDirectory = null;
-	}
-
-	public boolean isIgnoreImages() {
-		return ignoreImages;
-	}
-
-	public void setIgnoreImages(boolean ignoreImages) {
-		this.ignoreImages = ignoreImages;
-		mediaDirectory = null;
-	}
-
-
-	/**
-	 * Gets the media directory which represents the root of this media library.
-	 * @return
-	 */
-	public MediaDirectory getMediaDirectory(){
-
-		if(mediaDirectory == null){
-			mediaDirectory = new MediaDirectory(getLibraryRoot(), ignoreImages, ignoreMovies);
-		}
-
-		return mediaDirectory;
-	}
-
-	/**
-	 * Set the root path of this media library
-	 * @param location
-	 */
-	@Transient
-	public void setLibraryRoot(DirectoryLocation location) {
-		this.libraryDirectoryLocation = location;
-		libraryRootURI = libraryDirectoryLocation.getUri().toString();
-	}
-
-
-	@Transient
-	private DirectoryLocation getLibraryRoot() {
-		if(libraryDirectoryLocation == null){
-			try {
-				libraryDirectoryLocation = DirectoryLocation.Factory.create(libraryRootURI);
-			} catch (URISyntaxException e) {
+    /**
+     * Get the root path of this media library
+     * @return
+     */
+    public DirectoryLocation getLibraryRoot() {
+        if(libraryDirectoryLocation == null){
+            try {
+                libraryDirectoryLocation = DirectoryLocation.Factory.create(libraryRootURI);
+            } catch (URISyntaxException e) {
                 logger.error(e);
-			}
-		}
-		return libraryDirectoryLocation;
-	}
+            }
+        }
+        return libraryDirectoryLocation;
+    }
 
-	public File getUserTagRelationDef(){
-		return new File(new File(getLibraryRoot().getPath()), VidataTagRelations);
-	}
+    /***************************************************************************
+     *                                                                         *
+     * Private methods                                                         *
+     *                                                                         *
+     **************************************************************************/
 
-	/**
-	 * Gets the libraries image cache
-	 * @return Returns the cache service if this library supports caches
-	 */
-	public synchronized IImageCache getLibraryCache(){
 
-		if(imageCache == null){
-			DirectoryLocation libraryRoot = getLibraryRoot();
-			if(libraryRoot != null && libraryRoot.exists()){
-				try {
-					DirectoryLocation libCache = DirectoryLocation.Factory.create(libraryRoot, VidataThumbsFolder);
+    /**
+     * Returns the user-tag relation definition file
+     * @return
+     */
+    public File getUserTagRelationDef(){
+        return new File(new File(getLibraryRoot().getPath()), VidataTagRelations);
+    }
+
+    /**
+     * Gets this library's thumbnail cache
+     * @return Returns the thumbnail cache
+     */
+    public synchronized IImageCache getLibraryCache(){
+
+        if(imageCache == null){
+            DirectoryLocation libraryRoot = getLibraryRoot();
+            if(libraryRoot != null && libraryRoot.exists()){
+                try {
+                    DirectoryLocation libCache = DirectoryLocation.Factory.create(libraryRoot, VidataThumbsFolder);
                     logger.info("Opening new library cache...");
-					ImageCacheFactory factory = new ImageCacheFactory();
-					imageCache = factory.openCache(libCache);
-				} catch (URISyntaxException e1) {
+                    imageCache = ImageCacheFactory.instance().openCache(libCache);
+                } catch (URISyntaxException e1) {
                     logger.error(e1);
-				}
-			}
-		}
-		return imageCache;
-	}
+                }
+            }
+        }
+        return imageCache;
+    }
 
-	/**
-	 * Returns the property cache / store for this media library.
-	 * 
-	 * @return
-	 */
-	public synchronized IMediaPropertyStore getPropertyStore(){
-		if(propertyStore == null){
-			DirectoryLocation libraryRoot = getLibraryRoot();
-			if(libraryRoot != null && libraryRoot.exists()){
-				propertyStore = new JsonMediaPropertyStore(new File(libraryRoot.getPath(), VidataInfoFolder));
-			}
-		}
-		return propertyStore;
-	}
+    /**
+     * Returns the property cache / store for this media library.
+     *
+     * @return
+     */
+    public synchronized IMediaPropertyStore getPropertyStore(){
+        if(propertyStore == null){
+            DirectoryLocation libraryRoot = getLibraryRoot();
+            if(libraryRoot != null && libraryRoot.exists()){
+                propertyStore = new JsonMediaPropertyStore(new File(libraryRoot.getPath(), VidataInfoFolder));
+            }
+        }
+        return propertyStore;
+    }
 
-	/**
-	 * Is this library available?
-	 * @return
-	 */
-	@Transient
-	public boolean isAvailable(){
-		DirectoryLocation root = getLibraryRoot();
-		return root != null && root.exists();
-	}
+    /**
+     * Is this library / root path available?
+     * @return
+     */
+    @Transient
+    public boolean isAvailable(){
+        DirectoryLocation root = getLibraryRoot();
+        return root != null && root.exists();
+    }
 
-	@Override
-	public String toString(){
-		DirectoryLocation root = getLibraryRoot();
-		return (root != null ? root.toString() : "MediaLibrary:: DirectoiryLocation=NULL") + " id: " + getId();
-	}
+    @Override
+    public String toString(){
+        DirectoryLocation root = getLibraryRoot();
+        return (root != null ? root.toString() : "MediaLibrary:: DirectoiryLocation=NULL") + " id: " + getId();
+    }
 
 }

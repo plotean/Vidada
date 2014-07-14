@@ -15,7 +15,19 @@ import vidada.model.security.ICredentialManager;
 public class ImageCacheFactory {
 
     private static final Logger logger = LogManager.getLogger(ImageCacheFactory.class.getName());
+    private static final ImageCacheFactory instance = new ImageCacheFactory();
 
+    private ImageCacheFactory(){
+
+    }
+
+    /**
+     * Gets the default cache factory
+     * @return
+     */
+    public synchronized static ImageCacheFactory instance(){
+        return instance;
+    }
 
     /**
 	 * Build a leveled cache form the given two caches.

@@ -36,7 +36,6 @@ public class LocalImageCacheManager {
 
 
 	transient private final IImageCache localImageCache;
-	transient private final ImageCacheFactory cacheFactory = new ImageCacheFactory();
 	transient private final Map<MediaLibrary, IImageCache> combinedCachesMap = new HashMap<MediaLibrary, IImageCache>();
 
     /***************************************************************************
@@ -77,7 +76,7 @@ public class LocalImageCacheManager {
 			imageCache = combinedCachesMap.get(library);
 			if(imageCache == null){
 				IImageCache libraryCache = library.getLibraryCache();
-				imageCache = cacheFactory.leveledCache(localImageCache, libraryCache);
+				imageCache = ImageCacheFactory.instance().leveledCache(localImageCache, libraryCache);
 				combinedCachesMap.put(library, imageCache);
 			}
 		} else {
@@ -107,8 +106,7 @@ public class LocalImageCacheManager {
             DirectoryLocation localCacheLocation =
                     DirectoryLocation.Factory.create(absCacheLocation);
 
-            cache = cacheFactory.openEncryptedCache(localCacheLocation, credentialManager);
-
+            cache = ImageCacheFactory.instance().openEncryptedCache(localCacheLocation, credentialManager);
         }
 
 		if(cache == null){
