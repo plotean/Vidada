@@ -74,12 +74,11 @@ public class ThumbnailService extends VidadaServerService implements IThumbnailS
 			try {
 				thumb = fetchThumb(media, size, imageCache);
 			} catch (Exception e) {
-				e.printStackTrace();
+                logger.error("Fetching thumbnail failed.", e);
 			}
 		}else{
             logger.error("Can not find image cache for " + media);
 		}
-
 		return thumb;
 	}
 

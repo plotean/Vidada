@@ -21,7 +21,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Represents a single media item
+ * Represents a single media item. Base class of all media items.
  * 
  * @author IsNull
  * 
