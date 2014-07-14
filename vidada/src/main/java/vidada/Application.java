@@ -314,24 +314,27 @@ public class Application extends  javafx.application.Application {
 
 			logger.info("Vidada instance / Database must be selected by user.");
 
-			Dialog dlg = new Dialog(null, "Vidada-Server Database Chooser");
-			final ChooseMediaDatabaseView chooseView = new ChooseMediaDatabaseView(settings.getAvaiableDatabases());
-			final AbstractAction actionChoose = new AbstractAction("Choose") {
-				{  
-					ButtonBar.setType(this, ButtonType.OK_DONE); 
-				}
-				@Override
-				public void execute(ActionEvent ae) {
-					Dialog dlg = (Dialog) ae.getSource();
-					VidadaDatabaseConfig db = chooseView.getDatabase();
-					settings.setCurrentDBConfig(db);
-					dlg.hide();
-				}
-			};
-			dlg.setContent(chooseView);	
-			dlg.setMasthead("Choose the media database which you want to open.");
-			dlg.getActions().addAll(actionChoose, Dialog.Actions.CANCEL);
-			dlg.show();
+            ThreadUtil.runUIThreadWait(() -> {
+                Dialog dlg = new Dialog(null, "Vidada-Server Database Chooser");
+                final ChooseMediaDatabaseView chooseView = new ChooseMediaDatabaseView(settings.getAvaiableDatabases());
+                final AbstractAction actionChoose = new AbstractAction("Choose") {
+                    {
+                        ButtonBar.setType(this, ButtonType.OK_DONE);
+                    }
+                    @Override
+                    public void execute(ActionEvent ae) {
+                        Dialog dlg = (Dialog) ae.getSource();
+                        VidadaDatabaseConfig db = chooseView.getDatabase();
+                        settings.setCurrentDBConfig(db);
+                        dlg.hide();
+                    }
+                };
+                dlg.setContent(chooseView);
+                dlg.setMasthead("Choose the media database which you want to open.");
+                dlg.getActions().addAll(actionChoose, Dialog.Actions.CANCEL);
+                dlg.show();
+            });
+
 
 		}else{
             logger.info("Instance / Database automatically configured.");
