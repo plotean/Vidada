@@ -172,6 +172,7 @@ public class Application extends  javafx.application.Application {
                 }).start();
             }else{
                 logger.warn("Vidada instance config is NULL!");
+                stop();
             }
 
         } catch (Throwable e) {
@@ -179,7 +180,7 @@ public class Application extends  javafx.application.Application {
 
             ThreadUtil.runUIThread(() -> {
                 Dialogs.create()
-                        .title("Vidada Erorr")
+                        .title("Vidada Error")
                         .masthead("Vidada encountered an Error and has stopped working.")
                         .showException(e);
                 stop();
