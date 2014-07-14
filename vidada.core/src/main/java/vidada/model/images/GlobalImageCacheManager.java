@@ -18,11 +18,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Manages the local image caches
+ * Manages the global image cache and its slave caches.
  * @author IsNull
  *
  */
-public class LocalImageCacheManager {
+public class GlobalImageCacheManager {
 
     /***************************************************************************
      *                                                                         *
@@ -30,12 +30,12 @@ public class LocalImageCacheManager {
      *                                                                         *
      **************************************************************************/
 
-    private static final Logger logger = LogManager.getLogger(LocalImageCacheManager.class.getName());
+    private static final Logger logger = LogManager.getLogger(GlobalImageCacheManager.class.getName());
 
     transient private final ICredentialManager credentialManager =  ServiceProvider.Resolve(ICredentialManager.class);
 
 
-	transient private final IImageCache localImageCache;
+	transient private final IImageCache globalCache;
 	transient private final Map<MediaLibrary, IImageCache> combinedCachesMap = new HashMap<MediaLibrary, IImageCache>();
 
     /***************************************************************************
@@ -46,10 +46,19 @@ public class LocalImageCacheManager {
 
     /**
      * Creates a new LocalImageCacheManager.
-     * @param cacheLocation Local central file based cache.
+     * @param localCacheLocation Local central file based cache.
      */
-	public LocalImageCacheManager(File cacheLocation){
-		localImageCache = openLocalCache(cacheLocation);
+	public GlobalImageCacheManager(File localCacheLocation){
+        IImageCache globalCacheInstance;
+        IImageCache localFileCache = openLocalFileCache(localCacheLocation);
+        if(localFileCache != null){
+            // We have a local file cache wrapped with a memory cache
+            globalCacheInstance = new MemoryImageCache(localFileCache);
+        }else{
+            // We only have a memory cache as global cache
+            globalCacheInstance = new MemoryImageCache();
+        }
+		globalCache = globalCacheInstance;
 	}
 
 
@@ -76,11 +85,11 @@ public class LocalImageCacheManager {
 			imageCache = combinedCachesMap.get(library);
 			if(imageCache == null){
 				IImageCache libraryCache = library.getLibraryCache();
-				imageCache = ImageCacheFactory.instance().leveledCache(localImageCache, libraryCache);
+				imageCache = ImageCacheFactory.instance().leveledCache(globalCache, libraryCache);
 				combinedCachesMap.put(library, imageCache);
 			}
 		} else {
-			imageCache = localImageCache;
+			imageCache = globalCache;
 		}
 
 		return imageCache;
@@ -98,7 +107,7 @@ public class LocalImageCacheManager {
 	 * Should this fail, it will return a dummy cache
 	 * @return
 	 */
-	private synchronized IImageCache openLocalCache(File cacheLocation) {
+	private synchronized IImageCache openLocalFileCache(File cacheLocation) {
 		IImageCache cache = null;
 
         if(cacheLocation != null){
@@ -108,12 +117,6 @@ public class LocalImageCacheManager {
 
             cache = ImageCacheFactory.instance().openEncryptedCache(localCacheLocation, credentialManager);
         }
-
-		if(cache == null){
-            logger.warn("Injecting a MemoryCache to replace LocalFile Cache");
-			return new MemoryImageCache();
-		}
-        // TODO probably use memory cache too if local file cache is in place?
         return cache;
 	}
 

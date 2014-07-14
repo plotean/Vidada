@@ -14,7 +14,7 @@ import java.util.Set;
  * @author IsNull
  *
  */
-public class ImageCacheProxyBase implements IImageCache{
+public abstract class ImageCacheProxyBase implements IImageCache{
 
 	transient private IImageCache original;
 
