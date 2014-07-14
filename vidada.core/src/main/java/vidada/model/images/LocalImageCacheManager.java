@@ -4,9 +4,8 @@ import archimedes.core.io.locations.DirectoryLocation;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import vidada.model.images.cache.IImageCache;
-import vidada.model.images.cache.ImageCacheProxyBase;
-import vidada.model.images.cache.MemoryImageCache;
 import vidada.model.images.cache.ImageCacheFactory;
+import vidada.model.images.cache.MemoryImageCache;
 import vidada.model.media.MediaItem;
 import vidada.model.media.MediaLibrary;
 import vidada.model.media.source.MediaSource;
@@ -34,6 +33,7 @@ public class LocalImageCacheManager {
     private static final Logger logger = LogManager.getLogger(LocalImageCacheManager.class.getName());
 
     transient private final ICredentialManager credentialManager =  ServiceProvider.Resolve(ICredentialManager.class);
+
 
 	transient private final IImageCache localImageCache;
 	transient private final ImageCacheFactory cacheFactory = new ImageCacheFactory();
@@ -102,19 +102,21 @@ public class LocalImageCacheManager {
 	private synchronized IImageCache openLocalCache(File cacheLocation) {
 		IImageCache cache = null;
 
-		File absCacheLocation = new File(cacheLocation.getAbsolutePath());
-		DirectoryLocation localCacheLocation =
-				DirectoryLocation.Factory.create(absCacheLocation);
+        if(cacheLocation != null){
+            File absCacheLocation = new File(cacheLocation.getAbsolutePath());
+            DirectoryLocation localCacheLocation =
+                    DirectoryLocation.Factory.create(absCacheLocation);
 
-		cache = cacheFactory.openEncryptedCache(localCacheLocation, credentialManager);
+            cache = cacheFactory.openEncryptedCache(localCacheLocation, credentialManager);
 
-		if(cache != null){
-			return cache;
-		}else{
+        }
+
+		if(cache == null){
             logger.warn("Injecting a MemoryCache to replace LocalFile Cache");
-			return new MemoryImageCache(new ImageCacheProxyBase(null));
+			return new MemoryImageCache();
 		}
-
+        // TODO probably use memory cache too if local file cache is in place?
+        return cache;
 	}
 
 

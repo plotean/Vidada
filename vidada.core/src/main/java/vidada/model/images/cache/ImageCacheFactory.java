@@ -37,7 +37,7 @@ public class ImageCacheFactory {
 			}
 		}else if(secondLevelCache != null){
 			imageCache = secondLevelCache;
-            logger.warn("ImageCacheFactory: firstLevelCache is NULL!");
+            logger.warn("Can not create leveled cache, since firstLevelCache is NULL!");
 		}else{
 			// both caches are null
 			return null;
@@ -56,8 +56,7 @@ public class ImageCacheFactory {
 		try {
 			cache = new CryptedImageFileCache(cacheLocation, cacheKeyProvider);
 		} catch (AuthenticationException e) {
-            logger.error("ImageCacheFactory: AuthenticationException - openCache failed!");
-			e.printStackTrace();
+            logger.error("AuthenticationException - openCache failed!", e);
 		}
 		return cache;
 	}

@@ -76,6 +76,12 @@ public class MemoryImageCache implements IImageCache {
      *                                                                         *
      **************************************************************************/
 
+    /**
+     * Creates a standalone memory image cache
+     */
+    public MemoryImageCache(){
+        this(new ImageCacheProxyBase(null));
+    }
 
     /**
 	 * Wraps this memory cache around the given cache service,

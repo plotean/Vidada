@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Base class for image cache proxy. 
+ * Base class for a image cache proxy.
  * This implementation redirects all calls to this instance down to the "original".
  * 
  * Subclasses may override methods of the proxy to transparently inject functionality.
