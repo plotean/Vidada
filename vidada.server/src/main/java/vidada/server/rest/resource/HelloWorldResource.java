@@ -6,8 +6,7 @@ import javax.ws.rs.Produces;
 
 
 @Path("")
-public class HelloWorldResource {
-
+public class HelloWorldResource extends AbstractResource {
 	@GET
 	@Produces("text/html")
 	public String getMessage(){

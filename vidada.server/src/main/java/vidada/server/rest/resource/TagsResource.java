@@ -1,5 +1,8 @@
 package vidada.server.rest.resource;
 
+import vidada.server.rest.VidadaRestServer;
+import vidada.server.services.ITagService;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -7,9 +10,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.UriInfo;
-
-import vidada.server.rest.VidadaRestServer;
-import vidada.server.services.ITagService;
 
 @Path("/tags")
 public class TagsResource extends AbstractResource {
@@ -32,17 +32,6 @@ public class TagsResource extends AbstractResource {
 	@Produces({MediaType.TEXT_PLAIN})
 	public String get() {
 		return "Tag Service";
-	}
-
-	/**
-	 * test
-	 * @return
-	 */
-	@GET
-	@Path("test")
-	@Produces({MediaType.APPLICATION_JSON})
-	public String getTest() {
-		return "{test : bum }";
 	}
 
 
