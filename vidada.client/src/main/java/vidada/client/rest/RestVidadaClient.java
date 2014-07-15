@@ -8,9 +8,11 @@ import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import vidada.client.IVidadaClient;
 import vidada.client.rest.services.MediaServiceRestClient;
+import vidada.client.rest.services.PingServiceRestClient;
 import vidada.client.rest.services.TagServiceRestClient;
 import vidada.client.rest.services.ThumbnailRestClient;
 import vidada.client.services.IMediaClientService;
+import vidada.client.services.IPingClientService;
 import vidada.client.services.ITagClientService;
 import vidada.client.services.IThumbnailClientService;
 
@@ -28,6 +30,7 @@ public class RestVidadaClient implements IVidadaClient{
 	private final IMediaClientService mediaClientService;
 	private final ITagClientService tagClientService;
 	private final IThumbnailClientService thumbnailClientService;
+    private final IPingClientService pingClientService;
 
 	/**
 	 * Rest client
@@ -47,25 +50,23 @@ public class RestVidadaClient implements IVidadaClient{
 		mediaClientService = new MediaServiceRestClient(client, vidadaBaseUri, getJsonMapper());
 		tagClientService = new TagServiceRestClient(client, vidadaBaseUri, getJsonMapper());
 		thumbnailClientService = new ThumbnailRestClient(client, vidadaBaseUri, getJsonMapper());
+        pingClientService = new PingServiceRestClient(client, vidadaBaseUri, getJsonMapper());
 	}
 
 
 	@Override
-	public IMediaClientService getMediaClientService() {
-		return mediaClientService;
-	}
+	public IMediaClientService getMediaClientService() { return mediaClientService; }
 
 	@Override
-	public ITagClientService getTagClientService() {
-		return tagClientService;
-	}
+	public ITagClientService getTagClientService() { return tagClientService; }
 
 	@Override
-	public IThumbnailClientService getThumbnailClientService() {
-		return thumbnailClientService;
-	}
+	public IThumbnailClientService getThumbnailClientService() { return thumbnailClientService; }
 
-	@Override
+    @Override
+    public IPingClientService getPingClientService() {  return pingClientService; }
+
+    @Override
 	public String getInstanceId() {
 		return vidadaBaseUri.getHost();
 	}

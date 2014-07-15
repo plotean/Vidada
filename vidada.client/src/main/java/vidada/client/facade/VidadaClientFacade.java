@@ -3,6 +3,7 @@ package vidada.client.facade;
 import vidada.client.IVidadaClient;
 import vidada.client.IVidadaClientFacade;
 import vidada.client.services.IMediaClientService;
+import vidada.client.services.IPingClientService;
 import vidada.client.services.ITagClientService;
 import vidada.client.services.IThumbnailClientService;
 
@@ -45,7 +46,12 @@ public class VidadaClientFacade implements IVidadaClientFacade{
 		return vidadaClient.getThumbnailClientService();
 	}
 
-	/**{@inheritDoc}*/
+    @Override
+    public IPingClientService getPingClientService() {
+        return vidadaClient.getPingClientService();
+    }
+
+    /**{@inheritDoc}*/
 	@Override
 	public IThumbContainerService getThumbContainerService(){
 		return thumbContainerService;

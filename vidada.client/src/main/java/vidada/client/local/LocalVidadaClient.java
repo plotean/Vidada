@@ -3,9 +3,11 @@ package vidada.client.local;
 import vidada.IVidadaServer;
 import vidada.client.IVidadaClient;
 import vidada.client.local.impl.LocalMediaClientService;
+import vidada.client.local.impl.LocalPingClientService;
 import vidada.client.local.impl.LocalTagClientService;
 import vidada.client.local.impl.LocalThumbnailClientService;
 import vidada.client.services.IMediaClientService;
+import vidada.client.services.IPingClientService;
 import vidada.client.services.ITagClientService;
 import vidada.client.services.IThumbnailClientService;
 
@@ -21,6 +23,7 @@ public class LocalVidadaClient implements IVidadaClient {
 	private final IMediaClientService mediaClientService;
 	private final ITagClientService tagClientService;
 	private final IThumbnailClientService thumbnailClientService;
+    private final IPingClientService pingClientService;
 
 	/**
 	 * Creates a local Vidada Client using the given local Vidada server
@@ -31,6 +34,7 @@ public class LocalVidadaClient implements IVidadaClient {
 		mediaClientService = new LocalMediaClientService(server.getMediaService());
 		tagClientService = new LocalTagClientService(server.getTagService());
 		thumbnailClientService = new LocalThumbnailClientService(server.getThumbnailService());
+        pingClientService = new LocalPingClientService();
 	}
 
 	@Override
@@ -48,7 +52,12 @@ public class LocalVidadaClient implements IVidadaClient {
 		return thumbnailClientService;
 	}
 
-	@Override
+    @Override
+    public IPingClientService getPingClientService() {
+        return pingClientService;
+    }
+
+    @Override
 	public String getInstanceId() {
 		return localServer.getNameId();
 	}

@@ -1,6 +1,7 @@
 package vidada.client;
 
 import vidada.client.services.IMediaClientService;
+import vidada.client.services.IPingClientService;
 import vidada.client.services.ITagClientService;
 import vidada.client.services.IThumbnailClientService;
 
@@ -34,4 +35,10 @@ public interface IVidadaClient {
 	 * @return
 	 */
 	IThumbnailClientService getThumbnailClientService();
+
+    /**
+     * Returns the {@link IPingClientService} of this Vidada instance.
+     * @return
+     */
+    IPingClientService getPingClientService();
 }
