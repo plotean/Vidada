@@ -26,7 +26,7 @@ public class PingServiceRestClient extends AbstractRestService implements IPingC
             String response = pingResource().request(MediaType.TEXT_PLAIN).get(String.class);
             return response != null && response.equals("success");
         }catch (Exception e) {
-            logger.warn("Ping to " + pingResource().getUri() + " failed.", e);
+            logger.warn("Ping to " + pingResource().getUri() + " failed: " +  e.getMessage());
         }
         return false;
 	}

@@ -45,7 +45,7 @@ public class RestVidadaClient implements IVidadaClient{
 		// TODO replace with real credentials
 		HttpAuthenticationFeature feature = HttpAuthenticationFeature.basicBuilder()
 				.nonPreemptive().credentials("admin", "1337").build();
-		client.register(feature); 
+		client.register(feature);
 
 		mediaClientService = new MediaServiceRestClient(client, vidadaBaseUri, getJsonMapper());
 		tagClientService = new TagServiceRestClient(client, vidadaBaseUri, getJsonMapper());

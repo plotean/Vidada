@@ -162,9 +162,25 @@ public class Application extends  javafx.application.Application {
             if(instance != null){
                 logger.info("Starting Vidada with instance configured...");
                 new Thread(() -> {
-                    if(startVidadaInstance(instance)) {
-                        // Show MainFrame
-                        ThreadUtil.runUIThread(() -> showMainUI());
+                    IVidadaClient client = startVidadaClient(instance);
+                    if(client != null) {
+
+                        // Check connection to client
+                        if(client.getPingClientService().ping()){
+                            // Show MainFrame
+                            ThreadUtil.runUIThread(() -> showMainUI());
+                        }else{
+                            // Could not connect to client!
+                            ThreadUtil.runUIThread(() -> {
+                                Dialogs.create()
+                                        .title("Vidada Connection Error")
+                                        .masthead("Vidada could not connect to " + instance.getUri())
+                                        .message("Check if the address is correct and ensure that the server is running.")
+                                .showError();
+
+                                stop();
+                            });
+                        }
                     }else{
                         // Shut down
                         ThreadUtil.runUIThread(() -> stop());
@@ -227,7 +243,7 @@ public class Application extends  javafx.application.Application {
 	/**
 	 * Occurs after the application has started up and is ready
 	 */
-	private void afterStartup() {
+	private void afterStartup(IVidadaClient client) {
 
         registerMediaHandlers();
 
@@ -242,8 +258,7 @@ public class Application extends  javafx.application.Application {
      * @param instanceConfig
      * @return
      */
-    private boolean startVidadaInstance(VidadaInstanceConfig instanceConfig){
-        boolean success = false;
+    private IVidadaClient startVidadaClient(VidadaInstanceConfig instanceConfig){
 
         logger.info("Starting Vidada instance...");
 
@@ -256,10 +271,9 @@ public class Application extends  javafx.application.Application {
         if(vidadaClient != null){
             ServiceProvider.Resolve(IVidadaClientManager.class).addClient(vidadaClient);
             logger.info("Initialisation successful.");
-            afterStartup();
-            success = true;
+            afterStartup(vidadaClient);
         }
-        return success;
+        return vidadaClient;
     }
 
 	private VidadaInstanceConfig configInstance(){
