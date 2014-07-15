@@ -43,7 +43,7 @@ public class FilterViewModel {
 
 
 	private MediaType mediatype = MediaType.ANY;
-	private OrderProperty order = OrderProperty.FILENAME;
+	private OrderProperty order = OrderProperty.ADDEDDATE;
 	private List<MediaLibrary> requiredMediaLibs = new ArrayList<MediaLibrary>();
 	private boolean reverse = false;
 	private boolean onlyAvaiable = false;
