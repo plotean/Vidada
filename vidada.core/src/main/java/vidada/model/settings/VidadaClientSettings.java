@@ -98,8 +98,7 @@ public class VidadaClientSettings extends JsonSettings {
     private void loadDefaults(){
         // Set defaults
         vidadaInstances.add(VidadaInstanceConfig.LOCAL);
-        vidadaInstances.add(new VidadaInstanceConfig("REST Localhost", "http://localhost:5555/api"));
-
+        vidadaInstances.add(new VidadaInstanceConfig("Localhost (REST-API)", "http://localhost:5555/api"));
 
         if(OSValidator.isOSX()){
             // Add known media players if installed:
@@ -109,8 +108,19 @@ public class VidadaClientSettings extends JsonSettings {
             if((new File("/Applications/mpv.app")).exists()) {
                 externalMediaPlayers.add(new MediaPlayerCommand("MPV", "open -n /Applications/mpv.app --args $media"));
             }
+            if((new File("/Applications/mplayer2.app")).exists()) {
+                externalMediaPlayers.add(new MediaPlayerCommand("MPlayer 2", "open -n /Applications/mplayer2.app --args $media"));
+            }
+            if((new File("/Applications/DivX Player.app")).exists()) {
+                externalMediaPlayers.add(new MediaPlayerCommand("DivX-Player", "open -n \\\"/Applications/DivX Player.app\\\" --args $media"));
+            }
+            if((new File("/Applications/MPlayerX.app")).exists()) {
+                externalMediaPlayers.add(new MediaPlayerCommand("MPlayerX", "open -n /Applications/MPlayerX.app --args -url $media"));
+            }
+            if((new File("/Applications/mpv.app")).exists()) {
+                externalMediaPlayers.add(new MediaPlayerCommand("MPlayer Extended", "open -n /Applications/MPlayerExtended.app --args $media"));
+            }
         }
-
     }
 
 
