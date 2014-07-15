@@ -1,9 +1,9 @@
 package vidada.model.settings;
 
+import archimedes.core.util.OSValidator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import vlc.VLCUtil;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -100,9 +100,17 @@ public class VidadaClientSettings extends JsonSettings {
         vidadaInstances.add(VidadaInstanceConfig.LOCAL);
         vidadaInstances.add(new VidadaInstanceConfig("REST Localhost", "http://localhost:5555/api"));
 
-        String vlcBin = VLCUtil.getVLCBinaryPath();
-        if(vlcBin != null)
-            externalMediaPlayers.add(new MediaPlayerCommand("VLC", "\"" + vlcBin + "\" $media"));
+
+        if(OSValidator.isOSX()){
+            // Add known media players if installed:
+            if((new File("/Applications/VLC.app")).exists()) {
+                externalMediaPlayers.add(new MediaPlayerCommand("VLC", "open -n /Applications/VLC.app --args $media"));
+            }
+            if((new File("/Applications/mpv.app")).exists()) {
+                externalMediaPlayers.add(new MediaPlayerCommand("MPV", "open -n /Applications/mpv.app --args $media"));
+            }
+        }
+
     }
 
 
