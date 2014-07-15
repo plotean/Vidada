@@ -9,7 +9,7 @@ import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import vidada.client.IVidadaClient;
 import vidada.client.rest.services.MediaServiceRestClient;
 import vidada.client.rest.services.TagServiceRestClient;
-import vidada.client.rest.services.ThumbnailRestClientService;
+import vidada.client.rest.services.ThumbnailRestClient;
 import vidada.client.services.IMediaClientService;
 import vidada.client.services.ITagClientService;
 import vidada.client.services.IThumbnailClientService;
@@ -46,7 +46,7 @@ public class RestVidadaClient implements IVidadaClient{
 
 		mediaClientService = new MediaServiceRestClient(client, vidadaBaseUri, getJsonMapper());
 		tagClientService = new TagServiceRestClient(client, vidadaBaseUri, getJsonMapper());
-		thumbnailClientService = new ThumbnailRestClientService(client, vidadaBaseUri, getJsonMapper());
+		thumbnailClientService = new ThumbnailRestClient(client, vidadaBaseUri, getJsonMapper());
 	}
 
 

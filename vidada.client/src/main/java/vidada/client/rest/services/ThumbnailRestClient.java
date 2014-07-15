@@ -16,12 +16,12 @@ import javax.ws.rs.core.Response;
 import java.io.InputStream;
 import java.net.URI;
 
-public class ThumbnailRestClientService extends AbstractRestService implements IThumbnailClientService {
+public class ThumbnailRestClient extends AbstractRestService implements IThumbnailClientService {
 
 	private IRawImageFactory rawImageFactory = ServiceProvider.Resolve(IRawImageFactory.class);
 
 
-	public ThumbnailRestClientService(Client client, URI api, ObjectMapper mapper) {
+	public ThumbnailRestClient(Client client, URI api, ObjectMapper mapper) {
 		super(client, api, mapper);
 	}
 
