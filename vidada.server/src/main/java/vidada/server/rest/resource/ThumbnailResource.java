@@ -11,6 +11,7 @@ import vidada.server.services.IMediaService;
 import vidada.server.services.IThumbnailService;
 
 import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.StreamingOutput;
@@ -42,6 +43,11 @@ public class ThumbnailResource extends AbstractResource {
      *                                                                         *
      **************************************************************************/
 
+    @GET
+    @Produces({ MediaType.TEXT_PLAIN })
+    public String getDefault(){
+        return "REST Resource which provides access to media thumbnails.";
+    }
 
     @POST
 	@Path("{hash}")
